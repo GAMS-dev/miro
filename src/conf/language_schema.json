@@ -2890,10 +2890,22 @@
                   "minLength": 1
                 },
                 "baselineComparison": {
-                  "cbEnable": "Enable baseline comparison?",
-                  "selDomain": "Domain",
-                  "selRecord": "Baseline record",
-                  "selMetrics": "Comparison metrics (max 2)",
+                  "cbEnable": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selDomain": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selRecord": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selMetrics": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "metrics": {
                     "type": "object",
                     "additionalProperties": false,

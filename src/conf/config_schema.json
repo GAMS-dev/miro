@@ -269,7 +269,7 @@
           "required": [
             "domain",
             "record",
-            "statistics"
+            "metrics"
           ]
         },
         "chartOptions": {
@@ -1123,7 +1123,7 @@
                 "required": [
                   "domain",
                   "record",
-                  "statistics"
+                  "metrics"
                 ]
               }
             }

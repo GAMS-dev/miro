@@ -799,10 +799,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         metricsChoices = setNames(
           c("percentage difference", "absolute difference", "normalization", "value"),
           c(
-            lang$renderers$miroPivot$baselineComparisonMetrics$percDiff,
-            lang$renderers$miroPivot$baselineComparisonMetrics$absDiff,
-            lang$renderers$miroPivot$baselineComparisonMetrics$norm,
-            lang$renderers$miroPivot$baselineComparisonMetrics$value
+            lang$renderers$miroPivot$settings$baselineComparison$metrics$percDiff,
+            lang$renderers$miroPivot$settings$baselineComparison$metrics$absDiff,
+            lang$renderers$miroPivot$settings$baselineComparison$metrics$norm,
+            lang$renderers$miroPivot$settings$baselineComparison$metrics$values
           )
         )
       )
@@ -988,6 +988,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           isolate(singleDropdown(NULL))
         }
+        newBaselineCompConfig <- isolate(baselineComparisonConfig())
+        if (is.list(viewOptions[["baselineComparison"]]) &&
+          identical(length(viewOptions[["baselineComparison"]][["domain"]]), 1L) &&
+          viewOptions[["baselineComparison"]][["domain"]] %in% newBaselineCompConfig$domainChoices &&
+          length(viewOptions[["baselineComparison"]][["metrics"]]) >= 1L &&
+          length(viewOptions[["baselineComparison"]][["metrics"]]) <= 2L &&
+          all(viewOptions[["baselineComparison"]][["metrics"]] %in% newBaselineCompConfig$metricsChoices)) {
+          recordChoicesTmp <- as.character(unique(data[[viewOptions[["baselineComparison"]][["domain"]]]]))
+          if (identical(length(viewOptions[["baselineComparison"]][["record"]]), 1L) &&
+            viewOptions[["baselineComparison"]][["record"]] %in% recordChoicesTmp) {
+            newBaselineCompConfig$enabled <- TRUE
+            newBaselineCompConfig$domainSelected <- viewOptions[["baselineComparison"]][["domain"]]
+            newBaselineCompConfig$recordSelected <- viewOptions[["baselineComparison"]][["record"]]
+            newBaselineCompConfig$metricsSelected <- unlist(viewOptions[["baselineComparison"]][["metrics"]], use.names = FALSE)
+          } else {
+            newBaselineCompConfig$enabled <- FALSE
+          }
+        } else {
+          newBaselineCompConfig$enabled <- FALSE
+        }
+        isolate(baselineComparisonConfig(newBaselineCompConfig))
         if (length(viewOptions[["tableSummarySettings"]])) {
           bothEnabled <- identical(viewOptions[["tableSummarySettings"]][["enabled"]], TRUE)
           newTableSummarySettings <- list(
@@ -1812,183 +1833,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showAddViewDialog(isolate(input$pivotRenderer))
         })
-        rendererEnv[[ns("showSettings")]] <- observe({
-          if (is.null(input$showSettings) || initData || input$showSettings == 0L) {
-            return()
-          }
-          isolate({
-            showModal(modalDialog(
-              tabsetPanel(
-                id = ns("settingsTabs"),
-                tabPanel(
-                  lang$renderers$miroPivot$settings$tabGeneral,
-                  tags$div(class = "small-space"),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-12",
-                      checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$settings$cbHideEmptyCols,
-                        value = hideEmptyCols()
-                      )
-                    )
-                  ),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-12",
-                      `data-ns-prefix` = ns(""),
-                      selectInput(ns("singleDropdown"),
-                        label = lang$renderers$miroPivot$settings$singleDropdown,
-                        choices = setIndices,
-                        selected = singleDropdown(),
-                        multiple = TRUE,
-                        width = "100%"
-                      )
-                    )
-                  )
-                ),
-                tabPanel(
-                  lang$renderers$miroPivot$settings$tabTable,
-                  tags$div(class = "small-space"),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-6",
-                      checkboxInput_MIRO(ns("showTableSummaryCol"),
-                        label = lang$renderers$miroPivot$settings$cbShowTableSummaryCol,
-                        value = tableSummarySettings()$colEnabled
-                      )
-                    ),
-                    tags$div(
-                      class = "col-sm-6",
-                      `data-display-if` = "input.showTableSummaryCol===true",
-                      `data-ns-prefix` = ns(""),
-                      selectInput(ns("colSummaryFunction"),
-                        label = lang$renderers$miroPivot$settings$colSummaryFunction,
-                        choices = aggregationFunctions,
-                        selected = tableSummarySettings()$colSummaryFunction,
-                        width = "100%"
-                      )
-                    )
-                  ),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-6",
-                      checkboxInput_MIRO(ns("showTableSummaryRow"),
-                        label = lang$renderers$miroPivot$settings$cbShowTableSummaryRow,
-                        value = tableSummarySettings()$rowEnabled
-                      )
-                    ),
-                    tags$div(
-                      class = "col-sm-6",
-                      `data-display-if` = "input.showTableSummaryRow===true",
-                      `data-ns-prefix` = ns(""),
-                      selectInput(ns("rowSummaryFunction"),
-                        label = lang$renderers$miroPivot$settings$rowSummaryFunction,
-                        choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
-                        selected = tableSummarySettings()$rowSummaryFunction,
-                        width = "100%"
-                      )
-                    )
-                  ),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-12",
-                      checkboxInput_MIRO(ns("fixedColumns"),
-                        tags$span(
-                          lang$renderers$miroPivot$settings$fixedColumns,
-                          tags$span(
-                            `data-tooltip` = lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
-                            class = "info-wrapper tooltip-mobile",
-                            tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
-                              role = "presentation",
-                              `aria-label` = "More information"
-                            )
-                          )
-                        ),
-                        value = fixedColumns()
-                      )
-                    )
-                  )
-                ),
-                tabPanel(
-                  lang$renderers$miroPivot$settings$tabChart,
-                  tags$div(class = "small-space"),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-12",
-                      numericInput(ns("chartFontSize"), lang$renderers$miroPivot$settings$chartFontSize,
-                        value = chartFontSize(),
-                        min = 1,
-                        max = 42,
-                        step = 1
-                      )
-                    )
-                  )
-                ),
-                tabPanel(
-                  lang$renderers$miroPivot$settings$tabBaselineComp,
-                  tags$div(class = "small-space"),
-                  tags$div(
-                    class = "row",
-                    tags$div(
-                      class = "col-sm-12",
-                      checkboxInput_MIRO(ns("enableBaselineComparison"),
-                        label = lang$renderers$miroPivot$settings$baselineComparison$cbEnable,
-                        value = baselineComparisonConfig()$enabled
-                      )
-                    )
-                  ),
-                  conditionalPanel("input.enableBaselineComparison===true",
-                    ns = ns,
-                    tags$div(
-                      class = "row",
-                      tags$div(
-                        class = "col-sm-12",
-                        selectInput(ns("baselineCompDomain"),
-                          lang$renderers$miroPivot$settings$baselineComparison$selDomain,
-                          choices = baselineComparisonConfig()$domainChoices,
-                          selected = baselineComparisonConfig()$domainSelected
-                        )
-                      ),
-                      tags$div(
-                        class = "col-sm-12",
-                        selectInput(ns("baselineCompRecord"),
-                          lang$renderers$miroPivot$settings$baselineComparison$selRecord,
-                          choices = baselineComparisonConfig()$recordChoices,
-                          selected = baselineComparisonConfig()$recordSelected
-                        )
-                      ),
-                      tags$div(
-                        class = "col-sm-12",
-                        selectizeInput(ns("baselineCompMetrics"),
-                          lang$renderers$miroPivot$settings$baselineComparison$selMetrics,
-                          choices = baselineComparisonConfig()$metricsChoices,
-                          selected = baselineComparisonConfig()$metricsSelected,
-                          multiple = TRUE,
-                          options = list(maxItems = 2)
-                        )
-                      )
-                    )
-                  )
-                )
-              ),
-              footer = tags$div(
-                modalButton(lang$renderers$miroPivot$updateSettingsBtCancel),
-                actionButton(ns("updateSettings"),
-                  lang$renderers$miroPivot$updateSettingsBtSave,
-                  class = "bt-highlight-1 bt-gms-confirm"
-                )
-              ),
-              fade = TRUE, easyClose = FALSE, size = "m",
-              title = lang$renderers$miroPivot$updateSettingsTitle
-            ))
-          })
-        })
         deleteView <- function(viewId) {
           views$remove(session, viewId)
           updateViewList()
@@ -2006,6 +1850,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newViewConfig$chartFontSize <- chartFontSize()
             newViewConfig$singleDropdown <- singleDropdown()
             newViewConfig$tableSummarySettings <- tableSummarySettings()
+            if (baselineComparisonConfig()$enabled) {
+              newViewConfig$baselineComparison <- list(
+                domain = baselineComparisonConfig()$domainSelected,
+                record = baselineComparisonConfig()$recordSelected,
+                metrics = baselineComparisonConfig()$metricsSelected
+              )
+            }
             for (indexEl in list(c("rows", "rowIndexList"))) {
               indexVal <- input[[indexEl[[2]]]]
               if (length(indexVal)) {
@@ -2223,61 +2074,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
           })
         }
-        # rendererEnv[[ns("togglePivotControls")]] <- observe({
-        #     hideEl(session, paste0("#", ns("dataView")))
-        # })
-        rendererEnv[[ns("updateSettings")]] <- observe({
-          if (is.null(input$updateSettings) || initData ||
-            input$updateSettings == 0L) {
-            return()
-          }
-          isolate({
-            newTableSummarySettings <- list(
-              rowEnabled = identical(input$showTableSummaryRow, TRUE),
-              rowSummaryFunction = "sum",
-              colEnabled = identical(input$showTableSummaryCol, TRUE),
-              colSummaryFunction = "sum"
-            )
-            if (length(input$rowSummaryFunction) == 1L &&
-              input$rowSummaryFunction %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
-              newTableSummarySettings[["rowSummaryFunction"]] <- input$rowSummaryFunction
-            }
-            if (length(input$colSummaryFunction) == 1L &&
-              input$colSummaryFunction %in% aggregationFunctions) {
-              newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
-            }
-            if (length(input$singleDropdown) > 0 &&
-              all(input$singleDropdown %in% setIndices)) {
-              newSingleDropdown <- input$singleDropdown
-            } else {
-              newSingleDropdown <- NULL
-            }
-            if (!identical(singleDropdown(), newSingleDropdown)) {
-              singleDropdown(newSingleDropdown)
-            }
-            tableSummarySettings(newTableSummarySettings)
-            hideEmptyCols(identical(input$hideEmptyCols, TRUE))
-            fixedColumns(identical(input$fixedColumns, TRUE))
-            if (length(input$chartFontSize) > 0 && !is.na(input$chartFontSize)) {
-              newChartFontSize <- input$chartFontSize
-            } else {
-              newChartFontSize <- NULL
-            }
-            chartFontSize(newChartFontSize)
-            newBaselineCompConfig <- baselineComparisonConfig()
-            if (identical(input$enableBaselineComparison, TRUE)) {
-              newBaselineCompConfig$enabled <- TRUE
-              newBaselineCompConfig$domainSelected <- input$baselineCompDomain
-              newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
-              newBaselineCompConfig$recordSelected <- input$baselineCompRecord
-              newBaselineCompConfig$metricsSelected <- input$baselineCompMetrics
-            } else {
-              newBaselineCompConfig$enabled <- FALSE
-            }
-            baselineComparisonConfig(newBaselineCompConfig)
-            removeModal(session)
-          })
-        })
         rendererEnv[[ns("saveViewConfirm")]] <- observe({
           if (is.null(input$saveViewConfirm) || initData ||
             input$saveViewConfirm == 0L || readonlyViews) {
@@ -2384,6 +2180,243 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           resetView(currentView)
         })
       }
+      rendererEnv[[ns("showSettings")]] <- observe({
+        if (is.null(input$showSettings) || initData || input$showSettings == 0L) {
+          return()
+        }
+        isolate({
+          showModal(modalDialog(
+            tabsetPanel(
+              id = ns("settingsTabs"),
+              tabPanel(
+                lang$renderers$miroPivot$settings$tabGeneral,
+                tags$div(class = "small-space"),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$settings$cbHideEmptyCols,
+                      value = hideEmptyCols()
+                    )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("singleDropdown"),
+                      label = lang$renderers$miroPivot$settings$singleDropdown,
+                      choices = setIndices,
+                      selected = singleDropdown(),
+                      multiple = TRUE,
+                      width = "100%"
+                    )
+                  )
+                )
+              ),
+              tabPanel(
+                lang$renderers$miroPivot$settings$tabTable,
+                tags$div(class = "small-space"),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-6",
+                    checkboxInput_MIRO(ns("showTableSummaryCol"),
+                      label = lang$renderers$miroPivot$settings$cbShowTableSummaryCol,
+                      value = tableSummarySettings()$colEnabled
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    `data-display-if` = "input.showTableSummaryCol===true",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("colSummaryFunction"),
+                      label = lang$renderers$miroPivot$settings$colSummaryFunction,
+                      choices = aggregationFunctions,
+                      selected = tableSummarySettings()$colSummaryFunction,
+                      width = "100%"
+                    )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-6",
+                    checkboxInput_MIRO(ns("showTableSummaryRow"),
+                      label = lang$renderers$miroPivot$settings$cbShowTableSummaryRow,
+                      value = tableSummarySettings()$rowEnabled
+                    )
+                  ),
+                  tags$div(
+                    class = "col-sm-6",
+                    `data-display-if` = "input.showTableSummaryRow===true",
+                    `data-ns-prefix` = ns(""),
+                    selectInput(ns("rowSummaryFunction"),
+                      label = lang$renderers$miroPivot$settings$rowSummaryFunction,
+                      choices = aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")],
+                      selected = tableSummarySettings()$rowSummaryFunction,
+                      width = "100%"
+                    )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    checkboxInput_MIRO(ns("fixedColumns"),
+                      tags$span(
+                        lang$renderers$miroPivot$settings$fixedColumns,
+                        tags$span(
+                          `data-tooltip` = lang$adminMode$graphs$miroPivotOptions$fixedColumnsTooltip,
+                          class = "info-wrapper tooltip-mobile",
+                          tags$span(
+                            class = "fas fa-circle-info", class = "info-icon",
+                            role = "presentation",
+                            `aria-label` = "More information"
+                          )
+                        )
+                      ),
+                      value = fixedColumns()
+                    )
+                  )
+                )
+              ),
+              tabPanel(
+                lang$renderers$miroPivot$settings$tabChart,
+                tags$div(class = "small-space"),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    numericInput(ns("chartFontSize"), lang$renderers$miroPivot$settings$chartFontSize,
+                      value = chartFontSize(),
+                      min = 1,
+                      max = 42,
+                      step = 1
+                    )
+                  )
+                )
+              ),
+              tabPanel(
+                lang$renderers$miroPivot$settings$tabBaselineComp,
+                tags$div(class = "small-space"),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    checkboxInput_MIRO(ns("enableBaselineComparison"),
+                      label = lang$renderers$miroPivot$settings$baselineComparison$cbEnable,
+                      value = baselineComparisonConfig()$enabled
+                    )
+                  )
+                ),
+                conditionalPanel("input.enableBaselineComparison===true",
+                  ns = ns,
+                  tags$div(
+                    class = "row",
+                    tags$div(
+                      class = "col-sm-12",
+                      selectInput(ns("baselineCompDomain"),
+                        lang$renderers$miroPivot$settings$baselineComparison$selDomain,
+                        choices = baselineComparisonConfig()$domainChoices,
+                        selected = baselineComparisonConfig()$domainSelected
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-12",
+                      selectInput(ns("baselineCompRecord"),
+                        lang$renderers$miroPivot$settings$baselineComparison$selRecord,
+                        choices = baselineComparisonConfig()$recordChoices,
+                        selected = baselineComparisonConfig()$recordSelected
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-12",
+                      selectizeInput(ns("baselineCompMetrics"),
+                        lang$renderers$miroPivot$settings$baselineComparison$selMetrics,
+                        choices = baselineComparisonConfig()$metricsChoices,
+                        multiple = TRUE,
+                        options = list(
+                          maxItems = 2,
+                          # multiple issues in Shiny that I had to overcome here:
+                          # 1) order of items provided in "selected" not respected: https://github.com/rstudio/shiny/issues/1490
+                          # 2) I() used to avoid auto-unboxing values in jsonlite::toJSON() overwritten by Shiny
+                          #    to instead interpret character strings as JS code. Thus, we fall back to converting
+                          #    to a list instead.
+                          items = as.list(unname(baselineComparisonConfig()$metricsSelected)),
+                          plugins = list("drag_drop")
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+            footer = tags$div(
+              modalButton(lang$renderers$miroPivot$updateSettingsBtCancel),
+              actionButton(ns("updateSettings"),
+                lang$renderers$miroPivot$updateSettingsBtSave,
+                class = "bt-highlight-1 bt-gms-confirm"
+              )
+            ),
+            fade = TRUE, easyClose = FALSE, size = "m",
+            title = lang$renderers$miroPivot$updateSettingsTitle
+          ))
+        })
+      })
+      rendererEnv[[ns("updateSettings")]] <- observe({
+        if (is.null(input$updateSettings) || initData ||
+          input$updateSettings == 0L) {
+          return()
+        }
+        isolate({
+          newTableSummarySettings <- list(
+            rowEnabled = identical(input$showTableSummaryRow, TRUE),
+            rowSummaryFunction = "sum",
+            colEnabled = identical(input$showTableSummaryCol, TRUE),
+            colSummaryFunction = "sum"
+          )
+          if (length(input$rowSummaryFunction) == 1L &&
+            input$rowSummaryFunction %in% aggregationFunctions[aggregationFunctions %in% c("sum", "count", "mean")]) {
+            newTableSummarySettings[["rowSummaryFunction"]] <- input$rowSummaryFunction
+          }
+          if (length(input$colSummaryFunction) == 1L &&
+            input$colSummaryFunction %in% aggregationFunctions) {
+            newTableSummarySettings[["colSummaryFunction"]] <- input$colSummaryFunction
+          }
+          if (length(input$singleDropdown) > 0 &&
+            all(input$singleDropdown %in% setIndices)) {
+            newSingleDropdown <- input$singleDropdown
+          } else {
+            newSingleDropdown <- NULL
+          }
+          if (!identical(singleDropdown(), newSingleDropdown)) {
+            singleDropdown(newSingleDropdown)
+          }
+          tableSummarySettings(newTableSummarySettings)
+          hideEmptyCols(identical(input$hideEmptyCols, TRUE))
+          fixedColumns(identical(input$fixedColumns, TRUE))
+          if (length(input$chartFontSize) > 0 && !is.na(input$chartFontSize)) {
+            newChartFontSize <- input$chartFontSize
+          } else {
+            newChartFontSize <- NULL
+          }
+          chartFontSize(newChartFontSize)
+          newBaselineCompConfig <- baselineComparisonConfig()
+          if (identical(input$enableBaselineComparison, TRUE)) {
+            newBaselineCompConfig$enabled <- TRUE
+            newBaselineCompConfig$domainSelected <- input$baselineCompDomain
+            newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
+            newBaselineCompConfig$recordSelected <- input$baselineCompRecord
+            newBaselineCompConfig$metricsSelected <- input$baselineCompMetrics
+          } else {
+            newBaselineCompConfig$enabled <- FALSE
+          }
+          baselineComparisonConfig(newBaselineCompConfig)
+          removeModal(session)
+        })
+      })
 
       output$downloadCsv <- downloadHandler(
         filename = paste0(options[["_metadata_"]]$symname, ".csv"),
@@ -2811,6 +2844,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(-all_of(baselineCompConfig$domain)) %>%
+            select(!!!any_of(c(rowIndexList, colIndexList, valueColName))) %>%
             rename(.baseline = value)
           if (length(baselineCompConfig$filterIndex)) {
             dataTmp <- dataTmp %>%
@@ -2827,20 +2861,18 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (length(baselineCompConfig)) {
           baselineCompDataTmp <- dataTmp %>%
             left_join(baselineCompConfig$data, by = setdiff(names(baselineCompConfig$data), ".baseline"))
-          metricJS <- vector("character", length(baselineCompConfig$metrics))
+          metricSuffix <- vector("character", length(baselineCompConfig$metrics))
           baselineComp <- list()
           for (metricsIdx in seq_along(baselineCompConfig$metrics)) {
             if (identical(metricsIdx, 1L)) {
               colNameTmp <- ".primary"
-              jsVarName <- "data"
             } else {
               colNameTmp <- ".secondary"
-              jsVarName <- "secondaryData"
             }
-            metricJS[[metricsIdx]] <- paste0("DTWidget.formatRound(", jsVarName, ",", roundPrecision, ",3,',','.','0')")
+            metricSuffix[[metricsIdx]] <- ""
             if (identical(baselineCompConfig$metrics[[metricsIdx]], "percentage difference")) {
               baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := (value - .baseline) / .baseline * 100)
-              metricJS[[metricsIdx]] <- paste0("DTWidget.formatRound(", jsVarName, ",", roundPrecision, ",3,',','.','0') + '%'")
+              metricSuffix[[metricsIdx]] <- "%"
             } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "absolute difference")) {
               baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value - .baseline)
             } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "normalization")) {
@@ -2859,7 +2891,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
           }
           dataTmp <- select(baselineCompDataTmp, -any_of(c(".secondary", ".baseline", "value"))) %>% rename(value = .primary)
-          baselineComp$metricJS <- metricJS
+          baselineComp$metricSuffix <- metricSuffix
         }
         if (length(colIndexList)) {
           # note that names_sep is not an ASCII full stop, but UNICODE U+2024
@@ -3561,25 +3593,29 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
           baselineCompRenderFn <- list(list(
             targets = seq(noRowHeaders + 1, length(dataTmp)) - 1L,
-            render = JS(paste0("function(data, type, row, meta) {
-            if (type !== 'display') {
-              return data;
-            }", if (length(attr(dataTmp, "baselineComp")$metricJS) > 1L) {
-              paste0(
-                "
-        const offset=meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
-        const secondaryData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset];
-        const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
-        if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
-          window.alertPushed = '", tableSessionId, "';
-          Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
-        }
-    return '<span class=\"miro-pivot-primary-data\">'+ ", attr(dataTmp, "baselineComp")$metricJS[[1]], "+'</span> ('+",
-                attr(dataTmp, "baselineComp")$metricJS[[2]], "+')';}"
-              )
-            } else {
-              paste0("return ", attr(dataTmp, "baselineComp")$metricJS[[1]], ";}")
-            }))
+            render = JS(paste0(
+              "function(data, type, row, meta) {
+if (type !== 'display') {
+  return data;
+}
+const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+              if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
+                paste0(
+                  "
+const offset=meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
+const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
+if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
+  window.alertPushed = '", tableSessionId, "';
+  Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
+}
+return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "')+'</span>'+(secondaryMetric===''?'':' ('+secondaryMetric+'",
+                  attr(dataTmp, "baselineComp")$metricSuffix[[2]], "'+')');}"
+                )
+              } else {
+                paste0("return pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "');}")
+              }
+            ))
           ))
           if (length(columnDefsTmp)) {
             columnDefsTmp <- c(columnDefsTmp, baselineCompRenderFn)

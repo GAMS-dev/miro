@@ -779,7 +779,20 @@
         "rowSummaryFunction": "Zusammenfassungsfunktion für Zeilen",
         "colSummaryFunction": "Zusammenfassungsfunktion für Spalten",
         "fixedColumns": "Fixiere Tabellenspalten auf der linken Seite",
-        "chartFontSize": "In Charts zu verwendende Schriftgröße"
+        "chartFontSize": "In Charts zu verwendende Schriftgröße",
+        "baselineComparison": {
+          "cbEnable": "Enable baseline comparison?",
+          "selDomain": "Domain",
+          "selRecord": "Baseline record",
+          "selMetrics": "Comparison metrics (max 2)",
+          "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off — showing raw values instead.",
+          "metrics": {
+            "values": "Raw Values",
+            "percDiff": "Relative Δ (%)",
+            "absDiff": "Absolute Δ",
+            "norm": "Normalization"
+          }
+        }
       },
       "dialogAddRow":{
         "title": "Neue Zeile hinzufügen",

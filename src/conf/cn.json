@@ -779,7 +779,20 @@
         "rowSummaryFunction": "汇总行的函数",
         "colSummaryFunction": "汇总列的函数",
         "fixedColumns": "将表格列固定在左侧",
-        "chartFontSize": "图表中使用的字体大小"
+        "chartFontSize": "图表中使用的字体大小",
+        "baselineComparison": {
+          "cbEnable": "启用基准比较？",
+          "selDomain": "维度",
+          "selRecord": "基准记录",
+          "selMetrics": "比较指标（最多 2 个）",
+          "errorAggregated": "无法对基准维度进行汇总。已关闭基准比较 — 现显示原始值。",
+          "metrics": {
+            "values": "原始值",
+            "percDiff": "相对差值 (%)",
+            "absDiff": "绝对差值",
+            "norm": "归一化"
+          }
+        }
       },
       "dialogAddRow":{
         "title": "添加新行",

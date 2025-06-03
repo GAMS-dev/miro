@@ -2310,6 +2310,7 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
     pivotOptions$tableSummarySettings <- pivotOptions$tableSummarySettings
     pivotOptions$hideEmptyCols <- pivotOptions$hideEmptyCols
     pivotOptions$chartFontSize <- pivotOptions$chartFontSize
+    pivotOptions$baselineComparison <- pivotOptions$baselineComparison
     pivotOptions$singleDropdown <- pivotOptions$singleDropdown
     pivotOptions$hidePivotControls <- rv$widgetConfig$options$hidePivotControls
     pivotOptions$externalDefaultView <- rv$widgetConfig$options$externalDefaultView
@@ -2943,6 +2944,15 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       if (length(input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]) &&
         !is.na(input[["preview_inputTable_pivot-miroPivot-chartFontSize"]])) {
         newConfig$options$chartFontSize <- input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]
+      }
+      if (identical(length(input[["preview_inputTable_pivot-miroPivot-enableBaselineComparison"]]), TRUE)) {
+        newConfig$options$baselineComparison <<- list(
+          domain = input[["preview_inputTable_pivot-miroPivot-baselineCompDomain"]],
+          record = input[["preview_inputTable_pivot-miroPivot-baselineCompRecord"]],
+          metrics = input[["preview_inputTable_pivot-miroPivot-baselineCompMetrics"]]
+        )
+      } else {
+        newConfig$options$baselineComparison <<- NULL
       }
       if (length(rv$widgetConfig$options$externalDefaultView)) {
         newConfig$options$externalDefaultView <- rv$widgetConfig$options$externalDefaultView

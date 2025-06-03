@@ -10,6 +10,7 @@ test_that(
     Sys.setenv(MIRO_MODE = "base")
 
     source(file.path(testDir, "shinytest", "miropivot_test.R"), local = TRUE)
+    source(file.path(testDir, "shinytest", "miropivot_baseline_comparison_test.R"), local = TRUE)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
   })

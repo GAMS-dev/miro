@@ -746,7 +746,7 @@
           "selMetrics": "Comparison metrics (max 2)",
           "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off — showing raw values instead.",
           "metrics": {
-            "values": "Values",
+            "values": "Raw Values",
             "percDiff": "Relative Δ (%)",
             "absDiff": "Absolute Δ",
             "norm": "Normalization"

@@ -4878,6 +4878,7 @@ observe(
           miropivotOptions$tableSummarySettings <- currentGraphConfig$options$tableSummarySettings
           miropivotOptions$hideEmptyCols <- currentGraphConfig$options$hideEmptyCols
           miropivotOptions$chartFontSize <- currentGraphConfig$options$chartFontSize
+          miropivotOptions$baselineComparison <- currentGraphConfig$options$baselineComparison
           miropivotOptions$singleDropdown <- currentGraphConfig$options$singleDropdown
 
           if (!identical(input[["preview_output_miropivot-miroPivot-symbol_name"]], activeSymbol$name)) {
@@ -5089,6 +5090,15 @@ observeEvent(rv$saveGraphConfirm, {
     if (length(input[["preview_output_miropivot-miroPivot-chartFontSize"]]) &&
       !is.na(input[["preview_output_miropivot-miroPivot-chartFontSize"]])) {
       configJSON$dataRendering[[activeSymbol$name]]$options$chartFontSize <<- input[["preview_output_miropivot-miroPivot-chartFontSize"]]
+    }
+    if (identical(length(input[["preview_output_miropivot-miroPivot-enableBaselineComparison"]]), TRUE)) {
+      configJSON$dataRendering[[activeSymbol$name]]$options$baselineComparison <<- list(
+        domain = input[["preview_output_miropivot-miroPivot-baselineCompDomain"]],
+        record = input[["preview_output_miropivot-miroPivot-baselineCompRecord"]],
+        metrics = input[["preview_output_miropivot-miroPivot-baselineCompMetrics"]]
+      )
+    } else {
+      configJSON$dataRendering[[activeSymbol$name]]$options$baselineComparison <<- NULL
     }
     if (length(rv$graphConfig$graph$options$emptyUEL)) {
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL
