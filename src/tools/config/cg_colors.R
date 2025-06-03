@@ -294,6 +294,20 @@ derivePalette <- function(b = baseColors) {
 
   navbar_contrast_light <- if (goodContrast("#333333", b$miro_navbar_color)) "#333333" else "#eeeeee"
   v[["miro_navbar_contrast_light"]] <- navbar_contrast_light
+  miro_logo <- if (!is.null(input$navbar_color) && nchar(input$navbar_color) &&
+    !goodContrast("#000000", input$navbar_color)) {
+    "url('miro_logo_dark.png')"
+  } else {
+    "url('miro_logo_light.png')"
+  }
+  v[["miro_logo"]] <- miro_logo
+  miro_logo_dark <- if (!is.null(input$navbar_color_dark) && nchar(input$navbar_color_dark) &&
+    !goodContrast("#ffffff", input$navbar_color_dark)) {
+    "url('miro_logo_light.png')"
+  } else {
+    "url('miro_logo_dark.png')"
+  }
+  v[["miro_logo_dark"]] <- miro_logo_dark
 
   lighten_a006ac60 <- lighten(b$miro_sidebar_color_dark, 2)
   v[["miro_lighten_a006ac60"]] <- lighten_a006ac60

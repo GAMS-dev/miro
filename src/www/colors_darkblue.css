@@ -166,4 +166,6 @@
     --miro-notification-text: #000000;
     --miro-notification-border: #182f42;
     --miro-notification-bg-dark: #000000;
+    --miro-logo: url('miro_logo_light.png');
+    --miro-logo-dark: url('miro_logo_light_dark.png');
 }
