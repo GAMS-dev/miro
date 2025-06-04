@@ -31,7 +31,7 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
   simplifyDataFrame = FALSE,
   simplifyMatrix = FALSE
 ))
-expect_identical(length(configNew$themeColors), 168L)
+expect_identical(length(configNew$themeColors), 170L)
 expect_identical(configRaw$pageTitle, configNew$pageTitle)
 expect_identical(configRaw$UILogo, configNew$UILogo)
 expect_identical(configRaw$theme, configNew$theme)
