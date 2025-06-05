@@ -38,6 +38,12 @@ Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':hidden');"))
+
+expect_identical(
+  app$get_js("$('#cmpCustom___dashboard_1-abserrorTable tr').filter(function(el){return ['2016-06-02','2016-06-07'].includes($('td:first-child',this).text())}).map(function(el){return $('td',this).map(function(el2){return $(this).text()}).toArray()}).toArray()"),
+  list("2016-06-02", "1.31 (0%)", "1.31 (0%)", "1.87 (42.39%)", "2016-06-07", "1.08 (0%)", "1.08 (0%)", "0.95 (-11.89%)")
+)
+
 app$click(selector = "div[id='cmpCustom___dashboard_1-error_train'] .custom-info-box")
 Sys.sleep(1)
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':hidden')"))

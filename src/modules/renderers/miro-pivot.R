@@ -547,7 +547,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         tags$div(
           id = ns("baselineAggErr"), class = "gmsalert gmsalert-error",
           style = "position:static;margin-bottom:5px;",
-          lang$renderers$miroPivot$settings$baselineComparison$selMetrics
+          lang$renderers$miroPivot$settings$baselineComparison$errorAggregated
         ),
         tags$div(
           id = ns("noData"), class = "out-no-data",
@@ -2671,11 +2671,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         baselineCompConfig <- currentFilters()$baselineCompConfig
         filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
 
-        if (length(baselineCompConfig)) {
-          # TODO: Domain filter??
-          if (!length(filterIndexList)) {
-            baselineCompConfig$filterIndex <- NULL
-          }
+        if (length(baselineCompConfig) && !length(filterIndexList)) {
+          baselineCompConfig$filterIndex <- NULL
         }
         if (length(domainFilter)) {
           if (identical("__key__", names(data)[1])) {
@@ -2844,8 +2841,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (length(baselineCompConfig)) {
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
-            select(-all_of(baselineCompConfig$domain)) %>%
-            select(!!!any_of(c(rowIndexList, colIndexList, valueColName))) %>%
+            select(any_of(setdiff(
+              c(rowIndexList, colIndexList, valueColName),
+              baselineCompConfig$domain
+            ))) %>%
             rename(.baseline = value)
           if (length(baselineCompConfig$filterIndex)) {
             dataTmp <- dataTmp %>%
@@ -2899,31 +2898,40 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 # we account for those 2 things by 1) computing row and col levels and 2) calling `complete()`
                 # to make long table dense as well. This allows us to only communicate array of secondary values
                 # with DT and index into array using `rowIdx+(colIdx*noRows)` formula.
-                rowLevels <- baselineCompDataTmp %>%
-                  distinct(across(all_of(rowIndexList))) %>%
-                  droplevels() %>%
-                  mutate(.row = row_number())
                 colLevels <- build_wider_spec(
                   baselineCompDataTmp,
-                  names_from  = !!colIndexList,
+                  names_from  = all_of(colIndexList),
                   values_from = ".secondary",
                   names_sep   = "\U2024",
                   names_sort  = TRUE
                 ) %>%
                   mutate(.col = row_number()) %>%
                   select(all_of(c(".col", colIndexList)))
-                baselineCompDataTmp <- baselineCompDataTmp %>%
-                  complete(
-                    !!!rowLevels[rowIndexList],
-                    nesting(!!!rlang::syms(colIndexList))
-                  ) %>%
-                  left_join(rowLevels, by = rowIndexList) %>%
-                  left_join(colLevels, by = colIndexList) %>%
-                  mutate(.key = .row + (.col * nrow(rowLevels))) %>%
-                  select(all_of(c(".key", ".primary", ".secondary"))) %>%
-                  arrange(.key)
+                if (length(rowIndexList)) {
+                  rowLevels <- baselineCompDataTmp %>%
+                    distinct(across(all_of(rowIndexList))) %>%
+                    droplevels() %>%
+                    mutate(.row = row_number())
+                  baselineComp$secondaryData <- baselineCompDataTmp %>%
+                    complete(
+                      !!!rowLevels[rowIndexList],
+                      nesting(!!!rlang::syms(colIndexList))
+                    ) %>%
+                    left_join(rowLevels, by = rowIndexList) %>%
+                    left_join(colLevels, by = colIndexList) %>%
+                    mutate(.key = .row + (.col * nrow(rowLevels))) %>%
+                    arrange(.key) %>%
+                    select(all_of(c(".primary", ".secondary")))
+                } else {
+                  baselineComp$secondaryData <- baselineCompDataTmp %>%
+                    complete(
+                      nesting(!!!rlang::syms(colIndexList))
+                    ) %>%
+                    left_join(colLevels, by = colIndexList) %>%
+                    arrange(.col) %>%
+                    select(all_of(c(".primary", ".secondary")))
+                }
               }
-              baselineComp$secondaryData <- select(baselineCompDataTmp, .secondary, .primary)
             }
           }
           baselineComp$metricSuffix <- metricSuffix
@@ -2934,7 +2942,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             {
               dataTmp <- dataTmp %>%
                 pivot_wider(
-                  names_from = !!colIndexList, values_from = !!valueColName,
+                  names_from = all_of(colIndexList),
+                  values_from = all_of(valueColName),
                   names_sep = "\U2024",
                   names_sort = TRUE, names_repair = "unique"
                 )

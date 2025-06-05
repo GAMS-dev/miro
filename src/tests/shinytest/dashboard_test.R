@@ -45,4 +45,8 @@ app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio'] .c
 Sys.sleep(1)
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_date')[0].multiple")), TRUE))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_uni-selectized')[0].multiple")), FALSE))
+expect_identical(
+  app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()"))[1:6],
+  list("reference", "0.55 (0%)", "", "2016-01-04", "2.18 (294.23%)", "")
+)
 app$stop()

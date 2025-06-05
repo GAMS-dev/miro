@@ -223,6 +223,14 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
         )
       )
     }
+    if (length(config$baselineComparison$domain) && config$baselineComparison$domain %in% names(config$aggregations)) {
+      errMsgTmp <- paste(
+        errMsgTmp,
+        paste0(
+          "\nThe baseline comparison domain can't be aggregated (dataViewConfig '", view, "')"
+        )
+      )
+    }
   }
 
   if (is.null(errMsgTmp)) {

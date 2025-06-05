@@ -66,7 +66,7 @@ test_that(
     writeLines(dashboardRenderer, file.path(modelDir, "renderer_pickstock", "mirorenderer_stock_weight.R"))
 
     Sys.setenv(DASHBOARD_RENDERER_NAME = "custom")
-    # source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
+    source(file.path(testDir, "shinytest", "dashboard_test.R"), local = TRUE)
 
     unlink(file.path(modelDir, "renderer_pickstock", "mirorenderer_stock_weight.R"))
     file.move(

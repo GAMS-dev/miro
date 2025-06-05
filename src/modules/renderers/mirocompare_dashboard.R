@@ -511,24 +511,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       dataTmp <- getData(indicator)
       noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
 
-      # apply custom labels order
-      if (length(dataViewsConfig[[indicator]]$chartOptions$customLabelsOrder)) {
-        dataTmp <- applyCustomLabelsOrder(
-          dataTmp,
-          noRowHeaders,
-          dataViewsConfig[[indicator]]$chartOptions$customLabelsOrder
-        )
-      }
-
-      # apply custom series order
-      if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
-        dataTmp <- applyCustomSeriesOrder(
-          dataTmp,
-          noRowHeaders,
-          dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
-        )
-      }
-
       # heatmap
       if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
         if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
@@ -536,6 +518,43 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         } else {
           dataColors <- heatmapColors(dataTmp, noRowHeaders, 1L)
         }
+      }
+
+      # baseline comparison
+      roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
+      if (length(attr(dataTmp, "baselineComp"))) {
+        tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
+        baselineCompRenderFn <- list(list(
+          targets = seq(noRowHeaders + 1, length(dataTmp)) - 1L,
+          render = JS(paste0(
+            "function(data, type, row, meta) {
+if (type !== 'display') {
+return data;
+}
+const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+            if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
+              paste0(
+                "
+const offset=meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
+const refData=", toJSON(round(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]], digits = roundPrecision)), "[offset];
+if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
+console.log(data)
+console.log(refData)
+console.log(offset)
+window.alertPushed = '", tableSessionId, "';
+Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
+}
+return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "')+'</span>'+(secondaryMetric===''?'':' ('+secondaryMetric+'",
+                attr(dataTmp, "baselineComp")$metricSuffix[[2]], "'+')');}"
+              )
+            } else {
+              paste0("return pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "');}")
+            }
+          ))
+        ))
+      } else {
+        baselineCompRenderFn <- NULL
       }
 
       # Table Summary
@@ -587,7 +606,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
       if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
         tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
         colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
-        roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
         if (identical(tablesummarySettings$colSummaryFunction, "count")) {
           colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
             logical(1L),
@@ -615,9 +633,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           scrollX = TRUE,
           scrollY = if (length(dataViewsConfig[[indicator]]$height)) dataViewsConfig[[indicator]]$height else "33vh",
           scrollCollapse = TRUE,
-          columnDefs = list(list(
+          columnDefs = c(list(list(
             className = "dt-left", targets = "_all"
-          )),
+          )), baselineCompRenderFn),
           drawCallback = if (identical(input[[paste0(indicator, "ChartType")]], "heatmap")) JS('function() {$(this.api().table().body()).addClass("heatmap") }')
         )
       )
@@ -678,24 +696,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
       rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
       noSeries <- length(dataTmp) - rowHeaderLen
-
-      # apply custom labels order
-      if (length(currentView$chartOptions$customLabelsOrder)) {
-        dataTmp <- applyCustomLabelsOrder(
-          dataTmp,
-          rowHeaderLen,
-          currentView$chartOptions$customLabelsOrder
-        )
-      }
-
-      # apply custom series order
-      if (length(dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder)) {
-        dataTmp <- applyCustomSeriesOrder(
-          dataTmp,
-          rowHeaderLen,
-          dataViewsConfig[[indicator]]$chartOptions$customSeriesOrder
-        )
-      }
 
       labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
       if (!length(labels)) {

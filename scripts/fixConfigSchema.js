@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 // eslint-disable-next-line no-underscore-dangle
 const __filename = fileURLToPath(import.meta.url);
 
-const KEYS_TO_IGNORE = [
+const KEYS_TO_IGNORE_DATAVIEW_CONFIG = [
   'fixedColumns',
   'emptyUEL',
   'enableHideEmptyCols',
@@ -16,6 +16,10 @@ const KEYS_TO_IGNORE = [
   'externalDefaultView',
   'customChartColors',
 ];
+const KEYS_TO_IGNORE_LEN1_ARRAYS = [
+  "definitions.miroPivotOptions.properties.baselineComparison.properties.metrics.oneOf.type",
+  "definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.properties.baselineComparison.properties.metrics.oneOf.type"
+]
 
 function arraysEqual(a, b) {
   if (a === b) return true;
@@ -30,7 +34,7 @@ function arraysEqual(a, b) {
 function mergeObjects(obj1, obj2, keyPath = '') {
   Object.keys(obj1).forEach((key) => {
     const currentPath = keyPath ? `${keyPath}.${key}` : key;
-    if (KEYS_TO_IGNORE.includes(currentPath)) {
+    if (KEYS_TO_IGNORE_DATAVIEW_CONFIG.includes(currentPath)) {
       return;
     }
     if (Object.prototype.hasOwnProperty.call(obj2, key)) {
@@ -70,21 +74,23 @@ function mergeObjects(obj1, obj2, keyPath = '') {
   return obj2;
 }
 
-function fixLengthOneStringArrays(obj) {
+function fixLengthOneStringArrays(obj, keyPath = '') {
   const primitiveTypes = ['null', 'number', 'integer', 'boolean', 'string'];
   if (typeof obj !== 'object' || obj === null) {
     return;
   }
   if (Array.isArray(obj)) {
-    obj.forEach((el) => fixLengthOneStringArrays(el));
+    obj.forEach((el) => fixLengthOneStringArrays(el, keyPath));
     return;
   }
   Object.keys(obj).forEach((key) => {
+    const currentPath = keyPath ? `${keyPath}.${key}` : key;
     if (
       key === 'type' &&
       obj[key] === 'array' &&
       obj.items &&
-      typeof obj.items === 'object'
+      typeof obj.items === 'object' &&
+      !KEYS_TO_IGNORE_LEN1_ARRAYS.includes(currentPath)
     ) {
       let primitiveItems;
       if (Array.isArray(obj.items.type)) {
@@ -97,6 +103,7 @@ function fixLengthOneStringArrays(obj) {
         );
       }
       if (primitiveItems != null) {
+        console.log(currentPath)
         if (Array.isArray(primitiveItems)) {
           obj[key] = ['array', ...primitiveItems];
         } else {
@@ -122,7 +129,7 @@ function fixLengthOneStringArrays(obj) {
         });
       }
     }
-    fixLengthOneStringArrays(obj[key]);
+    fixLengthOneStringArrays(obj[key], currentPath);
   });
 }
 

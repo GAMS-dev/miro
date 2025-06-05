@@ -241,29 +241,32 @@
             },
             "metrics": {
               "description": "Metrics to display (up to two metrics, where order of array determines primary and secondary metric)",
-              "type": [
-                "array",
-                "string"
-              ],
-              "enum": [
-                "value",
-                "percentage difference",
-                "absolute difference",
-                "normalization"
-              ],
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "enum": [
-                  "value",
-                  "percentage difference",
-                  "absolute difference",
-                  "normalization"
-                ]
-              },
-              "minItems": 1,
-              "maxItems": 2,
-              "uniqueItems": true
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "value",
+                    "percentage difference",
+                    "absolute difference",
+                    "normalization"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "value",
+                      "percentage difference",
+                      "absolute difference",
+                      "normalization"
+                    ]
+                  },
+                  "minItems": 1,
+                  "maxItems": 2,
+                  "uniqueItems": true
+                }
+              ]
             }
           },
           "required": [
@@ -1095,29 +1098,32 @@
                   },
                   "metrics": {
                     "description": "Metrics to display (up to two metrics, where order of array determines primary and secondary metric)",
-                    "type": [
-                      "array",
-                      "string"
-                    ],
-                    "enum": [
-                      "value",
-                      "percentage difference",
-                      "absolute difference",
-                      "normalization"
-                    ],
-                    "items": {
-                      "type": "string",
-                      "minLength": 1,
-                      "enum": [
-                        "value",
-                        "percentage difference",
-                        "absolute difference",
-                        "normalization"
-                      ]
-                    },
-                    "minItems": 1,
-                    "maxItems": 2,
-                    "uniqueItems": true
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "value",
+                          "percentage difference",
+                          "absolute difference",
+                          "normalization"
+                        ]
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "value",
+                            "percentage difference",
+                            "absolute difference",
+                            "normalization"
+                          ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 2,
+                        "uniqueItems": true
+                      }
+                    ]
                   }
                 },
                 "required": [

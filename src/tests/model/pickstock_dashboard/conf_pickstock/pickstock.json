@@ -459,6 +459,11 @@
             "domainFilter": {
               "default": null
             },
+            "baselineComparison": {
+              "domain": "date",
+              "record": "2016-01-05",
+              "metrics": ["value", "percentage difference"]
+            },
             "tableSummarySettings": {
               "enabled": false,
               "rowSummaryFunction": "sum",
@@ -471,7 +476,18 @@
             "chartOptions": {
               "title": "Absolute Error",
               "xTitle": "Date",
-              "yTitle": "Error"
+              "yTitle": "Error",
+              "customSeriesOrder": [
+                 "absolute error train",
+                 "absolute error test"
+              ],
+              "customLabels": {
+                "2016-01-05": "reference"
+              },
+              "customLabelsOrder": [
+                "reference",
+                "2016-01-04"
+              ]
             },
             "data": "abserror",
             "decimals": 2
@@ -539,7 +555,8 @@
             "pricemerge": "All index prices including DJ"
           },
           "error_test": {
-            "dowVSindex": "dow VS index"
+            "dowVSindex": "dow VS index",
+            "abserror": "Absolute Error"
           },
           "error_train": {
             "stockWeight": "Sock Weight",
@@ -547,6 +564,37 @@
           }
         },
         "dataViewsConfig": {
+          "abserror": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "baselineComparison": {
+              "domain": "_scenName",
+              "record": "default",
+              "metrics": ["value", "percentage difference"]
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "filter": {
+              "Hdr": "absolute error test"
+            },
+            "cols": {
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Absolute Error",
+              "xTitle": "Date",
+              "yTitle": "Error"
+            },
+            "data": "abserror",
+            "decimals": 2
+          },
           "pricemerge": {
             "aggregationFunction": "sum",
             "pivotRenderer": "timeseries",
