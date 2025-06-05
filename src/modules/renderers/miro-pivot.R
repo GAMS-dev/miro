@@ -2406,9 +2406,21 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           newBaselineCompConfig <- baselineComparisonConfig()
           if (identical(input$enableBaselineComparison, TRUE)) {
             newBaselineCompConfig$enabled <- TRUE
+            if (!input$baselineCompDomain %in% newBaselineCompConfig$domainChoices) {
+              flog.error("Selected baseline domain: %s not in domain choices. Attempt to tamper with app!", input$baselineCompDomain)
+              stop("Attempt to tamper with the app detected!", call. = FALSE)
+            }
             newBaselineCompConfig$domainSelected <- input$baselineCompDomain
             newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
+            if (!input$baselineCompRecord %in% newBaselineCompConfig$recordChoices) {
+              flog.error("Selected baseline record: %s not in domain records. Attempt to tamper with app!", input$baselineCompRecord)
+              stop("Attempt to tamper with the app detected!", call. = FALSE)
+            }
             newBaselineCompConfig$recordSelected <- input$baselineCompRecord
+            if (!all(input$baselineCompMetrics %in% newBaselineCompConfig$metricsChoices)) {
+              flog.error("Selected baseline comparison metric: %s not in supported metrics. Attempt to tamper with app!", input$metricsChoices)
+              stop("Attempt to tamper with the app detected!", call. = FALSE)
+            }
             newBaselineCompConfig$metricsSelected <- input$baselineCompMetrics
           } else {
             newBaselineCompConfig$enabled <- FALSE
@@ -2655,7 +2667,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       })
 
       rendererEnv[[ns("baselineCompRecordObs")]] <- observe({
-        req(input$enableBaselineComparison, input$baselineCompDomain %in% names(data))
+        req(input$enableBaselineComparison, input$baselineCompDomain %in% setIndices)
         updateSelectInput(session, "baselineCompRecord", choices = unique(data[[input$baselineCompDomain]]))
       })
 
