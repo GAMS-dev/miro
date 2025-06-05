@@ -772,6 +772,7 @@
         "tabGeneral": "常规",
         "tabTable": "表格",
         "tabChart": "图表",
+        "tabBaselineComp": "基准比较",
         "cbHideEmptyCols": "隐藏空列",
         "singleDropdown": "限制为单选下拉过滤器的维度",
         "cbShowTableSummaryRow": "显示表格摘要（行）",

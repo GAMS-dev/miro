@@ -2906,6 +2906,10 @@
                     "type": "string",
                     "minLength": 1
                   },
+                  "errorAggregated": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "metrics": {
                     "type": "object",
                     "additionalProperties": false,

@@ -772,6 +772,7 @@
         "tabGeneral": "Allgemein",
         "tabTable": "Tabellen",
         "tabChart": "charts",
+        "tabBaselineComp": "Baseline-Vergleich",
         "cbHideEmptyCols": "Leere Spalten ausblenden",
         "singleDropdown": "Dimension(en), die auf einen Dropdown-Filter mit einfacher Auswahl beschränkt werden sollen",
         "cbShowTableSummaryRow": "Tabellenzusammenfassung anzeigen (Zeilen)",
@@ -781,16 +782,16 @@
         "fixedColumns": "Fixiere Tabellenspalten auf der linken Seite",
         "chartFontSize": "In Charts zu verwendende Schriftgröße",
         "baselineComparison": {
-          "cbEnable": "Enable baseline comparison?",
-          "selDomain": "Domain",
-          "selRecord": "Baseline record",
-          "selMetrics": "Comparison metrics (max 2)",
-          "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off — showing raw values instead.",
+          "cbEnable": "Baseline-Vergleich aktivieren?",
+          "selDomain": "Dimension",
+          "selRecord": "Baseline-Datensatz",
+          "selMetrics": "Vergleichsmetriken (max. 2)",
+          "errorAggregated": "Die Baseline-Dimension kann nicht aggregiert werden. Der Baseline-Vergleich wurde deaktiviert – es werden Rohwerte angezeigt.",
           "metrics": {
-            "values": "Raw Values",
+            "values": "Rohwerte",
             "percDiff": "Relative Δ (%)",
             "absDiff": "Absolute Δ",
-            "norm": "Normalization"
+            "norm": "Normalisierung"
           }
         }
       },
