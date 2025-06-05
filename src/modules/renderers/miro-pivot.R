@@ -2827,7 +2827,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               } else {
                 paste0(aggregationFunction, "(value, na.rm = TRUE)")
               }
-            ), .groups = "drop_last")
+            ), .groups = "drop_last") %>%
+            ungroup()
           if (!identical(valueColName, "value")) {
             names(dataTmp)[length(dataTmp)] <- valueColName
           }
@@ -2859,8 +2860,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
         }
         if (length(baselineCompConfig)) {
-          baselineCompDataTmp <- dataTmp %>%
-            left_join(baselineCompConfig$data, by = setdiff(names(baselineCompConfig$data), ".baseline"))
+          if (identical(length(baselineCompConfig$data), 1L)) {
+            baselineCompDataTmp <- cross_join(dataTmp, baselineCompConfig$data)
+          } else {
+            baselineCompDataTmp <- dataTmp %>%
+              left_join(baselineCompConfig$data, by = setdiff(names(baselineCompConfig$data), ".baseline"))
+          }
           metricSuffix <- vector("character", length(baselineCompConfig$metrics))
           baselineComp <- list()
           for (metricsIdx in seq_along(baselineCompConfig$metrics)) {
@@ -2871,26 +2876,56 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             metricSuffix[[metricsIdx]] <- ""
             if (identical(baselineCompConfig$metrics[[metricsIdx]], "percentage difference")) {
-              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := (value - .baseline) / .baseline * 100)
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := (!!sym(valueColName) - .baseline) / .baseline * 100)
               metricSuffix[[metricsIdx]] <- "%"
             } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "absolute difference")) {
-              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value - .baseline)
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := !!sym(valueColName) - .baseline)
             } else if (identical(baselineCompConfig$metrics[[metricsIdx]], "normalization")) {
-              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value / .baseline)
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := !!sym(valueColName) / .baseline)
             } else {
-              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := value)
+              baselineCompDataTmp <- mutate(baselineCompDataTmp, !!colNameTmp := !!sym(valueColName))
             }
-            if (identical(metricsIdx, 2L)) {
+            if (identical(metricsIdx, 1L)) {
+              dataTmp <- select(baselineCompDataTmp, -all_of(c(".baseline", valueColName))) %>%
+                rename(!!valueColName := .primary)
+            } else {
+              baselineCompDataTmp <- select(baselineCompDataTmp, -all_of(c(valueColName, ".baseline")))
               if (length(colIndexList)) {
+                # we want to avoid pivoting secondary metrics as well as pivoting has a large memory footprint
+                # To avoid this, we need to keep track of how the order is affected when pivoting, though
+                # The order is affected by two things:
+                # 1) `names_sort=TRUE` and `names_sep="\U2024` changes order of pivoted columns
+                # 2) missing data will be added when pivoting as the new table is dense
+                # we account for those 2 things by 1) computing row and col levels and 2) calling `complete()`
+                # to make long table dense as well. This allows us to only communicate array of secondary values
+                # with DT and index into array using `rowIdx+(colIdx*noRows)` formula.
+                rowLevels <- baselineCompDataTmp %>%
+                  distinct(across(all_of(rowIndexList))) %>%
+                  droplevels() %>%
+                  mutate(.row = row_number())
+                colLevels <- build_wider_spec(
+                  baselineCompDataTmp,
+                  names_from  = !!colIndexList,
+                  values_from = ".secondary",
+                  names_sep   = "\U2024",
+                  names_sort  = TRUE
+                ) %>%
+                  mutate(.col = row_number()) %>%
+                  select(all_of(c(".col", colIndexList)))
                 baselineCompDataTmp <- baselineCompDataTmp %>%
-                  group_by(!!!rlang::syms(colIndexList)) %>%
-                  arrange(!!!rlang::syms(c(rowIndexList, colIndexList)), .by_group = TRUE) %>%
-                  ungroup()
+                  complete(
+                    !!!rowLevels[rowIndexList],
+                    nesting(!!!rlang::syms(colIndexList))
+                  ) %>%
+                  left_join(rowLevels, by = rowIndexList) %>%
+                  left_join(colLevels, by = colIndexList) %>%
+                  mutate(.key = .row + (.col * nrow(rowLevels))) %>%
+                  select(all_of(c(".key", ".primary", ".secondary"))) %>%
+                  arrange(.key)
               }
               baselineComp$secondaryData <- select(baselineCompDataTmp, .secondary, .primary)
             }
           }
-          dataTmp <- select(baselineCompDataTmp, -any_of(c(".secondary", ".baseline", "value"))) %>% rename(value = .primary)
           baselineComp$metricSuffix <- metricSuffix
         }
         if (length(colIndexList)) {
@@ -3630,7 +3665,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
         if (tableSummarySettings()$rowEnabled) {
           if (identical(tableSummarySettings()$rowSummaryFunction, "sum")) {
             dataTmp <- mutate(
-              ungroup(dataTmp),
+              dataTmp,
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$sum,
                 "\U2003\U2003"
@@ -3641,7 +3676,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
             )
           } else if (identical(tableSummarySettings()$rowSummaryFunction, "mean")) {
             dataTmp <- mutate(
-              ungroup(dataTmp),
+              dataTmp,
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$mean,
                 "\U2003\U2003"
@@ -3653,7 +3688,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
           } else {
             # count
             dataTmp <- mutate(
-              ungroup(dataTmp),
+              dataTmp,
               !!paste0(
                 lang$renderers$miroPivot$aggregationFunctions$count,
                 "\U2003\U2003"
