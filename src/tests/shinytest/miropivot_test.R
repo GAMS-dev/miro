@@ -362,7 +362,7 @@ app$click(selector = 'button[data-dismiss="modal"]')
 Sys.sleep(1)
 app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
-app$wait_for_js("$('#tab_1_2-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();", timeout = 50)
+app$run_js("$('#tab_1_2-miroPivot-savedViewsDD .view-dropdown-item').filter(function(el){return $(this).text()==='agg view'}).click();")
 Sys.sleep(2)
 expect_identical(
   getVisibleDtData(app, "tab_1_2-miroPivot-pivotTable"),
@@ -411,6 +411,17 @@ expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootI
 expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='1200'"))
 expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1150'"))
 expect_true(app$get_js("$('#tab_1_2-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(4)').text()==='3250'"))
+
+app$click(selector = "#tab_1_2-miroPivot-toggleViewButton")
+Sys.sleep(0.5)
+app$run_js("$('#tab_1_2-miroPivot-savedViewsDD .view-dropdown-item').filter(function(el){return $(this).text()==='single dropdown'}).click();")
+Sys.sleep(2)
+expect_chartjs(
+  app,
+  "tab_1_2-miroPivot-pivotChart",
+  list(c(600, 350)),
+  c("San-Diego", "Seattle")
+)
 
 app$click(selector = "a[data-value='inputData']")
 Sys.sleep(0.5)

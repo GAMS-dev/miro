@@ -983,7 +983,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           isolate(chartFontSize(NULL))
         }
         if (length(viewOptions[["singleDropdown"]]) &&
-          !is.na(viewOptions[["singleDropdown"]])) {
+          !any(is.na(viewOptions[["singleDropdown"]]))) {
           isolate(singleDropdown(viewOptions[["singleDropdown"]]))
         } else {
           isolate(singleDropdown(NULL))
