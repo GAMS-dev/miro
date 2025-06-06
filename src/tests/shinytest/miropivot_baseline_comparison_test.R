@@ -51,4 +51,25 @@ expect_identical(
   list("San-Diego", "", "5.50", "", "Seattle", "1.00", "1.00", "", "San-Diego", "Seattle")
 )
 
+app$click(selector = "#tab_1_1-miroPivot-saveView")
+Sys.sleep(1)
+app$set_inputs("tab_1_1-miroPivot-newViewName" = "abc")
+app$set_inputs("tab_1_1-miroPivot-saveViewConfirm" = "click")
+Sys.sleep(1)
+
+app$click(selector = "#tab_1_1-miroPivot-toggleViewButton")
+Sys.sleep(0.5)
+app$run_js("$('#tab_1_1-miroPivot-savedViewsDD .view-dropdown-item').filter(function(el){return $(this).text()==='abc'}).click()")
+Sys.sleep(1)
+app$click(selector = "#tab_1_1-miroPivot-toggleViewButton")
+Sys.sleep(0.5)
+app$run_js("$('#tab_1_1-miroPivot-savedViewsDD .view-dropdown-item').filter(function(el){return $(this).text()==='default'}).click()")
+Sys.sleep(1)
+expect_chartjs(
+  app,
+  "tab_1_1-miroPivot-pivotChart",
+  list(c(NA, 300), c(275, 50), c(275, NA)),
+  c("San-Diego", "Seattle")
+)
+
 app$stop()

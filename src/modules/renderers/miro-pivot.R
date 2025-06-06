@@ -1037,6 +1037,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregations = unname(indices$aggregations),
           cols = unname(indices$cols)
         )
+        if (newBaselineCompConfig$enabled) {
+          if (newBaselineCompConfig$domainSelected %in% newView$aggregations) {
+            # can't produce baseline comparison statistics if dimension is aggregated
+            showEl(session, paste0("#", ns("baselineAggErr")))
+          } else {
+            hideEl(session, paste0("#", ns("baselineAggErr")))
+            newView$baselineCompConfig <- list(
+              domain = newBaselineCompConfig$domainSelected,
+              record = newBaselineCompConfig$recordSelected,
+              metrics = newBaselineCompConfig$metricsSelected
+            )
+          }
+        }
         if (length(domainFilterDomains)) {
           if (length(viewOptions[["domainFilter"]][["default"]]) &&
             viewOptions[["domainFilter"]][["default"]] %in% domainFilterDomains) {
