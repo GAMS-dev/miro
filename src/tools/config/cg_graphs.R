@@ -5091,7 +5091,7 @@ observeEvent(rv$saveGraphConfirm, {
       !is.na(input[["preview_output_miropivot-miroPivot-chartFontSize"]])) {
       configJSON$dataRendering[[activeSymbol$name]]$options$chartFontSize <<- input[["preview_output_miropivot-miroPivot-chartFontSize"]]
     }
-    if (identical(length(input[["preview_output_miropivot-miroPivot-enableBaselineComparison"]]), TRUE)) {
+    if (identical(input[["preview_output_miropivot-miroPivot-enableBaselineComparison"]], TRUE)) {
       configJSON$dataRendering[[activeSymbol$name]]$options$baselineComparison <<- list(
         domain = input[["preview_output_miropivot-miroPivot-baselineCompDomain"]],
         record = input[["preview_output_miropivot-miroPivot-baselineCompRecord"]],

@@ -2945,7 +2945,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         !is.na(input[["preview_inputTable_pivot-miroPivot-chartFontSize"]])) {
         newConfig$options$chartFontSize <- input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]
       }
-      if (identical(length(input[["preview_inputTable_pivot-miroPivot-enableBaselineComparison"]]), TRUE)) {
+      if (identical(input[["preview_inputTable_pivot-miroPivot-enableBaselineComparison"]], TRUE)) {
         newConfig$options$baselineComparison <<- list(
           domain = input[["preview_inputTable_pivot-miroPivot-baselineCompDomain"]],
           record = input[["preview_inputTable_pivot-miroPivot-baselineCompRecord"]],
