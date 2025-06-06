@@ -1,6 +1,7 @@
 uiDbMig <- fluidPage(
   tags$head(
     tags$meta(name = "color-scheme", content = "dark light"),
+    tags$link(type = "text/css", rel = "stylesheet", href = "colors_default.css"),
     tags$link(type = "text/css", rel = "stylesheet", href = "default_browser.css"),
     tags$script(`defer src` = "miro.js", type = "application/javascript")
   ),
