@@ -740,7 +740,7 @@
         "fixedColumns": "Fix table columns to the left",
         "chartFontSize": "Font size to use in charts",
         "baselineComparison": {
-          "cbEnable": "Enable baseline comparison?",
+          "cbEnable": "Enable baseline comparison",
           "selDomain": "Domain",
           "selRecord": "Baseline record",
           "selMetrics": "Comparison metrics (max 2)",

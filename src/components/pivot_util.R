@@ -255,6 +255,8 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
               arrange(.col) %>%
               select(all_of(c(".primary", ".secondary")))
           }
+        } else {
+          baselineComp$secondaryData <- select(baselineCompDataTmp, all_of(c(".primary", ".secondary")))
         }
       }
     }

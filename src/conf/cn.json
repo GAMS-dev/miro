@@ -782,7 +782,7 @@
         "fixedColumns": "将表格列固定在左侧",
         "chartFontSize": "图表中使用的字体大小",
         "baselineComparison": {
-          "cbEnable": "启用基准比较？",
+          "cbEnable": "启用基准比较",
           "selDomain": "维度",
           "selRecord": "基准记录",
           "selMetrics": "比较指标（最多 2 个）",
@@ -1118,7 +1118,7 @@
     "general":{
       "ui":{
         "title":"通用设置",
-		"tabInterface": "用户界面",
+		    "tabInterface": "用户界面",
         "tabSubmission": "工作提交",
         "tabLogs": "日志文件",
         "tabComparison": "情景比较",

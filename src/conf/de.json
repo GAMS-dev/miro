@@ -782,7 +782,7 @@
         "fixedColumns": "Fixiere Tabellenspalten auf der linken Seite",
         "chartFontSize": "In Charts zu verwendende Schriftgröße",
         "baselineComparison": {
-          "cbEnable": "Baseline-Vergleich aktivieren?",
+          "cbEnable": "Baseline-Vergleich aktivieren",
           "selDomain": "Dimension",
           "selRecord": "Baseline-Datensatz",
           "selMetrics": "Vergleichsmetriken (max. 2)",

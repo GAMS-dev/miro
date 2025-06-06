@@ -442,12 +442,15 @@ test_that("MIRO pivot compare metrics work", {
         enableBaselineComparison = TRUE,
         baselineCompDomain = "j",
         baselineCompRecord = "Chicago",
-        baselineCompMetrics = c("values", "percentage difference"),
+        baselineCompMetrics = c("value", "percentage difference"),
         updateSettings = 1L
       )
       expect_equal(
         attr(dataToRender(), "baselineComp")$secondaryData,
-        tibble(.secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100), .primary = c(275, 275, 10, 300, 50))
+        tibble(
+          .primary = c(275, 275, 10, 300, 50),
+          .secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100)
+        )
       )
       session$setInputs(
         enableBaselineComparison = TRUE,
@@ -458,7 +461,7 @@ test_that("MIRO pivot compare metrics work", {
       )
       expect_equal(
         attr(dataToRender(), "baselineComp")$secondaryData,
-        tibble(.secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100), .primary = c(0, 0, -290, 0, -250))
+        tibble(.primary = c(0, 0, -290, 0, -250), .secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100))
       )
       session$setInputs(
         enableBaselineComparison = TRUE,
@@ -516,7 +519,7 @@ test_that("MIRO pivot compare metrics work", {
         enableBaselineComparison = TRUE,
         baselineCompDomain = "j",
         baselineCompRecord = "Braunschweig",
-        baselineCompMetrics = c("values", "normalization"),
+        baselineCompMetrics = c("value", "normalization"),
         updateSettings = 1L
       )
       expect_identical(
@@ -528,7 +531,7 @@ test_that("MIRO pivot compare metrics work", {
       )
       expect_equal(
         attr(dataToRender(), "baselineComp")$secondaryData,
-        tibble(.secondary = c(1, 57.5, 32.5), .primary = c(10, 575, 325))
+        tibble(.primary = c(10, 575, 325), .secondary = c(1, 57.5, 32.5))
       )
     },
     args = list(

@@ -2418,7 +2418,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
             newBaselineCompConfig$recordSelected <- input$baselineCompRecord
             if (!all(input$baselineCompMetrics %in% newBaselineCompConfig$metricsChoices)) {
-              flog.error("Selected baseline comparison metric: %s not in supported metrics. Attempt to tamper with app!", input$metricsChoices)
+              flog.error(
+                "Selected baseline comparison metric(s): %s not in supported metrics. Attempt to tamper with app!",
+                paste(input$baselineCompMetrics[!input$baselineCompMetrics %in% newBaselineCompConfig$metricsChoices], collapse = ",")
+              )
               stop("Attempt to tamper with the app detected!", call. = FALSE)
             }
             newBaselineCompConfig$metricsSelected <- input$baselineCompMetrics
@@ -2943,6 +2946,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     arrange(.col) %>%
                     select(all_of(c(".primary", ".secondary")))
                 }
+              } else {
+                baselineComp$secondaryData <- select(baselineCompDataTmp, all_of(c(".primary", ".secondary")))
               }
             }
           }
