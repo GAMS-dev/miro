@@ -713,6 +713,10 @@ $(document).ready(() => {
       { priority: 'event' },
     );
   }, 300));
+  $(document).on('input change', '.miro-color-picker', function () {
+    const col = $(this).val();
+    $(`#${this.id}_swatch`).css('background', col);
+  });
   colorPickerBinding.setValue = function (el, value) {
     $(el).colorpicker('setValue', value);
   };

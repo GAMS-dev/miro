@@ -495,10 +495,6 @@ $(() => {
       $('.miro-pivot-custom-colors-wrapper .miro-color-picker input').hide();
     }
   });
-  $(document).on('input change', '.miro-color-picker', function () {
-    const col = $(this).val();
-    $(`#${this.id}_swatch`).css('background', col);
-  });
   $(document).on('click', '.btn-switch-sidebar', function () {
     switchTab(this.dataset.target);
   });

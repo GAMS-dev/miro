@@ -420,19 +420,19 @@ isAdvanced <- function(cfg, mode = "light") {
     }
     sidebar <- hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
 
-    neutral_primary <- (hue(cfg$miro_primary_color_dark) == 0) &&
+    neutralPrimary <- (hue(cfg$miro_primary_color_dark) == 0) &&
       (saturation(cfg$miro_primary_color_dark) == 0)
 
-    navbar <- if (neutral_primary) {
+    navbar <- if (neutralPrimary) {
       hslHex(hue(cfg$miro_primary_color_dark), 0, 10)
     } else {
       hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
     }
 
-    neutral_bg <- (hue(cfg$miro_main_bg_dark) == 0) &&
+    neutralBg <- (hue(cfg$miro_main_bg_dark) == 0) &&
       (saturation(cfg$miro_main_bg_dark) == 0)
 
-    body_bg <- if (neutral_bg) {
+    bodybg <- if (neutralBg) {
       hslHex(hue(cfg$miro_main_bg_dark), 0, 12)
     } else {
       hslHex(hue(cfg$miro_main_bg_dark), 10, 18)
@@ -440,7 +440,7 @@ isAdvanced <- function(cfg, mode = "light") {
 
     defaults <- list(
       miro_sidebar_color_dark = sidebar,
-      miro_body_bg_color_dark = body_bg,
+      miro_body_bg_color_dark = bodybg,
       miro_navbar_color_dark  = navbar
     )
   } else {
@@ -453,7 +453,7 @@ isAdvanced <- function(cfg, mode = "light") {
     neutral <- (hue(cfg$miro_primary_color) == 0) &&
       (saturation(cfg$miro_primary_color) == 0)
 
-    body_bg <- if (neutral) {
+    bodybg <- if (neutral) {
       makeHsl(cfg$miro_primary_color, 80, 0)
     } else {
       makeHsl(cfg$miro_primary_color, 94, 26)
@@ -461,16 +461,16 @@ isAdvanced <- function(cfg, mode = "light") {
 
     defaults <- list(
       miro_sidebar_color = sidebar,
-      miro_body_bg_color = body_bg,
+      miro_body_bg_color = bodybg,
       miro_navbar_color  = "#ffffff"
     )
   }
 
   keys <- intersect(names(cfg), names(defaults))
 
-  any(vapply(keys, function(k) {
+  return(any(vapply(keys, function(k) {
     !identical(tolower(cfg[[k]]), tolower(defaults[[k]]))
-  }, logical(1)))
+  }, logical(1))))
 }
 getThemeColors <- function(cssInput) {
   if (is.null(cssInput)) {
@@ -498,18 +498,20 @@ getThemeColors <- function(cssInput) {
   return(colorValues)
 }
 hslHex <- function(h, s, l) {
-  colorspace::hex(colorspace::HLS(H = h, S = s / 100, L = l / 100))
+  return(colorspace::hex(colorspace::HLS(H = h, S = s / 100, L = l / 100)))
 }
 hexToHsl <- function(hex) {
   hls <- as(colorspace::hex2RGB(hex), "HLS")
   cc <- colorspace::coords(hls)
-  setNames(
-    c(
-      unname(cc[, "H"]),
-      unname(cc[, "S"]) * 100,
-      unname(cc[, "L"]) * 100
-    ),
-    c("h", "s", "l")
+  return(
+    setNames(
+      c(
+        unname(cc[, "H"]),
+        unname(cc[, "S"]) * 100,
+        unname(cc[, "L"]) * 100
+      ),
+      c("h", "s", "l")
+    )
   )
 }
 
@@ -517,16 +519,16 @@ hue <- function(hex) unname(hexToHsl(hex)["h"])
 saturation <- function(hex) unname(hexToHsl(hex)["s"])
 
 lighten <- function(col, p, method = "absolute") {
-  colorspace::lighten(col, amount = p / 100, method, space = "HCL")
+  return(colorspace::lighten(col, amount = p / 100, method, space = "HCL"))
 }
 darken <- function(col, p, method = "absolute") {
-  colorspace::darken(col, amount = p / 100, method, space = "HCL")
+  return(colorspace::darken(col, amount = p / 100, method, space = "HCL"))
 }
 
 fade <- function(col, p) scales::alpha(col, p / 100)
 
 contrast <- function(bg, dark = "#000000", light = "#ffffff") {
-  unname(ifelse(luma(bg) > 50, dark, light))
+  return(unname(ifelse(luma(bg) > 50, dark, light)))
 }
 
 luma <- function(hex) {
@@ -534,7 +536,7 @@ luma <- function(hex) {
   c <- ifelse(rgb <= .03928, rgb / 12.92,
     ((rgb + .055) / 1.055)^2.4
   )
-  (0.2126 * c[, 1] + 0.7152 * c[, 2] + 0.0722 * c[, 3]) * 100
+  return((0.2126 * c[, 1] + 0.7152 * c[, 2] + 0.0722 * c[, 3]) * 100)
 }
 
 contrastRatio <- function(col1, col2) {
@@ -545,20 +547,28 @@ contrastRatio <- function(col1, col2) {
     L1 <- L2
     L2 <- tmp
   }
-  (L1 + 0.05) / (L2 + 0.05)
+  return((L1 + 0.05) / (L2 + 0.05))
 }
 
 goodContrast <- function(fg, bg, threshold = 3.5) {
-  contrastRatio(fg, bg) >= threshold
+  return(contrastRatio(fg, bg) >= threshold)
 }
 
 boolean <- function(x) {
   val <- as.logical(x)[1]
-  if (is.na(val) || length(val) == 0) FALSE else val
+  if (is.na(val) || length(val) == 0) {
+    return(FALSE)
+  } else {
+    return(val)
+  }
 }
 
 makeHsl <- function(color, l, s) hslHex(hue(color), s, l)
 
 resolveColor <- function(val, default) {
-  if (length(val) && nzchar(val)) val else default
+  if (length(val) && nzchar(val)) {
+    return(val)
+  } else {
+    return(default)
+  }
 }
