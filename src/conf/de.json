@@ -722,7 +722,7 @@
         "title": "Neuer view",
         "label": "Bitte wählen Sie einen Namen für den View.",
         "info": "Bei horizontalen Diagrammen werden die Achseneinstellungen umgekehrt.",
-        "chartTitle": "Diagrammtitel (optional)",
+        "chartTitle": "Titel (optional)",
         "xTitle": "X-Achsen-Beschriftung (optional)",
         "yTitle": "Y-Achsen-Beschriftung (optional)",
         "yLogScale": "Logarithmische Skala auf der y-Achse verwenden",
