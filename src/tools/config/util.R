@@ -478,9 +478,8 @@ getThemeColors <- function(cssInput) {
   }
 
   if ((is.list(cssInput) || is.atomic(cssInput)) && !is.null(names(cssInput))) {
-    varNames <- gsub("-", "_", names(cssInput))
-    varValues <- as.character(unlist(cssInput, use.names = FALSE))
-    return(as.list(setNames(varValues, varNames)))
+    names(cssInput) <- gsub("-", "_", names(cssInput))
+    return(cssInput)
   }
 
   cssLines <- if (length(cssInput) == 1 && file.exists(cssInput)) {

@@ -1918,6 +1918,7 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE, c
       )
     )
   } else if (colorPreview) {
+    # colorPreview only available in Configuration Mode for now
     colorpicker <- tags$div(
       class = "form-group",
       tags$label(`for` = id, label, class = "control-label"),
