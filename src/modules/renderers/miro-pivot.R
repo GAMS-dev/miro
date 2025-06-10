@@ -3685,7 +3685,7 @@ const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
               if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
                 paste0(
                   "
-const offset=meta.row+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
 const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
 const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
 if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
