@@ -807,16 +807,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         )
       )
       if (length(options$baselineComparison)) {
+        baselineComparisonConfigDefault$enabled <- TRUE
         baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[baselineComparisonConfigDefault$metricsChoices %in% options$baselineComparison$metrics]
         baselineComparisonConfigDefault$domainSelected <- options$baselineComparison$domain
         baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
-        if (options$baselineComparison$element %in% baselineComparisonConfigDefault$recordChoices) {
+        if (options$baselineComparison$record %in% baselineComparisonConfigDefault$recordChoices) {
           baselineComparisonConfigDefault$recordSelected <- options$baselineComparison$record
+        } else {
+          baselineComparisonConfigDefault$recordSelected <- baselineComparisonConfigDefault$recordChoices[1]
         }
       } else {
         baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[1]
         baselineComparisonConfigDefault$domainSelected <- baselineComparisonConfigDefault$domainChoices[1]
         baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        baselineComparisonConfigDefault$recordSelected <- baselineComparisonConfigDefault$recordChoices[1]
       }
       baselineComparisonConfig <- reactiveVal(baselineComparisonConfigDefault)
 
@@ -2867,6 +2871,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           enableEl(session, paste0("#", ns("btRemoveRows")))
         }
         if (length(baselineCompConfig)) {
+          if (isInput) {
+            isEditable <<- FALSE
+            disableEl(session, paste0("#", ns("btAddRow")))
+            disableEl(session, paste0("#", ns("btRemoveRows")))
+          }
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(

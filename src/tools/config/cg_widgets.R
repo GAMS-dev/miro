@@ -2946,13 +2946,13 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
         newConfig$options$chartFontSize <- input[["preview_inputTable_pivot-miroPivot-chartFontSize"]]
       }
       if (identical(input[["preview_inputTable_pivot-miroPivot-enableBaselineComparison"]], TRUE)) {
-        newConfig$options$baselineComparison <<- list(
+        newConfig$options$baselineComparison <- list(
           domain = input[["preview_inputTable_pivot-miroPivot-baselineCompDomain"]],
           record = input[["preview_inputTable_pivot-miroPivot-baselineCompRecord"]],
           metrics = input[["preview_inputTable_pivot-miroPivot-baselineCompMetrics"]]
         )
       } else {
-        newConfig$options$baselineComparison <<- NULL
+        newConfig$options$baselineComparison <- NULL
       }
       if (length(rv$widgetConfig$options$externalDefaultView)) {
         newConfig$options$externalDefaultView <- rv$widgetConfig$options$externalDefaultView
