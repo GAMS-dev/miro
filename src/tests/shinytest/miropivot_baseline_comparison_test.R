@@ -30,7 +30,7 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 Sys.sleep(0.5)
 app$click(selector = "#tab_1_1-miroPivot-settingsTabs a[data-value='Baseline Comparison']")
 Sys.sleep(0.5)
-app$set_inputs(`tab_1_1-miroPivot-enableBaselineComparison` = TRUE)
+expect_true(app$get_value(input = "tab_1_1-miroPivot-enableBaselineComparison"))
 expect_identical(getSelectizeOptions(app, "#tab_1_1-miroPivot-baselineCompDomain"), list("i", "j", "Hdr"))
 expect_identical(app$get_value(input = "tab_1_1-miroPivot-baselineCompDomain"), "j")
 expect_identical(getSelectizeOptions(app, "#tab_1_1-miroPivot-baselineCompRecord"), list("New-york", "Chicago", "Topeka"))

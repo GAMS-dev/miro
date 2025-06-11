@@ -808,7 +808,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       )
       if (length(options$baselineComparison)) {
         baselineComparisonConfigDefault$enabled <- TRUE
-        baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[baselineComparisonConfigDefault$metricsChoices %in% options$baselineComparison$metrics]
+        baselineComparisonConfigDefault$metricsSelected <- options$baselineComparison$metrics[options$baselineComparison$metrics %in% baselineComparisonConfigDefault$metricsChoices]
         baselineComparisonConfigDefault$domainSelected <- options$baselineComparison$domain
         baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
         if (options$baselineComparison$record %in% baselineComparisonConfigDefault$recordChoices) {
