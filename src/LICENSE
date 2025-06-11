@@ -901,7 +901,7 @@ Section 8 -- Interpretation.
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
         - hms, Copyright (c) 2020 hms authors
-        - ps, Copyright (c) 2009-2020 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
+        - ps, Copyright (c) 2023 ps authors
         - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2022 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
@@ -947,7 +947,7 @@ Section 8 -- Interpretation.
         - pkgconfig, Copyright (c) 2014-2017 Gábor Csárdi
         - tibble, Copyright (c) 2013-2017 RStudio
         - cellranger, Copyright (c) 2018 RStudio
-        - scales, Copyright (c) 2010-2016 Hadley Wickham
+        - scales, Copyright (c) 2025 scales authors
         - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
         - chartjs (R link), Copyright (c) 2015-2016 Pierre Formont
         - Chart.js, Copyright (c) 2014-2024 Chart.js Contributors
@@ -957,12 +957,12 @@ Section 8 -- Interpretation.
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
         - cachem, Copyright (c) 2020 Winston Chang [aut, cre], RStudio [cph, fnd]
-        - rlang, Copyright (c) 2020 Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - rlang, Copyright (c) 2020 rlang authors
         - withr, Copyright (c)
             Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - bindr, Copyright (c) 2016 RStudio
         - cli, Copyright (c) 2017 Gábor Csárdi
-        - zip, Copyright (c) 2020 zip authors
+        - zip, Copyright (c) 2025 zip authors
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
         - rematch, Copyright (c) 2016 Mango Solutions
         - prettyunits, Copyright (c) 2014 Gabor Csardi
@@ -1381,8 +1381,8 @@ Library.
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
-        - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
-        - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
+        - bit, Copyright (c) Michael Chirico [aut, cre], Jens Oehlschlägel [aut], Brian Ripley [ctb]
+        - bit64, Copyright (c) Michael Chirico [aut, cre], Jens Oehlschlägel [aut], Leonardo Silvestri [ctb], Ofek Shilon [ctb]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Jim Hester [aut], Lionel Henry [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
@@ -2392,10 +2392,7 @@ DEALINGS IN THE SOFTWARE.
 -----------------------------------------------------------------------------
             The “MPL-2.0 License”
         applies to:
-        - data.table, Copyright (c) Matt Dowle [aut, cre], Arun Srinivasan [aut],
-            Jan Gorecki [ctb], Michael Chirico [ctb], Pasha Stetsenko [ctb],
-            Tom Short [ctb], Steve Lianoglou [ctb], Eduard Antonyan [ctb],
-            Markus Bonsch [ctb], Hugh Parsonage [ctb]
+        - data.table, Copyright (c) Tyson Barrett ORCID iD [aut, cre], Matt Dowle [aut], Arun Srinivasan [aut], Jan Gorecki [aut], Michael Chirico ORCID iD [aut], Toby Hocking ORCID iD [aut], Benjamin Schwendinger  ORCID iD [aut], Ivan Krylov ORCID iD [aut], Pasha Stetsenko [ctb], Tom Short [ctb], Steve Lianoglou [ctb], Eduard Antonyan [ctb], Markus Bonsch [ctb], Hugh Parsonage [ctb], Scott Ritchie [ctb], Kun Ren [ctb], Xianying Tan [ctb], Rick Saporta [ctb], Otto Seiskari [ctb], Xianghui Dong [ctb], Michel Lang [ctb], Watal Iwasaki [ctb], Seth Wenchel [ctb], Karl Broman [ctb], Tobias Schmidt [ctb], David Arenburg [ctb], Ethan Smith [ctb], Francois Cocquemas [ctb], Matthieu Gomez [ctb], Philippe Chataignon [ctb], Nello Blaser [ctb], Dmitry Selivanov [ctb], Andrey Riabushenko [ctb], Cheng Lee [ctb], Declan Groves [ctb], Daniel Possenriede [ctb], Felipe Parages [ctb], Denes Toth [ctb], Mus Yaramaz-David [ctb], Ayappan Perumal [ctb], James Sams [ctb], Martin Morgan [ctb], Michael Quinn [ctb], @javrucebo [ctb], @marc-outins [ctb], Roy Storey [ctb], Manish Saraswat [ctb], Morgan Jacob [ctb], Michael Schubmehl [ctb], Davis Vaughan [ctb], Leonardo Silvestri [ctb], Jim Hester [ctb], Anthony Damico [ctb], Sebastian Freundt [ctb], David Simons [ctb], Elliott Sales de Andrade [ctb], Cole Miller [ctb], Jens Peder Meldgaard [ctb], Vaclav Tlapak [ctb], Kevin Ushey [ctb], Dirk Eddelbuettel [ctb], Tony Fischetti [ctb], Ofek Shilon [ctb], Vadim Khotilovich [ctb], Hadley Wickham [ctb], Bennet Becker [ctb], Kyle Haynes [ctb], Boniface Christian Kamgang [ctb], Olivier Delmarcell [ctb], Josh O'Brien [ctb], Dereck de Mezquita [ctb], Michael Czekanski [ctb], Dmitry Shemetov [ctb], Nitish Jha [ctb], Joshua Wu [ctb], Iago Giné-Vázquez [ctb], Anirban Chetia [ctb], Doris Amoakohene [ctb], Angel Feliz [ctb], Michael Young [ctb], Mark Seeto [ctb], Philippe Grosjean [ctb], Vincent Runge [ctb], Christian Wia [ctb], Elise Maigné [ctb], Vincent Rocher [ctb], Vijay Lulla [ctb], Aljaž Sluga [ctb], Bill Evans [ctb]
 -----------------------------------------------------------------------------
 
 Mozilla Public License Version 2.0
