@@ -45,7 +45,7 @@ app$set_inputs(`tab_1_1-miroPivot-baselineCompRecord` = "Seattle")
 app$set_inputs(`tab_1_1-miroPivot-baselineCompMetrics` = c("normalization"))
 app$set_inputs(`tab_1_1-miroPivot-updateSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_identical(
   app$get_js("$('#tab_1_1-miroPivot-pivotTable td').map(function(index){return $(this).text()}).toArray()"),
   list("San-Diego", "", "5.50", "", "Seattle", "1.00", "1.00", "", "San-Diego", "Seattle")
