@@ -2688,7 +2688,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       rendererEnv[[ns("baselineCompRecordObs")]] <- observe({
         req(input$enableBaselineComparison, input$baselineCompDomain %in% setIndices)
-        updateSelectInput(session, "baselineCompRecord", choices = unique(data[[input$baselineCompDomain]]))
+        baselineRecordChoices <- unique(data[[input$baselineCompDomain]])
+        baselineRecordSelected <- baselineRecordChoices[1]
+        currBaselineCompConfig <- isolate(baselineComparisonConfig())
+        if (currBaselineCompConfig$enabled &&
+          identical(currBaselineCompConfig$domainSelected, input$baselineCompDomain)) {
+          baselineRecordSelected <- currBaselineCompConfig$recordSelected
+        }
+        updateSelectInput(session, "baselineCompRecord",
+          choices = baselineRecordChoices,
+          selected = baselineRecordSelected
+        )
       })
 
       filteredData <- reactive({

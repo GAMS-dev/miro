@@ -786,7 +786,7 @@
           "selDomain": "Dimension",
           "selRecord": "Baseline-Datensatz",
           "selMetrics": "Vergleichsmetriken (max. 2)",
-          "errorAggregated": "Die Baseline-Dimension kann nicht aggregiert werden. Der Baseline-Vergleich wurde deaktiviert – es werden Rohwerte angezeigt.",
+          "errorAggregated": "Die Baseline-Dimension kann nicht aggregiert werden. Der Baseline-Vergleich wurde deaktiviert - es werden Rohwerte angezeigt.",
           "metrics": {
             "values": "Rohwerte",
             "percDiff": "Relative Δ (%)",
