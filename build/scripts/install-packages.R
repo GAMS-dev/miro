@@ -255,6 +255,11 @@ installPackage <- function(package, attempt = 0) {
           dependencies = FALSE, INSTALL_opts = "--no-multiarch"
         )
       } else {
+        if (isMac && identical(Sys.info()[["machine"]], "x86_64")) {
+          # temporary workaround for https://github.com/Rdatatable/data.table/issues/6622
+          Sys.setenv(PKG_LIBS = "-fopenmp")
+          on.exit(Sys.unsetenv("PKG_LIBS"))
+        }
         # if ( isMac && identical(package[1], 'data.table') ) {
         #    makevarsPath <- '~/.R/Makevars'
         #    if ( file.exists(makevarsPath) ) {
