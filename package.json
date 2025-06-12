@@ -43,7 +43,8 @@
       "!r/**",
       "!r-src/**",
       "!electron-builder.env",
-      "!src/**"
+      "!src/**",
+      "!server/**"
     ],
     "fileAssociations": [
       {
