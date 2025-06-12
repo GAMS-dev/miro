@@ -633,7 +633,7 @@ data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                          ${(app.version != null && app.version !== '') ? `<div class="app-id-field app-version-field" style="display:none;" title="${escapeHtml(app.version)}">
                           <small><i>${escapeHtml(app.version)}</i></small>
                          </div>`: ''}
-                         ${(app.authors != null && app.authors > 0) ? `<div class="app-id-field app-authors-field" style="display:none;" title="${escapeHtml(app.authors.join(', '))}">
+                         ${(app.authors != null && app.authors.length > 0) ? `<div class="app-id-field app-authors-field" style="display:none;" title="${escapeHtml(app.authors.join(', '))}">
                           <small><i>by ${escapeHtml(app.authors.join(', '))}</i></small>
                         </div>`: ''}
                      </div>
