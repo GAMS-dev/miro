@@ -946,6 +946,7 @@ test_job_miro_server_k8s:
   script:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - export ENGINE_NS="${ENGINE_NS_2}"
     - ./scripts/test_miro_server_k8s.sh
   dependencies: []
   artifacts:
