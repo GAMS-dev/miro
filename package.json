@@ -123,7 +123,7 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.53.0",
     "electron": "^36.4.0",
     "electron-builder": "26.0.12",
     "eslint": "^8.57.1",
