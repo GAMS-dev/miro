@@ -478,6 +478,7 @@ create_vulnerability_report:
 build_windows_job:
   tags:
     - windows
+    - sewer
   stage: build
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
@@ -614,6 +615,7 @@ build_macos_arm_job:
 test_windows_job:
   tags:
     - windows
+    - sewer
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
