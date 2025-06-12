@@ -83,8 +83,10 @@
         "r/**"
       ],
       "target": "nsis",
-      "timeStampServer": "http://timestamp.digicert.com",
-      "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01",
+      "signtoolOptions": {
+        "timeStampServer": "http://timestamp.digicert.com",
+        "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01"
+      },
       "icon": "./build/icon.ico"
     },
     "nsis": {
