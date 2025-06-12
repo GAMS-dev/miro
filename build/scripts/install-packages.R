@@ -254,12 +254,34 @@ installPackage <- function(package, attempt = 0) {
           repos = CRANMirrors[attempt + 1],
           dependencies = FALSE, INSTALL_opts = "--no-multiarch"
         )
+      } else if (isMac && identical(Sys.info()[["machine"]], "x86_64") && identical(package[1], "data.table")) {
+        # use binary from CRAN to avoid issue with openMP (https://github.com/Rdatatable/data.table/issues/6622)
+        options(install.packages.check.source = "no")
+        install.packages(package[1], if (CIBuild) RlibPathTmp else RLibPath,
+          repos = CRANMirrors[attempt + 1],
+          dependencies = FALSE, INSTALL_opts = "--no-multiarch"
+        )
       } else {
-        if (isMac && identical(Sys.info()[["machine"]], "x86_64")) {
-          # temporary workaround for https://github.com/Rdatatable/data.table/issues/6622
-          Sys.setenv(PKG_LIBS = "-fopenmp")
-          on.exit(Sys.unsetenv("PKG_LIBS"))
-        }
+        # if ( isMac && identical(package[1], 'data.table') ) {
+        #    makevarsPath <- '~/.R/Makevars'
+        #    if ( file.exists(makevarsPath) ) {
+        #        stop("Makevars already exist. Won't overwrite!")
+        #    }
+        #    on.exit(unlink(makevarsPath))
+        #    if (!dir.exists(dirname(makevarsPath)) &&
+        #        !dir.create(dirname(makevarsPath), showWarnings = TRUE, recursive = TRUE)){
+        #        stop(sprintf('Could not create directory: %s', dirname(makevarsPath)))
+        #    }
+        #    writeLines(c('LLVM_LOC = /usr/local/opt/llvm',
+        #        'CC=$(LLVM_LOC)/bin/clang -fopenmp',
+        #       'CXX=$(LLVM_LOC)/bin/clang++ -fopenmp',
+        #       '# -O3 should be faster than -O2 (default) level optimisation ..',
+        #       'CFLAGS=-g -O3 -Wall -pedantic -std=gnu99 -mtune=native -pipe',
+        #       'CXXFLAGS=-g -O3 -Wall -pedantic -std=c++11 -mtune=native -pipe',
+        #       'LDFLAGS=-L/usr/local/opt/gettext/lib -L$(LLVM_LOC)/lib -Wl,-rpath,$(LLVM_LOC)/lib',
+        #        'CPPFLAGS=-I/usr/local/opt/gettext/include -I$(LLVM_LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'),
+        #    makevarsPath)
+        # }
         withr::with_libpaths(if (CIBuild) RlibPathTmp else RLibPath, install_version(package[1], package[2],
           out = "./dist/dump",
           dependencies = FALSE, repos = CRANMirrors[attempt + 1],
