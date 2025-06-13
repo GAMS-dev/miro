@@ -12,12 +12,13 @@ getVisibleDtData <- function(app, id) {
     .name_repair = "universal"
   ))
 }
-getHotData <- function(app, id) {
+getHotData <- function(app, id, timeout = 5000L) {
   hotToR <- function(data) {
     return(suppressWarnings(as_tibble(
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
+  app$wait_for_js(paste0("$('#", id, " .htCore').is(':visible')"), timeout = timeout)
   return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
 expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6) {
