@@ -1,7 +1,7 @@
 {
   "name": "com.gams.miro",
   "productName": "GAMS MIRO",
-  "version": "2.11.9999",
+  "version": "2.12.0",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
   "type": "module",
@@ -43,7 +43,8 @@
       "!r/**",
       "!r-src/**",
       "!electron-builder.env",
-      "!src/**"
+      "!src/**",
+      "!server/**"
     ],
     "fileAssociations": [
       {
@@ -83,8 +84,10 @@
         "r/**"
       ],
       "target": "nsis",
-      "timeStampServer": "http://timestamp.digicert.com",
-      "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01",
+      "signtoolOptions": {
+        "timeStampServer": "http://timestamp.digicert.com",
+        "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01"
+      },
       "icon": "./build/icon.ico"
     },
     "nsis": {
@@ -120,25 +123,25 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
-    "electron": "^33.2.1",
-    "electron-builder": "25.1.8",
+    "@playwright/test": "^1.53.0",
+    "electron": "^36.4.0",
+    "electron-builder": "26.0.12",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
-    "playwright": "^1.52.0",
+    "playwright": "^1.53.0",
     "prettier": "3.4.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "ajv": "^8.17.1",
-    "axios": "^1.7.9",
+    "axios": "^1.9.0",
     "bootstrap": "^4.6.2",
-    "electron-log": "^5.2.4",
-    "electron-store": "^10.0.0",
-    "execa": "^9.5.2",
-    "fs-extra": "^11.2.0",
+    "electron-log": "^5.4.1",
+    "electron-store": "^10.0.1",
+    "execa": "^9.6.0",
+    "fs-extra": "^11.3.0",
     "jquery": "^3.7.1",
     "popper.js": "^1.16.1",
     "portscanner": "^2.2.0",

@@ -6,21 +6,24 @@ getSelectizeAliases <- function(app, selector) {
   options <- app$get_js(paste0("Object.values($('", selector, "')[0].selectize.options).map(option => option.label)"))
   return(unlist(options))
 }
-getVisibleDtData <- function(app, id) {
+getVisibleDtData <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, "').data('datatable')!=null"), timeout = 5000L)
   dtData <- app$get_js(paste0("JSON.stringify($('#", id, "').data('datatable').data().toArray())"))
   return(tibble::as_tibble(jsonlite::fromJSON(dtData),
     .name_repair = "universal"
   ))
 }
-getHotData <- function(app, id) {
+getHotData <- function(app, id, timeout = 5000L) {
   hotToR <- function(data) {
     return(suppressWarnings(as_tibble(
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
+  app$wait_for_js(paste0("$('#", id, " .htCore').is(':visible')"), timeout = timeout)
   return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
-expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6) {
+expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6, timeout = 5000L) {
+  app$wait_for_js(paste0("Chart.getChart('", id, "')?.attached===true"), timeout = timeout)
   chartjsData <- jsonlite::fromJSON(app$get_values()$output[[id]])$x$data
   if (is.list(data)) {
     expect_equal(chartjsData$datasets$data, data, tolerance = tolerance)

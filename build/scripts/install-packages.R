@@ -254,6 +254,13 @@ installPackage <- function(package, attempt = 0) {
           repos = CRANMirrors[attempt + 1],
           dependencies = FALSE, INSTALL_opts = "--no-multiarch"
         )
+      } else if (isMac && identical(Sys.info()[["machine"]], "x86_64") && identical(package[1], "data.table")) {
+        # use binary from CRAN to avoid issue with openMP (https://github.com/Rdatatable/data.table/issues/6622)
+        options(install.packages.check.source = "no")
+        install.packages(package[1], if (CIBuild) RlibPathTmp else RLibPath,
+          repos = CRANMirrors[attempt + 1],
+          dependencies = FALSE, INSTALL_opts = "--no-multiarch"
+        )
       } else {
         # if ( isMac && identical(package[1], 'data.table') ) {
         #    makevarsPath <- '~/.R/Makevars'

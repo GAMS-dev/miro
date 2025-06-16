@@ -283,8 +283,8 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
               ['version', 'version'],
               ['authors', 'authors'],
             ].forEach((configKey) => {
-              if (content.data[configKey] != null) {
-                newAppConf[configKey] = content.data[configKey];
+              if (content.data[configKey[0]] != null) {
+                newAppConf[configKey[0]] = content.data[configKey[1]];
               }
             });
           }

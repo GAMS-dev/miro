@@ -53,7 +53,7 @@ RUN New-Item $($env:APPDATA + '\npm') -Type Directory ; \
     $env:PATH = 'C:\nodejs;{0}\npm;C:\yarn\bin;{1}' -f $env:APPDATA, $env:PATH ; \
     Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\' -Name Path -Value $env:PATH
 
-RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools45/files/rtools45-6536-6492.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
+RUN Invoke-WebRequest "https://cran.r-project.org/bin/windows/Rtools/rtools45/files/rtools45-6608-6492.exe" -OutFile "Rtools.exe" -UseBasicParsing ; \
     Start-Process Rtools.exe -ArgumentList '/TYPE=full', '/VERYSILENT', -NoNewWindow -Wait
 
 RUN Invoke-WebRequest $('https://constexpr.org/innoextract/files/innoextract-{0}-windows.zip' -f $env:INNOEXTRACT_VERSION) -OutFile innoextract.zip -UseBasicParsing ; \
@@ -73,4 +73,4 @@ RUN Invoke-WebRequest $('https://d37drm4t2jghv5.cloudfront.net/distributions/{0}
 ENV GAMS_SYS_DIR=C:/gams
 
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
-    choco install -y googlechrome
+    choco install -y googlechrome git

@@ -478,6 +478,7 @@ create_vulnerability_report:
 build_windows_job:
   tags:
     - windows
+    - sewer
   stage: build
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
@@ -614,6 +615,7 @@ build_macos_arm_job:
 test_windows_job:
   tags:
     - windows
+    - sewer
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
@@ -741,7 +743,7 @@ test_macos_arm_job:
     - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
     - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
     - yarn playwright test
-    - rm "/Users/gitlab/Library/Application Support/Chromium/SingletonLock"
+    - rm -f "/Users/gitlab/Library/Application Support/Chromium/SingletonLock"
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
     - hdiutil detach -force tmp/mnt
@@ -944,6 +946,7 @@ test_job_miro_server_k8s:
   script:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - export ENGINE_NS="${ENGINE_NS_2}"
     - ./scripts/test_miro_server_k8s.sh
   dependencies: []
   artifacts:

@@ -161,7 +161,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         if (update) {
           private$runQuery(
             sprintf(
-              "UPDATE sys_config SET value = %s, verified = FALSE WHERE key='role_prefix';",
+              "UPDATE sys_config SET value = %s, verified = FALSE, updated = CURRENT_TIMESTAMP WHERE key='role_prefix';",
               dbQuoteString(private$conn, newRolePrefix)
             )
           )
@@ -194,7 +194,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         private$runQuery(sprintf(
           "CREATE ROLE %s;", dbQuoteIdentifier(private$conn, newRolePrefix)
         ))
-        private$runQuery("UPDATE sys_config SET verified = TRUE WHERE key='role_prefix';")
+        private$runQuery("UPDATE sys_config SET verified = TRUE, updated = CURRENT_TIMESTAMP WHERE key='role_prefix';")
       },
       error = function(err) {
         if (grepl("already exists", conditionMessage(err), fixed = TRUE)) {
