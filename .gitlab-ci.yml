@@ -157,6 +157,8 @@ build_build_image_windows:
     - cd ci/windows
     - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
+  after_script:
+    - docker logout $env:CI_REGISTRY
   rules:
     - if: '"$[[ inputs.force-build-windows-builder ]]" == "true"'
     - if: '$CI_PIPELINE_SOURCE != "push"'
