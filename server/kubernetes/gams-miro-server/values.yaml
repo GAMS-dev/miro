@@ -47,6 +47,7 @@ proxy:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+    annotations: {}
   networkPolicy:
     allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy
@@ -117,8 +118,8 @@ proxy:
     engine:
       apiUrl: ''
       namespace: ''
-      anonymousUser: ''
-      anonymousPassword: ''
+      anonymousUser: '' # only relevant if authentication is none
+      anonymousPassword: '' # only relevant if authentication is none
     metrics:
       enabled: false
       port: 9090
@@ -139,6 +140,7 @@ auth:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+    annotations: {}
   networkPolicy:
     allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy

@@ -3,14 +3,26 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- $annotations := dict }}
+
+{{- if .Values.global.commonAnnotations }}
+{{- $common := include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | fromYaml }}
+{{- $annotations = merge $annotations $common }}
+{{- end }}
+
+{{- if .Values.auth.service.annotations }}
+{{- $auth := include "common.tplvalues.render" (dict "value" .Values.auth.service.annotations "context" $) | fromYaml }}
+{{- $annotations = merge $annotations $auth }}
+{{- end }}
+
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "common.names.fullname" . }}-auth
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.global.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- if $annotations }}
+  annotations: {{- toYaml $annotations | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.auth.service.type }}
