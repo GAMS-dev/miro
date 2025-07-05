@@ -21,7 +21,6 @@ isolate({
   rv$generalConfig$outputGroups <- configJSON$outputGroups
   rv$generalConfig$outputAttachments <- configJSON$outputAttachments
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
-  rv$generalConfig$scripts <- configJSON$scripts
   rv$generalConfig$UILogo <- configJSON$UILogo
 })
 scalarSymbols <- setNames(
@@ -40,28 +39,6 @@ scalarSymbols <- setNames(
 )
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 
-baseScriptValidator <- Validator$new(
-  c(
-    "id", "tabTitle", "command",
-    "args", "outputFile", "markdown", "timeout"
-  ),
-  configJSON$scripts$base,
-  requiredKeys = c(
-    "id", "tabTitle",
-    "command", "outputFile"
-  )
-)
-hcubeScriptValidator <- Validator$new(
-  c(
-    "id", "title", "command",
-    "args", "outputFile", "markdown", "timeout"
-  ),
-  configJSON$scripts$hcube,
-  requiredKeys = c(
-    "id", "title",
-    "command", "outputFile"
-  )
-)
 outputAttachmentsValidator <- Validator$new(c("filename", "execPerm", "throwError"),
   configJSON$outputAttachments,
   requiredKeys = c("filename")
@@ -79,12 +56,6 @@ if (length(configJSON$outputGroups)) {
 }
 if (length(configJSON$symbolLinks)) {
   addArrayEl(session, "symbol_links", defaults = configJSON$symbolLinks)
-}
-if (length(configJSON$scripts$base)) {
-  addArrayEl(session, "scripts_base", defaults = configJSON$scripts$base)
-}
-if (length(configJSON$scripts$hcube)) {
-  addArrayEl(session, "scripts_hcube", defaults = configJSON$scripts$hcube)
 }
 if (length(configJSON$outputAttachments)) {
   addArrayEl(session, "general_output_attach", defaults = configJSON$outputAttachments)
@@ -119,6 +90,7 @@ observeEvent(input$general_pageTitle, {
     rv$generalConfig$pageTitle <<- input$general_pageTitle
   }
 })
+
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
 })
@@ -181,14 +153,23 @@ observeEvent(input$general_meta, {
 observeEvent(input$general_empty, {
   rv$generalConfig$excelIncludeEmptySheets <<- input$general_empty
 })
-observeEvent(c(input$default_scen_check, input$general_default_scen_name), {
-  if (!nchar(input$general_default_scen_name) || identical(input$default_scen_check, FALSE)) {
-    configJSON$defaultScenName <<- NULL
-  }
-  if (nchar(input$general_default_scen_name) && identical(input$default_scen_check, TRUE)) {
+observeEvent(input$default_scen_check, {
+  if (identical(input$default_scen_check, TRUE) && nchar(input$general_default_scen_name)) {
     rv$generalConfig$defaultScenName <<- input$general_default_scen_name
   } else {
     rv$generalConfig$defaultScenName <<- NULL
+    configJSON$defaultScenName <<- NULL
+  }
+})
+observeEvent(input$general_default_scen_name, {
+  if (!identical(input$default_scen_check, TRUE)) {
+    return()
+  }
+  if (nchar(input$general_default_scen_name)) {
+    rv$generalConfig$defaultScenName <<- input$general_default_scen_name
+  } else {
+    rv$generalConfig$defaultScenName <<- NULL
+    configJSON$defaultScenName <<- NULL
   }
 })
 observeEvent(input$general_defaultRendererOutput, {
@@ -297,28 +278,57 @@ observeEvent(input$general_args, ignoreNULL = FALSE, {
 observeEvent(input$general_scen, {
   rv$generalConfig$defCompMode <<- input$general_scen
 })
-observeEvent(
-  {
-    input$pivotcomp_emptyUEL
-    input$pivotcomp_enableHideEmptyCols
-  },
-  {
-    if (isTRUE(input$pivotcomp_enableHideEmptyCols)) {
-      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <- TRUE
-      if (length(input$pivotcomp_emptyUEL) && !identical(input$pivotcomp_emptyUEL, "")) {
-        rv$generalConfig$pivotCompSettings$emptyUEL <- input$pivotcomp_emptyUEL
-      }
-    } else {
-      configJSON$pivotCompSettings$enableHideEmptyCols <<- NULL
-      configJSON$pivotCompSettings$emptyUEL <<- NULL
-      rv$generalConfig$pivotCompSettings$enableHideEmptyCols <<- NULL
-      rv$generalConfig$pivotCompSettings$emptyUEL <<- NULL
-    }
+observeEvent(input$pivotcomp_emptyUEL, {
+  emptyUEL <- input$pivotcomp_emptyUEL
+  if (!is.null(emptyUEL) && emptyUEL != "") {
+    rv$generalConfig$pivotCompSettings$emptyUEL <- emptyUEL
+  } else {
+    configJSON$pivotCompSettings$emptyUEL <<- NULL
+    rv$generalConfig$pivotCompSettings$emptyUEL <<- NULL
   }
-)
+})
 observeEvent(input$pivotcomp_hidePivotControls, {
   rv$generalConfig$pivotCompSettings$hidePivotControls <<- input$pivotcomp_hidePivotControls
 })
+observeEvent(input$pivotcomp_hideEmptyCols, {
+  rv$generalConfig$pivotCompSettings$hideEmptyCols <<- input$pivotcomp_hideEmptyCols
+})
+observeEvent(input$pivotcomp_chartFontSize,
+  {
+    if (length(input$pivotcomp_chartFontSize) && !is.na(input$pivotcomp_chartFontSize)) {
+      rv$generalConfig$pivotCompSettings$chartFontSize <<- input$pivotcomp_chartFontSize
+    } else {
+      configJSON$pivotCompSettings$chartFontSize <<- NULL
+      rv$generalConfig$pivotCompSettings$chartFontSize <<- NULL
+    }
+  },
+  ignoreNULL = FALSE
+)
+observeEvent(
+  {
+    input$pivotcomp_showTableSummaryRow
+    input$pivotcomp_rowSummaryFunction
+    input$pivotcomp_showTableSummaryCol
+    input$pivotcomp_colSummaryFunction
+  },
+  {
+    tableSummarySettings <- list(
+      rowEnabled = identical(input$pivotcomp_showTableSummaryRow, TRUE),
+      rowSummaryFunction = if (length(input$pivotcomp_rowSummaryFunction)) {
+        input$pivotcomp_rowSummaryFunction
+      } else {
+        "sum"
+      },
+      colEnabled = identical(input$pivotcomp_showTableSummaryCol, TRUE),
+      colSummaryFunction = if (length(input$pivotcomp_colSummaryFunction)) {
+        input$pivotcomp_colSummaryFunction
+      } else {
+        "sum"
+      }
+    )
+    rv$generalConfig$pivotCompSettings$tableSummarySettings <<- tableSummarySettings
+  }
+)
 observeEvent(input$pivotcomp_fixedColumns, {
   rv$generalConfig$pivotCompSettings$fixedColumns <<- input$pivotcomp_fixedColumns
 })
@@ -493,6 +503,9 @@ observeEvent(input$general_mirologfile, {
   }
   rv$generalConfig$miroLogFile <<- NULL
 })
+observeEvent(input$general_mirologParsingStdout, {
+  rv$generalConfig$parseLogForMiroLogSyntax <<- isTRUE(input$general_mirologParsingStdout)
+})
 observeEvent(input$add_general, {
   if (length(input$add_general) < 3L) {
     return()
@@ -647,331 +660,6 @@ observeEvent(input$remove_symlink, {
     if (!length(rv$generalConfig$symbolLinks)) {
       rv$generalConfig$symbolLinks <<- NULL
     }
-  }
-})
-observeEvent(input$add_script, {
-  arrayID <- as.integer(input$add_script[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  isHcubeScript <- identical(input$add_script[3], "scripts_hcube")
-  if (!grepl("^[[:alnum:]]+$", input$add_script[2])) {
-    showElReplaceTxt(
-      session, paste0("#", input$add_script[3], arrayID, "_err"),
-      lang$adminMode$widgets$validate$val49
-    )
-    if (isHcubeScript) {
-      rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-        removeKey(arrayID, "id")$
-        getValidData()
-    } else {
-      rv$generalConfig$scripts$base <- baseScriptValidator$
-        removeKey(arrayID, "id")$
-        getValidData()
-    }
-    return()
-  }
-  if (isHcubeScript) {
-    validScriptIds <- hcubeScriptValidator$getValid("id")
-  } else {
-    validScriptIds <- baseScriptValidator$getValid("id")
-  }
-  if (input$add_script[2] %in% validScriptIds) {
-    showElReplaceTxt(
-      session, paste0("#", input$add_script[3], arrayID, "_err"),
-      lang$adminMode$widgets$validate$val50
-    )
-    if (isHcubeScript) {
-      rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-        removeKey(arrayID, "id")$
-        getValidData()
-    } else {
-      rv$generalConfig$scripts$base <- baseScriptValidator$
-        removeKey(arrayID, "id")$
-        getValidData()
-    }
-    return()
-  }
-  hideEl(session, paste0("#", input$add_script[3], arrayID, "_err"))
-  if (isHcubeScript) {
-    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-      setVal(arrayID, "id", input$add_script[2])$
-      getValidData()
-  } else {
-    rv$generalConfig$scripts$base <- baseScriptValidator$
-      setVal(arrayID, "id", input$add_script[2])$
-      getValidData()
-  }
-})
-observeEvent(input$scriptsB_title, {
-  if (length(input$scriptsB_title) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_title[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsB_title[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsB_title", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val51
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsB_title", arrayID, "_err"))
-
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "tabTitle", val)$
-    getValidData()
-})
-observeEvent(input$scriptsB_cmd, {
-  if (length(input$scriptsB_cmd) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_cmd[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsB_cmd[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsB_cmd", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val52
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsB_cmd", arrayID, "_err"))
-
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "command", val)$
-    getValidData()
-})
-observeEvent(input$scriptsB_args, {
-  if (length(input$scriptsB_args) < 1L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_args[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  if (length(input$scriptsB_args) < 2L) {
-    rv$generalConfig$scripts$base <- baseScriptValidator$
-      removeKey(arrayID, "args")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "args", input$scriptsB_args[-1])$
-    getValidData()
-})
-observeEvent(input$scriptsB_outFile, {
-  if (length(input$scriptsB_outFile) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_outFile[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsB_outFile[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsB_outFile", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val53
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsB_outFile", arrayID, "_err"))
-
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "outputFile", val)$
-    getValidData()
-})
-observeEvent(input$scriptsB_markdown, {
-  if (length(input$scriptsB_markdown) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_markdown[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- as.logical(input$scriptsB_markdown[2])
-  if (!length(val) || is.na(val) || val < -1L) {
-    rv$generalConfig$scripts$base <- baseScriptValidator$
-      removeKey(arrayID, "markdown")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "markdown", val)$
-    getValidData()
-})
-observeEvent(input$scriptsB_timeout, {
-  if (length(input$scriptsB_timeout) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsB_timeout[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- as.integer(input$scriptsB_timeout[2])
-  if (!length(val) || is.na(val) || val < -1L) {
-    rv$generalConfig$scripts$base <- baseScriptValidator$
-      removeKey(arrayID, "timeout")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    setVal(arrayID, "timeout", val)$
-    getValidData()
-})
-observeEvent(input$scriptsH_title, {
-  if (length(input$scriptsH_title) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_title[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsH_title[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsH_title", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val51
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsH_title", arrayID, "_err"))
-
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "title", val)$
-    getValidData()
-})
-observeEvent(input$scriptsH_cmd, {
-  if (length(input$scriptsH_cmd) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_cmd[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsH_cmd[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsH_cmd", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val52
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsH_cmd", arrayID, "_err"))
-
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "command", val)$
-    getValidData()
-})
-observeEvent(input$scriptsH_args, {
-  if (length(input$scriptsH_args) < 1L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_args[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  if (length(input$scriptsH_args) < 2L) {
-    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-      removeKey(arrayID, "args")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "args", input$scriptsH_args[-1])$
-    getValidData()
-})
-observeEvent(input$scriptsH_outFile, {
-  if (length(input$scriptsH_outFile) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_outFile[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- input$scriptsH_outFile[2]
-  if (!length(val) || !nchar(val)) {
-    showElReplaceTxt(
-      session, paste0("#scriptsH_outFile", arrayID, "_err"),
-      lang$adminMode$widgets$validate$val53
-    )
-    return()
-  }
-  hideEl(session, paste0("#scriptsH_outFile", arrayID, "_err"))
-
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "outputFile", val)$
-    getValidData()
-})
-observeEvent(input$scriptsH_markdown, {
-  if (length(input$scriptsH_markdown) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_markdown[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- as.logical(input$scriptsH_markdown[2])
-  if (!length(val) || is.na(val) || val < -1L) {
-    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-      removeKey(arrayID, "markdown")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "markdown", val)$
-    getValidData()
-})
-observeEvent(input$scriptsH_timeout, {
-  if (length(input$scriptsH_timeout) < 2L) {
-    return()
-  }
-  arrayID <- as.integer(input$scriptsH_timeout[1])
-  if (is.na(arrayID)) {
-    return()
-  }
-  val <- as.integer(input$scriptsH_timeout[2])
-  if (!length(val) || is.na(val) || val < -1L) {
-    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-      removeKey(arrayID, "timeout")$
-      getValidData()
-    return()
-  }
-  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-    setVal(arrayID, "timeout", val)$
-    getValidData()
-})
-observeEvent(input$remove_script, {
-  if (length(input$remove_script) < 3L) {
-    return()
-  }
-  arrayID <- as.integer(input$remove_script[3])
-  if (is.na(arrayID)) {
-    return()
-  }
-  if (identical(input$remove_script[1], "scripts_hcube")) {
-    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
-      removeEl(arrayID)$
-      getValidData()
-    if (!length(rv$generalConfig$scripts$hcube)) {
-      rv$generalConfig$scripts$hcube <- NULL
-    }
-  } else if (identical(input$remove_script[1], "scripts_base")) {
-    rv$generalConfig$scripts$base <- baseScriptValidator$
-      removeEl(arrayID)$
-      getValidData()
-    if (!length(rv$generalConfig$scripts$base)) {
-      rv$generalConfig$scripts$base <- NULL
-    }
-  }
-  if (!length(rv$generalConfig$scripts)) {
-    rv$generalConfig$scripts <- NULL
   }
 })
 observeEvent(input$add_attach, {
@@ -1348,7 +1036,7 @@ observeEvent(input$btMdSave, {
 #  =======================================
 #          SAVE JSON (automatically)
 #  =======================================
-observeEvent(rv$generalConfig, {
+observeEvent(list(rv$generalConfig, removeThemeColorsTrigger()), {
   req(length(rv$generalConfig))
   configJSON$inputGroups <<- NULL
   configJSON$outputGroups <<- NULL
@@ -1365,7 +1053,6 @@ observeEvent(rv$generalConfig, {
     configJSON <<- modifyList(configJSON, rv$generalConfig)
   }
   configJSON$symbolLinks <<- rv$generalConfig$symbolLinks
-  configJSON$scripts <<- rv$generalConfig$scripts
   configJSON$outputAttachments <<- rv$generalConfig$outputAttachments
   jsonConfig$write(configJSON)
 })

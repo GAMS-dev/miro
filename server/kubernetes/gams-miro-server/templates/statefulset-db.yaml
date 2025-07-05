@@ -1,0 +1,88 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.names.fullname" . }}-db-sts
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "common.names.fullname" . }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ include "common.names.fullname" . }}-db
+      {{- if .Values.db.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.db.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+    spec:
+      automountServiceAccountToken: false
+      {{- if .Values.global.securityContext.enabled }}
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      {{- end }}
+{{- include "common.images.renderPullSecrets" ( dict "images" (list .Values.db.image) "context" $) | nindent 6}}
+      {{- if .Values.global.nodeSelectorSts }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.global.nodeSelectorSts "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.global.tolerationsSts }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.global.tolerationsSts "context" $) | nindent 8 }}
+      {{- end }}
+      priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
+      containers:
+      - name: db
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        resources:
+{{ toYaml .Values.db.resources | indent 10 }}
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: {{ .Values.db.user }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secrets
+              key: db_password
+        - name: POSTGRES_DB
+          value: {{ .Values.db.name }}
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+        - name: db-runtime
+          mountPath: /var/run/postgresql
+        - name: db-tmp
+          mountPath: /tmp
+        {{- if .Values.global.securityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          privileged: false
+          readOnlyRootFilesystem: true
+        {{- end }}
+      volumes:
+      - name: db-runtime
+        emptyDir: {}
+      - name: db-tmp
+        emptyDir: {}
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: {{ include "common.names.fullname" . }}-db-pvc

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -636,7 +636,7 @@ $offExternalInput
                           input table types or declare the sets you need sorted
                           as additional external input (instead of using the
                           <a
-                            href="https://www.gams.com/31/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
+                            href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
                             >implicit set definition</a
                           >).
                         </p>
@@ -651,16 +651,26 @@ $offExternalInput
 {
   "inputWidgets": {
     "price": {
-      "widgetType": "table",
-      "tableType": "pivot",
       "options": {
-        "aggregationFunction": "sum",
-        "pivotRenderer": "table",
-        "enableHideEmptyCols": false,
-        "hideEmptyCols": false,
-        "rows": ["date", "symbol"]
+          "aggregationFunction": "sum",
+          "cols": {
+              "symbol": null
+          },
+          "fixedColumns": true,
+          "hideEmptyCols": true,
+          "hidePivotControls": false,
+          "pivotRenderer": "table",
+          "rows": "date",
+          "tableSummarySettings": {
+              "colEnabled": true,
+              "colSummaryFunction": "max",
+              "rowEnabled": false,
+              "rowSummaryFunction": "sum"
+          }
       },
-      "label": "This table shows the price trend of the 30 DOW Jones stocks"
+      "readonly": false,
+      "tableType": "pivot",
+      "widgetType": "table"
     }
   }
 }
@@ -1473,7 +1483,7 @@ solve transport%type% using %type% minimizing z;
                       stored in the compile-time variable
                       <i>type</i> by using the Dollar Control Option
                       <a
-                        href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                        href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                         target="__blank"
                         >eval.Set</a
                       >. This can then be used (in compile time) to run the
@@ -1899,7 +1909,7 @@ $offExternalInput
                         Migrating a singleton set into a compile time variable
                         can be done using the
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           >$eval.set</a
                         >
                         method. Since the variable should be filled by the
@@ -2692,7 +2702,7 @@ $offExternalInput
                         singleton set into a compile time variable in GAMS can
                         then be done using the
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           >$eval.set</a
                         >
                         method. Since the variable should be filled by the

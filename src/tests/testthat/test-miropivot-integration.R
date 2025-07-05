@@ -7,9 +7,11 @@ library(futile.logger)
 library(chartjs)
 library(jsonlite)
 
+source("../../components/scenario_extensions.R")
 source("../../components/views.R")
 source("../../modules/renderers/miro-pivot.R")
 
+lang <<- list()
 
 testData <- tibble(
   a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq_len(10)),
@@ -35,7 +37,8 @@ test_that("MIRO pivot renderer handles filtering", {
       # fully initialized
       expect_identical(filteredData(), list(
         data = testDataFactor,
-        filterElements = list()
+        filterElements = list(),
+        baselineCompConfig = NULL
       ))
       session$setInputs(
         rowIndexList = letters[2:6],
@@ -46,7 +49,9 @@ test_that("MIRO pivot renderer handles filtering", {
         list(
           data = testDataFactor[c(1, 6), ],
           filterElements = list(a = factor(c("a1", "a2", "a3", "a4", "a5"))),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL,
+          baselineCompConfig = NULL
         )
       )
       session$setInputs(rowIndexList = letters[3:6], filterIndexList = c("a", "b"))
@@ -63,7 +68,9 @@ test_that("MIRO pivot renderer handles filtering", {
               )
             )
           ),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL,
+          baselineCompConfig = NULL
         )
       )
       session$setInputs(
@@ -83,7 +90,9 @@ test_that("MIRO pivot renderer handles filtering", {
               )
             )
           ),
-          multiFilterIndices = NULL
+          multiFilterIndices = NULL,
+          singleFilterIndices = NULL,
+          baselineCompConfig = NULL
         )
       )
       expect_equal(
@@ -382,7 +391,12 @@ test_that("MIRO pivot renderer views work", {
         aggregationFunction = "count",
         pivotRenderer = "bar",
         domainFilter = list(default = NULL),
-        tableSummarySettings = list(enabled = FALSE, rowSummaryFunction = "sum", colSummaryFunction = "sum"),
+        hideEmptyCols = FALSE,
+        fixedColumns = TRUE,
+        tableSummarySettings = list(
+          rowEnabled = FALSE, rowSummaryFunction = "sum",
+          colEnabled = FALSE, colSummaryFunction = "sum"
+        ),
         aggregations = list(
           b = NULL, c = "c2", d = NULL,
           e = NULL, f = NULL
@@ -403,6 +417,132 @@ test_that("MIRO pivot renderer views work", {
       views = views,
       options = list(
         enablePersistentViews = TRUE,
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot compare metrics work", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = c("i", "j"), colIndexList = character(),
+        filterIndexList = "hdr", aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          i = c("San-Diego", "San-Diego", "Seattle", "Seattle", "Seattle"),
+          j = c("Chicago", "New-York", "Braunschweig", "Chicago", "New-York"),
+          value = c(275, 275, 10, 300, 50)
+        )
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "j",
+        baselineCompRecord = "Chicago",
+        baselineCompMetrics = c("value", "percentage difference"),
+        updateSettings = 1L
+      )
+      expect_equal(
+        attr(dataToRender(), "baselineComp")$secondaryData,
+        tibble(
+          .primary = c(275, 275, 10, 300, 50),
+          .secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100)
+        )
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "j",
+        baselineCompRecord = "Chicago",
+        baselineCompMetrics = c("absolute difference", "percentage difference"),
+        updateSettings = 1L
+      )
+      expect_equal(
+        attr(dataToRender(), "baselineComp")$secondaryData,
+        tibble(.primary = c(0, 0, -290, 0, -250), .secondary = c(0, 0, -290 / 300 * 100, 0, -250 / 300 * 100))
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "i",
+        baselineCompRecord = "Seattle",
+        baselineCompMetrics = c("normalization"),
+        updateSettings = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          i = c("San-Diego", "San-Diego", "Seattle", "Seattle", "Seattle"),
+          j = c("Chicago", "New-York", "Braunschweig", "Chicago", "New-York"),
+          value = c(275 / 300, 275 / 50, 1, 1, 1)
+        )
+      )
+      expect_identical(
+        attr(dataToRender(), "baselineComp")$secondaryData,
+        NULL
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "j",
+        baselineCompRecord = "Braunschweig",
+        baselineCompMetrics = c("normalization"),
+        updateSettings = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          i = c("San-Diego", "San-Diego", "Seattle", "Seattle", "Seattle"),
+          j = c("Chicago", "New-York", "Braunschweig", "Chicago", "New-York"),
+          value = c(NA, NA, 1, 30, 5)
+        )
+      )
+      session$setInputs(
+        rowIndexList = c("i"), colIndexList = character(),
+        filterIndexList = "hdr", aggregationIndexList = "j",
+        aggregationFunction = "sum"
+      )
+      # putting compare dimension to aggregate should reset compare metric and display raw values
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          i = c("San-Diego", "Seattle"),
+          value = c(550, 360)
+        )
+      )
+      session$setInputs(
+        rowIndexList = c("j"), colIndexList = character(),
+        filterIndexList = "hdr", aggregationIndexList = "i",
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "j",
+        baselineCompRecord = "Braunschweig",
+        baselineCompMetrics = c("value", "normalization"),
+        updateSettings = 1L
+      )
+      expect_identical(
+        convert_to_df(dataToRender()),
+        data.frame(
+          j = c("Braunschweig", "Chicago", "New-York"),
+          value = c(10, 575, 325)
+        )
+      )
+      expect_equal(
+        attr(dataToRender(), "baselineComp")$secondaryData,
+        tibble(.primary = c(10, 575, 325), .secondary = c(1, 57.5, 32.5))
+      )
+    },
+    args = list(
+      data = tibble(
+        i = c("Seattle", "Seattle", "Seattle", "San-Diego", "San-Diego"),
+        j = c("New-York", "Chicago", "Braunschweig", "New-York", "Chicago"),
+        hdr = c("shipment"),
+        value = c(50, 300, 10, 275, 275)
+      ),
+      options = list(
+        enablePersistentViews = FALSE,
         "_metadata_" = list(symtype = "parameter")
       )
     )

@@ -121,17 +121,17 @@
     background-color: @yellow-dark;
   });
   .responsiveDark({
-    border-color: darken(@yellow, 5%);
+    border-color: @darken-75d40b33;
   },
   {
-    border-color: darken(@yellow-dark, 5%);
+    border-color: @darken-19dd7eda;
   });
   &:hover, &:active, &.hover {
     .responsiveDark({
-       background-color: darken(@yellow, 5%);
+       background-color: @darken-75d40b33;
     },
     {
-       background-color: darken(@yellow-dark, 5%);
+       background-color: @darken-19dd7eda;
     });
   }
 }

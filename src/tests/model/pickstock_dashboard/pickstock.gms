@@ -58,8 +58,9 @@ Variable
     w(symbol)   'what part of the portfolio'
     slpos(date) 'positive slack'
     slneg(date) 'negative slack'
+$onExternalOutput
     obj         'objective';
-
+$offExternalOutput
 Positive variables w, slpos, slneg;
 Binary variable p;
 
@@ -96,6 +97,8 @@ $onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train'
+       testnegative                    'testnegative'
+       testpositive                    'testpositive'
 Parameter
        stock_weight(symbol)            'weight'
        dowVSindex(date,fHdr)           'dow jones vs. index fund'
@@ -127,3 +130,5 @@ Parameter priceMerge(date,*) 'Price (stocks & dow jones)';
 $offExternalOutput
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
+testnegative = -1001;
+testpositive = 1001;

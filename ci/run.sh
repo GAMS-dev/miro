@@ -10,7 +10,7 @@ function mchecklic () {
 
 function mtestall () {
     pushd src > /dev/null
-      Rscript tests/testthat.R --stop || {
+      /usr/bin/time -v -o ../profile.txt Rscript tests/testthat.R --stop || {
         echo "Error running tests"
         popd > /dev/null
         return 1

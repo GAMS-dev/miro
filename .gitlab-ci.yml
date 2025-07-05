@@ -1,3 +1,58 @@
+spec:
+  inputs:
+    build-linux:
+      default: true
+      description: 'Build Linux (ignored on master)?'
+      type: boolean
+    build-windows:
+      default: true
+      description: 'Build Windows (ignored on master)?'
+      type: boolean
+    build-macos-amd64:
+      default: true
+      description: 'Build macOS AMD64 (ignored on master)?'
+      type: boolean
+    build-macos-arm:
+      default: true
+      description: 'Build macOS ARM (ignored on master)?'
+      type: boolean
+    build-ci:
+      default: false
+      description: 'Build CI image?'
+      type: boolean
+    build-server-images:
+      default: false
+      description: 'Build MIRO Server images and push to registry.gams.com (tagged as unstable on develop and feature on feature branches) (always built on master)?'
+      type: boolean
+    force-build-linux-builder:
+      default: false
+      description: 'Build Linux build image even when Dockerfile did not change?'
+      type: boolean
+    force-build-windows-builder:
+      default: false
+      description: 'Build Windows build image even when Dockerfile did not change?'
+      type: boolean
+    force-release:
+      default: false
+      description: 'Force release even if tests fail?'
+      type: boolean
+    skip-tests:
+      default: false
+      description: 'Skip tests on branch pipelines?'
+      type: boolean
+    run-tests-master:
+      default: false
+      description: 'Run tests on master branch (default is no as tests already ran on rc branch)?'
+      type: boolean
+    skip-notarization:
+      default: false
+      description: 'Skip notarization of macOS installer?'
+      type: boolean
+    max-test-failures:
+      default: 1
+      description: 'Maximum number of tests allowed to fail before the job fails'
+      type: number
+---
 stages:
   - prepare
   - build
@@ -10,58 +65,31 @@ include:
 image:
   name: $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
 
+.assume_role_s3: &assume_role_s3
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${AWS_S3_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
 
-variables:
-  BUILD_LINUX:
-    value: 'yes'
-    description: 'Build Linux (ignored on master) (yes/no)?'
-  BUILD_WINDOWS:
-    value: 'yes'
-    description: 'Build Windows (ignored on master) (yes/no)?'
-  BUILD_MACOS:
-    value: 'yes'
-    description: 'Build macOS (ignored on master) (yes/no)?'
-  BUILD_MACOS_ARM:
-    value: 'yes'
-    description: 'Build macOS ARM (ignored on master) (yes/no)?'
-  FORCE_BUILD_LINUX_BUILDER:
-    value: 'no'
-    description: 'Build Linux build image even when Dockerfile did not change (yes/no)?'
-  FORCE_BUILD_WINDOWS_BUILDER:
-    value: 'no'
-    description: 'Build Windows build image even when Dockerfile did not change (yes/no)?'
-  FORCE_RELEASE:
-    value: 'no'
-    description: 'Force release even if tests fail (yes/no)?'
-  SKIP_TESTS:
-    value: 'no'
-    description: 'Skip tests on Windows/macOS (yes/no)?'
-  MIRO_MAX_TEST_FAILURES:
-    value: '1'
-    description: 'Maximum number of tests allowed to fail before the job fails'
-  SKIP_NOTARIZATION:
-    value: 'no'
-    description: 'Skip notarization of macOS installer (yes/no)?'
-  BUILD_CI:
-    value: 'no'
-    description: 'Build CI image (yes/no)?'
-  PUSH_UNSTABLE_SERVER_IMAGES:
-    value: 'no'
-    description: 'Push MIRO Server images to registry.gams.com (tagged as unstable on develop and feature on feature branches) (yes/no)?'
-
-
-.assume_role: &assume_role
-    - >
-      STS=($(aws sts assume-role-with-web-identity
-      --role-arn ${AWS_S3_ROLE_ARN}
-      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
-      --web-identity-token $ID_TOKEN
-      --duration-seconds 3600
-      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
-      --output text))
-    - export AWS_ACCESS_KEY_ID="${STS[0]}"
-    - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
-    - export AWS_SESSION_TOKEN="${STS[2]}"
+.assume_role_ecr: &assume_role_ecr
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${ECR_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
 
 prepare_all:
   tags:
@@ -101,16 +129,14 @@ build_build_image_linux:
     - docker:20.10-dind
   stage: prepare
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - apk update && apk add jq
   script:
     - cd ci/linux
     - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` .
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
-    - if: $FORCE_BUILD_LINUX_BUILDER == "yes"
+    - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
@@ -118,15 +144,12 @@ build_build_image_linux:
           - ci/linux/Dockerfile
         compare_to: develop
 
-
 build_build_image_windows:
   tags:
     - windows-shell
   stage: prepare
   before_script:
-    # this is to be able to pull and push images
-    - New-Item -ItemType Directory -Force -Path %USERPROFILE%/.docker
-    - $env:DOCKER_AUTH_CONFIG > %USERPROFILE%/.docker/config.json
+    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
   script:
     - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
     - $rVersion=$buildConfig.rVersion
@@ -135,7 +158,7 @@ build_build_image_windows:
     - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   rules:
-    - if: $FORCE_BUILD_WINDOWS_BUILDER == "yes"
+    - if: '"$[[ inputs.force-build-windows-builder ]]" == "true"'
     - if: '$CI_PIPELINE_SOURCE != "push"'
       when: never
     - changes:
@@ -145,15 +168,15 @@ build_build_image_windows:
 
 lint_job:
   tags:
-   - linux
+    - linux
   stage: test
   before_script:
     - mkdir -p $R_CACHE_ROOTPATH
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
     - yarn install
   script:
-   - pre-commit run --all-files
-   - ./scripts/fix_copyright.sh
+    - pre-commit run --all-files
+    - ./scripts/fix_copyright.sh
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     R_CACHE_ROOTPATH: ${PRE_COMMIT_HOME}/R.cache
@@ -171,7 +194,6 @@ lint_job:
 build_linux_job:
   tags:
     - linux
-    - puma
   stage: build
   services:
     - docker:20.10-dind
@@ -179,45 +201,45 @@ build_linux_job:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
     GIT_SUBMODULE_STRATEGY: normal
     NODE_OPTIONS: --openssl-legacy-provider
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_LINUX" == "no" ]] && [[ "$BUILD_CI" == "no" ]] && [[ "$PUSH_UNSTABLE_SERVER_IMAGES" == "no" ]] && echo "Skipping Linux build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
     - yarn dist
     - >
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag latest
+            python3 miro_server.py push --unstable --custom-tag latest --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag unstable
+            python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
-      elif [[ "$PUSH_UNSTABLE_SERVER_IMAGES" != "no" ]]; then
+      elif $[[ inputs.build-server-images ]]; then
         pushd server
             python3 miro_server.py build
-            python3 miro_server.py push --unstable --custom-tag feature
+            python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
-      elif [[ "$BUILD_CI" != "no" ]]; then
+      elif $[[ inputs.build-ci ]]; then
         pushd server
           python3 miro_server.py build --module ui
         popd
       fi
     - >
-      if [[ "$BUILD_CI" != "no" ]]; then
+      if $[[ inputs.build-ci ]]; then
         yarn docker-build-ci
         docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
+        docker tag gamsmiro-server-ci $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+        docker push $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
       fi
   artifacts:
     paths:
@@ -245,10 +267,9 @@ build_linux_job:
     - when: on_success
   needs: [prepare_all]
 
-
 dependency_scanning_js:
   tags:
-   - linux
+    - linux
   stage: test
   script:
     - echo -n '{"launcher":' > npm-audit-report.json
@@ -256,15 +277,15 @@ dependency_scanning_js:
     - npm audit --omit=dev --json | tr -d '\n' >> npm-audit-report.json || true
     - echo -n ',"ui":' >> npm-audit-report.json
     - |
-        pushd src
-          npm audit --omit=dev --json | tr -d '\n' >> ../npm-audit-report.json || true
-        popd
+      pushd src
+        npm audit --omit=dev --json | tr -d '\n' >> ../npm-audit-report.json || true
+      popd
     - echo -n ',"server_admin":' >> npm-audit-report.json
     - |
-        pushd server/admin
-          npm i --package-lock-only --ignore-scripts
-          npm audit --omit=dev --json | tr -d '\n' >> ../../npm-audit-report.json || true
-        popd
+      pushd server/admin
+        npm i --package-lock-only --ignore-scripts
+        npm audit --omit=dev --json | tr -d '\n' >> ../../npm-audit-report.json || true
+      popd
     - echo -n '}' >> npm-audit-report.json
   artifacts:
     paths:
@@ -276,10 +297,9 @@ dependency_scanning_js:
       when: never
     - when: on_success
 
-
 dependency_scanning_r:
   tags:
-   - linux
+    - linux
   stage: test
   script:
     - Rscript scripts/checkVuln.R
@@ -292,7 +312,6 @@ dependency_scanning_r:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-
 
 dependency_scanning_python:
   tags:
@@ -311,14 +330,13 @@ dependency_scanning_python:
       when: never
     - when: on_success
 
-
 container_scanning:
   tags:
     - linux
   variables:
-    CS_DOCKERFILE_PATH: "server/ui/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/ui/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-ui:$IMAGE_TAG
@@ -334,13 +352,12 @@ container_scanning:
       when: never
     - when: on_success
 
-
 container_scanning_admin:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/admin/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/admin/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-admin:$IMAGE_TAG
@@ -356,13 +373,12 @@ container_scanning_admin:
       when: never
     - when: on_success
 
-
 container_scanning_auth:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/auth/Dockerfile"
-    GIT_STRATEGY: "fetch"
-    CS_IGNORE_UNFIXED: "true"
+    CS_DOCKERFILE_PATH: 'server/auth/Dockerfile'
+    GIT_STRATEGY: 'fetch'
+    CS_IGNORE_UNFIXED: 'true'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-auth:$IMAGE_TAG
@@ -378,12 +394,11 @@ container_scanning_auth:
       when: never
     - when: on_success
 
-
 container_scanning_proxy:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/proxy/Dockerfile"
-    GIT_STRATEGY: "fetch"
+    CS_DOCKERFILE_PATH: 'server/proxy/Dockerfile'
+    GIT_STRATEGY: 'fetch'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-proxy:$IMAGE_TAG
@@ -399,12 +414,11 @@ container_scanning_proxy:
       when: never
     - when: on_success
 
-
 container_scanning_sproxy:
   extends: container_scanning
   variables:
-    CS_DOCKERFILE_PATH: "server/docker-socket-proxy/Dockerfile"
-    GIT_STRATEGY: "fetch"
+    CS_DOCKERFILE_PATH: 'server/docker-socket-proxy/Dockerfile'
+    GIT_STRATEGY: 'fetch'
   before_script:
     - IMAGE_TAG="latest" && [[ "$CI_COMMIT_BRANCH" != "master" ]] && IMAGE_TAG="feature" && ([[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]) && IMAGE_TAG=unstable
     - export CS_IMAGE=$CI_REGISTRY_IMAGE/miro-sproxy:$IMAGE_TAG
@@ -420,11 +434,10 @@ container_scanning_sproxy:
       when: never
     - when: on_success
 
-
 container_scanning_db:
   extends: container_scanning
   variables:
-    CS_IMAGE: "postgres:16.1-alpine"
+    CS_IMAGE: 'postgres:16.1-alpine'
   after_script:
     - cp gl-container-scanning-report.json gl-container-scanning-report-db.json
   artifacts:
@@ -436,7 +449,6 @@ container_scanning_db:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-
 
 create_vulnerability_report:
   tags:
@@ -463,10 +475,10 @@ create_vulnerability_report:
       when: never
     - when: on_success
 
-
 build_windows_job:
   tags:
     - windows
+    - sewer
   stage: build
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
@@ -476,7 +488,7 @@ build_windows_job:
     - yarn install
     - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
   script:
-    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
     - yarn dist
   artifacts:
     paths:
@@ -509,18 +521,17 @@ build_windows_job:
     - when: on_success
   needs: [prepare_all]
 
-
 build_macos_job:
   tags:
     - macos
   stage: build
   variables:
-    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
     GIT_SUBMODULE_STRATEGY: normal
+    SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
     - yarn dist
   artifacts:
@@ -555,18 +566,17 @@ build_macos_job:
     - when: on_success
   needs: [prepare_all]
 
-
 build_macos_arm_job:
   tags:
     - macos-arm64
   stage: build
   variables:
-    OPENSSL_PKG_CONFIG_PATH: ${OPENSSL_PKG_CONFIG_PATH_MACOS}
     GIT_SUBMODULE_STRATEGY: normal
+    SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
     - yarn install
   script:
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
     - yarn dist
     - mkdir dist/arm && mv dist/*.dmg dist/arm
@@ -602,19 +612,30 @@ build_macos_arm_job:
     - when: on_success
   needs: [prepare_all]
 
-
 test_windows_job:
   tags:
     - windows
+    - sewer
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  variables:
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - $env:FORCE_RELEASE = if ("$[[ inputs.force-release ]]" -ceq "true") { "yes" } else { "no" }
   script:
-    - 'if ("$env:SKIP_TESTS" -eq "yes") { "Skipping tests"; Exit }'
-    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$env:BUILD_WINDOWS" -eq "no") { "Skipping Windows build"; Exit }'
+    - 'if ("$[[ inputs.skip-tests ]]" -ceq "true") { "Skipping tests"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$[[ inputs.run-tests-master ]]" -ceq "false") { "Skipping tests on master"; Exit }'
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
+    - cd dist
+    - $installer = Get-ChildItem *.exe | Select-Object -First 1
+    - 'echo "Using installer: $installer"'
+    - Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+    - cd ..
+    - $env:MIRO_EXEC_PATH="C:\Users\ContainerAdministrator\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe"
+    - yarn playwright test
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
-  dependencies: []
+  dependencies: [build_windows_job]
   cache:
     - key:
         files:
@@ -648,20 +669,29 @@ test_windows_job:
     - when: on_success
   needs: [build_windows_job]
 
-
 test_macos_job:
   tags:
     - macos
   stage: test
   variables:
     LANG: en_US.UTF-8
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS" == "no" ]] && echo "Skipping macOS build" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
+    - mkdir -p tmp/mnt
+    - hdiutil attach dist/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
+    - yarn playwright test
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
-  dependencies: []
+  after_script:
+    - hdiutil detach -force tmp/mnt
+    - rm -rf $HOME/.miro
+  dependencies: [build_macos_job]
   cache:
     - key:
         files:
@@ -695,20 +725,30 @@ test_macos_job:
     - when: on_success
   needs: [build_macos_job]
 
-
 test_macos_arm_job:
   tags:
     - macos-arm64
   stage: test
   variables:
     LANG: en_US.UTF-8
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
-    - '[[ "$SKIP_TESTS" == "yes" ]] && echo "Skipping tests" && exit 0'
-    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$BUILD_MACOS_ARM" == "no" ]] && echo "Skipping macOS ARM build" && exit 0'
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
+    - mkdir -p tmp/mnt
+    - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
+    - yarn playwright test
+    - rm -f "/Users/gitlab/Library/Application Support/Chromium/SingletonLock"
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
-  dependencies: []
+  after_script:
+    - hdiutil detach -force tmp/mnt
+    - rm -rf $HOME/.miro
+  dependencies: [build_macos_arm_job]
   cache:
     - key:
         files:
@@ -742,7 +782,6 @@ test_macos_arm_job:
     - when: on_success
   needs: [build_macos_arm_job]
 
-
 test_job_api:
   tags:
     - linux
@@ -754,8 +793,8 @@ test_job_api:
       alias: postgres
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: "/certs"
-    FF_NETWORK_PER_BUILD: "true"
+    DOCKER_TLS_CERTDIR: '/certs'
+    FF_NETWORK_PER_BUILD: 'true'
     GMS_MIRO_DATABASE_HOST: postgres
     GMS_MIRO_DATABASE: miroapitests
     GMS_MIRO_DATABASE_USER: mirotests
@@ -764,10 +803,10 @@ test_job_api:
     POSTGRES_USER: $GMS_MIRO_DATABASE_USER
     POSTGRES_PASSWORD: $GMS_MIRO_DATABASE_PWD
     POSTGRES_HOST_AUTH_METHOD: trust
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
     - docker pull ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable && docker tag ${CI_REGISTRY_IMAGE}/miro-auth-test:unstable miro-auth-test || exit 1
     - ./test/run-api-tests.sh
@@ -777,6 +816,14 @@ test_job_api:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
 
 test_job:
   tags:
@@ -794,11 +841,19 @@ test_job:
     POSTGRES_USER: $MIRO_DB_USERNAME
     POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
     POSTGRES_HOST_AUTH_METHOD: trust
+    GAMSPY_INTERPRETER_PATH: /usr/bin/python3
+    MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    PYTHON_EXEC_PATH: /usr/bin/python3
   before_script:
+    - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
     - source /etc/profile.d/ci.sh
   script:
     - mchecklic
     - mtestall
+    - |
+      max_mem_kb=$(cat "profile.txt" | grep "Maximum resident set size" | awk '{print $6}')
+      max_mem_mb=$((max_mem_kb / 1024))
+      echo "Maximum memory usage: $max_mem_mb MB"
   interruptible: true
   artifacts:
     when: always
@@ -815,12 +870,11 @@ test_job:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
-
 test_job_gamspy:
   tags:
     - linux
   stage: test
-  image: python
+  image: python:3.13
   before_script:
     - pip install --force-reinstall git+https://github.com/GAMS-dev/gamspy.git@develop
   script:
@@ -832,7 +886,86 @@ test_job_gamspy:
       when: manual
     - if: $CI_MERGE_REQUEST_ID
 
+test_job_miro_server:
+  tags:
+    - linux
+  stage: test
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  services:
+    - docker:27-dind
+    - selenium/standalone-chrome
+  variables:
+    MIRO_PROXY_URL: http://docker:8080
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
+    DOCKER_HOST: tcp://docker:2376
+    FF_NETWORK_PER_BUILD: 'true'
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - ./scripts/test_miro_server.sh
+  dependencies: []
+  artifacts:
+    when: always
+    paths:
+      - miro_server_all_logs.txt
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_linux_job]
 
+test_job_miro_server_k8s:
+  tags:
+    - linux
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  stage: test
+  services:
+    - docker:27-dind
+    - selenium/standalone-chrome
+  variables:
+    MIRO_PROXY_URL: http://docker:30080
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
+    DOCKER_HOST: tcp://docker:2376
+    FF_NETWORK_PER_BUILD: 'true'
+    PYTEST_JUNIT: 'report.xml'
+    PYTEST_COV: 'coverage.xml'
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - mkdir kind-logs
+  script:
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - export ENGINE_NS="${ENGINE_NS_2}"
+    - ./scripts/test_miro_server_k8s.sh
+  dependencies: []
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - ./kind-logs
+    reports:
+      junit: $PYTEST_JUNIT
+      coverage_report:
+        coverage_format: cobertura
+        path: $PYTEST_COV
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_linux_job]
 
 upload_cloudfront:
   tags:
@@ -840,10 +973,10 @@ upload_cloudfront:
   stage: deploy
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   id_tokens:
-      ID_TOKEN:
-        aud: ${S3_OIDC_AUD}
+    ID_TOKEN:
+      aud: https://git.gams.com
   script:
-    - *assume_role
+    - *assume_role_s3
     - echo "MIRO_SHA_HASH_WIN=`sha256sum dist/*.exe |cut -d ' ' -f1`" > .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_ARM=`sha256sum dist/arm/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_X86=`sha256sum dist/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
@@ -864,21 +997,39 @@ upload_dockerhub:
   services:
     - docker:20.10-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  id_tokens:
+    ID_TOKEN:
+      aud: https://git.gams.com
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
   before_script:
-    # this is to be able to pull and push images
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$DOCKERHUB_PASS" | docker login -u $DOCKERHUB_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - aws configure set default.region us-east-1
+    - *assume_role_ecr
+    - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY_URL_US_EAST
   script:
     - echo -e "\e[0Ksection_start:`date +%s`:download_image_section[collapsed=true]\r\e[0KDownloading images section"
     - cd server && python3 miro_server.py download ${CI_REGISTRY_IMAGE} && cd ..
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
-    - cd server && python3 miro_server.py push && cd ..
+    - >
+      pushd server
+        python3 miro_server.py push
+        python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
+      popd
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+update_custom_saas_images:
+  stage: deploy
+  trigger:
+    project: miro/miro-saas
+  needs: [upload_dockerhub]
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -893,12 +1044,11 @@ update_doc_job_release:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_VERIFY: 1
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
   before_script:
-    - mkdir -p $HOME/.docker
-    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - git config --global user.email "puma@noreply.gams.com"
     - git config --global user.name "Gitlab Runner (puma)"
     - mkdir -p ~/.ssh

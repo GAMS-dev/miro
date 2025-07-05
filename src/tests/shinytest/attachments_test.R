@@ -52,9 +52,13 @@ app$expect_download("downloadAttachmentData", name = "attachment.md")
 # un-check model read permissions for attachment several times, save and remove scenario from sandbox
 attachmentList <- app$get_js("$('.attachment-line').length")
 expect_identical(attachmentList, 1L)
-expect_true(app$get_js("$('.attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]')[0].checked"))
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-expect_false(app$get_js("$('.attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]')[0].checked"))
+expect_true(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "1"
+)
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "2"
+)
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$set_inputs(btSave = "click")
@@ -66,14 +70,18 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeo
 app$click(selector = "a[data-value='attachments']")
 Sys.sleep(0.1)
 # attachmentList <- app$findElements(".attachment-line")
-expect_false(app$get_js("$('.attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]')[0].checked"))
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-app$click(selector = ".attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]")
-expect_false(app$get_js("$('.attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]')[0].checked"))
+expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "3"
+)
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+app$click(selector = ".attachment-line > div:nth-child(2) input[type=checkbox]")
+expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "4"
+)
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$set_inputs(btSave = "click")
@@ -82,7 +90,9 @@ app$set_inputs(btEditMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 app$click(selector = "a[data-value='attachments']")
 Sys.sleep(0.1)
-expect_false(app$get_js("$('.attachment-line > div:nth-child(2) > div > div > label > input[type=checkbox]')[0].checked"))
+expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "5"
+)
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
 app$set_inputs(btSave = "click")
@@ -101,7 +111,9 @@ app$set_inputs(btEditMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 app$click(selector = "a[data-value='attachments']")
 Sys.sleep(0.1)
-expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(0).checked"))
+expect_false(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]')[0].checked"),
+  label = "6"
+)
 app$click(selector = "#btRemoveAttachment_1")
 Sys.sleep(0.2)
 attachmentList <- app$get_js("$('.attachment-line').length")

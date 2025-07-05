@@ -194,7 +194,7 @@ loadScenData <- function(metaData, workDir,
       if (length(dfClArgs) == 3L) {
         ret$tabular[[i]] <<- bind_rows(ret$tabular[[i]], setNames(dfClArgs, names(metaData[[i]]$headers)))
       }
-    } else {
+    } else if (!names(metaData)[[i]] %in% c(scalarsOutName, scalarEquationsOutName)) {
       ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate(across(
         where(is.character),
         ~ replace_na(.x, replace = "")

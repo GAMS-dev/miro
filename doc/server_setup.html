@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -559,6 +559,7 @@ server:
                           <li>Tawny ("tawny")</li>
                           <li>Dark blue ("darkblue")</li>
                           <li>Red wine ("redwine")</li>
+                          <li>Custom theme ("custom")*</li>
                         </ul>
                         <p>
                           This global color theme setting initially applies to
@@ -572,8 +573,36 @@ server:
                           >.
                         </p>
                         <p>
-                          Note that in addition to the predefined themes, you
-                          can also include a
+                          If you have created a
+                          <a
+                            href="./configuration_colors.html#miro-server-colors"
+                            >custom theme for MIRO Server</a
+                          >, place the downloaded
+                          <em>colors_custom.css</em> file in a newly created
+                          folder in <em>miro_server/data</em>, e.g.
+                          <em>miro_server/data/css/colors_custom.css</em>. Now
+                          specify this style sheet in the
+                          <i>docker-compose.yml</i> file under 'proxy.volumes':
+                        </p>
+
+                        <pre><code class="diff-highlight language-diff">  proxy:
+    image: gams/miro-proxy:latest
+    ports:
+      - 8080:8080
+    volumes:
++     - ./data/css/colors_custom.css:/home/miroproxy/templates/2col/assets/css/themes/colors_custom.css
+      - ./data:/home/miroproxy/data
+</code></pre>
+                        <p>
+                          The path before the colon
+                          (<kbd>./data/css/colors_custom.css</kbd>) points to
+                          your custom theme CSS file. The second path points to
+                          the file inside the container that will be
+                          overwritten.
+                        </p>
+                        <p>
+                          Note that in addition to the predefined and custom
+                          themes, you can also include a
                           <a href="#custom-css" , calss="Scroll"
                             >customized css</a
                           >
@@ -815,16 +844,17 @@ server:
                         In addition to the settings in the
                         <i>application.yml</i>, the logo that is displayed in
                         the login screen can also be customized. To change the
-                        logo, replace the <i>logo.png</i> and
-                        <i>logo.svg</i> under <kbd>data/img/</kbd> in the
+                        logo, replace the <i>logo.png</i> under
+                        <kbd>data/img/</kbd> in the
                         <i>miro_server</i> directory.
                       </li>
                       <li>
                         <b id="custom-css">Custom styles:</b><br />
                         <p>
                           The CSS styles of MIRO Server can be customized. For
-                          example, you can use predefined company colors in the
-                          login and overview screen:
+                          example, you can re-design the login page or apply
+                          other custom styles to the login and app overview
+                          screen:
                         </p>
                         <div class="section-block">
                           <img
@@ -837,7 +867,7 @@ server:
                               cursor: pointer;
                             "
                             src="assets/images/server/custom-login-screen.png"
-                            alt="Custom login screen colors"
+                            alt="Custom login screen"
                             onclick="window.open(this.src, '_blank');"
                           />
                         </div>
@@ -848,22 +878,25 @@ server:
                           you put the custom CSS (e.g.
                           <kbd>miro_server/data/css/styles.css</kbd>). Now
                           specify this style sheet in the
-                          <i>docker-compose.yml</i> file under 'volumes':
+                          <i>docker-compose.yml</i> file under 'proxy.volumes':
                         </p>
 
-                        <pre><code class="diff-highlight language-diff">     ports:
-       - 8080:8080
-     volumes:
-+      - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/styles.css
-       - ./data:/home/miroproxy/data
+                        <pre><code class="diff-highlight language-diff">  proxy:
+    image: gams/miro-proxy:latest
+    ports:
+      - 8080:8080
+    volumes:
++     - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/styles.css
+      - ./data:/home/miroproxy/data
 </code></pre>
                         <p>
                           The path before the colon
-                          (<kbd>./data/css/styles.css</kbd>) points to the
-                          custom CSS file. The second path must not be changed.
+                          (<kbd>./data/css/styles.css</kbd>) points to your
+                          custom CSS file. The second path points to the file
+                          inside the container that will be overwritten.
                         </p>
                         <p>
-                          The default stylesheet used by MIRO Server can be
+                          The original stylesheet used by MIRO Server can be
                           found
                           <a
                             href="https://github.com/GAMS-dev/miro/blob/master/server/proxy/templates/2col/assets/css/styles.css"
@@ -878,11 +911,21 @@ server:
                           <!--//icon-holder-->
                           <div class="content">
                             <b class="callout-title">Note:</b>
-                            <p>
-                              Note that the styles only affect MIRO server
-                              components and not the MIRO applications
-                              themselves!
-                            </p>
+                            <ul>
+                              <li>
+                                Future MIRO Server releases may change the
+                                underlying HTML (for example, we might add,
+                                remove, or rename CSS classes). If you maintain
+                                custom stylesheets, always test them on a
+                                staging or test server before upgrading to be
+                                sure they still render as expected.
+                              </li>
+                              <li>
+                                Note that the styles only affect MIRO server
+                                components and not the MIRO applications
+                                themselves!
+                              </li>
+                            </ul>
                           </div>
                           <!--//content-->
                         </div>
@@ -1249,7 +1292,7 @@ server {
                       instance is running on the same machine as MIRO Server,
                       there are a few things to consider. The following example
                       shows the installation procedure to run MIRO and Engine
-                      on a freshly installed Ubuntu 20.04 server.
+                      on a freshly installed Ubuntu 24.04 server.
                     </p>
                     <h3 class="block-title">Planned configuration</h3>
                     <ul>
@@ -1278,12 +1321,6 @@ server {
                         <a
                           href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user"
                           >manage docker as a non-root user</a
-                        >.
-                      </li>
-                      <li>
-                        Install
-                        <a href="https://docs.docker.com/compose/install/"
-                          >Docker Compose</a
                         >.
                       </li>
                       <li>
@@ -1320,11 +1357,8 @@ server {
                         <kbd>gams_engine</kbd> directory.
                       </li>
                       <li>
-                        Run the script <kbd>./up.sh</kbd> with admin
-                        privileges, e.g.
-                        <kbd
-                          >sudo ./up.sh -a test1234 -m engine -p 8095 -w 4</kbd
-                        >.
+                        Run the script <kbd>./up.sh</kbd> e.g.
+                        <kbd>./up.sh -a test1234 -m engine -p 8095 -w 4</kbd>.
                       </li>
                       <ul>
                         <li>
@@ -1375,7 +1409,7 @@ server {
                         Get the IP of the docker0 network interface via:
                         <kbd
                           >sudo ip addr show docker0 |grep -Po 'inet
-                          \K[\d.]+’</kbd
+                          \K[\d.]+'</kbd
                         >.
                       </li>
                       <li>Run <kbd>./miro-server install</kbd>.</li>

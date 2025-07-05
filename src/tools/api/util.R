@@ -1,11 +1,11 @@
-scenMetaTibbleToJSON <- function(metadata) {
+scenMetaTibbleToJSON <- function(metadata, totalCount) {
   metaTmp <- metadata[, c("_sname", "_stag", "_uid", "_stime", "_accessr", "_accessw", "_accessx")]
   for (colId in c("_stag", "_accessr", "_accessw", "_accessx")) {
     metaTmp[[colId]] <- stringi::stri_split_fixed(metaTmp[[colId]], ",", omit_empty = TRUE)
   }
   metaTmp[["_stime"]] <- paste0(metaTmp[["_stime"]], "Z")
   names(metaTmp) <- c("name", "tags", "owner", "last_modified", "read_perm", "write_perm", "exec_perm")
-  return(toJSON(metaTmp, dataframe = "rows"))
+  return(toJSON(list(total_count = totalCount, items = metaTmp), dataframe = "rows"))
 }
 
 deleteMIROScenario <- function(db, uid) {

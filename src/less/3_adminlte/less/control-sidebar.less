@@ -175,15 +175,15 @@
   }
   // Sidebar tabs
   .nav-tabs.control-sidebar-tabs {
-    border-bottom: darken(@sidebar-dark-bg, 3%);
+    border-bottom: @darken-8e899f91;
     > li {
       > a {
         .responsiveDark({
-           background: darken(@sidebar-dark-bg, 5%);
+           background: @darken-28c2c354;
            color: @sidebar-dark-color;
         },
         {
-           background: darken(@sidebar-dark-bg-dark, 5%);
+           background: @darken-78904a7c;
            color: @sidebar-dark-color-dark;
         });
         //Hover and active states
@@ -191,22 +191,22 @@
         &:hover,
         &:focus {
           .responsiveDark({
-             border-left-color: darken(@sidebar-dark-bg, 7%);
-             border-bottom-color: darken(@sidebar-dark-bg, 7%);
+             border-left-color: @darken-12518b85;
+             border-bottom-color: @darken-12518b85;
           },
           {
-             border-left-color: darken(@sidebar-dark-bg-dark, 7%);
-             border-bottom-color: darken(@sidebar-dark-bg-dark, 7%);
+             border-left-color: @darken-f6592ee2;
+             border-bottom-color: @darken-f6592ee2;
           });
         }
         &:hover,
         &:focus,
         &:active {
           .responsiveDark({
-             background: darken(@sidebar-dark-bg, 3%);
+             background: @darken-8e899f91;
           },
           {
-             background: darken(@sidebar-dark-bg-dark, 3%);
+             background: @darken-dc24222b;
           });
         }
         &:hover {

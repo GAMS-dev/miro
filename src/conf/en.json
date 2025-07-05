@@ -53,7 +53,7 @@
       "help":{
         "title": "Help",
         "doc": "Documentation",
-        "forum": "GAMS World Forum",
+        "forum": "GAMS Forum",
         "commandPalette": "Command palette",
         "about": "About"
       }
@@ -172,8 +172,11 @@
       "errorReturnCode": "Process terminated with status: %d"
     },
     "notificationNewInput":{
-      "new":"%s datasets imported.",
-      "noNew":"No dataset was imported."
+      "new":"%s datasets imported from: %s.",
+      "noNew":"No dataset was imported from: %s.",
+      "importerNames": {
+        "database": "Database"
+      }
     },
     "notificationOutputAttachmentAdded": {
       "desc": "Added new output attachments: %s."
@@ -201,7 +204,6 @@
       "desc":"Please enter a name for the scenario:",
       "discardAttach": "Discard attachments?",
       "discardViews": "Discard views?",
-      "discardPerm": "Discard permissions?",
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",
@@ -321,7 +323,7 @@
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "descClearSandbox": "There is already data loaded in the sandbox. Do you want to clear this data?",
+      "descClearSandbox": "There is already data loaded in the sandbox. Unsaved data/results will be lost. Do you want to clear this data?",
       "descOverwriteInput":"Data is already loaded for the symbol(s) you selected. Do you want to merge the new data with the existing data or replace the existing data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
@@ -634,6 +636,7 @@
         "placeholder": "Search..."
       },
      "miroPivot":{
+      "btDownload": "Download",
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
       "btDownloadCsvShort": "CSV",
@@ -648,10 +651,6 @@
       "btEnableEdit": "Enable editing",
       "btAddRow": "Add row",
       "btRemoveRows": "Remove rows",
-      "cbHideEmptyCols": "Hide empty columns",
-      "cbShowTableSummary": "Show table summary",
-      "rowSummaryFunction": "Row summary function",
-      "colSummaryFunction": "Column summary function",
       "rows": "Rows",
       "columns": "Columns",
       "aggregation": "Aggregation",
@@ -661,19 +660,6 @@
       "defaultViewName": "default",
       "colTruncationWarning": "Data was truncated to the first %s columns.",
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
-      "newViewTitle": "New view",
-      "newViewLabel": "Please choose a name for the view.",
-      "newViewChartTitle": "Chart title (optional)",
-      "newViewxTitle": "X-axis label (optional)",
-      "newViewyTitle": "Y-axis label (optional)",
-      "newViewyLogScale": "Use logarithmic scale on y-axis?",
-      "newViewMultiChartSeries": "Render series as %s chart?",
-      "newViewCbCustomColors": "Use custom colors?",
-      "newViewCbManualColors": "Enter colors manually?",
-      "newViewBtCancel": "Cancel",
-      "newViewBtSave": "Save",
-      "newViewBtCancelOverwrite": "No",
-      "newViewBtOverwrite": "Yes",
       "updateSettingsTitle": "Settings",
       "updateSettingsBtCancel": "Cancel",
       "updateSettingsBtSave": "Save",
@@ -685,6 +671,88 @@
       "errPivot": "The data could not be pivoted. This could be because your data is too large.",
       "errorTitle": "Error",
       "duplicateRecordError": "The record: '%s' already exists. Please remove it and try again.",
+      "newView": {
+        "tabGeneral": "General",
+        "tabScales": "Axes",
+        "tabMultiChart": "Combo chart",
+        "tabSecondAxis": "Second Axis",
+        "tabSeries": "Series Styling",
+        "title": "New view",
+        "label": "Please choose a name for the view.",
+        "info": "Axis settings are reversed for horizontal charts.",
+        "chartTitle": "Title (optional)",
+        "xTitle": "X-axis label (optional)",
+        "yTitle": "Y-axis label (optional)",
+        "yLogScale": "Logarithmic scale on y-axis",
+        "singleStack": "Stack positive and negative values together",
+        "groupDimension": "Group stacks by dimension",
+        "xGrid": "Draw grid for x axis",
+        "yGrid": "Draw grid for y axis",
+        "showDataMarkers": "Draw data points",
+        "stepPlot": "Stepped Line Chart",
+        "minY": "Static minimum value on y axis (optional)",
+        "maxY": "Static maximum value on y axis (optional)",
+        "multiChartSeries": "Render series with different chart type",
+        "multiChartSeriesTypeSelection": "Chart type",
+        "showMultiChartDataMarkers": "Draw data points for secondary chart",
+        "stackMultiChartSeries": "Include secondary chart series in stack",
+        "stackType1": "No",
+        "stackType2": "Yes - Add to regular stack",
+        "stackType3": "Yes - Individual stack",
+        "x2axis": "Use a secondary x axis",
+        "y2axis": "Use a secondary y axis",
+        "y2axisSeries": "Series to render on secondary axis",
+        "y2axisTitle": "Secondary axis label (optional)",
+        "y2axisGrid": "Draw grid for secondary axis",
+        "y2axisLogScale": "Logarithmic scale on secondary axis",
+        "minY2": "Static minimum value on secondary axis (optional)",
+        "maxY2": "Static maximum value on secondary axis (optional)",
+        "cbCustomColors": "Use custom colors",
+        "cbManualColors": "Enter colors manually",
+        "fillOpacity": "Fill opacity",
+        "cbLineDash": "Use dashed lines",
+        "cbManualLineDashTooltip": "Array of values defining alternating line and gap lengths",
+        "solid": "Solid",
+        "dotted": "Dotted",
+        "dashed": "Dashed",
+        "wideDashed": "Wide-Dashed",
+        "dashDot": "Dash-Dot",
+        "dashDotDot": "Dash-Dot-Dot",
+        "customPattern": "Custom Pattern",
+        "cbBorderWidth": "Use custom border width",
+        "selectizePlaceholder": "Select an option or create a new one",
+        "btCancel": "Cancel",
+        "btSave": "Save",
+        "btCancelOverwrite": "No",
+        "btOverwrite": "Yes"
+      },
+      "settings": {
+        "tabGeneral": "General",
+        "tabTable": "Tables",
+        "tabChart": "Charts",
+        "tabBaselineComp": "Baseline Comparison",
+        "cbHideEmptyCols": "Hide empty columns",
+        "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
+        "cbShowTableSummaryRow": "Show table summary (rows)",
+        "cbShowTableSummaryCol": "Show table summary (columns)",
+        "rowSummaryFunction": "Row summary function",
+        "colSummaryFunction": "Column summary function",
+        "fixedColumns": "Fix table columns to the left",
+        "chartFontSize": "Font size to use in charts",
+        "baselineComparison": {
+          "cbEnable": "Enable baseline comparison",
+          "selDomain": "Domain",
+          "selRecord": "Baseline record",
+          "selMetrics": "Comparison metrics (max 2)",
+          "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off - showing raw values instead.",
+          "metrics": {
+            "values": "Raw Values",
+            "percDiff": "Relative Δ (%)",
+            "absDiff": "Absolute Δ",
+            "norm": "Normalization"
+          }
+        }
+      },
       "dialogAddRow":{
         "title": "Add new row",
         "btCancel": "Cancel",
@@ -742,6 +810,9 @@
         "prompt1": "Are you sure you want to remove the column(s):",
         "prompt2": "? This cannot be undone!"
       }
+    },
+    "dashboardComparison":{
+      "selectScen": "Select scenario"
     }
   },
   "progressBar":{
@@ -762,7 +833,8 @@
     },
     "exportScen":{
       "title": "Exporting scenario",
-      "exportDs": "Exporting dataset %s of %s"
+      "exportDs": "Exporting dataset %s of %s",
+      "success": "Scenario data successfully exported to: %s."
     },
     "loadScenDb":{
       "title":"Loading scenario data from database",
@@ -933,10 +1005,7 @@
       "title": "MIRO busy",
       "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
     },
-    "gamsTerm":{
-      "title":"Error terminating gams.exe",
-      "desc":"Some error occurred terminating GAMS."
-    },
+    "gamsTerm": "Some error occurred terminating GAMS (e.g. process is already finished).",
     "readLog":{
       "title":"Error reading log file",
       "desc":"Some error occurred reading the GAMS log file."
@@ -1042,7 +1111,7 @@
       "table": "Tables",
       "widgets": "Input widgets",
       "graphs": "Graphs",
-      "analysis": "Scenario analysis",
+      "colors": "Colors",
       "database": "Database management",
       "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
@@ -1054,10 +1123,10 @@
         "tabLogs": "Log Files",
         "tabComparison": "Scenario Comparison",
         "tabData": "Scenario Data and Attachments",
-        "tabScripts": "Analysis scripts",
         "tabSymbolLinks": "Hidden Symbols and Symbol Links",
         "headerGeneral": "Title and Logo",
         "headerPivotcompare": "Pivot comparison mode",
+        "descriptionPivotcompare": "These settings serve as default values for the user, but they can be adjusted at any time during a session.",
         "headerRenderers": "Default Renderers",
         "headerAppearance": "Appearance",
         "headerSymbolDisplay": "Hide symbols",
@@ -1069,13 +1138,9 @@
         "tabNameOrder": "Symbol Order and Groups",
         "headerSymbolNaming": "Symbol and Column Names",
         "headerSymbolGrouping": "Ordering",
-        "headerBaseScripts": "Individual Scenarios",
         "headerOutputAttach": "Output Attachments",
         "headerExport": "Export",
         "headerImport": "Import",
-        "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Batch Analysis",
-        "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
@@ -1115,7 +1180,7 @@
         "label": "Name of the default scenario"
       },
       "args":{
-        "label": "Specify extra command line arguments that GAMS will be called with"
+        "label": "Specify extra command line arguments that GAMS/Python will be called with"
       },
       "groups":{
         "input": "Add group for input symbols",
@@ -1124,10 +1189,6 @@
       },
       "symlinks":{
         "label": "Add symbol link (results that can be used as input data)"
-      },
-      "scripts":{
-        "base": "Specify custom analysis scripts for individual scenarios",
-        "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"
@@ -1152,8 +1213,10 @@
       },
       "mirologfile":{
         "label": "Include custom log file?",
-        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty."
+        "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty.",
+        "miroLogExclusiveError": "Only one log file can be parsed for MIRO log syntax. Therefore, only stdout will be parsed, but the MIRO log will still be displayed."
       },
+      "mirologStdout": "Should the standard log file (process stdout) be parsed for MIRO log syntax?",
       "readme":{
         "label": "README File",
         "readmeTooltip": "A README file is displayed in the input section as an individual start page",
@@ -1823,11 +1886,12 @@
       "miroPivotOptions":{
         "externalDefaultViewSwitch": "Use external default view",
         "externalDefaultViewName": "Name of the view to use as default",
-        "infoMsg": "Please use directly the preview on the right side to configure the default view.",
-        "hideEmptyColsSwitch": "Enable switch to hide empty columns",
+        "infoMsg": "Please use directly the preview on the right side to configure the default view. This includes settings (%s) and view options (%s)",
+        "hideEmptyColsSwitch": "Enable switch to hide empty columns by default",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
+        "emptyUELTooltip": "The switch to hide empty columns (located in the pivot table settings menu) allows to hide empty columns in a table. This is especially useful in a data cube where individual views can have empty dimensions.",
         "hidePivotControlsSwitch": "Show presentation mode by default",
-        "fixedColumnsSwitch": "Enable fixed columns",
+        "fixedColumnsSwitch": "Fix columns",
         "fixedColumnsTooltip": "If this option is activated, the columns of the pivot table are fixed to the left side of the table and remain visible when scrolling horizontally.",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
@@ -2097,6 +2161,71 @@
           "timevisCustom": "The date/time to add",
           "placeholder": "e.g. 2016-08-21"
         }
+      }
+    },
+    "colors":{
+      "title": "Colors",
+      "themeColors":{
+        "title": "Custom theme colors",
+        "light": "Light mode",
+        "dark": "Dark mode",
+        "advanced": "Manually set surface colors",
+        "primary": "Primary color",
+        "secondary": "Secondary color",
+        "sidebar": "Sidebar color",
+        "navbar": "Header color",
+        "body_bg": "Body background color",
+        "alert": "Alert color",
+        "mainBg": "Main background color",
+        "console": "Console text color",
+        "primaryDark": "Primary color",
+        "secondaryDark": "Secondary color",
+        "sidebarDark": "Sidebar color",
+        "navbarDark": "Header color",
+        "body_bg_dark": "Body background color",
+        "alertDark": "Alert color",
+        "mainBgDark": "Main background color",
+        "consoleDark": "Console text color",
+        "widgetBgDark": "Widgets background color",
+        "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
+        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
+        "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
+        "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
+        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
+      },
+      "themeButtons": {
+        "buttonsTitle": "Save theme colors",
+        "saveLocal": "Save for this app",
+        "saveGlobal": "Save for all apps",
+        "downloadTheme": "Download for MIRO Server",
+        "saveLocalDesc": "An app-specific theme is embedded in the app and overrides all other theme settings. Once the app is exported, its colors can't be changed.",
+        "saveGlobalDesc": "A global theme is centrally stored and applies to all apps present on the device. It is selected in the MIRO Desktop Preferences.",
+        "removeColorsDesc": "Deletes any existing app-specific theme configuration, if present.",
+        "saveLocalNote": "Theme saved.",
+        "saveGlobalModalTitle": "File exists",
+        "saveGlobalModalText": "A file called '%s' already exists in the GAMS MIRO workspace.",
+        "saveGlobalModalCancel": "Cancel",
+        "saveGlobalModalOverwrite": "Overwrite",
+        "saveGlobalModalNote1": "File overwritten!",
+        "saveGlobalModalNote2": "Theme exported!",
+        "saveGlobalModalNoteDesc": "You can now select the color theme 'Custom' in the MIRO Desktop preferences.",
+        "removeColors": "Delete for this app",
+        "removeColorsTitle": "Delete theme colors",
+        "removeColorsText": "This will remove all 'themeColors' from your configuration file.",
+        "removeColorsCancel": "Cancel",
+        "removeColorsConfirm": "Delete",
+        "removeColorsNote1": "Theme colors have been removed.",
+        "removeColorsNote2": "No theme colors found."
+      },
+      "miroServerColors":{
+        "checkbox": "Prepare theme for MIRO Server",
+        "title": "MIRO Server colors",
+        "titleTooltip": "Colors for the MIRO Server login screen, the app overview page, etc.",
+        "primary": "Primary color",
+        "bodyBg": "Body background color",
+        "mainBg": "Main background color",
+        "loginHeaderBg": "Login header background",
+        "primaryTooltip": "Main brand color. It is used to highlight primary actions and guide user focus."
       }
     }
   }

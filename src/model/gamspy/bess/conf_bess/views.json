@@ -1,0 +1,68 @@
+{
+  "timewise_load_demand_and_cost_external_grid_data": {
+    "Timeline": {
+      "aggregationFunction": "sum",
+      "pivotRenderer": "line",
+      "domainFilter": {
+        "default": null
+      },
+      "tableSummarySettings": {
+        "enabled": false,
+        "rowSummaryFunction": "sum",
+        "colSummaryFunction": "sum"
+      },
+      "rows": "j",
+      "cols": {
+        "Hdr": null
+      },
+      "chartOptions": {
+        "title": "Timeline",
+        "yTitle": "load demand",
+        "yLogScale": false,
+        "showDataMarkers": true,
+        "stepPlot": false,
+        "showXGrid": true,
+        "showYGrid": true,
+        "y2axis": {
+          "series": "cost_external_grid",
+          "title": "cost external grid",
+          "showGrid": false,
+          "logScale": false
+        }
+      }
+    }
+  },
+  "report_output": {
+    "Balance": {
+      "aggregationFunction": "sum",
+      "pivotRenderer": "stackedbar",
+      "domainFilter": {
+        "default": null
+      },
+      "tableSummarySettings": {
+        "enabled": false,
+        "rowSummaryFunction": "sum",
+        "colSummaryFunction": "sum"
+      },
+      "rows": "j",
+      "cols": {
+        "power_output_header": null
+      },
+      "chartOptions": {
+        "yLogScale": false,
+        "showDataMarkers": true,
+        "stepPlot": false,
+        "showXGrid": true,
+        "showYGrid": true,
+        "singleStack": false,
+        "multiChartSeries": "load_demand",
+        "multiChartOptions": {
+          "showMultiChartDataMarkers": false,
+          "multiChartRenderer": "line",
+          "stackMultiChartSeries": "no",
+          "multiChartStepPlot": false
+        }
+      }
+    }
+  }
+}

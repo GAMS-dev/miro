@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 maven:3.9.6-eclipse-temurin-17 as builder
+FROM --platform=linux/amd64 maven:3.9.6-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
@@ -21,8 +21,11 @@ RUN apk update && \
     apk upgrade --available && \
     apk --no-cache add openjdk17-jre
 
-RUN addgroup -g 1000 -S miro && \
-    adduser -u 1000 -S miro -G miro
+RUN addgroup -g 1001 -S miro && \
+    addgroup -g 1000 -S miro2 && \
+    adduser -u 1001 -S miro -G miro && \
+    addgroup miro root && \
+    addgroup miro miro2
 
 WORKDIR /home/miroproxy/
 

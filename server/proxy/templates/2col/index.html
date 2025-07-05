@@ -20,7 +20,7 @@
     along with this program.  If not, see <http://www.apache.org/licenses/>
 
 -->
-<!DOCTYPE html>
+<!doctype html>
 <html
   xmlns:th="//www.thymeleaf.org"
   xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
@@ -54,6 +54,11 @@
       media="screen"
       th:href="@{${resourcePrefix} + ${themeCss}}"
     />
+    <link
+      rel="stylesheet"
+      media="screen"
+      th:href="@{${resourcePrefix} + '/assets/css/styles.css'}"
+    />
     <script th:src="@{${resourcePrefix} + ${jqueryJs}}"></script>
   </head>
 
@@ -72,7 +77,7 @@
               <div>
                 <div style="height: 200px">
                   <div
-                    th:style="'background:url('+${resourcePrefix}+@{/assets/logos/{name}(name=${app.logoURL})}+');background-size:cover;'"
+                    th:style="'background:url(\'' + @{${resourcePrefix} + '/assets/logos/' + ${app.logoURL}} + '\');background-size:cover;'"
                     class="app-logo"
                   ></div>
                 </div>

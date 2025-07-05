@@ -4,7 +4,7 @@
 //** Border color for inputs on focus
 @input-border-focus-dark:     @light-blue-dark;                // before: #66afe9;
 //also an adminLTE less variable
-@body-bg-dark:                if(@main-bg-dark-has-no-color, hsl(hue(@main-bg-dark), 0%, 15%), hsl(hue(@main-bg-dark), 10%, 18%));//#292D33;                         //before: #fff;
+@body-bg-dark:                @if-c1a0bfe3;//#292D33;                         //before: #fff;
 //modal-bg: box-background color from AdminLTE
 @modal-bg-dark:               @main-bg-dark; //#393e46;                         //before: #fff;
 @dropdown-background-dark:    @widget-bg-dark;//#848991;                         //before: unset
@@ -17,19 +17,19 @@
 
 @gray-base-dark:              #fff;                            //before: #000;
 @gray-darker-dark:            darken(@gray-base-dark, 13.5%);  //before: lighten(@gray-base, 13.5%);
-@gray-darken-dark:            darken(@gray-base-dark, 20%);    //before: lighten(@gray-base, 20%);
+@gray-darken-dark:            darken(@gray-base-dark, 13.5%);  //before: lighten(@gray-base, 13.5%);
 @gray-dark:                   darken(@gray-base-dark, 40%);    //before: lighten(@gray-base, 33.5%);
 @gray-light-dark:             darken(@gray-base-dark, 46.7%);  //before: lighten(@gray-base, 46.7%);
 @gray-lighter-dark:           darken(@gray-base-dark, 93.5%);  //before: lighten(@gray-base, 93.5%);
 
-@brand-primary-color-dark:    darken(@light-blue-dark, 6.5%);  //before: darken(#428bca, 6.5%);
+@brand-primary-color-dark:    @darken-411e4a78;  //before: darken(#428bca, 6.5%);
 @brand-primary-dark:          @brand-primary-color-dark;
 
 //code
-@log-bg-dark:                 darken(@modal-bg-dark, 20%);     //before: #f5f5f5;
+@log-bg-dark:                 @darken-d35a8f8e;     //before: #f5f5f5;
 @pre-bg-dark:                 @log-bg-dark;                    //before: #f5f5f5;
-@pre-color-dark:              @log-color-dark;                         //before: @gray-darken;
-@pre-border-color-dark:       @log-color-dark;                         //before: #ccc;
+@pre-color-dark:              @console-text-color-dark;                         //before: @gray-darken;
+@pre-border-color-dark:       @console-text-color-dark;                         //before: #ccc;
 
 
 //** Global text color on `<body>`.
@@ -64,7 +64,7 @@
 
 //@light-blue:           #00adb5;                    //new variable
 //** Border color for inputs on focus
-@input-border-focus:     if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 35%), hsl(hue(@primary-color), 76%, 62%));//#66afe9
+@input-border-focus:     @if-e44576b0;//#66afe9
 //also an adminLTE less variable
 @body-bg:                #fff;
 //modal-bg: box-background color from AdminLTE
@@ -84,13 +84,14 @@
 @gray-light:             lighten(@gray-base, 46.7%);
 @gray-lighter:           lighten(@gray-base, 93.5%);
 
-@brand-primary-color:    darken(@primary-color, 6.5%);
+@brand-primary-color:    @darken-cd55fe88;
 @brand-primary:          @brand-primary-color;
 
 //code
 @log-bg:                 #f5f5f5;
 @pre-bg:                 #f5f5f5;
 @pre-color:              @gray-darken;
+@console-color:          @console-text-color;
 @pre-border-color:       #ccc;
 
 
@@ -124,11 +125,11 @@
 //** Global textual link color.
 @link-color:                           @brand-primary;
 //** Link hover color set via `darken()` function.
-@link-hover-color:                     darken(@link-color, 15%);
+@link-hover-color:                     @darken-111221b2;
 //** Global background color for active items (e.g., navs or dropdowns).
 @component-active-bg:                  @brand-primary;
 @btn-primary-bg:                       @brand-primary;
-@btn-primary-border:                   darken(@btn-primary-bg, 5%);
+@btn-primary-border:                   @darken-28f7e606;
 @btn-link-disabled-color:              @gray-light;
 //** Text color for `<input>`s
 @input-color:                          @gray;
@@ -178,7 +179,7 @@
 //** Border color of active list elements
 @list-group-active-border:             @list-group-active-bg;
 //** Text color for content within active list items
-@list-group-active-text-color:         lighten(@list-group-active-bg, 40%);
+@list-group-active-text-color:         @lighten-6a0cbe6d;
 //** Text color of disabled list items
 @list-group-disabled-color:            @gray-light;
 //** Background color of disabled list items
@@ -218,11 +219,11 @@
 //** Global textual link color.
 @link-color-dark:                           @brand-primary-dark;
 //** Link hover color set via `darken()` function.
-@link-hover-color-dark:                     darken(@link-color-dark, 15%);
+@link-hover-color-dark:                     @darken-87dfbfea;
 //** Global background color for active items (e.g., navs or dropdowns).
 @component-active-bg-dark:                  @brand-primary-dark;
 @btn-primary-bg-dark:                       @brand-primary-dark;
-@btn-primary-border-dark:                   darken(@btn-primary-bg-dark, 5%);
+@btn-primary-border-dark:                   @darken-e71e1e83;
 @btn-link-disabled-color-dark:              @gray-light-dark;
 //** Text color for `<input>`s
 @input-color-dark:                          @text-color-dark; //before: #000;
@@ -248,7 +249,7 @@
 @nav-link-hover-bg-dark:                    @gray-lighter-dark;
 @nav-disabled-link-color-dark:              @gray-light-dark;
 @nav-disabled-link-hover-color-dark:        @gray-light-dark;
-@nav-tabs-link-hover-border-color-dark:     lighten(@main-bg-dark, 5%);  //before: @gray-lighter-dark;
+@nav-tabs-link-hover-border-color-dark:     @lighten-9ae39279;  //before: @gray-lighter-dark;
 @nav-tabs-active-link-hover-color-dark:     @gray-dark;
 @nav-tabs-justified-active-link-border-color-dark:     @body-bg-dark;
 @nav-pills-active-link-hover-bg-dark:       @component-active-bg-dark;
@@ -272,7 +273,7 @@
 //** Border color of active list elements
 @list-group-active-border-dark:             @list-group-active-bg-dark;
 //** Text color for content within active list items
-@list-group-active-text-color-dark:         lighten(@list-group-active-bg-dark, 40%);
+@list-group-active-text-color-dark:         @lighten-6a0cbe6d;
 //** Text color of disabled list items
 @list-group-disabled-color-dark:            @gray-light-dark;
 //** Background color of disabled list items

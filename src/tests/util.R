@@ -6,21 +6,24 @@ getSelectizeAliases <- function(app, selector) {
   options <- app$get_js(paste0("Object.values($('", selector, "')[0].selectize.options).map(option => option.label)"))
   return(unlist(options))
 }
-getVisibleDtData <- function(app, id) {
+getVisibleDtData <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, "').data('datatable')!=null"), timeout = 5000L)
   dtData <- app$get_js(paste0("JSON.stringify($('#", id, "').data('datatable').data().toArray())"))
   return(tibble::as_tibble(jsonlite::fromJSON(dtData),
     .name_repair = "universal"
   ))
 }
-getHotData <- function(app, id) {
+getHotData <- function(app, id, timeout = 5000L) {
   hotToR <- function(data) {
     return(suppressWarnings(as_tibble(
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
+  app$wait_for_js(paste0("$('#", id, " .htCore').is(':visible')"), timeout = timeout)
   return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
-expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6) {
+expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6, timeout = 5000L) {
+  app$wait_for_js(paste0("Chart.getChart('", id, "')?.attached===true"), timeout = timeout)
   chartjsData <- jsonlite::fromJSON(app$get_values()$output[[id]])$x$data
   if (is.list(data)) {
     expect_equal(chartjsData$datasets$data, data, tolerance = tolerance)
@@ -337,6 +340,17 @@ saveAdditionalGamsClArgs <- function(miroModelDir, modelToTest, additionalGamsCl
   jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   return(invisible())
 }
+copyDirRecursive <- function(from, to) {
+  dir.create(to, recursive = TRUE, showWarnings = FALSE)
+  files <- list.files(from, recursive = TRUE, full.names = TRUE)
+  relative_paths <- list.files(from, recursive = TRUE)
+
+  for (i in seq_along(files)) {
+    target_path <- file.path(to, relative_paths[i])
+    dir.create(dirname(target_path), recursive = TRUE, showWarnings = FALSE)
+    file.copy(files[i], target_path, overwrite = TRUE)
+  }
+}
 PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
   initialize = function() {
     private$url <- Sys.getenv("MIRO_REPORTER_URL", unset = NA)
@@ -375,7 +389,7 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
           body = dataToPublish,
           httr::authenticate(private$user, private$pass),
           encode = "json",
-          httr::timeout(3L)
+          httr::timeout(10L)
         )
         if (httr::status_code(req) != 200L) {
           stop(sprintf("Bad status code: %s", httr::status_code(req)), call. = FALSE)
@@ -470,4 +484,28 @@ removeUser <- function(apiURL, inviterUser, inviterPass, username) {
     httr::authenticate(inviterUser, inviterPass)
   )
   stopifnot(identical(httr::status_code(resp), 200L))
+}
+removeModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName) {
+  resp <- httr::DELETE(
+    paste0(
+      apiURL, "/namespaces/", URLencode(namespace, reserved = TRUE),
+      "/models/", modelName
+    ), httr::timeout(10L),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 200L))
+}
+registerModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName, modelFilesZip) {
+  resp <- httr::POST(
+    paste0(
+      apiURL, "/namespaces/", URLencode(namespace, reserved = TRUE),
+      "/models/", modelName
+    ), httr::timeout(10L),
+    encode = "multipart",
+    body = list(data = httr::upload_file(modelFilesZip,
+      type = "application/zip"
+    )),
+    httr::authenticate(inviterUser, inviterPass)
+  )
+  stopifnot(identical(httr::status_code(resp), 201L))
 }

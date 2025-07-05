@@ -34,9 +34,6 @@ test_that(
         )
       }
       source(file.path(testDir, "shinytest", paste0("solve_model_test_", modelToTest, ".R")), local = TRUE)
-      if (modelToTest == "pickstock") {
-        source(file.path(testDir, "shinytest", "interrupt_model_test.R"), local = TRUE)
-      }
       if (length(additionalGamsClArgs)) {
         file.rename(
           file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),

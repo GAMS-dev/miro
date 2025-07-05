@@ -276,9 +276,17 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             return;
           }
           if (content.file === 'app_info.json') {
-            newAppConf.title = content.data.title;
-            newAppConf.description = content.data.description;
-            newAppConf.id = content.data.appId;
+            [
+              ['title', 'title'],
+              ['description', 'description'],
+              ['id', 'appId'],
+              ['version', 'version'],
+              ['authors', 'authors'],
+            ].forEach((configKey) => {
+              if (content.data[configKey[0]] != null) {
+                newAppConf[configKey[0]] = content.data[configKey[1]];
+              }
+            });
           }
         });
         const validateAppId = (appIdToValidate) => {
@@ -645,6 +653,7 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
     }
     appConf.miroversion = newApp.miroversion;
     appConf.usetmpdir = newApp.usetmpdir;
+    appConf.gmsName = newApp.gmsName;
     await addModelData(
       miroProcessManager,
       {
@@ -653,6 +662,7 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
         appDir: appDirTmp,
       },
       appConf.id,
+      appConf.gmsName,
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,
@@ -896,6 +906,7 @@ function createSettingsWindow() {
       await configData.getAll(),
       await configData.getAll(true),
       lang.settings,
+      fs.existsSync(path.join(miroWorkspaceDir, 'colors_custom.css')),
     );
     log.debug('Settings window settings loaded.');
     settingsWindow.show();
@@ -1001,7 +1012,7 @@ function openCheckUpdateWindow() {
   });
 }
 function quitLauncher() {
-  if (process.platform !== 'darwin') {
+  if (process.platform !== 'darwin' || process.env.E2E === 'true') {
     app.quit();
   }
 }
@@ -1121,14 +1132,16 @@ function createMainWindow(showRunningApps = false, focus = true, onSuccess = nul
     appLoaded = true;
     if (process.platform === 'win32'
       && process.argv.length >= 2 && !DEVELOPMENT_MODE) {
-      const associatedFile = process.argv[1];
-      if (associatedFile.toLowerCase().endsWith('.miroscen')) {
-        log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
-        await addMiroscenFile(associatedFile);
-        return;
+      const associatedFile = process.argv.slice(process.defaultApp ? 2 : 1).filter((el) => !el.startsWith('-'))[0];
+      if (associatedFile != null) {
+        if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+          log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
+          await addMiroscenFile(associatedFile);
+          return;
+        }
+        log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
+        await addOrUpdateMIROApp(associatedFile);
       }
-      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
-      await addOrUpdateMIROApp(associatedFile);
     } else if (fileToOpen) {
       const associatedFile = fileToOpen;
       if (associatedFile.toLowerCase().endsWith('.miroscen')) {
@@ -1791,6 +1804,7 @@ ipcMain.on('add-app', async (e, newApp) => {
         appDir,
       },
       appConf.id,
+      appConf.gmsName,
       appConf.miroversion,
       appConf.usetmpdir,
       mainWindow,
@@ -1902,6 +1916,7 @@ ipcMain.on('update-app-data', async (_, filePaths, appId) => {
           appDir,
         },
         appId,
+        appConf.gmsName,
         appConf.miroversion,
         appConf.usetmpdir,
         mainWindow,
@@ -2196,7 +2211,7 @@ app.on('ready', async () => {
     const remoteConfig = await configData.get('remoteConfig');
     if (remoteConfig.jwt != null) {
       log.info('Checking if Engine JWT is expired');
-      if (false) { // eslint-disable no-constant-condition
+      if (false) { // eslint-disable-line no-constant-condition
         try {
           remoteConfig.jwt = await refreshEngineJwt(remoteConfig.url, remoteConfig.jwt);
           configData.set('remoteConfig', remoteConfig);

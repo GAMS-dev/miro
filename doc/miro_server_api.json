@@ -37,39 +37,8 @@
                     "apps"
                 ],
                 "summary": "Get all visible MIRO apps",
-                "description": "Get all apps registered for one of your user groups and their metadata.\n\nAn app object contains the following fields:\n\n- **id**: The unique identifier of the app\n- **display_name**: The name of the app as it appears in the library\n- **description**: The description of the app as it appears in the library\n- **access_groups**: The user groups that can see this app. If no user groups are assigned (empty array), anyone with access to the MIRO Server instance can see the app. Displays only subset of user groups of which the logged in user is a member.",
+                "description": "Get all apps registered for one of your user groups and their metadata.\n\nAn app object contains the following fields:\n\n- **id**: The unique identifier of the app\n- **display_name**: The name of the app as it appears in the library\n- **description**: The description of the app as it appears in the library\n- **version**: The app's version info (if specified)\n- **authors**: The app's authors (if specified)\n- **environment**: The app's environment (if specified)\n- **access_groups**: The user groups that can see this app. If no user groups are assigned (empty array), anyone with access to the MIRO Server instance can see the app. Displays only subset of user groups of which the logged in user is a member.",
                 "operationId": "get_apps",
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/AppConfig"
-                                    },
-                                    "type": "array",
-                                    "title": "Response Get Apps Apps  Get"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "message": "Not found"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                },
                 "security": [
                     {
                         "HTTPBasic": []
@@ -77,7 +46,78 @@
                     {
                         "HTTPBearer": []
                     }
-                ]
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 10000000.0,
+                            "minimum": 1,
+                            "description": "Pagination: The page number to return (offset)",
+                            "default": 1,
+                            "title": "Page"
+                        },
+                        "description": "Pagination: The page number to return (offset)"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "minimum": 1,
+                            "description": "Pagination: Number of items to return per page",
+                            "default": 20,
+                            "title": "Per Page"
+                        },
+                        "description": "Pagination: Number of items to return per page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AppConfigOutput"
+                                    },
+                                    "title": "Response Get Apps Apps  Get"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "message": "Not found",
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
             },
             "post": {
                 "tags": [
@@ -86,15 +126,23 @@
                 "summary": "Add new MIRO app",
                 "description": "Add a new MIRO app (requires write permissions on namespace).",
                 "operationId": "add_app",
+                "security": [
+                    {
+                        "HTTPBasic": []
+                    },
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "multipart/form-data": {
                             "schema": {
                                 "$ref": "#/components/schemas/Body_add_app_apps__post"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "201": {
@@ -106,16 +154,16 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "message": "Unauthorized"
+                        "message": "Unauthorized",
+                        "description": "Unauthorized"
                     },
                     "403": {
-                        "description": "Forbidden",
-                        "message": "Unauthorized access"
+                        "message": "Unauthorized access",
+                        "description": "Forbidden"
                     },
                     "404": {
-                        "description": "Not Found",
-                        "message": "Not found"
+                        "message": "Not found",
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -136,15 +184,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "HTTPBasic": []
-                    },
-                    {
-                        "HTTPBearer": []
-                    }
-                ]
+                }
             }
         },
         "/apps/{app_id}": {
@@ -308,7 +348,7 @@
                     "scenarios"
                 ],
                 "summary": "Get list of all visible scenarios",
-                "description": "Get all scenarios for this app that are visible to you.\n\nA scenario object contains the following fields:\n\n- **name**: The name of the scenario\n- **owner**: The owner of this scenario\n- **tags**: The tags of the scenario\n- **last_modified**: The timestamp when the scenario was last modified\n- **read_perm**: Array of users/groups that have permissions to read the scenario data (groups are indicated by a leading hash `#`)\n- **write_perm**: Array of users/groups that have permissions to modify the scenario data (groups are indicated by a leading hash `#`)\n- **exec_perm**: Array of users/groups that have permissions to execute the scenario (groups are indicated by a leading hash `#`)",
+                "description": "Get scenarios for this app that are visible to you.\n\nA scenario object contains the following fields:\n\n- **name**: The name of the scenario\n- **owner**: The owner of this scenario\n- **tags**: The tags of the scenario\n- **last_modified**: The timestamp when the scenario was last modified\n- **read_perm**: Array of users/groups that have permissions to read the scenario data (groups are indicated by a leading hash `#`)\n- **write_perm**: Array of users/groups that have permissions to modify the scenario data (groups are indicated by a leading hash `#`)\n- **exec_perm**: Array of users/groups that have permissions to execute the scenario (groups are indicated by a leading hash `#`)",
                 "operationId": "get_scenario_list",
                 "security": [
                     {
@@ -330,6 +370,34 @@
                             "title": "App Id"
                         },
                         "description": "The ID of the app whose data you want to operate on."
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 10000000.0,
+                            "minimum": 1,
+                            "description": "Pagination: The page number to return (offset)",
+                            "default": 1,
+                            "title": "Page"
+                        },
+                        "description": "Pagination: The page number to return (offset)"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "minimum": 1,
+                            "description": "Pagination: Number of items to return per page",
+                            "default": 20,
+                            "title": "Per Page"
+                        },
+                        "description": "Pagination: Number of items to return per page"
                     }
                 ],
                 "responses": {
@@ -760,17 +828,10 @@
     },
     "components": {
         "schemas": {
-            "AppConfig": {
+            "AppConfigOutput": {
                 "properties": {
                     "id": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
                         "title": "Id"
                     },
                     "display_name": {
@@ -801,6 +862,41 @@
                         },
                         "type": "array",
                         "title": "Access Groups"
+                    },
+                    "environment": {
+                        "patternProperties": {
+                            "^[A-Z_][A-Z0-9_]*$": {
+                                "$ref": "#/components/schemas/AppEnvironmentItem"
+                            }
+                        },
+                        "type": "object",
+                        "title": "Environment",
+                        "default": {}
+                    },
+                    "version": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Version"
+                    },
+                    "authors": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Authors"
                     }
                 },
                 "type": "object",
@@ -810,7 +906,27 @@
                     "description",
                     "access_groups"
                 ],
-                "title": "AppConfig"
+                "title": "AppConfigOutput"
+            },
+            "AppEnvironmentItem": {
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "title": "Value"
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "title": "Description",
+                        "default": ""
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "value"
+                ],
+                "title": "AppEnvironmentItem"
             },
             "AuthRequest": {
                 "properties": {
@@ -865,43 +981,27 @@
                         "description": "A valid MIROAPP file deployed for a multi-user environment."
                     },
                     "app_id": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 60
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
+                        "maxLength": 60,
                         "title": "App Id",
                         "description": "The ID of this app. If no ID is specified, the default ID (filename of the main `.gms` file in lower case) is used. This ID must be unique among all apps registered on this instance of MIRO Server."
                     },
                     "display_name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 40
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
+                        "maxLength": 40,
                         "title": "Display Name",
                         "description": "The name of the app as it appears in the library."
                     },
                     "description": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 200
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
+                        "maxLength": 200,
                         "title": "Description",
                         "description": "The description of the app as it appears in the library."
+                    },
+                    "environment": {
+                        "type": "string",
+                        "title": "Environment",
+                        "description": "JSON string with app environment configuration. Example: `{\"MIRO_IMPORTER_API_KEY\":{\"description\":\"Secret API key\",\"value\":\"my_super_secret_key\"}}`"
                     },
                     "access_groups": {
                         "items": {
@@ -978,30 +1078,21 @@
                         "description": "A valid MIROAPP file deployed for a multi-user environment."
                     },
                     "display_name": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 40
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
+                        "maxLength": 40,
                         "title": "Display Name",
                         "description": "The name of the app as it appears in the library."
                     },
                     "description": {
-                        "anyOf": [
-                            {
-                                "type": "string",
-                                "maxLength": 200
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
+                        "type": "string",
+                        "maxLength": 200,
                         "title": "Description",
                         "description": "The description of the app as it appears in the library."
+                    },
+                    "environment": {
+                        "type": "string",
+                        "title": "Environment",
+                        "description": "JSON string with app environment configuration. Example: `{\"MIRO_IMPORTER_API_KEY\":{\"description\":\"Secret API key\",\"value\":\"my_super_secret_key\"}}`"
                     },
                     "access_groups": {
                         "items": {

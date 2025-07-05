@@ -78,10 +78,123 @@
 }
 .btn-primary {
   .responsiveDark({
-     .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+
+    &:focus,
+    &.focus {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-4b80b5c4;
+    }
+
+    &:hover {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-ec72c039;
+    }
+
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-ec72c039;
+
+      &:hover,
+      &:focus,
+      &.focus {
+        .responsiveDark({
+          color: @sidebar-contrast-light;
+        },
+        {
+          color: @sidebar-contrast-dark;
+        });
+        background-color: @darken-b5221a2c;
+        border-color: @darken-4b80b5c4;
+      }
+    }
+
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+      background-image: none;
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+      &:hover,
+      &:focus,
+      &.focus {
+        background-color: @darken-cd55fe88;
+        border-color: @darken-28f7e606;
+      }
+    }
+
+    .badge {
+      color: @darken-cd55fe88;
+      background-color: @btn-primary-color;
+    }
   },
   {
-     .button-variant(@btn-primary-color; @btn-primary-bg-dark; @btn-primary-border-dark);
+    color: @btn-primary-color;
+    background-color: @darken-411e4a78;
+    border-color: @darken-e71e1e83;
+
+    &:focus,
+    &.focus {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-4b80b5c4;
+    }
+
+    &:hover {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-ec72c039;
+    }
+
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+      color: @btn-primary-color;
+      background-color: @darken-618fc861;
+      border-color: @darken-ec72c039;
+
+      &:hover,
+      &:focus,
+      &.focus {
+        .responsiveDark({
+          color: @sidebar-contrast-light;
+        },
+        {
+          color: @sidebar-contrast-dark;
+        });
+        background-color: @darken-b5221a2c;
+        border-color: @darken-4b80b5c4;
+      }
+    }
+
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+      background-image: none;
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+      &:hover,
+      &:focus,
+      &.focus {
+        background-color: @darken-411e4a78;
+        border-color: @darken-e71e1e83;
+      }
+    }
+
+    .badge {
+      color: @darken-411e4a78;
+      background-color: @btn-primary-color;
+    }
   });
 }
 // Success appears as green

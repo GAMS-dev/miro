@@ -53,7 +53,7 @@
       "help":{
         "title": "Hilfe",
         "doc": "Dokumentation",
-        "forum": "GAMS World Forum",
+        "forum": "GAMS Forum",
         "commandPalette": "Befehlspalette",
         "about": "Über"
       }
@@ -172,8 +172,11 @@
       "errorReturnCode": "Prozess wurde mit Status: %d beendet"
     },
     "notificationNewInput":{
-      "new":"%s Datensätze importiert.",
-      "noNew":"Keine neuen Datensätze importiert."
+      "new":"%s Datensätze importiert aus: %s.",
+      "noNew":"Keine neuen Datensätze importiert aus: %s.",
+      "importerNames": {
+        "database": "Datenbank"
+      }
     },
     "notificationOutputAttachmentAdded": {
       "desc": "Neue Ausgabeanhänge hinzugefügt: %s."
@@ -201,7 +204,6 @@
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
       "discardAttach": "Anhänge verwerfen?",
       "discardViews": "Views verwerfen?",
-      "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
       "newScenName":"Neues Szenario",
@@ -321,7 +323,7 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
-      "descClearSandbox": "Es sind bereits Daten in die Sandbox geladen. Möchten Sie diese Daten ersetzen?",
+      "descClearSandbox": "Es sind bereits Daten in die Sandbox geladen. Nicht gespeicherte Daten/Ergebnisse gehen verloren. Möchten Sie diese Daten ersetzen?",
       "descOverwriteInput":"Für das/die von Ihnen ausgewählte(n) Symbol(e) sind bereits Daten geladen. Möchten Sie die neuen Daten mit den vorhandenen Daten zusammenführen oder die vorhandenen Daten ersetzen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
@@ -647,7 +649,8 @@
     },
     "exportScen":{
       "title": "Szenario wird exportiert",
-      "exportDs": "Datensatz %s von %s wird exportiert"
+      "exportDs": "Datensatz %s von %s wird exportiert",
+      "success": "Szenariodaten erfolgreich exportiert nach: %s."
     },
     "loadScenDb":{
       "title":"Laden von Szenariodaten aus der Datenbank",
@@ -675,6 +678,7 @@
       "placeholder": "Suchen..."
     },
     "miroPivot":{
+      "btDownload": "Herunterladen",
       "btDownloadCsv": "CSV herunterladen",
       "btDownloadPng": "PNG herunterladen",
       "btDownloadCsvShort": "CSV",
@@ -689,10 +693,6 @@
       "btEnableEdit": "Bearbeitung aktivieren",
       "btAddRow": "Zeile hinzufügen",
       "btRemoveRows": "Zeilen entfernen",
-      "cbHideEmptyCols": "Leere Spalten ausblenden",
-      "cbShowTableSummary": "Tabellenzusammenfassung anzeigen",
-      "rowSummaryFunction": "Zusammenfassungsfunktion für Zeilen",
-      "colSummaryFunction": "Zusammenfassungsfunktion für Spalten",
       "rows": "Zeilen",
       "columns": "Spalten",
       "aggregation": "Aggregation",
@@ -702,19 +702,6 @@
       "defaultViewName": "Standardeinstellung",
       "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
-      "newViewTitle": "Neuer view",
-      "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
-      "newViewChartTitle": "Diagrammtitel (optional)",
-      "newViewxTitle": "X-Achsen-Beschriftung (optional)",
-      "newViewyTitle": "Y-Achsen-Beschriftung (optional)",
-      "newViewyLogScale": "Logarithmische Skala auf der y-Achse verwenden?",
-      "newViewMultiChartSeries": "Serien als %s-Diagramme rendern?",
-      "newViewCbCustomColors": "Benutzerdefinierte Farben verwenden?",
-      "newViewCbManualColors": "Farben manuell eingeben?",
-      "newViewBtCancel": "Abbrechen",
-      "newViewBtSave": "Speichern",
-      "newViewBtCancelOverwrite": "Nein",
-      "newViewBtOverwrite": "Ja",
       "updateSettingsTitle": "Einstellungen",
       "updateSettingsBtCancel": "Abbrechen",
       "updateSettingsBtSave": "Speichern",
@@ -726,6 +713,88 @@
       "errPivot": "Die Daten konnten nicht gepivoted werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
       "errorTitle": "Fehler",
       "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
+      "newView": {
+        "tabGeneral": "Allgemein",
+        "tabScales": "Achsen",
+        "tabMultiChart": "Kombinationsdiagramm",
+        "tabSecondAxis": "Zweite Achse",
+        "tabSeries": "Datenreihendarstellung",
+        "title": "Neuer view",
+        "label": "Bitte wählen Sie einen Namen für den View.",
+        "info": "Bei horizontalen Diagrammen werden die Achseneinstellungen umgekehrt.",
+        "chartTitle": "Titel (optional)",
+        "xTitle": "X-Achsen-Beschriftung (optional)",
+        "yTitle": "Y-Achsen-Beschriftung (optional)",
+        "yLogScale": "Logarithmische Skala auf der y-Achse verwenden",
+        "singleStack": "Positive und negative Werte zusammen stapeln",
+        "groupDimension": "Stapel nach Dimension gruppieren",
+        "xGrid": "Raster für x-Achse zeichnen",
+        "yGrid": "Raster für y-Achse zeichnen",
+        "showDataMarkers": "Datenpunkte zeichnen",
+        "stepPlot": "Stufen-Liniendiagramm",
+        "minY": "Statischer Minimalwert auf der y-Achse (optional)",
+        "maxY": "Statischer Maximalwert auf der y-Achse (optional)",
+        "multiChartSeries": "Datensatz mit unterschiedlichem Diagrammtyp darstellen",
+        "multiChartSeriesTypeSelection": "Diagrammtyp",
+        "showMultiChartDataMarkers": "Datenpunkte für sekundäres Diagramm zeichnen",
+        "stackMultiChartSeries": "Datensatz mit unterschiedlichem Diagrammtyp in Stapel einbeziehen?",
+        "stackType1": "Nein",
+        "stackType2": "Ja - Zum regulären Stapel hinzufügen",
+        "stackType3": "Ja - Individueller Stapel",
+        "x2axis": "Zweite x-Achse verwenden",
+        "y2axis": "Zweite y-Achse verwenden",
+        "y2axisSeries": "Datenreihe auf der zweiten Achse darstellen",
+        "y2axisTitle": "Beschriftung der zweiten Achse (optional)",
+        "y2axisGrid": "Raster für die zweite Achse zeichnen",
+        "y2axisLogScale": "Logarithmische Skala auf der zweiten Achse verwenden",
+        "minY2": "Statischer Minimalwert auf der sekundären Achse (optional)",
+        "maxY2": "Statischer Maximalwert auf der sekundären Achse (optional)",
+        "cbCustomColors": "Benutzerdefinierte Farben verwenden",
+        "cbManualColors": "Farben manuell eingeben",
+        "fillOpacity": "Deckkraft der Füllung",
+        "cbLineDash": "Benutzerdefinierte Linienstrichmuster verwenden",
+        "cbManualLineDashTooltip": "Reihe von Werten, die alternierende Linien- und Lückenlängen definieren",
+        "solid": "Durchgezogen",
+        "dotted": "Gepunktet",
+        "dashed": "Gestrichelt",
+        "wideDashed": "Breit gestrichelt",
+        "dashDot": "Strich-Punkt",
+        "dashDotDot": "Strich-Punkt-Punkt",
+        "customPattern": "Benutzerdefiniertes Muster",
+        "cbBorderWidth": "Benutzerdefinierte Rahmenbreite festlegen",
+        "selectizePlaceholder": "Wählen Sie eine Option oder erstellen Sie eine neue",
+        "btCancel": "Abbrechen",
+        "btSave": "Speichern",
+        "btCancelOverwrite": "Nein",
+        "btOverwrite": "Ja"
+      },
+      "settings": {
+        "tabGeneral": "Allgemein",
+        "tabTable": "Tabellen",
+        "tabChart": "charts",
+        "tabBaselineComp": "Baseline-Vergleich",
+        "cbHideEmptyCols": "Leere Spalten ausblenden",
+        "singleDropdown": "Dimension(en), die auf einen Dropdown-Filter mit einfacher Auswahl beschränkt werden sollen",
+        "cbShowTableSummaryRow": "Tabellenzusammenfassung anzeigen (Zeilen)",
+        "cbShowTableSummaryCol": "Tabellenzusammenfassung anzeigen (Spalten)",
+        "rowSummaryFunction": "Zusammenfassungsfunktion für Zeilen",
+        "colSummaryFunction": "Zusammenfassungsfunktion für Spalten",
+        "fixedColumns": "Fixiere Tabellenspalten auf der linken Seite",
+        "chartFontSize": "In Charts zu verwendende Schriftgröße",
+        "baselineComparison": {
+          "cbEnable": "Baseline-Vergleich aktivieren",
+          "selDomain": "Dimension",
+          "selRecord": "Baseline-Datensatz",
+          "selMetrics": "Vergleichsmetriken (max. 2)",
+          "errorAggregated": "Die Baseline-Dimension kann nicht aggregiert werden. Der Baseline-Vergleich wurde deaktiviert - es werden Rohwerte angezeigt.",
+          "metrics": {
+            "values": "Rohwerte",
+            "percDiff": "Relative Δ (%)",
+            "absDiff": "Absolute Δ",
+            "norm": "Normalisierung"
+          }
+        }
+      },
       "dialogAddRow":{
         "title": "Neue Zeile hinzufügen",
         "btCancel": "Abbrechen",
@@ -783,6 +852,9 @@
         "prompt1": "Sind Sie sicher, dass Sie die Spalte(n):",
         "prompt2": "entfernen möchten? Dies kann nicht rückgängig gemacht werden!"
       }
+    },
+    "dashboardComparison":{
+      "selectScen": "Wähle Szenario"
     }
   },
   "errMsg":{
@@ -933,10 +1005,7 @@
       "title": "MIRO beschäftigt",
       "desc": "MIRO ist beschäftigt, die Modelldateien in Ihrem Arbeitsbereich zu extrahieren. Bitte warten Sie und versuchen Sie es dann erneut."
     },
-    "gamsTerm":{
-      "title":"Fehler beim Beenden von gams.exe",
-      "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."
-    },
+    "gamsTerm": "Beim Beenden von GAMS ist ein Fehler aufgetreten (z.B. der Prozess ist bereits beendet).",
     "readLog":{
       "title":"Fehler beim Lesen der log-Datei",
       "desc":"Beim Lesen der GAMS log-Datei ist ein Fehler aufgetreten."
@@ -1042,7 +1111,7 @@
       "table": "Tabellen",
       "widgets": "Eingabewidgets",
       "graphs": "Graphen",
-      "analysis": "Szenarioanalysen",
+      "colors": "Farben",
       "database": "Datenbankverwaltung",
       "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
@@ -1054,10 +1123,10 @@
         "tabLogs": "Log-Dateien",
         "tabComparison": "Szenariovergleich",
         "tabData": "Szenariodaten und Anhänge",
-        "tabScripts": "Analyseskripte",
         "tabSymbolLinks": "Versteckte Symbole und Symbolverknüpfungen",
         "headerGeneral": "Titel und Logo",
         "headerPivotcompare": "Pivot-Szenariovergleichsmodus",
+        "descriptionPivotcompare": "Diese Einstellungen dienen als Standardwerte für den Benutzer, können jedoch jederzeit während einer Sitzung angepasst werden.",
         "headerRenderers": "Standard-Renderer",
         "headerAppearance": "Erscheinungsbild",
         "headerSymbolDisplay": "Symboldarstellung",
@@ -1069,13 +1138,9 @@
         "tabNameOrder": "Reihenfolge und Gruppen",
         "headerSymbolNaming": "Symbol- und Spaltennamen",
         "headerSymbolGrouping": "Reihenfolge",
-        "headerBaseScripts": "Einzelne Szenarien",
         "headerOutputAttach": "Ergebnis-Anhänge",
         "headerExport": "Export",
         "headerImport": "Import",
-        "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
-        "headerHcubeScripts": "Batch-Analyse",
-        "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "tooltipDocs": "Dokumentation öffnen"
       },
       "modalDialog":{
@@ -1115,7 +1180,7 @@
         "label": "Name des Standardszenarios"
       },
       "args":{
-        "label": "Zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen werden soll"
+        "label": "Gib zusätzliche Kommandozeilenparameter an, mit denen GAMS/Python aufgerufen werden soll"
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
@@ -1124,10 +1189,6 @@
       },
       "symlinks":{
         "label": "Symbolverknüpfung hinzufügen (Ergebnisse, die als Eingabedaten verwendet werden können)"
-      },
-      "scripts":{
-        "base": "Spezifizieren Sie individuelle Analyseskripte für einzelne Szenarien.",
-        "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"
@@ -1152,8 +1213,10 @@
       },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
-        "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer."
+        "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer.",
+        "miroLogExclusiveError": "Es kann nur eine Protokolldatei auf die MIRO-Protokollsyntax hin geparst werden. Daher wird nur stdout geparst, das MIRO-Protokoll wird jedoch weiterhin angezeigt."
       },
+      "mirologStdout": "Soll die Standardprotokolldatei (stdout des Prozesses) auf die MIRO-Protokollsyntax hin geparst werden?",
       "readme":{
         "label": "README Datei",
         "readmeTooltip": "Eine README-Datei wird im Eingabebereich als individuelle Startseite angezeigt",
@@ -1822,11 +1885,12 @@
       "miroPivotOptions":{
          "externalDefaultViewSwitch": "Externe Standardansicht verwenden",
          "externalDefaultViewName": "Name der als Standard zu verwendenden Ansicht",
-         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
-         "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren. Dazu gehören Einstellungen (%s) und View-Optionen (%s)",
+         "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten standardmäßig aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
+         "emptyUELTooltip": "Der Schalter zum Ausblenden leerer Spalten (im Einstellungen-Menü der Pivot-Tabelle) ermöglicht das Ausblenden leerer Spalten in einer Tabelle. Dies ist besonders nützlich in einem Datenwürfel, bei dem einzelne Ansichten leere Dimensionen aufweisen können.",
          "hidePivotControlsSwitch": "Präsentationsmodus standardmäßig anzeigen",
-         "fixedColumnsSwitch": "Fixierte Spalten aktivieren",
+         "fixedColumnsSwitch": "Spalten fixieren",
          "fixedColumnsTooltip": "Wenn diese Option aktiviert ist, werden die Spalten der Pivot-Tabelle an der linken Seite der Tabelle fixiert und bleiben beim horizontalen Scrollen sichtbar.",
          "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },
@@ -2096,6 +2160,71 @@
           "timevisCustom": "Datum/Uhrzeit, das hinzugefügt werden soll",
           "placeholder": "z.B. 2016-08-21"
         }
+      }
+    },
+    "colors":{
+      "title": "Farben",
+      "themeColors": {
+        "title": "Benutzerdefiniertes Farbschema",
+        "light": "Heller Modus",
+        "dark": "Dunkler Modus",
+        "advanced": "Oberflächenfarben manuell einstellen",
+        "primary": "Primärfarbe",
+        "secondary": "Sekundärfarbe",
+        "sidebar": "Seitenleistenfarbe",
+        "navbar": "Kopfzeilenfarbe",
+        "body_bg": "Body-Hintergrundfarbe",
+        "alert": "Farbe der Entfernen-Schaltfläche",
+        "mainBg": "Hintergrundfarbe Hauptbereich",
+        "console": "Hintergrundfarbe für Log und Code",
+        "primaryDark": "Primärfarbe",
+        "secondaryDark": "Sekundärfarbe",
+        "sidebarDark": "Seitenleistenfarbe",
+        "navbarDark": "Kopfzeilenfarbe",
+        "body_bg_dark": "Body-Hintergrundfarbe",
+        "alertDark": "Farbe der Entfernen-Schaltfläche",
+        "mainBgDark": "Hintergrundfarbe Hauptbereich",
+        "consoleDark": "Hintergrundfarbe für Log und Code",
+        "widgetBgDark": "Hintergrundfarbe Widgets",
+        "primaryTooltip": "Hauptmarkenfarbe. Sie wird am häufigsten in der Anwendung verwendet, um primäre Aktionen hervorzuheben und die Benutzeraufmerksamkeit zu lenken.",
+        "secondaryTooltip": "Die Sekundärfarbe wird verwendet, um die Benutzeroberfläche zu akzentuieren, Inhalte zu unterscheiden, weniger prominente Aktionen anzuzeigen und dient als Farbe der Hauptschaltflächen in der Anwendung.",
+        "alertTooltip": "Die Warnfarbe wird für Schaltflächen verwendet, die Aktionen wie Entfernen, Löschen oder Zurücksetzen auslösen, um Vorsicht zu signalisieren und auf potenziell irreversible Änderungen hinzuweisen.",
+        "consoleTooltip": "Wird zur Anzeige von Ausgaben in Log- und Listing-Dateien innerhalb des GAMS-Interaktionsbereichs verwendet.",
+        "widgetBgDarkTooltip": "Die Widget-Farbe wird für interaktive UI-Elemente wie Dropdowns, Tabellen, Schieberegler und andere Steuerelemente verwendet."
+      },
+      "themeButtons": {
+        "buttonsTitle": "Farbschema speichern",
+        "saveLocal": "Für diese App speichern",
+        "saveGlobal": "Für alle Apps speichern",
+        "downloadTheme": "Für MIRO Server herunterladen",
+        "saveLocalDesc": "Ein app-spezifisches Farbschema ist in der App eingebettet und überschreibt alle anderen Farbschema-Einstellungen. Sobald die App exportiert ist, können die Farben nicht mehr geändert werden.",
+        "saveGlobalDesc": "Ein globales Farbschema wird zentral gespeichert und gilt für alle auf dem Gerät vorhandenen Apps. Es wird in den MIRO-Desktop Einstellungen ausgewählt.",
+        "removeColorsDesc": "Löscht, falls vorhanden, das bestehende app-spezifische Farbschema.",
+        "saveLocalNote": "Farbschema gespeichert.",
+        "saveGlobalModalTitle": "Datei existiert",
+        "saveGlobalModalText": "Eine Datei namens '%s' existiert bereits im GAMS MIRO Arbeitsverzeichnis.",
+        "saveGlobalModalCancel": "Abbrechen",
+        "saveGlobalModalOverwrite": "Überschreiben",
+        "saveGlobalModalNote1": "Datei überschrieben!",
+        "saveGlobalModalNote2": "Farbschema exportiert!",
+        "saveGlobalModalNoteDesc": "Sie können nun in den MIRO-Desktop Einstellungen das Farbschema 'Benutzerdefiniert' auswählen.",
+        "removeColors": "Für diese App löschen",
+        "removeColorsTitle": "Farbschema löschen",
+        "removeColorsText": "Dies entfernt alle 'themeColors' aus Ihrer Konfigurationsdatei.",
+        "removeColorsCancel": "Abbrechen",
+        "removeColorsConfirm": "Löschen",
+        "removeColorsNote1": "Farbschema wurde entfernt.",
+        "removeColorsNote2": "Kein Farbschema gefunden."
+      },
+      "miroServerColors": {
+        "checkbox": "Farbschema für MIRO Server vorbereiten",
+        "title": "MIRO Server Farbschema",
+        "titleTooltip": "Farben für den MIRO Server Anmeldebildschirm, die App-Übersicht usw.",
+        "primary": "Primärfarbe",
+        "bodyBg": "Body-Hintergrundfarbe",
+        "mainBg": "Haupt-Hintergrundfarbe",
+        "loginHeaderBg": "Hintergrund des Headers auf der Loginseite",
+        "primaryTooltip": "Hauptmarkenfarbe. Sie wird verwendet, um primäre Aktionen hervorzuheben."
       }
     }
   }

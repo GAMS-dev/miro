@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.10.9999"
+MIROVersion <- "2.12.0"
 APIVersion <- "1"
-MIRORDate <- "Oct 07 2024"
+MIRORDate <- "Jun 13 2025"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -49,7 +49,7 @@ errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPat
 installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c(
-  "./global.R", "./components/util.R", "./components/gdxio.R",
+  "./global.R", "./components/util.R", "./components/pivot_util.R", "./components/gdxio.R",
   "./components/json.R", "./components/scenario_extensions.R", "./components/views.R",
   "./components/attachments.R", "./components/miroscenio.R",
   "./components/load_scen_data.R", "./components/localfileio.R",
@@ -91,6 +91,8 @@ if (is.null(errMsg)) {
   })
   # set maximum upload size
   options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
+  # disable check for global size in futures
+  options(future.globals.maxSize = Inf)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]
@@ -106,7 +108,7 @@ if (is.null(errMsg)) {
   miroDbDir <- NULL
 
   if (isShinyProxy) {
-    miroWorkspace <- file.path(getwd(), "ws")
+    miroWorkspace <- file.path(tmpFileDir, "ws")
   } else {
     # initialise MIRO workspace
     miroWorkspace <- Sys.getenv("MIRO_WS_PATH")
@@ -725,10 +727,10 @@ if (is.null(errMsg) && debugMode) {
   rm(listOfCustomRenderers)
 }
 aboutDialogText <- paste0(
-  "<b>", MIROVersionString, "</b><br/><br/>",
+  "<div class=\"text-break\"><b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
-  "Copyright (c) 2024 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-  "Copyright (c) 2024 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+  "Copyright (c) 2025 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+  "Copyright (c) 2025 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
   "This program is free software: you can redistribute it and/or modify ",
   "it under the terms of version 3 of the GNU General Public License as published by ",
   "the Free Software Foundation.<br/><br/>",
@@ -740,7 +742,7 @@ aboutDialogText <- paste0(
   "along with this program. If not, see ",
   "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>. ",
   "For more information about third-party software included in MIRO, see ",
-  "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>."
+  "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.</div>"
 )
 if (miroBuildOnly) {
   if (!is.null(errMsg)) {
@@ -816,22 +818,13 @@ if (miroBuildOnly) {
       )
       # assemble MIROAPP
       miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
-      appInfoPath <- file.path(paste0("static_", modelName), "app_info.json")
-      appIdToValidate <- tryCatch(suppressWarnings(
-        read_json(file.path(currentModelDir, appInfoPath),
-          simplifyDataFrame = FALSE,
-          simplifyMatrix = FALSE
-        )
-      )$appId, error = function(e) {
-        return(modelName)
-      })
-      if (length(appIdToValidate) != 1L || !is.character(appIdToValidate)) {
-        appIdToValidate <- modelName
-      }
-      if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", appIdToValidate, perl = TRUE)) {
+      appInfoPath <- file.path(currentModelDir, paste0("static_", modelName), "app_info.json")
+      if (identical(file.access(appInfoPath, mode = 4L)[[1]], 0L)) {
+        jsonValidator$validate(appInfoPath, file.path("conf", "app_info_schema.json"))
+      } else if (!grepl("^[a-z0-9][a-z0-9-_]{0,59}$", modelName, perl = TRUE)) {
         stop(
           sprintf(
-            "The App ID ('%s') may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters!\nProvide a valid app ID by specifying it in the `%s` JSON file with the key: `appId` (e.g. `{\"appId\": \"my_model123\"}`).",
+            "The main model file ('%s') contains an invalid app ID. App IDs must meet the following criteria: contain only ASCII lowercase letters, digits, '-', or '_'; cannot start with '-' or '_'; and cannot exceed 60 characters in length.\nTo provide a valid app ID, specify it in the `%s` JSON file using the `appId` key, for example: {\"appId\": \"my_model123\"}.",
             appIdToValidate, appInfoPath
           ),
           call. = FALSE
@@ -1225,7 +1218,11 @@ if (!is.null(errMsg)) {
         class = "initErrors"
       ),
       HTML("<br>"),
-      verbatimTextOutput("errorMessages"),
+      tags$pre(
+        id = "errorMessages",
+        style = "text-align:left;",
+        class = "shiny-text-output noplaceholder"
+      ),
       tags$div(
         style = "text-align:center;margin-top:20px;",
         actionButton("btCloseInitErrWindow", if (!exists("lang") || is.null(lang$errMsg$initErrors$okButton)) {
@@ -1258,8 +1255,21 @@ if (!is.null(errMsg)) {
   if (isShinyProxy && miroStoreDataOnly) {
     if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
       source("./tools/api/util.R")
+      page <- as.integer(Sys.getenv("MIRO_API_PAGE", "1"))
+      perPage <- as.integer(Sys.getenv("MIRO_API_PER_PAGE", "20"))
+      totalCount <- db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        count = TRUE
+      )[["count"]]
+      if (is.null(totalCount)) {
+        totalCount <- 0L
+      }
       write("merr:::200:::", stderr())
-      write(scenMetaTibbleToJSON(db$fetchScenList(scode = SCODEMAP[["scen"]])), stderr())
+      write(scenMetaTibbleToJSON(db$fetchScenList(
+        scode = SCODEMAP[["scen"]],
+        limit = perPage,
+        offset = perPage * (page - 1L),
+      ), as.integer(totalCount)), stderr())
       if (interactive()) {
         stop()
       }
@@ -1742,11 +1752,10 @@ if (!is.null(errMsg)) {
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode <- FALSE
-      isInRefreshMode <- FALSE
+      isInRefreshMode <- LazyFlagRegistry$new()
       isInSolveMode <- TRUE
       modelStatus <- NULL
       modelStatusObs <- NULL
-      miroLogAnnotations <- NULL
 
       dynamicUILoaded <- list(
         inputGraphs = vector("logical", length(modelIn)),
@@ -1932,6 +1941,9 @@ if (!is.null(errMsg)) {
       if (length(credConfig)) {
         do.call(worker$setCredentials, credConfig)
       }
+      if (isShinyProxy) {
+        worker$setAppAccessGroups(csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", ""))))
+      }
       rendererEnv <- new.env(parent = emptyenv())
 
       # scenario metadata of scenario saved in database
@@ -2100,6 +2112,7 @@ if (!is.null(errMsg)) {
         if (config$activateModules$logFile ||
           config$activateModules$miroLogFile) {
           emptyEl(session, "#logStatusContainer")
+          emptyEl(session, "#miroLogContainer")
         }
         rv$refreshLogs <- NULL
         emptyEl(session, "#modelStatus")
@@ -2208,7 +2221,7 @@ if (!is.null(errMsg)) {
             dynamicUILoaded$dynamicTabsets[[refId]][["content"]][] <<- FALSE
           }
         }
-        isInRefreshMode <<- FALSE
+        isInRefreshMode$set(FALSE)
         scenData$clear(refId)
       })
       lapply(seq(0L, maxNumberScenarios + 3L), function(i) {
@@ -2349,6 +2362,15 @@ if (!is.null(errMsg)) {
         showEl(session, ".file-export")
         hideEl(session, ".remote-export")
       })
+      if (isTRUE(config$parseLogForMiroLogSyntax)) {
+        initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
+      } else if (config$activateModules$miroLogFile) {
+        if (config$activateModules$logFile) {
+          initializeMiroLogParser(session, "mirolog", "miroLogContainer", tabSheetMap$input)
+        } else {
+          initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
+        }
+      }
       hideEl(session, "#loading-screen")
     }
 

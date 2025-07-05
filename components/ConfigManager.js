@@ -74,7 +74,7 @@ const schema = {
   },
   colorTheme: {
     type: 'string',
-    enum: ['default', 'blackandwhite', 'forest', 'tawny', 'darkblue', 'redwine'],
+    enum: ['default', 'blackandwhite', 'forest', 'tawny', 'darkblue', 'redwine', 'custom'],
   },
   logLevel: {
     type: 'string',

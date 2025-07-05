@@ -6,6 +6,12 @@ app <- AppDriver$new("../../",
 expect_true(app$get_js("$('#inputTabset > li').length===3", timeout = 50L))
 expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 50L))
 
+# check that about dialog opens and has correct copyright year
+app$run_js("$('.navbar-custom-menu a.dropdown-toggle').get(0).click()")
+app$run_js("$('.navbar-custom-menu a:contains(\"About\")').click()")
+app$wait_for_js(paste0("$('.modal-body').text().includes('Copyright (c) ", format(Sys.Date(), "%Y"), "')"))
+app$click(selector = 'button[data-dismiss="modal"]')
+
 # tab view
 app$click(selector = 'a[data-value="scenarios"]')
 app$run_js("$('#btLoadScen').click();", timeout = 50L)

@@ -47,6 +47,10 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   if (identical(manipulate, "wrongAssembly")) {
     writeLines(c("Hello", "World"), file.path(testModelPath, paste0(modelToTest, "_files.txt")))
   }
+  if (identical(manipulate, "wrongAppInfo")) {
+    suppressWarnings(dir.create(file.path(testModelPath, paste0("static_", modelToTest))))
+    writeLines('{"title": true}', file.path(testModelPath, paste0("static_", modelToTest), "app_info.json"))
+  }
 
   Sys.setenv(MIRO_USE_TMP = if (useTemp) "true" else "false")
   Sys.setenv(MIRO_BUILD_ARCHIVE = if (buildArchive) "true" else "false")
@@ -65,7 +69,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
   )
   deployProc$wait()
   if (identical(manipulate, "noAssembly") || identical(manipulate, "emptyAssembly") ||
-    identical(manipulate, "wrongAssembly")) {
+    identical(manipulate, "wrongAssembly") || identical(manipulate, "wrongAppInfo")) {
     expect_true(!identical(deployProc$get_exit_status(), 0L))
     unlink(testModelPath, recursive = TRUE, force = TRUE)
     return()
@@ -133,6 +137,7 @@ test_that(sprintf("Example app: '%s' can not be deployed with faulty model assem
   expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = "noAssembly")
   expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = "emptyAssembly")
   expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = "wrongAssembly")
+  expect_deploy_works(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = "wrongAppInfo")
 })
 
 Sys.unsetenv(c(

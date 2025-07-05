@@ -1,0 +1,10 @@
+:root {
+    --miro-server-primary-color: #ce7e16;
+    --miro-server-body-bg: #eae7e5;
+    --miro-server-main-bg: #fff;
+    --miro-server-login-header-bg: #1a1309;
+    --miro-server-primary-color-dark: #ce7e16;
+    --miro-server-body-bg-dark: #1f1f1f;
+    --miro-server-main-bg-dark: #2b2b2b;
+    --miro-server-login-header-bg-dark: #1a1309;
+}

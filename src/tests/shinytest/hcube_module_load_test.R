@@ -88,7 +88,7 @@ expect_identical(httr::status_code(httr::PUT(
     volume_quota = 200L
   ),
   httr::authenticate(Sys.getenv("ENGINE_USER"), Sys.getenv("ENGINE_PASSWORD")),
-  httr::timeout(2L)
+  httr::timeout(10L)
 )), 200L)
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")

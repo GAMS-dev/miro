@@ -34,187 +34,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
       dataViewsConfig <- options$dataViewsConfig
 
-      prepareData <- function(config, viewData) {
-        dataTmp <- viewData
-
-        filterIndexList <- names(config$filter)
-        aggFilterIndexList <- names(config$aggregations)
-        colFilterIndexList <- names(config$cols)
-        filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
-
-        filterElements <- vector("list", length(filterIndexList))
-        names(filterElements) <- filterIndexList
-        multiFilterIndices <- c()
-
-        for (filterIndex in filterIndexList) {
-          filterElements[[filterIndex]] <- sort(unique(dataTmp[[filterIndex]]))
-          optionId <- "filter"
-          if (filterIndex %in% aggFilterIndexList) {
-            optionId <- "aggregations"
-          } else if (filterIndex %in% colFilterIndexList) {
-            optionId <- "cols"
-          }
-          filterVal <- config[[optionId]][[filterIndex]]
-
-          if (!any(filterVal %in% filterElements[[filterIndex]])) {
-            if (filterIndex %in% c(aggFilterIndexList, colFilterIndexList)) {
-              # nothing selected = no filter for aggregations/cols
-              next
-            }
-            filterVal <- filterElements[[filterIndex]][1]
-          }
-          if (any(is.na(match(filterIndex, names(dataTmp))))) {
-            flog.warn(
-              "Attempt to tamper with the app detected! User entered: '%s' as filter index",
-              filterIndex
-            )
-            stop("Attempt to tamper with the app detected!", call. = FALSE)
-          }
-          if (length(filterVal) > 1L) {
-            multiFilterIndices <- c(multiFilterIndices, filterIndex)
-            filterExpression <- paste0(
-              ".[[\"", filterIndex, "\"]]%in%c('",
-              paste(gsub("'", "\\'", filterVal, fixed = TRUE), collapse = "','"),
-              "')"
-            )
-          } else {
-            filterExpression <- paste0(
-              ".[[\"", filterIndex, "\"]]=='",
-              gsub("'", "\\'", filterVal, fixed = TRUE),
-              "'"
-            )
-          }
-          dataTmp <- dataTmp %>% filter(
-            !!rlang::parse_expr(filterExpression)
-          )
-        }
-
-
-        rowIndexList <- config$rows
-        aggregationFunction <- config$aggregationFunction
-        setIndices <- names(dataTmp)[-length(dataTmp)]
-        if (is.null(rowIndexList)) {
-          rowIndexList <- setIndices
-        }
-        rowIndexList <- c(
-          rowIndexList,
-          multiFilterIndices[!multiFilterIndices %in% c(aggFilterIndexList, colFilterIndexList)]
-        )
-        valueColName <- names(dataTmp)[length(dataTmp)]
-        if (length(aggFilterIndexList)) {
-          if (identical(aggregationFunction, "")) {
-            aggregationFunction <- "count"
-          } else if (length(aggregationFunction) != 1L ||
-            !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median", "sd")) {
-            flog.warn(
-              "Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
-              aggregationFunction
-            )
-            stop("Attempt to tamper with the app detected!", call. = FALSE)
-          }
-          valueColName <- names(dataTmp)[length(dataTmp)]
-          if (!identical(valueColName, "value")) {
-            names(dataTmp)[length(dataTmp)] <- "value"
-          }
-          dataTmp <- dataTmp %>%
-            group_by(!!!rlang::syms(c(rowIndexList, colFilterIndexList))) %>%
-            summarise(value = !!rlang::parse_expr(
-              if (identical(aggregationFunction, "count")) {
-                "sum(!is.na(value))"
-              } else {
-                paste0(aggregationFunction, "(value, na.rm = TRUE)")
-              }
-            ), .groups = "drop_last")
-          if (!identical(valueColName, "value")) {
-            names(dataTmp)[length(dataTmp)] <- valueColName
-          }
-        }
-
-        if (length(rowIndexList)) {
-          dataTmp <- dataTmp %>%
-            select(!!!c(rowIndexList, colFilterIndexList, valueColName)) %>%
-            arrange(!!!rlang::syms(rowIndexList))
-        } else {
-          dataTmp <- dataTmp %>% select(!!!c(colFilterIndexList, valueColName))
-        }
-
-        # apply custom labels
-        if (length(config$chartOptions$customLabels)) {
-          labelCols <- dataTmp[, vapply(dataTmp, class, character(1L), USE.NAMES = FALSE) == "character"]
-          for (col in seq_len(length(labelCols))) {
-            dataTmp[[col]] <- sapply(dataTmp[[col]], function(x) {
-              if (x %in% names(config$chartOptions$customLabels)) {
-                config$chartOptions$customLabels[[x]]
-              } else {
-                x
-              }
-            })
-          }
-        }
-
-        userFilterData <- list()
-
-        if (length(config$userFilter) &&
-          !(length(config$userFilter) == 1 && config$userFilter %in% names(dataViewsConfig))) {
-          for (filter in config$userFilter) {
-            userFilterData[[filter]] <- unique(dataTmp[[filter]])
-          }
-        }
-
-        if (length(colFilterIndexList)) {
-          # note that names_sep is not an ASCII full stop, but UNICODE U+2024
-          tryCatch(
-            {
-              dataTmp <- dataTmp %>%
-                pivot_wider(
-                  names_from = !!colFilterIndexList, values_from = !!valueColName,
-                  names_sep = "\U2024",
-                  names_sort = TRUE, names_repair = "unique"
-                )
-            },
-            warning = function(w) {
-              if (grepl("list-cols", conditionMessage(w), fixed = TRUE)) {
-                flog.trace("Dashboard configuration: Data contains duplicated keys and can therefore not be pivoted.")
-                showErrorMsg(
-                  lang$renderers$miroPivot$errorTitle,
-                  lang$renderers$miroPivot$errPivotDuplicate
-                )
-              } else {
-                flog.info(
-                  "Dashboard configuration: Unexpected warning while pivoting data. Error message: %s",
-                  conditionMessage(e)
-                )
-                showErrorMsg(
-                  lang$renderers$miroPivot$errorTitle,
-                  lang$renderers$miroPivot$errPivot
-                )
-              }
-            },
-            error = function(e) {
-              flog.info(
-                "Dashboard configuration: Unexpected error while pivoting data. Error message: %s",
-                conditionMessage(e)
-              )
-              showErrorMsg(
-                lang$renderers$miroPivot$errorTitle,
-                lang$renderers$miroPivot$errPivot
-              )
-            }
-          )
-        }
-
-        attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
-        for (filterName in names(userFilterData)) {
-          attr(dataTmp, paste0("userFilterData_", filterName)) <- userFilterData[[filterName]]
-        }
-        return(dataTmp)
-      }
-
-      hasMultipleNumeric <- function(df) {
-        numericCols <- vapply(df, is.numeric, logical(1L), USE.NAMES = FALSE)
-        sum(numericCols) > 1
-      }
-
       getData <- function(indicator) {
         noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
         dataTmp <- dashboardChartData[[indicator]]
@@ -255,6 +74,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
       dashboardChartData <- list()
       currentConfig <- c()
+      rawData <- list()
       for (view in names(dataViewsConfig)) {
         if (!is.list(dataViewsConfig[[view]])) {
           # custom user output
@@ -273,7 +93,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         currentConfig <- dataViewsConfig[[view]]
 
         # If no data symbol is provided, the renderer's base symbol is used.
-        if (is.list(data)) {
+        if (!is_tibble(data)) {
           if (!is.null(currentConfig$data)) {
             viewData <- data[[tolower(currentConfig$data)]]
           } else {
@@ -296,7 +116,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
         }
 
-        preparedData <- prepareData(currentConfig, viewData)
+        rawData[[view]] <- viewData
+        preparedData <- prepareData(currentConfig, viewData, names(dataViewsConfig))
         dashboardChartData[[view]] <- preparedData
       }
 
@@ -367,16 +188,13 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                   } else {
                     "color:#dd4b39!important"
                   },
-                  if (!is.na(suppressWarnings(as.numeric(value))) &&
-                    as.numeric(value) > 0) {
-                    paste0(prefix, value, postfix)
-                  } else if (!is.na(suppressWarnings(as.numeric(value))) &&
-                    as.numeric(value) == 0) {
-                    paste0("0", postfix)
-                  } else if (!is.na(suppressWarnings(as.numeric(value)))) {
-                    paste0(value, postfix)
+                  if (!is.na(suppressWarnings(as.numeric(value)))) {
+                    if (as.numeric(value) < 0 && identical(prefix, "+")) {
+                      prefix <- ""
+                    }
+                    paste0(prefix, format(value, big.mark = ","), postfix)
                   } else {
-                    value
+                    "NA"
                   }
                 )
               },
@@ -391,10 +209,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
 
           div(
-            class = "shiny-html-output",
             class = if (!is.null(width)) {
               paste0("col-sm-", width)
             },
+            `data-namespace` = ns(""),
             id = id,
             boxContent
           )
@@ -430,18 +248,24 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           if (is.null(options$valueBoxes$valueScalar[i]) || is.na(options$valueBoxes$valueScalar[i])) {
             valueTmp <- NULL
           } else {
-            if (is.null(outputScalarsFull)) {
-              abortSafe("No scalar symbols found for valueBoxes")
+            valueScalarName <- options$valueBoxes$valueScalar[i]
+            valueTmp <- NULL
+            if (!is.null(outputScalarsFull) &&
+              valueScalarName %in% outputScalarsFull$scalar) {
+              valueTmp <- outputScalarsFull %>%
+                filter(tolower(scalar) == tolower(valueScalarName)) %>%
+                pull(value) %>%
+                as.numeric()
+            } else if (!is_tibble(data) && "_scalarsve_out" %in% names(data) &&
+              valueScalarName %in% data[["_scalarsve_out"]]$scalar) {
+              valueTmp <- data[["_scalarsve_out"]] %>%
+                filter(tolower(scalar) == tolower(valueScalarName)) %>%
+                pull(level) %>%
+                as.numeric()
             }
-            valueTmp <- outputScalarsFull %>%
-              filter(scalar == tolower(options$valueBoxes$valueScalar[i]))
-
-            if (!nrow(valueTmp)) {
-              abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", options$valueBoxes$valueScalar[i], options$valueBoxes$id[i]))
+            if (length(valueTmp) == 0) {
+              abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", valueScalarName, options$valueBoxes$id[i]))
             }
-
-            valueTmp <- as.numeric(valueTmp$value)
-
             if (!is.na(options$valueBoxes$decimals[i])) {
               valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
             }
@@ -504,6 +328,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       output$dataViews <- renderUI({
         sections <- lapply(names(options$dataViews), function(viewList) {
           view <- options$dataViews[[viewList]]
+          if (is.null(names(view))) {
+            view <- unlist(view, recursive = FALSE)
+          }
           idList <- as.list(names(view))
           titleList <- view
 
@@ -547,14 +374,31 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                         uiOutput(ns(paste0(id, "DownloadButtons")))
                       ),
                       if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
+                        singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
+                          dataViewsConfig[[id]]$singleDropdown
+                        } else {
+                          character(0)
+                        }
+
                         filterInputs <- lapply(userFilter, function(filterName) {
+                          userFilterChoices <- attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))
+                          multiple <- if (filterName %in% singleDropdownFilters) {
+                            FALSE
+                          } else {
+                            TRUE
+                          }
+
+                          if (multiple) {
+                            userFilterChoices <- c("All" = "", userFilterChoices)
+                          }
+
                           tags$div(
                             class = "custom-dropdown-wide user-filter",
                             class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
                             selectizeInput(ns(paste0(id, "userFilter_", filterName)),
                               label = NULL,
-                              choices = c("All" = "", attr(dashboardChartData[[id]], paste0("userFilterData_", filterName))),
-                              multiple = TRUE, width = "100%",
+                              choices = userFilterChoices,
+                              multiple = multiple, width = "100%",
                               options = list(onInitialize = I(paste0("function(value) {
                                          document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
                                        }")))
@@ -567,7 +411,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                     ),
                     tags$div(
                       class = "table-chart-wide-wrapper",
-                      DTOutput(ns(paste0(id, "Table"))),
+                      DT::DTOutput(ns(paste0(id, "Table"))),
                       tags$div(
                         id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
                         style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
@@ -614,13 +458,45 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           # heatmap
           if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
-            brks <- quantile(dataTmp[-seq_len(as.numeric(noRowHeaders))],
-              probs = seq(.05, .95, .05), na.rm = TRUE
-            )
-            clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
-              {
-                paste0("rgb(255,", ., ",", ., ")")
-              }
+            if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
+              dataColors <- heatmapColors(dataTmp, noRowHeaders, 2L)
+            } else {
+              dataColors <- heatmapColors(dataTmp, noRowHeaders, 1L)
+            }
+          }
+
+          # baseline comparison
+          roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
+          if (length(attr(dataTmp, "baselineComp"))) {
+            tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
+            baselineCompRenderFn <- list(list(
+              targets = seq(noRowHeaders + 1, length(dataTmp)) - 1L,
+              render = JS(paste0(
+                "function(data, type, row, meta) {
+  if (type !== 'display') {
+    return data;
+  }
+  const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+                if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
+                  paste0(
+                    "
+  const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+  const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
+  const refData=", toJSON(round(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]], digits = roundPrecision)), "[offset];
+  if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
+    window.alertPushed = '", tableSessionId, "';
+    Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
+  }
+  return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "')+'</span>'+(secondaryMetric===''?'':' ('+secondaryMetric+'",
+                    attr(dataTmp, "baselineComp")$metricSuffix[[2]], "'+')');}"
+                  )
+                } else {
+                  paste0("return pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "');}")
+                }
+              ))
+            ))
+          } else {
+            baselineCompRenderFn <- NULL
           }
 
           # Table Summary
@@ -630,7 +506,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             select(where(~ !is.numeric(.))) %>%
             names()
 
-          if (identical(dataViewsConfig[[indicator]]$tableSummarySettings$enabled, TRUE)) {
+          fullSummaryEnabled <- identical(dataViewsConfig[[indicator]]$tableSummarySettings[["enabled"]], TRUE)
+          if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$rowEnabled, TRUE)) {
             tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             if (identical(tablesummarySettings$rowSummaryFunction, "sum")) {
               dataTmp <- mutate(
@@ -667,9 +544,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 )]))
               )
             }
-
+          }
+          if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
+            tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
             colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
-            roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (identical(tablesummarySettings$colSummaryFunction, "count")) {
               colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
                 logical(1L),
@@ -697,19 +575,25 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               scrollX = TRUE,
               scrollY = if (length(dataViewsConfig[[indicator]]$height)) dataViewsConfig[[indicator]]$height else "33vh",
               scrollCollapse = TRUE,
-              columnDefs = list(list(
+              columnDefs = c(list(list(
                 className = "dt-left", targets = "_all"
-              ))
+              )), baselineCompRenderFn),
+              drawCallback = if (identical(input[[paste0(indicator, "ChartType")]], "heatmap")) JS('function() {$(this.api().table().body()).addClass("heatmap") }')
             )
           )
 
           if (!identical(input[[paste0(indicator, "ChartType")]], "heatmap")) {
             return(tableObj)
           }
-          return(formatStyle(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
-            color = "#000",
-            backgroundColor = styleInterval(brks, clrs)
-          ))
+          return(
+            formatStyle(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
+              color = "#333",
+              backgroundColor = styleInterval(
+                dataColors$brks,
+                dataColors$clrs
+              )
+            )
+          )
         })
 
         customColors <- c(
@@ -754,6 +638,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
           noSeries <- length(dataTmp) - rowHeaderLen
+
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
           if (!length(labels)) {
             labels <- "value"
@@ -763,36 +648,38 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           if (length(currentView$chartOptions$customChartColors) &&
             length(names(currentView$chartOptions$customChartColors))) {
-            # custom chart colors specified
+            colorLabelsNew <- transformLabels(
+              originalLabels = names(currentView$chartOptions$customChartColors),
+              customLabels = currentView$chartOptions$customLabels
+            )
 
-            colorLabels <- names(currentView$chartOptions$customChartColors)
-            colorLabelsNew <- colorLabels
-            if (length(currentView$chartOptions$customLabels)) {
-              colorLabelsNew <- c()
-              for (colorLabel in colorLabels) {
-                label <- colorLabel
-                if (colorLabel %in% names(currentView$chartOptions$customLabels)) {
-                  label <- currentView$chartOptions$customLabels[[colorLabel]]
-                } else {
-                  labelsTmp <- strsplit(colorLabel, "\U2024")[[1]]
-                  labelMatch <- which(labelsTmp %in% names(currentView$chartOptions$customLabels))
-                  labelsTmp[labelMatch] <- unlist(currentView$chartOptions$customLabels[labelsTmp[labelMatch]])
-                  label <- paste(labelsTmp, collapse = "\U2024")
+            numSeries <- length(currentSeriesLabels)
+            colorList <- vector("list", numSeries)
+            for (i in seq_len(numSeries)) {
+              colorList[[i]] <- defaultColorPair(i, customColors)
+            }
+
+            for (i in seq_along(currentSeriesLabels)) {
+              seriesLab <- currentSeriesLabels[i]
+
+              exactIdx <- which(colorLabelsNew == seriesLab)
+              if (length(exactIdx) == 1) {
+                colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
+              } else {
+                patternMatches <- which(vapply(colorLabelsNew, matchSeriesLabel, logical(1L), label = seriesLab, USE.NAMES = FALSE))
+
+                if (length(patternMatches) > 0) {
+                  chosenIdx <- patternMatches[1]
+                  colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
                 }
-                colorLabelsNew <- c(colorLabelsNew, label)
               }
             }
 
-            chartColorIdx <- match(
-              currentSeriesLabels,
-              colorLabelsNew
-            )
-            chartColorsToUse <- currentView$chartOptions$customChartColors[chartColorIdx]
-            chartColorsToUse[is.na(chartColorIdx)] <- list(c("#666", "#666"))
-            chartColorsToUse <- unlist(chartColorsToUse, use.names = FALSE)
+            chartColorsToUse <- unlist(colorList, use.names = FALSE)
           } else {
             chartColorsToUse <- customColors
           }
+
 
           if (chartType %in% c(
             "line", "scatter", "area", "stackedarea",
@@ -809,7 +696,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (identical(chartType, "scatter")) {
               chartJsObj$x$options$showLine <- FALSE
             } else if (identical(chartType, "stackedarea")) {
-              chartJsObj$x$scales$y$stacked <- TRUE
+              chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
               chartJsObj$x$options$plugins$tooltip <- list(
                 mode = "index",
                 position = "nearest"
@@ -837,6 +724,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 xTitle = currentView$chartOptions$xTitle,
                 yTitle = currentView$chartOptions$yTitle
               )
+            chartJsObj$x$scales$y$stacked <- if (identical(currentView$chartOptions$singleStack, TRUE)) "single" else TRUE
             chartJsObj$x$options$plugins$tooltip <- list(
               mode = "index",
               position = "nearest"
@@ -868,18 +756,86 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 yTitle = currentView$chartOptions$yTitle
               )
           }
-          if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
-            if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-              identical(chartJsObj$x$scales$y$type, "linear")) {
-              chartJsObj$x$scales$x$type <- "logarithmic"
-            } else {
-              chartJsObj$x$scales$x$type <- "linear"
+          if (length(currentView$chartOptions$y2axis$series)) {
+            axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x2" else "y2"
+            position <- if (axisType == "x2") "top" else "right"
+
+            chartJsObj <- cjsAddScale(chartJsObj,
+              axis = axisType,
+              position = position,
+              type = if (identical(currentView$chartOptions$y2axis$logScale, TRUE)) "logarithmic" else "linear",
+              display = "auto",
+              title = list(
+                text = if (length(currentView$chartOptions$y2axis$title)) currentView$chartOptions$y2axis$title else NULL,
+                display = if (length(currentView$chartOptions$y2axis$title)) TRUE else FALSE
+              )
+            )
+
+            if (identical(currentView$chartOptions$y2axis$showGrid, FALSE)) {
+              chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
             }
+            if (length(currentView$chartOptions$y2axis$min)) {
+              chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$y2axis$min
+            }
+            if (length(currentView$chartOptions$y2axis$max)) {
+              chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$y2axis$max
+            }
+          }
+
+          if (identical(currentView$chartOptions$yLogScale, TRUE)) {
+            if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+              chartJsObj$x$scales$x$type <- "logarithmic"
+              chartJsObj$x$options$indexAxis <- "y"
+              chartJsObj$x$scales$y$type <- "category"
+            } else if (identical(chartJsObj$x$scales$y$type, "linear")) {
+              chartJsObj$x$scales$y$type <- "logarithmic"
+            }
+          } else if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+            chartJsObj$x$scales$x$type <- "linear"
             chartJsObj$x$options$indexAxis <- "y"
             chartJsObj$x$scales$y$type <- "category"
-          } else if (identical(currentView$chartOptions$yLogScale, TRUE) &&
-            identical(chartJsObj$x$scales$y$type, "linear")) {
-            chartJsObj$x$scales$y$type <- "logarithmic"
+          }
+
+          axisType <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "x" else "y"
+          xGrid <- if (chartType %in% c("horizontalbar", "horizontalstackedbar")) "y" else "x"
+          if (length(currentView$chartOptions$yMin)) {
+            chartJsObj$x$scales[[axisType]]$min <- currentView$chartOptions$yMin
+          }
+          if (length(currentView$chartOptions$yMax)) {
+            chartJsObj$x$scales[[axisType]]$max <- currentView$chartOptions$yMax
+          }
+          if (identical(currentView$chartOptions$showXGrid, FALSE)) {
+            chartJsObj$x$scales[[xGrid]]$grid$display <- FALSE
+          }
+          if (identical(currentView$chartOptions$showYGrid, FALSE)) {
+            chartJsObj$x$scales[[axisType]]$grid$display <- FALSE
+          }
+          if (identical(currentView$chartOptions$showDataMarkers, FALSE) &&
+            !identical(chartType, "scatter")) {
+            chartJsObj$x$options$normalized <- TRUE
+            chartJsObj$x$options$animation <- FALSE
+            chartJsObj$x$options$elements <- list(
+              point = list(
+                radius = 0L,
+                hitRadius = 4L
+              )
+            )
+            chartJsObj$x$options$plugins$tooltip <- list(
+              mode = "index",
+              position = "nearest"
+            )
+          }
+
+          chartJsObj <- chartJsObj %>% cjsLegend()
+
+          multiChartRenderer <- character(0)
+          if (length(currentView$chartOptions$multiChartOptions$multiChartRenderer)) {
+            multiChartRenderer <- currentView$chartOptions$multiChartOptions$multiChartRenderer
+          }
+          groupElements <- NULL
+          if (length(currentView$chartOptions$groupDimension) &&
+            chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+            groupElements <- unique(rawData[[indicator]][[currentView$chartOptions$groupDimension]])
           }
 
           for (i in seq_len(noSeries)) {
@@ -892,29 +848,171 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               ]
             }
 
-            if (originalLabel %in% currentView$chartOptions$multiChartSeries) {
-              if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "bar",
-                  order = 2
-                )
+            scaleID <- NULL
+            if (length(currentView$chartOptions$y2axis$series) && originalLabel %in% currentView$chartOptions$y2axis$series) {
+              if (chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+                scaleID <- "x2"
               } else {
-                chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
-                  label = label,
-                  type = "line",
-                  showLine = TRUE,
-                  order = 0
-                )
+                scaleID <- "y2"
+              }
+            }
+
+            lineDash <- NULL
+            if (length(currentView$chartOptions$customLineDashPatterns) &&
+              length(names(currentView$chartOptions$customLineDashPatterns))) {
+              transformedLineDashNames <- transformLabels(
+                originalLabels = names(currentView$chartOptions$customLineDashPatterns),
+                customLabels = currentView$chartOptions$customLabels
+              )
+
+              exactIdx <- which(transformedLineDashNames == label)
+              if (length(exactIdx) == 1) {
+                lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
+              } else {
+                patternMatches <- which(vapply(transformedLineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+                if (length(patternMatches) > 0) {
+                  chosenIdx <- patternMatches[1]
+                  lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
+                } else {
+                  lineDash <- NULL
+                }
+              }
+            }
+
+            borderWidth <- NULL
+            if (length(currentView$chartOptions$customBorderWidths) &&
+              length(names(currentView$chartOptions$customBorderWidths)) > 0) {
+              transformedBorderWidthNames <- transformLabels(
+                originalLabels = names(currentView$chartOptions$customBorderWidths),
+                customLabels = currentView$chartOptions$customLabels
+              )
+
+              exactIdx <- which(transformedBorderWidthNames == label)
+              if (length(exactIdx) == 1) {
+                borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[exactIdx]]
+                borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+                if (!is.na(borderWidthCandidate)) {
+                  borderWidth <- borderWidthCandidate
+                }
+              } else {
+                patternMatches <- which(vapply(transformedBorderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+                if (length(patternMatches) > 0) {
+                  chosenIdx <- patternMatches[1]
+                  borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
+                  borderWidthCandidate <- round(as.numeric(borderWidthCandidate))
+                  if (!is.na(borderWidthCandidate)) {
+                    borderWidth <- borderWidthCandidate
+                  }
+                }
+              }
+            }
+
+            stack <- NULL
+            if (length(groupElements) && chartType %in% c("stackedbar", "horizontalstackedbar")) {
+              patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
+              if (length(patternMatches) == 0) {
+                stack <- NULL
+              } else {
+                stack <- paste0("stack", patternMatches[1])
               }
             } else {
-              chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]],
+              stack <- if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
+            }
+
+            multiChartSeries <- FALSE
+            if (length(currentView$chartOptions$multiChartSeries)) {
+              series <- currentView$chartOptions$multiChartSeries
+              if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
+                multiChartSeries <- TRUE
+              }
+            }
+            if (multiChartSeries) {
+              if (chartType %in% c("line", "area", "stackedarea", "timeseries")) {
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "bar"
+              } else {
+                multiChartRenderer <- if (length(multiChartRenderer)) multiChartRenderer else "line"
+              }
+              if ((multiChartRenderer %in% c("line", "scatter") || identical(chartType, "stackedarea")) &&
+                !identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
+                order <- 0
+              } else {
+                order <- 2
+              }
+
+              args <- list(
+                chartJsObj,
+                dataTmp[[rowHeaderLen + i]],
+                label = label,
+                type = multiChartRenderer,
+                showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
+                order = order,
+                scaleID = scaleID,
+                pointHitRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 1L else 0L,
+                pointRadius = if (identical(currentView$chartOptions$multiChartOptions$showMultiChartDataMarkers, TRUE)) 3L else 0L,
+                stack = if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "regularStack")) {
+                  stack
+                } else if (identical(currentView$chartOptions$multiChartOptions$stackMultiChartSeries, "individualStack")) {
+                  "stack0"
+                } else {
+                  as.character(i)
+                },
+                stepped = identical(currentView$chartOptions$multiChartOptions$multiChartStepPlot, TRUE)
+              )
+
+              if (!is.null(lineDash)) {
+                args$borderDash <- lineDash
+              }
+              if (!is.null(borderWidth)) {
+                args$borderWidth <- borderWidth
+              }
+
+              chartJsObj <- do.call(cjsSeries, args)
+            } else {
+              fillOpacity <- if (identical(chartType, "stackedarea")) {
+                if (length(currentView$chartOptions$fillOpacity)) currentView$chartOptions$fillOpacity else 1
+              } else if (identical(chartType, "area")) {
+                if (length(currentView$chartOptions$fillOpacity)) currentView$chartOptions$fillOpacity else 0.15
+              } else {
+                0.15
+              }
+
+              args <- list(
+                chartJsObj,
+                dataTmp[[rowHeaderLen + i]],
                 label = label,
                 fill = chartType %in% c("area", "stackedarea"),
-                fillOpacity = if (identical(chartType, "stackedarea")) 1 else 0.15,
-                order = 1
+                fillOpacity = fillOpacity,
+                order = 1,
+                scaleID = scaleID,
+                stack = stack,
+                stepped = identical(currentView$chartOptions$stepPlot, TRUE)
               )
+
+              if (!is.null(lineDash)) {
+                args$borderDash <- lineDash
+              }
+              if (!is.null(borderWidth)) {
+                args$borderWidth <- borderWidth
+              }
+
+              chartJsObj <- do.call(cjsSeries, args)
             }
+          }
+
+          if (length(currentView$chartFontSize)) {
+            chartFontSize <- isolate(as.numeric(currentView$chartFontSize))
+            chartJsObj$x$options$plugins$tooltip$bodyFont$size <- chartFontSize
+            chartJsObj$x$options$plugins$tooltip$titleFont$size <- chartFontSize
+            chartJsObj$x$options$plugins$legend$labels$font$size <- chartFontSize
+
+            for (scale in names(chartJsObj$x$scales)) {
+              chartJsObj$x$scales[[scale]]$ticks$font$size <- chartFontSize
+              chartJsObj$x$scales[[scale]]$title$font$size <- chartFontSize
+            }
+          }
+
+          if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+            chartJsObj$x$options$plugins$legend$display <- FALSE
           }
 
           if (chartType %in% c("stackedbar", "stackedarea")) {
@@ -942,7 +1040,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 enabled = TRUE
               ),
               mode = "xy",
-              overScaleMode = "y"
+              scaleMode = "y"
             ),
             pan = list(
               enabled = TRUE,
@@ -950,7 +1048,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           )
 
-          return(chartJsObj %>% cjsLegend())
+          return(chartJsObj)
         })
 
         # download buttons: png & csv

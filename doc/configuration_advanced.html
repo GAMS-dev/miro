@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -121,7 +121,7 @@
                       itself. To learn more about the concepts of this dual
                       component approach, visit the website for the R Shiny
                       framework that GAMS MIRO is based upon:
-                      <a href="https://shiny.rstudio.com/"
+                      <a href="https://shiny.rstudio.com/" target="_blank"
                         >https://shiny.rstudio.com/</a
                       >. In particular, we are using
                       <a
@@ -322,9 +322,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                         <b class="callout-title">Note:</b>
                         <p>
                           If you use functions from packages other than
-                          <kbd>shiny</kbd>, <kbd>DT</kbd>,
-                          <kbd>rhandsontable</kbd>, <kbd>dplyr</kbd>,
-                          <kbd>readr</kbd> or the R base packages, make sure
+                          <kbd>shiny</kbd> or the R base packages, make sure
                           you specify the package/namespace that exports this
                           function. In our example, the functions
                           <kbd>leafletOutput</kbd>,
@@ -342,6 +340,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                       <kbd>data</kbd> argument - an R
                       <a
                         href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html"
+                        target="_blank"
                         >tibble</a
                       >, a data structure that is very similar to a Data Frame.
                       In case you specified
@@ -365,6 +364,30 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                       accessed via the argument
                       <kbd>options</kbd> - a (nested) list.
                     </p>
+                    <div
+                      class="callout-block callout-warning"
+                      id="cr-package-note"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Note:</b>
+                        <p>
+                          Scalar variables are not added to
+                          <kbd>outputScalarsFull</kbd>, since they have the
+                          attributes <kbd>level</kbd>, <kbd>marginal</kbd>,
+                          <kbd>lower</kbd>, <kbd>upper</kbd>, and
+                          <kbd>scale</kbd>
+                          and are therefore not true scalars. To access them
+                          you need to include
+                          <kbd>_scalarsve_out</kbd> in your additional
+                          datasets.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
                     <div class="callout-block callout-success">
                       <div class="icon-holder">
                         <i class="fas fa-thumbs-up"></i>
@@ -1122,7 +1145,17 @@ attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPe
                       method
                       <code class="language-r"
                         >attachments$isReadonly(session)</code
-                      >.
+                      >. Attachments must not exceed the maximum size of
+                      <kbd>50 MB</kbd>. If an attachment is added that exceeds
+                      this size, an error of the
+                      <span class="code">error_max_size</span> class is raised.
+                      In addition, a maximum of <kbd>20</kbd> attachments can
+                      be added per scenario. If this limit is exceeded, an
+                      error of class <span class="code">error_max_no</span> is
+                      thrown. If a scenario with a name that already exists is
+                      added, an error of the
+                      <span class="code">error_duplicate_files</span> class is
+                      raised.
                     </p>
                     <h6 class="api-header">Example</h6>
                     <p>

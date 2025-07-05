@@ -147,7 +147,6 @@
         "maxTabsExpandedSplitComp": 5,
         "maxTabsExpandedTabComp": 5
     },
-    "miroLogFile": "cpack_miroLog.dat",
     "overwriteAliases": {
         "circledata": {
             "newAlias": "circledata"

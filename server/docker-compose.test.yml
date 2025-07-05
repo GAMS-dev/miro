@@ -18,6 +18,7 @@ services:
     build:
       context: ./auth/
       dockerfile: Dockerfile.test
+    command: pytest -vv tests/
     ports:
       - 8081:1234
     environment:
@@ -31,13 +32,13 @@ services:
       GMS_MIRO_DATABASE_USER: GMSMASTER
       GMS_MIRO_DATABASE_PWD:  ${GMS_MIRO_DATABASE_PWD}
       SESSION_TIMEOUT: 43200
-    restart: always
+    restart: no
     volumes:
       - ../src:/home/miro/app
       - ./admin:/home/miro/admin
       - ./data:/home/miro/admin/data
       - ./models:/home/miro/admin/models
-      - ./auth/app:/app
+      - ./auth/app:/app/app
     networks:
       - gamsmiro-network
   dockerproxy:

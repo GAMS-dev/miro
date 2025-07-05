@@ -268,6 +268,11 @@ Attachments <- R6Class("Attachments",
       lapply(names(private$updateCallbacks[["1"]]), function(symName) {
         private$updateCallbacks[["1"]][[symName]]()
       })
+      flog.debug(
+        "Added attachment(s): %s with execPerm: %s (Attachments.add)",
+        paste(basename(filePaths), collapse = ","),
+        paste(execPerm, collapse = ",")
+      )
       invisible(self)
     },
     getData = function(scenIds = integer(0L), fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE) {
@@ -547,6 +552,7 @@ Attachments <- R6Class("Attachments",
             remotePaths
           ))
         }
+        flog.debug("Downloaded attachment(s): %s (Attachments.download)", paste(remotePaths, collapse = ","))
       }
       return(c(remotePaths, localPaths))
     },
@@ -555,7 +561,7 @@ Attachments <- R6Class("Attachments",
       #
       # Args:
       #   session:   session object
-      #   fileNames: vector if filenames
+      #   fileNames: vector of filenames
       #   execPerm:  logical vector (same length as fileNames or length 1)
       #              that specifies whether data can be executed by GAMS
       #
@@ -612,6 +618,11 @@ Attachments <- R6Class("Attachments",
         if (length(execPermToUpdate)) {
           private$attachmentsUpdateExec$execPerm[updateIds[!isNewUpdate]] <- execPermToUpdate
         }
+        flog.debug(
+          "Updated execPerm of attachment(s): %s to: %s (Attachments.setExecPerm).",
+          paste(fileNames, collapse = ","),
+          paste(execPerm, collapse = ",")
+        )
         fileNames <- fileNames[!is.na(localFileIds)]
         if (!length(fileNames)) {
           private$markUnsaved(markDirty = TRUE)
@@ -914,6 +925,7 @@ Attachments <- R6Class("Attachments",
           attachmentsUpdateExec$execPerm[-updatesToRemove]
       }
       private$attachmentsToRemove <- c(private$attachmentsToRemove, fileNames)
+      flog.debug("Removed attachment(s): %s (Attachments..remove)", paste(fileNames, collapse = ", "))
       invisible(self)
     },
     .removeLocalFiles = function(filePaths) {

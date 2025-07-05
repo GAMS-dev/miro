@@ -123,12 +123,17 @@ const tryInstallRPackages = async () => {
   if (buildDocker && process.argv[3] === '--ci') {
     try {
       console.log('Building CI Docker image...');
-      const subprocCi = execa('docker', ['build',
+      let subprocCi = execa('docker', ['build',
         '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
         '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
         '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
         '--build-arg', `R_BASE_VERSION=${buildConfig.rVersion}`,
         '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
+      subprocCi.stderr.pipe(process.stderr);
+      subprocCi.stdout.pipe(process.stderr);
+      await subprocCi;
+      subprocCi = execa('docker', ['build',
+        '-t', 'gamsmiro-server-ci', '-f', 'ci/Dockerfile-server-tests', '.']);
       subprocCi.stderr.pipe(process.stderr);
       subprocCi.stdout.pipe(process.stderr);
       await subprocCi;

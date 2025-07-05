@@ -155,23 +155,14 @@ def main():
     cirlce_data[i, "y"] = y.l[i] + SpecialValues.EPS
     cirlce_data[i, "radius"] = r.l + SpecialValues.EPS
 
-    with open("cpack_miroLog.dat", "w") as f:
-        f.writelines(
-            [
-                "------------------------------------\n",
-                "        Circle Packing MIRO Report\n",
-                "------------------------------------\n",
-                f"Outer Circle Area          : {round(math.pi, 4)}\n",
-                (
-                    "Area covered by start point:"
-                    f" {round(len(i.records.index) * math.pi*((1/k.toValue())**2), 4)}\n"
-                ),
-                (
-                    "Area covered by solution   :"
-                    f" {round(len(i.records.index) * math.pi*(r.records.level.loc[0]**2), 4)}"
-                ),
-            ]
-        )
+    print(f"""
+------------------------------------
+        Circle Packing MIRO Report
+------------------------------------
+Outer Circle Area          : {round(math.pi, 4)}
+Area covered by start point: {round(len(i.records.index) * math.pi*((1/k.toValue())**2), 4)}
+Area covered by solution   : {round(len(i.records.index) * math.pi*(r.records.level.loc[0]**2), 4)}
+""")
 
 
 if __name__ == "__main__":

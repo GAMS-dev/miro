@@ -811,7 +811,6 @@
   "theme": "dark",
   "defCompMode": "tab",
   "pivotCompSettings":{
-    "enableHideEmptyCols": true,
     "emptyUEL": "&",
     "fixedColumns": true
   },

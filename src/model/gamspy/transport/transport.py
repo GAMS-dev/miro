@@ -89,14 +89,15 @@ def main():
                   i, j], description="transport cost in thousands of dollars per case")
     c[i, j] = f * d[i, j] / 1000
 
-    with open('miro.log', 'w') as f:
-        f.writelines(['------------------------------------\n',
-                      '        Validating data\n',
-                      '------------------------------------\n'])
-        if a.records.value.sum() < b.records.value.sum():
-            f.writelines(['a:: Capacity insufficient to meet demand'])
-        else:
-            f.writelines(['OK'])
+
+    print("""------------------------------------
+        Validating data
+------------------------------------""")
+    if a.records.value.sum() < b.records.value.sum():
+        print('a:: Capacity insufficient to meet demand')
+        sys.exit(1)
+    else:
+        print('OK')
 
     # Variable
     x = Variable(m, name="x", domain=[

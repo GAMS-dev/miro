@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -90,17 +90,505 @@
           <div class="doc-body row">
             <div class="doc-content col-md-9 col-12 order-1">
               <div class="content-inner">
+                <section id="v212" class="doc-section">
+                  <h2 class="section-title" style="display: inline-block">
+                    GAMS MIRO 2.12
+                  </h2>
+                  <div style="display: inline-block; padding-left: 15px">
+                    (2025-06-13)
+                  </div>
+                  <div class="section-block">
+                    <h3>Breaking changes</h3>
+                    <ul>
+                      <li>
+                        Deprecated
+                        <a href="./configuration_analysis.html"
+                          >custom analysis scripts</a
+                        >. Please contact
+                        <a
+                          href="mailto:support@gams.com?subject=MIRO%20custom%20analysis%20scripts%20deprecation&body=I%20am%20still%20using%20custom%20analysis%20scripts%20in%20MIRO%20and%20don't%20want%20them%20to%20be%20removed."
+                          >support@gams.com</a
+                        >
+                        if you rely on this feature and don't want it to be
+                        removed in a future release.
+                      </li>
+                    </ul>
+                    <h3>New features</h3>
+                    <ul>
+                      <li>
+                        MIRO now allows you to use
+                        <a
+                          href="./configuration_colors.html#custom-theme-colors"
+                          >custom theme colors</a
+                        >. Define a small palette of brand- or project-specific
+                        colors, and MIRO will automatically apply them to
+                        tables, form elements, and highlight accents, giving
+                        each app its own distinct look and feel.
+                      </li>
+                    </ul>
+                    <h3>Minor new features and improvements</h3>
+                    <ul>
+                      <li>
+                        <a href="./charts.html#pivot-chart">MIRO Pivot</a>,
+                        <a href="./charts.html#dashboard"
+                          >dashboard renderer</a
+                        >
+                        and
+                        <a
+                          href="./configuration_json_only.html#dashboard-compare"
+                          >dashboard Compare</a
+                        >:
+                        <ul>
+                          <li>
+                            Stacked bar charts: add option to group stacks by a
+                            dimension.
+                          </li>
+                          <li>
+                            Allow
+                            <a href="./charts.html#series-patterns"
+                              >custom patterns</a
+                            >
+                            for series used in several options.
+                          </li>
+                          <li>
+                            If custom chart colors are specified for only some
+                            data series, any series without a custom color now
+                            uses the default palette color instead of the
+                            previous gray fallback.
+                          </li>
+                          <li>
+                            Add
+                            <a href="./charts.html#baseline-comparison"
+                              >Baseline Comparison</a
+                            >
+                            - pick a baseline record and display up to two
+                            difference metrics per cell.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        Dashboard renderer and dashboard Compare: Add support
+                        for specifying
+                        <a href="./charts.html#dashboard-custom-labels-order"
+                          >custom label ordering</a
+                        >
+                        on a per-dimension basis.
+                      </li>
+                      <li>
+                        Support adding
+                        <a href="./deployment.html#app-metadata"
+                          ><i>version</i> and <i>author</i> information</a
+                        >
+                        to <span class="code">app_info.json</span> file.
+                      </li>
+                      <li>
+                        Add GAMSPy example model: Battery Energy Storage System
+                        (BESS) sizing problem. This addition comes with a
+                        <a href="./step_by_step_tutorial.html"
+                          >comprehensive guide</a
+                        >
+                        that walks you from creating the GAMSPy model to
+                        building a sophisticated application.
+                      </li>
+                      <li>
+                        Success messages for data import/export now include the
+                        name of the importer/exporter for improved clarity.
+                      </li>
+                      <li>
+                        Increase maximum number of attachments per scenario
+                        from 7 to 20.
+                      </li>
+                      <li>
+                        MIRO Desktop: Remove scenario permissions tab from edit
+                        metadata dialog as scenario permissions are only
+                        supported in MIRO Server.
+                      </li>
+                      <li>
+                        MIRO Server: Improve user
+                        <a href="server_administration.html#app-environment"
+                          >interface for entering environment variables</a
+                        >
+                        as well as support setting default scenario
+                        permissions.
+                      </li>
+                      <li>
+                        MIRO Server: Support customizing the
+                        <a href="deployment.html#favicon">app's favicon</a>.
+                      </li>
+                      <li>
+                        MIRO Server: The list of groups in permission selectors
+                        is filtered to include only those that are part of the
+                        app's configured access groups, ensuring more relevant
+                        and secure group selection.
+                      </li>
+                    </ul>
+                  </div>
+                </section>
                 <section id="v211" class="doc-section">
                   <h2 class="section-title" style="display: inline-block">
                     GAMS MIRO 2.11
                   </h2>
                   <div style="display: inline-block; padding-left: 15px">
-                    (xxxx-xx-xx)
+                    (2025-01-21)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.11.2</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2025-05-22)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix issue where the view in the pivot compare mode was
+                        not properly reset in certain situations.
+                      </li>
+                      <li>
+                        Fix issue
+                        <a href="./deployment.html#sbs-sign-app"
+                          >signing/validating</a
+                        >
+                        apps on macOS.
+                      </li>
+                      <li>
+                        Support
+                        <a
+                          href="./configuration_general.html#command-line-args"
+                          >extra command line arguments</a
+                        >
+                        for GAMSPy models.
+                      </li>
+                      <li>
+                        Fix about dialog not opening in Configuration Mode.
+                      </li>
+                    </ul>
+                    <h5 style="display: inline-block">GAMS MIRO 2.11.1</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2025-02-19)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix issue where the output data was cleared when using
+                        a custom importer with a subset of input/output symbols
+                        (using the <kbd>symNames</kbd> property).
+                      </li>
+                      <li>
+                        Fix issue where the scalars dataframe was validated
+                        when using a custom importer, despite no scalars being
+                        intended for import.
+                      </li>
+                      <li>
+                        Fix issue where MIRO used excessive memory/cpu when
+                        submitting jobs to GAMS Engine.
+                      </li>
+                      <li>
+                        Fix issue where reading parameters from GDX with
+                        invalid domain information resulted in empty tables.
+                      </li>
+                      <li>
+                        Fix issue where the dashboard renderer threw an error
+                        in some situations if the data view configuration did
+                        not specify a row dimension.
+                      </li>
+                      <li>
+                        Fix issue where an incorrect internal error message was
+                        displayed when submitting a job to GAMS Engine under
+                        specific conditions.
+                      </li>
+                      <li>
+                        If an error occurs while interrupting the GAMS process,
+                        the error message is now less intrusive.
+                      </li>
+                      <li>
+                        Fix issue where the modified dataset count was off by
+                        one in certain situations during local data import.
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue where the loading indicator was
+                        not hidden after canceling app data migration.
+                      </li>
+                      <li>
+                        MIRO Server: To prevent accidental overwriting of
+                        existing app data, administrators must now enter the
+                        app ID before the button to overwrite data can be
+                        clicked.
+                      </li>
+                      <li>
+                        Fix issue where value boxes in the dashboard renderer
+                        did not show pre-/postfixes in some situations.
+                      </li>
+                      <li>
+                        Add missing <kbd>attachments</kbd> argument to the
+                        custom renderer function when using the custom renderer
+                        editor in Configuration Mode.
+                      </li>
+                      <li>
+                        MIRO Server: Fix potential XSS vulnerabilities in admin
+                        panel.
+                      </li>
+                    </ul>
+                    <h3>New features</h3>
+                    <ul>
+                      <li>
+                        Add new optional scenario comparison module
+                        <a
+                          href="./configuration_json_only.html#dashboard-compare"
+                          >dashboard Compare</a
+                        >. Like the
+                        <a href="./charts.html#dashboard"
+                          >dashboard renderer</a
+                        >
+                        the dashboard scenario comparison is an interactive
+                        tool that can display multiple charts and tables but
+                        for multiple scenarios at once.
+                      </li>
+                    </ul>
                     <h3>Minor new features and improvements</h3>
                     <ul>
+                      <li>
+                        Dashboard renderer:
+                        <ul>
+                          <li>
+                            Add option to change the labels order in
+                            charts/tables.
+                          </li>
+                          <li>Add option to hide the legend in charts.</li>
+                          <li>
+                            Add option to show an alternative heatmap with
+                            different colors for positive and negative values.
+                          </li>
+                          <li>
+                            Show comma as thousands separator in value boxes.
+                          </li>
+                          <li>
+                            Support displaying the level of
+                            <a href="./model.html#display-scalar-vareq"
+                              >scalar variables or equations</a
+                            >
+                            in value boxes.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        New options in
+                        <a href="./charts.html#pivot-chart">MIRO Pivot</a>
+                        and
+                        <a href="./charts.html#dashboard">dashboard renderer</a
+                        >:
+                        <ul>
+                          <li>
+                            Support separate activation/deactivation of
+                            row/column summary.
+                          </li>
+                          <li>
+                            Add option to configure filter dimensions as
+                            single-choice dropdown menus.
+                          </li>
+                          <li>
+                            Add option to specify the font size for charts.
+                          </li>
+                          <li>Add support for a second x/y-axis.</li>
+                          <li>
+                            Add option to select the second chart type in a
+                            combo chart.
+                          </li>
+                          <li>
+                            It is now possible to configure the stacking
+                            behavior of data series in combo charts (as part of
+                            a stacked chart), enabling the creation of grouped
+                            stacked bar charts, stacked bar/line charts, and
+                            more.
+                          </li>
+                          <li>
+                            Add option to draw a line chart as stepped line
+                            chart.
+                          </li>
+                          <li>
+                            Add option to set a dash pattern for individual
+                            series of a line chart.
+                          </li>
+                          <li>
+                            Add option to set a border width for individual
+                            series.
+                          </li>
+                          <li>
+                            Add option to set a static minimum/maximum value
+                            for axes.
+                          </li>
+                          <li>
+                            Add option to show/hide data points in a chart.
+                          </li>
+                          <li>Add option to show/hide the grid in a chart.</li>
+                          <li>
+                            Add option to specify the fill opacity for stacked
+                            and regular area charts.
+                          </li>
+                          <li>
+                            Add option to stack positive and negative values
+                            together for stacked charts.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        MIRO Pivot:
+                        <ul>
+                          <li>
+                            The
+                            <a href="./charts.html#pivot-view">view dialog</a>
+                            has been restructured.
+                          </li>
+                          <li>
+                            The
+                            <a href="./charts.html#pivot-settings"
+                              >settings dialog</a
+                            >
+                            has been restructured.
+                          </li>
+                          <li>
+                            Support setting title for
+                            <kbd>table</kbd> and <kbd>heatmap</kbd> renderers.
+                          </li>
+                          <li>
+                            Add option to activate/deactivate fixed table
+                            columns to the settings menu.
+                          </li>
+                          <li>
+                            The <kbd>enableHideEmptyCols</kbd> option has been
+                            deprecated. The functionality to show/hide empty
+                            table columns is now always accessible via the
+                            settings menu.
+                          </li>
+                          <li>
+                            The CSV and PNG download buttons have been
+                            consolidated into a dropdown menu.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        Pivot compare mode: Add support for setting default
+                        values for several configuration options that are also
+                        available in the regular Pivot tool.
+                      </li>
+                      <li>
+                        Configuration Mode: When activating checkbox to load
+                        scenario on app startup, the scenario name is now
+                        "default" by default.
+                      </li>
+                      <li>
+                        Improve error messages if the validation of the JSON
+                        configuration file fails.
+                      </li>
                       <li>Add GAMSPy example model: tsp.</li>
+                      <li>
+                        Add option to
+                        <a
+                          href="./configuration_general.html#miro-syntax-stdout"
+                          >parse standard log (stdout) for MIRO log syntax</a
+                        >. This is particularly useful for GAMSPy-MIRO models,
+                        where it is easier to control the stdout of the
+                        process.
+                      </li>
+                    </ul>
+                    <h3>Bug fixes</h3>
+                    <ul>
+                      <li>
+                        MIRO Pivot: Fix issue where removing title from chart
+                        did not work properly.
+                      </li>
+                      <li>
+                        MIRO Pivot: Fix issue loading view with multiple
+                        single-choice dropdown menus.
+                      </li>
+                      <li>
+                        Pivot compare mode: Fix issue where removing all
+                        dimensions from rows could cause a problem in certain
+                        situations.
+                      </li>
+                      <li>
+                        Update Help menu link to point to the new
+                        <a
+                          href="https://forum.gams.com/c/gams-miro/12"
+                          target="_blank"
+                          >GAMS forum</a
+                        >.
+                      </li>
+                      <li>
+                        Fix issue where clicking the "Solve" button could cause
+                        MIRO with GAMS Engine backend to crash in certain
+                        situations.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent value(s) of slider</a
+                        >
+                        resulted in broken slider with only
+                        <kbd>NaN</kbd> choices.
+                      </li>
+                      <li>
+                        Fixes issue where updating
+                        <a
+                          href="./configuration_advanced.html#widgets-dependencies"
+                          >dependent choices of dropdown</a
+                        >
+                        resulted in selected value to be reset.
+                      </li>
+                      <li>
+                        Fix issue where imported output datasets were not
+                        counted in the total number of imported sheets
+                        displayed in the alert message during local file
+                        imports.
+                      </li>
+                      <li>
+                        Fix issue where choosing no datasets during manual
+                        dataset selection for local file imports incorrectly
+                        resulted in all datasets being imported.
+                      </li>
+                      <li>
+                        Fix issue where adding GAMSPy apps to MIRO Desktop did
+                        not work in certain situations.
+                      </li>
+                      <li>
+                        Fix crash when opening dialog to download temporary
+                        files when number of temporary files was large (>500).
+                      </li>
+                      <li>
+                        Fix issue where rendering a Chart.js chart with an
+                        invalid configuration would break the canvas,
+                        preventing it from being reused for subsequent charts
+                        with valid configurations.
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue where app logos did not load
+                        when
+                        <kbd>server.servlet.context-path</kbd> was set to
+                        anything but <kbd>/</kbd>.
+                      </li>
+                      <li>
+                        MIRO Pivot: Fix issue where incorrect labels were
+                        displayed in a chart in certain situations.
+                      </li>
+                      <li>
+                        Using a fixed
+                        <a href="configuration_general.html#dark-mode"
+                          >color mode</a
+                        >
+                        (<i>light</i> or <i>dark</i>) did not work properly for
+                        some components (e.g. dashboard).
+                      </li>
+                      <li>
+                        <a href="./charts.html#dashboard-custom-code"
+                          >Dashboard with custom code</a
+                        >: Due to a package update, the appearance of the value
+                        boxes in the dashboard has changed. To avoid this
+                        change, synchronize your custom dashboard code with the
+                        <a
+                          href="https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R"
+                          target="_blank"
+                          >official version</a
+                        >
+                        or delete the following line in your code:
+                        <kbd>class = "shiny-html-output",</kbd>.
+                      </li>
                     </ul>
                   </div>
                 </section>
@@ -112,6 +600,29 @@
                     (2024-07-17)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.10.4</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2024-10-29)
+                    </div>
+                    <ul>
+                      <li>
+                        Fix determining the delimiter of a CSV file did not
+                        work for quoted strings.
+                      </li>
+                      <li>
+                        Fix issue when using the dashboard as a custom renderer
+                        (to use custom code).
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue that causes the Docker Socket
+                        Proxy to crash on certain Linux distributions and/or
+                        certain Docker versions.
+                      </li>
+                      <li>
+                        MIRO Server: Fix potential Denial of service (DoS)
+                        vulnerability in API server.
+                      </li>
+                    </ul>
                     <h5 style="display: inline-block">GAMS MIRO 2.10.3</h5>
                     <div style="display: inline-block; padding-left: 15px">
                       (2024-10-07)
@@ -3315,7 +3826,7 @@
                         The value and/or the element text of a singleton Set
                         can be used in the
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           >eval.Set</a
                         >
                         option to evaluate the value/text at compile time and

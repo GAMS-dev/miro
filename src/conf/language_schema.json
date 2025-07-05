@@ -682,9 +682,20 @@
             "noNew": {
               "type": "string",
               "minLength": 1
+            },
+            "importerNames": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "database": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "notificationOutputAttachmentAdded": {
           "type": "object",
@@ -786,10 +797,6 @@
               "type": "string",
               "minLength": 1
             },
-            "discardPerm": {
-              "type": "string",
-              "minLength": 1
-            },
             "tags": {
               "type": "string",
               "minLength": 1
@@ -823,7 +830,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 13
+          "minProperties": 12
         },
         "dialogEditMeta": {
           "type": "object",
@@ -2471,6 +2478,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "btDownload": {
+              "type": "string",
+              "minLength": 1
+            },
             "btDownloadCsv": {
               "type": "string",
               "minLength": 1
@@ -2527,22 +2538,6 @@
               "type": "string",
               "minLength": 1
             },
-            "cbHideEmptyCols": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cbShowTableSummary": {
-              "type": "string",
-              "minLength": 1
-            },
-            "rowSummaryFunction": {
-              "type": "string",
-              "minLength": 1
-            },
-            "colSummaryFunction": {
-              "type": "string",
-              "minLength": 1
-            },
             "rows": {
               "type": "string",
               "minLength": 1
@@ -2576,58 +2571,6 @@
               "minLength": 1
             },
             "rowTruncationWarning": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewLabel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewChartTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewxTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewyTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewyLogScale": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewMultiChartSeries": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewCbCustomColors": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewCbManualColors": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtCancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtSave": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtCancelOverwrite": {
-              "type": "string",
-              "minLength": 1
-            },
-            "newViewBtOverwrite": {
               "type": "string",
               "minLength": 1
             },
@@ -2674,6 +2617,325 @@
             "duplicateRecordError": {
               "type": "string",
               "minLength": 1
+            },
+            "newView": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "tabGeneral": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabScales": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabMultiChart": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabSecondAxis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "info": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "chartTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "xTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "yTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "yLogScale": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "singleStack": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "groupDimension": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "xGrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "yGrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "showDataMarkers": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stepPlot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minY": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "maxY": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiChartSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "multiChartSeriesTypeSelection": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "showMultiChartDataMarkers": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackMultiChartSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackType3": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "x2axis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisSeries": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisGrid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "y2axisLogScale": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minY2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "maxY2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbCustomColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fillOpacity": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbLineDash": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbManualLineDashTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "solid": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dotted": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "wideDashed": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dashDotDot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "customPattern": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbBorderWidth": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "selectizePlaceholder": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btSave": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancelOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 53
+            },
+            "settings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "tabGeneral": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabTable": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabChart": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tabBaselineComp": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbHideEmptyCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "singleDropdown": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbShowTableSummaryRow": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbShowTableSummaryCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "rowSummaryFunction": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "colSummaryFunction": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fixedColumns": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "chartFontSize": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "baselineComparison": {
+                  "cbEnable": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selDomain": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selRecord": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "selMetrics": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "errorAggregated": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "metrics": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "values": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "percDiff": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "absDiff": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "norm": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "minProperties": 4
+                  }
+                }
+              },
+              "minProperties": 13
             },
             "dialogAddRow": {
               "type": "object",
@@ -2816,7 +3078,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 55
+          "minProperties": 41
         },
         "datatable": {
           "type": "object",
@@ -2906,9 +3168,20 @@
             }
           },
           "minProperties": 3
+        },
+        "dashboardComparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "selectScen": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
         }
       },
-      "minProperties": 4
+      "minProperties": 5
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",
@@ -2983,9 +3256,13 @@
             "exportDs": {
               "type": "string",
               "minLength": 1
+            },
+            "success": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "loadScenDb": {
           "type": "object",
@@ -3638,19 +3915,8 @@
           "minProperties": 2
         },
         "gamsTerm": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "title": {
-              "type": "string",
-              "minLength": 1
-            },
-            "desc": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "minProperties": 2
+          "type": "string",
+          "minLength": 1
         },
         "readLog": {
           "type": "object",
@@ -4050,7 +4316,7 @@
               "type": "string",
               "minLength": 1
             },
-            "analysis": {
+            "colors": {
               "type": "string",
               "minLength": 1
             },
@@ -4097,10 +4363,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "tabScripts": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "tabSymbolLinks": {
                   "type": "string",
                   "minLength": 1
@@ -4110,6 +4372,10 @@
                   "minLength": 1
                 },
                 "headerPivotcompare": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "descriptionPivotcompare": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4157,10 +4423,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "headerBaseScripts": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "headerOutputAttach": {
                   "type": "string",
                   "minLength": 1
@@ -4173,24 +4435,12 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "baseScriptsTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "headerHcubeScripts": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hcubeScriptsTooltip": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "tooltipDocs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 29
+              "minProperties": 25
             },
             "modalDialog": {
               "type": "object",
@@ -4383,21 +4633,6 @@
               },
               "minProperties": 1
             },
-            "scripts": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "base": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "hcube": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 2
-            },
             "outputAttach": {
               "type": "object",
               "additionalProperties": false,
@@ -4487,9 +4722,17 @@
                 "tooltip": {
                   "type": "string",
                   "minLength": 1
+                },
+                "miroLogExclusiveError": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
+            },
+            "mirologStdout": {
+              "type": "string",
+              "minLength": 1
             },
             "readme": {
               "type": "object",
@@ -7287,6 +7530,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "emptyUELTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "hidePivotControlsSwitch": {
                   "type": "string",
                   "minLength": 1
@@ -7304,7 +7551,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 10
             },
             "datatableOptions": {
               "type": "object",
@@ -8479,9 +8726,265 @@
             }
           },
           "minProperties": 25
+        },
+        "colors": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "themeColors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "light": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "advanced": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "navbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body_bg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alert": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "console": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sidebarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "navbarDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body_bg_dark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDark": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "secondaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "alertTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "consoleTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "widgetBgDarkTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 26
+            },
+            "themeButtons": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "buttonsTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocal": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobal": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "downloadTheme": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocalDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveLocalNote": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalOverwrite": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNote1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNote2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveGlobalModalNoteDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColors": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsText": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsNote1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "removeColorsNote2": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 22
+            },
+            "miroServerColors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "checkbox": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "titleTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bodyBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mainBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "loginHeaderBg": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryTooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 8
+            }
+          },
+          "minProperties": 4
         }
       },
-      "minProperties": 7
+      "minProperties": 8
     }
   },
   "minProperties": 6

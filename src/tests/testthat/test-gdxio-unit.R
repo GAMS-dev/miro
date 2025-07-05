@@ -7,6 +7,7 @@ filePathEnc <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxio.gdx"))
 filePathEnc2 <- nativeFileEnc(file.path(getwd(), "dätä/test_gdxio.gdx"))
 filePathEnc3 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxioeq.gdx"))
 filePathEnc4 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxiouni.gdx"))
+filePathEnc5 <- nativeFileEnc(file.path(getwd(), "dätä/gdx_dom_test.gdx"))
 
 lang <<- list(errMsg = list(gdxio = list(errors = list(
   duplicateRecords = "Duplicate records in symbol: '%s'",
@@ -42,6 +43,15 @@ test_that("Reading of parameter works", {
   expect_identical(
     gdxio$rgdx(filePathEnc2, "a"),
     dataExpected
+  )
+})
+test_that("Reading of parameter works with bad domain (different UELs)", {
+  expect_equal(
+    gdxio$rgdx(filePathEnc5, "accepted_bids"),
+    tibble::tibble(
+      "...***...1" = "DEF", "...***...2" = "Buy",
+      "...***...3" = "Volume", "...***...4" = 10L
+    )
   )
 })
 test_that("Reading of table with squeezed out column works", {

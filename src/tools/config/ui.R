@@ -80,15 +80,21 @@ header_admin <- dashboardHeader(
         target = "_blank", lang$nav$header$help$doc
       )),
       tags$li(tags$a(
-        href = "https://forum.gamsworld.org/viewforum.php?f=14",
+        href = "https://forum.gams.com/c/gams-miro/12",
         target = "_blank", lang$nav$header$help$forum
       )),
-      tags$li(HTML(paste0(
-        '<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
-        "About MIRO', '",
-        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
-        lang$nav$header$help$about, "</a>"
-      )))
+      tags$li(
+        tags$a(
+          hred = "#",
+          class = "action-button",
+          onclick = paste0(
+            "Miro.confirmModalShow('About GAMS MIRO','",
+            aboutDialogText,
+            "', 'Cancel');"
+          ),
+          lang$nav$header$help$about
+        )
+      )
     )
   ),
   title = paste0(lang$adminMode$uiR$configMode, " (", modelName, ")"), disable = FALSE
@@ -102,7 +108,7 @@ sidebar_admin <- dashboardSidebar(
     menuItem(lang$adminMode$uiR$table, tabName = "tables_gen", icon = icon("table")),
     menuItem(lang$adminMode$uiR$widgets, tabName = "new_widget", icon = icon("sliders")),
     menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
-    menuItem(lang$adminMode$uiR$analysis, tabName = "analysis_scripts", icon = icon("magnifying-glass")),
+    menuItem(lang$adminMode$uiR$colors, tabName = "colors", icon = icon("palette")),
     menuItem(lang$adminMode$uiR$database, tabName = "db_management", icon = icon("database"))
   )
 )
@@ -121,10 +127,27 @@ body_admin <- dashboardBody({
         name = "color-scheme",
         content = if (identical(config$theme, "browser")) "dark light" else "normal"
       ),
+      if (!is.null(config$themeColors) && length(config$themeColors)) {
+        cssLines <- sprintf(
+          "--%s:%s;",
+          gsub("_", "-", names(config$themeColors), fixed = TRUE),
+          unname(config$themeColors)
+        )
+        htmltools::tags$style(
+          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+        )
+      } else if (identical(miroColorTheme, "custom")) {
+        customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
+        htmltools::tags$style(
+          HTML(customColorCss)
+        )
+      } else {
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
+      },
       tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
         paste0("static_", modelName, "/custom_theme.css")
       } else {
-        paste0(miroColorTheme, "_", config$theme, ".css")
+        paste0("default_", config$theme, ".css")
       }),
       tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
       tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
@@ -610,7 +633,7 @@ font-size: 12px;
                 ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
-                  height = 400, customOptions = list(enableHideEmptyCols = TRUE)
+                  height = 400, customOptions = list()
                 )
               ),
               tags$div(
@@ -758,7 +781,6 @@ font-size: 12px;
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
                   customOptions = list(
-                    enableHideEmptyCols = TRUE,
                     "_input_" = TRUE
                   )
                 ),
@@ -816,6 +838,7 @@ font-size: 12px;
                       tags$div(class = "space"),
                       tags$div(class = "space"),
                       tags$h2(lang$adminMode$general$ui$headerAppearance, class = "option-category"),
+                      tags$h4(lang$adminMode$general$themeColors$light),
                       tags$div(
                         class = "option-wrapper",
                         selectInput("general_theme", labelTooltip(
@@ -1018,7 +1041,7 @@ font-size: 12px;
                       tags$div(
                         class = "option-wrapper", style = "margin-top:-10px;padding-left: 25px;",
                         textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
-                          value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL
+                          value = if (length(configJSON$defaultScenName)) configJSON$defaultScenName else "default"
                         )
                       )
                     ),
@@ -1214,6 +1237,17 @@ font-size: 12px;
                         config$activateModules$logFile
                       }
                     ),
+                    conditionalPanel(
+                      condition = "input.general_act_log == true",
+                      checkboxInput_SIMPLE("general_mirologParsingStdout",
+                        labelTooltip(
+                          lang$adminMode$general$mirologStdout,
+                          NULL,
+                          "https://gams.com/miro/configuration_general.html#miro-log-syntax"
+                        ),
+                        value = identical(config$parseLogForMiroLogSyntax, TRUE)
+                      )
+                    ),
                     checkboxInput_SIMPLE("general_act_lst",
                       lang$adminMode$general$actLst$label,
                       value = if (length(configJSON$activateModules$lstFile)) {
@@ -1224,6 +1258,13 @@ font-size: 12px;
                     ),
                     tags$div(
                       class = "option-wrapper info-position",
+                      conditionalPanel(
+                        condition = "input.general_act_log===true && input.general_mirologParsingStdout===true && input.general_mirologfile?.length > 0",
+                        tags$div(
+                          class = "err-msg",
+                          lang$adminMode$general$mirologfile$miroLogExclusiveError
+                        )
+                      ),
                       textInput("general_mirologfile",
                         labelTooltip(
                           lang$adminMode$general$mirologfile$label,
@@ -1307,6 +1348,7 @@ font-size: 12px;
                     tags$div(
                       class = "option-wrapper",
                       tags$h4(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
+                      tags$div(lang$adminMode$general$ui$descriptionPivotcompare),
                       getMIROPivotOptions(configJSON$pivotCompSettings,
                         prefix = "pivotcomp_",
                         pivotComp = TRUE
@@ -1761,66 +1803,381 @@ font-size: 12px;
         )
       ),
       tabItem(
-        tabName = "analysis_scripts",
+        tabName = "colors",
         fluidRow(
           box(
-            title = lang$adminMode$general$ui$tabScripts, status = "primary", solidHeader = TRUE, width = 12,
+            title = lang$adminMode$colors$title, status = "primary", solidHeader = TRUE, width = 12,
+            tags$div(class = "space"),
             tags$div(
               class = "col-sm-6", style = "padding-top: 20px;",
               tags$div(
                 class = "main-tab",
-                tags$h2(
-                  lang$adminMode$general$ui$headerBaseScripts,
-                  tags$a("",
-                    title = paste0(
-                      lang$adminMode$general$ui$baseScriptsTooltip, " - ",
-                      tolower(lang$adminMode$general$ui$tooltipDocs)
-                    ),
-                    class = "info-header",
-                    href = "https://gams.com/miro/configuration_analysis.html",
-                    tags$span(
-                      class = "fas fa-circle-info", class = "info-icon",
-                      role = "presentation",
-                      `aria-label` = "More information"
-                    ), target = "_blank"
-                  )
-                ),
                 tags$div(
-                  createArray(NULL, "scripts_base",
-                    lang$adminMode$general$scripts$base,
-                    autoCreate = FALSE
-                  )
-                ),
-                tags$div(class = "space")
+                  tags$h2(lang$adminMode$colors$themeColors$title, class = "option-category"),
+                  tags$h4(lang$adminMode$colors$themeColors$light),
+                  fluidRow(
+                    tags$div(
+                      class = "col-sm-6 themeColors-colorpicker",
+                      colorPickerInput(
+                        "primary_color",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$primary,
+                          lang$adminMode$colors$themeColors$primaryTooltip
+                        ),
+                        value = baseColors$miro_primary_color,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "secondary_color",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$secondary,
+                          lang$adminMode$colors$themeColors$secondaryTooltip
+                        ),
+                        value = baseColors$miro_secondary_color,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "alert_color",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$alert,
+                          lang$adminMode$colors$themeColors$alertTooltip
+                        ),
+                        value = baseColors$miro_alert_color,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "console_text_color",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$console,
+                          lang$adminMode$colors$themeColors$consoleTooltip
+                        ),
+                        value = baseColors$miro_console_text_color,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-12",
+                      checkboxInput_MIRO("advanced_light", lang$adminMode$colors$themeColors$advanced,
+                        value = isAdvanced(baseColors, mode = "light")
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.advanced_light===true",
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "sidebar_color",
+                          lang$adminMode$colors$themeColors$sidebar,
+                          value = baseColors$miro_sidebar_color,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "navbar_color",
+                          lang$adminMode$colors$themeColors$navbar,
+                          value = baseColors$miro_navbar_color,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "body_bg_color",
+                          lang$adminMode$colors$themeColors$body_bg,
+                          value = baseColors$miro_body_bg_color,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      )
+                    )
+                  ),
+                  tags$h4(lang$adminMode$colors$themeColors$dark),
+                  fluidRow(
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "primary_color_dark",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$primaryDark,
+                          lang$adminMode$colors$themeColors$primaryTooltip
+                        ),
+                        value = baseColors$miro_primary_color_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "secondary_color_dark",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$secondaryDark,
+                          lang$adminMode$colors$themeColors$secondaryTooltip
+                        ),
+                        value = baseColors$miro_secondary_color_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "alert_color_dark",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$alertDark,
+                          lang$adminMode$colors$themeColors$alertTooltip
+                        ),
+                        value = baseColors$miro_alert_color_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "console_text_color_dark",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$consoleDark,
+                          lang$adminMode$colors$themeColors$consoleTooltip
+                        ),
+                        value = baseColors$miro_console_text_color_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "widget_bg_dark",
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$widgetBgDark,
+                          lang$adminMode$colors$themeColors$widgetBgDarkTooltip
+                        ),
+                        value = baseColors$miro_widget_bg_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-6",
+                      colorPickerInput(
+                        "main_bg_dark",
+                        lang$adminMode$colors$themeColors$mainBgDark,
+                        value = baseColors$miro_main_bg_dark,
+                        colorPreview = TRUE,
+                        disableAlphaChannel = TRUE
+                      )
+                    ),
+                    tags$div(
+                      class = "col-sm-12",
+                      checkboxInput_MIRO("advanced_dark", lang$adminMode$colors$themeColors$advanced,
+                        value = isAdvanced(baseColors, mode = "dark")
+                      )
+                    ),
+                    conditionalPanel(
+                      condition = "input.advanced_dark===true",
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "sidebar_color_dark",
+                          lang$adminMode$colors$themeColors$sidebarDark,
+                          value = baseColors$miro_sidebar_color_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "navbar_color_dark",
+                          lang$adminMode$colors$themeColors$navbarDark,
+                          value = baseColors$miro_navbar_color_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "body_bg_color_dark",
+                          lang$adminMode$colors$themeColors$body_bg_dark,
+                          value = baseColors$miro_body_bg_color_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      )
+                    )
+                  ),
+                  tags$h4(lang$adminMode$colors$themeButtons$buttonsTitle),
+                  fluidRow(
+                    class = "theme-btn-row",
+                    tags$div(
+                      class = "col-md-12 col-lg-6",
+                      actionButton("saveLocal", lang$adminMode$colors$themeButtons$saveLocal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn")
+                    ),
+                    tags$div(
+                      class = "col-md-12 col-lg-6",
+                      actionButton("saveGlobal", lang$adminMode$colors$themeButtons$saveGlobal, icon("floppy-disk"), class = "bt-highlight-1 theme-btn")
+                    ),
+                    tags$div(
+                      class = "col-md-12 col-lg-6",
+                      actionButton("removeColors", lang$adminMode$colors$themeButtons$removeColors, icon("trash-can"), class = "bt-remove theme-btn")
+                    )
+                  ),
+                  tags$div(class = "space"),
+                  tags$ul(
+                    tags$li(
+                      tags$b(paste0(lang$adminMode$colors$themeButtons$saveLocal, ": ")),
+                      lang$adminMode$colors$themeButtons$saveLocalDesc
+                    ),
+                    tags$li(
+                      tags$b(paste0(lang$adminMode$colors$themeButtons$saveGlobal, ": ")),
+                      lang$adminMode$colors$themeButtons$saveGlobalDesc
+                    ),
+                    tags$li(
+                      tags$b(paste0(lang$adminMode$colors$themeButtons$removeColors, ": ")),
+                      lang$adminMode$colors$themeButtons$removeColorsDesc
+                    )
+                  ),
+                  tags$div(class = "space")
+                )
               )
             ),
             tags$div(
               class = "col-sm-6", style = "padding-top: 20px;",
               tags$div(
                 class = "main-tab",
-                tags$h2(
-                  lang$adminMode$general$ui$headerHcubeScripts,
-                  tags$a("",
-                    title = paste0(
-                      lang$adminMode$general$ui$hcubeScriptsTooltip, " - ",
-                      tolower(lang$adminMode$general$ui$tooltipDocs)
+                checkboxInput_MIRO("generateMiroServerTheme", lang$adminMode$colors$miroServerColors$checkbox, value = FALSE),
+                conditionalPanel(
+                  condition = "input.generateMiroServerTheme===true",
+                  tags$div(
+                    tags$h2(
+                      class = "option-category",
+                      labelTooltip(
+                        lang$adminMode$colors$miroServerColors$title,
+                        lang$adminMode$colors$miroServerColors$titleTooltip
+                      )
                     ),
-                    class = "info-header",
-                    href = "https://gams.com/miro/start.html#analysis-scripts",
-                    tags$span(
-                      class = "fas fa-circle-info", class = "info-icon",
-                      role = "presentation",
-                      `aria-label` = "More information"
-                    ), target = "_blank"
+                    tags$h4(lang$adminMode$colors$themeColors$light),
+                    fluidRow(
+                      tags$div(
+                        class = "col-sm-6 themeColors-colorpicker",
+                        colorPickerInput(
+                          "server_primary_color",
+                          labelTooltip(
+                            lang$adminMode$colors$miroServerColors$primary,
+                            lang$adminMode$colors$miroServerColors$primaryTooltip
+                          ),
+                          value = serverBaseColors$primary_color,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_body_bg",
+                          lang$adminMode$colors$miroServerColors$bodyBg,
+                          value = serverBaseColors$body_bg,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_main_bg",
+                          lang$adminMode$colors$miroServerColors$mainBg,
+                          value = serverBaseColors$main_bg,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_login_header_bg",
+                          lang$adminMode$colors$miroServerColors$loginHeaderBg,
+                          value = serverBaseColors$login_header_bg,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      )
+                    ),
+                    tags$h4(lang$adminMode$colors$themeColors$dark),
+                    fluidRow(
+                      tags$div(
+                        class = "col-sm-6 themeColors-colorpicker",
+                        colorPickerInput(
+                          "server_primary_color_dark",
+                          labelTooltip(
+                            lang$adminMode$colors$miroServerColors$primary,
+                            lang$adminMode$colors$miroServerColors$primaryTooltip
+                          ),
+                          value = serverBaseColors$primary_color_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_body_bg_dark",
+                          lang$adminMode$colors$miroServerColors$bodyBg,
+                          value = serverBaseColors$body_bg_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_main_bg_dark",
+                          lang$adminMode$colors$miroServerColors$mainBg,
+                          value = serverBaseColors$main_bg_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      ),
+                      tags$div(
+                        class = "col-sm-6",
+                        colorPickerInput(
+                          "server_login_header_bg_dark",
+                          lang$adminMode$colors$miroServerColors$loginHeaderBg,
+                          value = serverBaseColors$login_header_bg_dark,
+                          colorPreview = TRUE,
+                          disableAlphaChannel = TRUE
+                        )
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    fluidRow(
+                      class = "theme-btn-row",
+                      tags$div(
+                        class = "col-md-12 col-lg-6",
+                        downloadButton("downloadTheme", lang$adminMode$colors$themeButtons$downloadTheme, class = "theme-btn", style = "min-width: 215px;")
+                      )
+                    ),
+                    tags$div(class = "space")
                   )
-                ),
-                tags$div(
-                  createArray(NULL, "scripts_hcube",
-                    lang$adminMode$general$scripts$hcube,
-                    autoCreate = FALSE
-                  )
-                ),
-                tags$div(class = "space")
+                )
               )
             )
           )

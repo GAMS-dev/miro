@@ -1,0 +1,46 @@
+ACCESSING YOUR GAMS MIRO SERVER APPLICATION
+
+Thank you for installing the GAMS MIRO Server Helm chart.
+Your release is named {{ .Release.Name }}.
+
+{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.tls }}
+The UI will be available over HTTPS at:
+  https://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}
+The API will be available at:
+  https://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+  {{- else }}The application will be available over HTTP at:
+  http://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}
+The API will be available at:
+  http://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+{{- end }}
+
+NOTES
+- Ensure your DNS is configured correctly to resolve the ingress hostname if ingress is enabled.
+- For secure communications, configure TLS certificates when enabling ingress with `.Values.ingress.tls` set to `true`.
+
+{{- else }}
+UI Service:
+  - Service Type: `{{ .Values.proxy.service.type }}`.
+  {{- if eq .Values.proxy.service.type "NodePort" }}
+  - The UI will be accessible on:
+    http://<node-ip>:{{ .Values.proxy.service.nodePort }}{{ .Values.global.rootPath | trimSuffix "/" }}
+  {{- else }}
+  - The UI will be accessible on the cluster IP within the Kubernetes network.
+  {{- end }}
+API Service:
+  - Service Type: `{{ .Values.auth.service.type }}`.
+  {{- if eq .Values.auth.service.type "NodePort" }}
+  - The API will be accessible on:
+    http://<node-ip>:{{ .Values.auth.service.nodePort }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+  {{- else }}
+  - The API will be accessible on the cluster IP within the Kubernetes network.
+  {{- end }}
+
+{{- if eq .Values.auth.service.type "NodePort" }}
+NOTES
+- Replace `<node-ip>` with the IP address of a node in your Kubernetes cluster.
+{{- end }}
+{{- end }}
+
+Refer to the `values.yaml` file for more details on configuration options.

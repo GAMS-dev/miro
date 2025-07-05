@@ -24,6 +24,11 @@ test_that(
         filter = list(Hdr = "quantities"),
         pivotRenderer = "bar"
       )
+    ), `_pivotcomp__scalars_out` = list(
+      test2 = list(
+        cols = list(`_scenName` = NULL),
+        pivotRenderer = "bar"
+      )
     )), globalViewsFilePath, pretty = TRUE, auto_unbox = TRUE, null = "null")
     configJSONFileName <- file.path(testModelPath, "conf_transport", "transport.json")
     file.copy(configJSONFileName, file.path(
@@ -39,12 +44,15 @@ test_that(
     ))
     jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
     source(file.path(testDir, "shinytest", "pivot_comp_views_test.R"), local = TRUE)
-    unlink(globalViewsFilePath)
-    unlink(modelDataPath, recursive = TRUE, force = TRUE)
+
     file.rename(
       file.path(dirname(configJSONFileName), "transport_tmp.json"),
       file.path(dirname(configJSONFileName), "transport.json")
     )
+    source(file.path(testDir, "shinytest", "pivot_comp_refresh_mode_test.R"), local = TRUE)
+
+    unlink(globalViewsFilePath)
+    unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
   })

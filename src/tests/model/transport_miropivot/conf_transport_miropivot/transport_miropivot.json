@@ -1,183 +1,245 @@
 {
-  "miroLogFile": "miro.log",
-  "inputWidgets": {
-    "f": {
-      "widgetType": "slider",
-      "alias": "freight in dollars per case per thousand miles",
-      "min": 1,
-      "max": 500,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "freight in dollars per case per thousand miles"
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": true,
+        "hcube": false,
+        "loadLocal": true,
+        "logFile": true,
+        "lstFile": true,
+        "remoteExecution": false
     },
-    "mins": {
-      "widgetType": "slider",
-      "alias": "minimum shipment (MIP- and MINLP-only)",
-      "min": 0,
-      "max": 500,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "minStep": 0,
-      "label": "minimum shipment (MIP- and MINLP-only)"
-    },
-    "beta": {
-      "widgetType": "slider",
-      "alias": "beta (MINLP-only)",
-      "label": "beta (MINLP-only)",
-      "min": 0,
-      "max": 1,
-      "default": 0.95,
-      "step": 0.01
-    },
-    "d": {
-      "widgetType": "table",
-      "tableType": "pivot",
-      "options": {
-        "cols": {
-          "j": null
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "customCss": false,
+    "dataRendering": {
+        "_scalars_out": {
+            "options": {
+                "color": "red",
+                "icon": {
+                    "lib": "font-awesome",
+                    "name": "dollar-sign"
+                },
+                "width": 4
+            },
+            "outType": "valueBox"
+        },
+        "schedule": {
+            "height": 700,
+            "options": {
+                "cols": {
+                    "j": ""
+                },
+                "filter": {
+                    "Hdr": "quantities"
+                },
+                "pivotRenderer": "bar",
+                "rows": "i"
+            },
+            "outType": "miroPivot"
+        },
+        "schedule2": {
+            "height": 700,
+            "options": {
+                "cols": {
+                    "j": null
+                },
+                "externalDefaultView": "test123",
+                "filter": {
+                    "Hdr": "quantities"
+                },
+                "pivotRenderer": "bar",
+                "rows": "i",
+                "hideEmptyCols": true,
+                "fixedColumns": true
+            },
+            "outType": "miroPivot"
         }
-      }
     },
-    "type": {
-      "widgetType": "dropdown",
-      "alias": "model type",
-      "selected": "lp",
-      "noHcube": false,
-      "multiple": false,
-      "label": "Select the model type",
-      "choices": ["lp", "mip", "minlp"],
-      "aliases": ["LP", "MIP", "MINLP"]
-    }
-  },
-  "dataRendering": {
-    "schedule": {
-      "outType": "miroPivot",
-      "options": {
-        "rows": "i",
-        "cols": {
-          "j": ""
+    "datatable": {
+        "class": "display",
+        "filter": "none",
+        "options": {
+            "pageLength": 15
         },
-        "filter": {
-          "Hdr": "quantities"
-        },
-        "pivotRenderer": "bar"
-      },
-      "height": 700
+        "rownames": false
     },
-    "schedule2": {
-      "outType": "miroPivot",
-      "options": {
-        "externalDefaultView": "test123",
-        "rows": "i",
-        "cols": {
-          "j": null
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "split",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 150,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
         },
-        "filter": {
-          "Hdr": "quantities"
-        },
-        "pivotRenderer": "bar"
-      },
-      "height": 700
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
     },
-    "_scalars_out": {
-      "outType": "valueBox",
-      "options": {
-        "width": 4,
-        "color": "red",
-        "icon": {
-          "name": "dollar-sign",
-          "lib": "font-awesome"
+    "hiddenOutputSymbols": "_scalars_out",
+    "inputGroups": [
+        {
+            "members": [
+                "ilocdata",
+                "jlocdata"
+            ],
+            "name": "Location information",
+            "sameTab": false
         }
-      }
-    }
-  },
-  "theme": "browser",
-  "defCompMode": "split",
-  "roundingDecimals": 2,
-  "activateModules": {
-    "logFile": true,
-    "lstFile": true,
-    "loadLocal": true,
-    "attachments": true,
-    "remoteExecution": false,
-    "downloadTempFiles": true
-  },
-  "autoGenInputGraphs": true,
-  "aggregateWidgets": true,
-  "storeLogFilesDuration": 0,
-  "excelIncludeMeta": true,
-  "excelIncludeEmptySheets": true,
-  "saveTraceFile": true,
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
-  "overwriteSheetOrder": {
-    "input": ["_widgets", "a", "b", "d", "ilocdata", "jlocdata"],
-    "output": ["schedule", "_scalars_out"]
-  },
-  "pageTitle": "A transportation problem",
-  "defaultScenName": "default",
-  "overwriteAliases": {
-    "a": {
-      "newAlias": "Capacity"
+    ],
+    "inputWidgets": {
+        "beta": {
+            "alias": "beta (MINLP-only)",
+            "default": 0.95,
+            "label": "beta (MINLP-only)",
+            "max": 1,
+            "min": 0,
+            "step": 0.01,
+            "widgetType": "slider"
+        },
+        "d": {
+            "options": {
+                "cols": {
+                    "j": null
+                }
+            },
+            "tableType": "pivot",
+            "widgetType": "table"
+        },
+        "f": {
+            "alias": "freight in dollars per case per thousand miles",
+            "default": 100,
+            "label": "freight in dollars per case per thousand miles",
+            "max": 500,
+            "min": 1,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "mins": {
+            "alias": "minimum shipment (MIP- and MINLP-only)",
+            "default": 100,
+            "label": "minimum shipment (MIP- and MINLP-only)",
+            "max": 500,
+            "min": 0,
+            "minStep": 0,
+            "noHcube": false,
+            "step": 1,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "type": {
+            "alias": "model type",
+            "aliases": [
+                "LP",
+                "MIP",
+                "MINLP"
+            ],
+            "choices": [
+                "lp",
+                "mip",
+                "minlp"
+            ],
+            "label": "Select the model type",
+            "multiple": false,
+            "noHcube": false,
+            "selected": "lp",
+            "widgetType": "dropdown"
+        }
     },
-    "b": {
-      "newAlias": "Demand"
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 5,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
     },
-    "d": {
-      "newAlias": "Distance"
+    "miroLogFile": "miro.log",
+    "outputGroups": [
+        {
+            "members": [
+                "schedule",
+                "_scalars_out"
+            ],
+            "name": "Schedule",
+            "sameTab": false
+        }
+    ],
+    "overwriteAliases": {
+        "_scalars_out": {
+            "newAlias": "Cost"
+        },
+        "a": {
+            "newAlias": "Capacity"
+        },
+        "b": {
+            "newAlias": "Demand"
+        },
+        "beta": {
+            "newAlias": "beta (MINLP-only)"
+        },
+        "d": {
+            "newAlias": "Distance"
+        },
+        "f": {
+            "newAlias": "freight in dollars per case per thousand miles"
+        },
+        "ilocdata": {
+            "newAlias": "Plant location"
+        },
+        "jlocdata": {
+            "newAlias": "Market location"
+        },
+        "mins": {
+            "newAlias": "minimum shipment (MIP- and MINLP-only)"
+        },
+        "schedule": {
+            "newAlias": "Shipment quantities"
+        },
+        "schedule2": {
+            "newAlias": "shipment quantities in cases"
+        },
+        "total_cost": {
+            "newAlias": "total transportation costs in thousands of dollars"
+        },
+        "type": {
+            "newAlias": "selected model type"
+        }
     },
-    "ilocdata": {
-      "newAlias": "Plant location"
+    "overwriteSheetOrder": {
+        "input": [
+            "_widgets",
+            "a",
+            "b",
+            "d",
+            "ilocdata",
+            "jlocdata"
+        ],
+        "output": [
+            "schedule",
+            "_scalars_out",
+            "schedule2"
+        ]
     },
-    "jlocdata": {
-      "newAlias": "Market location"
+    "pageTitle": "A transportation problem",
+    "pivotCompSettings": {
+        "emptyUEL": "-",
+        "fixedColumns": true,
+        "hideEmptyCols": false,
+        "hidePivotControls": false,
+        "tableSummarySettings": {
+            "colEnabled": false,
+            "colSummaryFunction": "sum",
+            "rowEnabled": false,
+            "rowSummaryFunction": "sum"
+        }
     },
-    "schedule": {
-      "newAlias": "Shipment quantities"
-    },
-    "_scalars_out": {
-      "newAlias": "Cost"
-    }
-  },
-  "inputGroups": [
-    {
-      "name": "Location information",
-      "members": ["ilocdata", "jlocdata"],
-      "sameTab": false
-    }
-  ],
-  "outputGroups": [
-    {
-      "name": "Schedule",
-      "members": ["schedule", "_scalars_out"],
-      "sameTab": false
-    }
-  ],
-  "hiddenOutputSymbols": ["_scalars_out"],
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
-    },
-    "height": 700,
-    "colWidths": 150
-  }
+    "roundingDecimals": 2,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 0,
+    "theme": "browser"
 }

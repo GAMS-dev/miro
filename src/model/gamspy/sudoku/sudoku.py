@@ -49,21 +49,18 @@ def main():
     error01[row, col] = (initial_state[row, col] < 0) | (
         initial_state[row, col] > 9) | (mod(initial_state[row, col], 1) != 0)
 
-    with open("miro.log", "w") as f:
-        f.writelines(["------------------------------------\n",
-                      "        Validating data\n",
-                      "------------------------------------\n"])
-        if error01.records is not None:
-            f.writelines(
-                ["initial_state:: Digits must be integers between 0 and 9!\n"])
-            initial_state_data = initial_state.records
-            for _, row in error01.records.iterrows():
-                value = initial_state_data[(initial_state_data["row"] == row["row"]) & (
-                    initial_state_data["col"] == row["col"])]["value"].values[0]
-                f.writelines(
-                    [f'Cell {row["row"]}:{row["col"]} has invalid value of {value}\n'])
-            raise Exception("Data errors detected")
-        f.writelines(["Data ok\n"])
+    print("""------------------------------------
+        Validating data
+------------------------------------""")
+    if error01.records is not None:
+        print("initial_state:: Digits must be integers between 0 and 9!")
+        initial_state_data = initial_state.records
+        for _, row in error01.records.iterrows():
+            value = initial_state_data[(initial_state_data["row"] == row["row"]) & (
+                initial_state_data["col"] == row["col"])]["value"].values[0]
+            print(f'Cell {row["row"]}:{row["col"]} has invalid value of {value}')
+        raise Exception("Data errors detected")
+    print("Data ok")
 
     # Variable
     x = Variable(m, "x", domain=[col, row, val], type="binary")
@@ -87,23 +84,19 @@ def main():
     sudoku = Model(m, name="sudoku", equations=m.getEquations(),
                    problem="MIP", sense=Sense.MIN, objective=z)
 
-    sudoku.solve(solver="CPLEX", output=sys.stdout, solver_options={"solnpool": "solnpool.gdx",
-                                                                    "solnpoolintensity": "4",
-                                                                    "solnpoolpop": "2"})
+    sudoku.solve(solver="CPLEX", solver_options={"solnpool": "solnpool.gdx",
+                                                 "solnpoolintensity": "4",
+                                                 "solnpoolpop": "2"})
 
     if sudoku.solve_status not in [SolveStatus.NormalCompletion, SolveStatus.TerminatedBySolver] or \
             sudoku.status not in [ModelStatus.OptimalGlobal, ModelStatus.Integer]:
-        with open("miro.log", "a") as f:
-            f.writelines(["No solution exists for your input data.\n"])
-        raise Exception("Infeasible.")
+        raise Exception("No solution exists for your input data.")
 
     if force_unique_sol.toValue():
         m_solnpool = Container("solnpool.gdx")
         if len(m_solnpool["index"].records.index) > 1:
-            with open("miro.log", "a") as f:
-                f.writelines(
-                    ["The solution to the input data you provided is not unique!\n"])
-            raise Exception("Solution is not unique!")
+            raise Exception(
+                "The solution to the input data you provided is not unique!")
 
     results = Parameter(m, "results", domain=[
                         row, col], is_miro_output=True, is_miro_table=True)

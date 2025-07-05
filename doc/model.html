@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -628,7 +628,7 @@ f = Parameter(m, name="f", records=90, is_miro_input=True, description="freight 
                             were to modify the set elements! To get around this
                             problem, we will use
                             <a
-                              href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition"
+                              href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding"
                               target="_blank"
                             >
                               Implicit Set Definition</a
@@ -647,7 +647,7 @@ b = Parameter(m, name="b", domain=[j], records=demands, domain_forwarding=True, 
                           <p>
                             This
                             <a
-                              href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition"
+                              href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding"
                               target="_blank"
                             >
                               Implicit Set Definition</a
@@ -2558,7 +2558,7 @@ single = Set(m, name="single", is_miro_input=True, is_singleton = True, records 
                           <p>
                             A
                             <a
-                              href="https://www.gams.com/26/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
+                              href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets"
                               >singleton set</a
                             >
                             in GAMS is a special set that has at most one
@@ -2632,17 +2632,17 @@ $offExternalInput
                                 a Singleton Set can be migrated to compile time
                                 variables using the Dollar Control Options
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                                   target="__blank"
                                   >eval.Set</a
                                 >,
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
                                   target="__blank"
                                   >evalGlobal.Set</a
                                 >, and
                                 <a
-                                  href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
+                                  href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
                                   target="__blank"
                                   >evalLocal.Set</a
                                 >. For more information see
@@ -3057,17 +3057,17 @@ cost = Equation(m, name = "cost", is_miro_output=True, description = "define obj
                         can be migrated to compile time variables using the
                         Dollar Control Options
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset"
                           target="__blank"
                           >eval.Set</a
                         >,
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset"
                           target="__blank"
                           >evalGlobal.Set</a
                         >, and
                         <a
-                          href="https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
+                          href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset"
                           target="__blank"
                           >evalLocal.Set</a
                         >. Since Singleton Sets are handled, communicated and

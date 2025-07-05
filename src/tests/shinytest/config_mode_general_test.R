@@ -15,7 +15,23 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
   simplifyMatrix = FALSE
 ))
 
+# check that about dialog opens and has correct copyright year
+app$run_js("$('.navbar-custom-menu a.dropdown-toggle').get(0).click()")
+app$run_js("$('.navbar-custom-menu a:contains(\"About\")').click()")
+app$wait_for_js(paste0("$('.modal-body').text().includes('Copyright (c) ", format(Sys.Date(), "%Y"), "')"))
+app$click(selector = 'button[data-dismiss="modal"]')
+
 # user interface tab
+expect_identical(configNew$themeColors, NULL)
+app$run_js("$('#primary_color').val('#d3377c').trigger('change');")
+Sys.sleep(2)
+app$click(selector = "#saveLocal")
+Sys.sleep(1)
+configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
+expect_identical(length(configNew$themeColors), 170L)
 expect_identical(configRaw$pageTitle, configNew$pageTitle)
 expect_identical(configRaw$UILogo, configNew$UILogo)
 expect_identical(configRaw$theme, configNew$theme)
@@ -53,7 +69,7 @@ expect_identical(configRaw$storeLogFilesDuration, configNew$storeLogFilesDuratio
 
 # Scenario comparison
 expect_identical(configRaw$defCompMode, configNew$defCompMode)
-expect_identical(configRaw$pivotCompSettings, list(enableHideEmptyCols = TRUE, emptyUEL = "&", fixedColumns = TRUE))
+expect_identical(configRaw$pivotCompSettings, list(emptyUEL = "&", fixedColumns = TRUE))
 
 
 # Symbol configuration: Symbol and Column Names
@@ -90,9 +106,34 @@ expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
 
+# remove default scenario
+app$click(selector = "a[data-value='Scenario Data and Attachments']")
+expect_identical(app$get_values()$input[["default_scen_check"]], TRUE)
+app$set_inputs(default_scen_check = FALSE)
+
+# remove symbol links
 app$click(selector = "a[data-value='symbol_conf']")
 Sys.sleep(1)
+app$click(selector = "a[data-value='Hidden Symbols and Symbol Links']")
+app$run_js("$('#symbol_links1_wrapper button').click()")
 
+# remove output attachments
+app$click(selector = "a[data-value='new_gen']")
+Sys.sleep(1)
+app$run_js("$('#general_output_attach2_wrapper button').click()")
+app$run_js("$('#general_output_attach1_wrapper button').click()")
+Sys.sleep(1)
+
+configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
+expect_identical(configNew$defaultScenName, NULL)
+expect_identical(configNew$symbolLinks, NULL)
+expect_identical(configNew$outputAttachments, NULL)
+
+app$click(selector = "a[data-value='symbol_conf']")
+Sys.sleep(1)
 app$click(selector = "a[data-value='Symbol and Column Names']")
 app$set_inputs("general_overwriteSymHeaders_price_1" = "2nd header")
 Sys.sleep(1L)

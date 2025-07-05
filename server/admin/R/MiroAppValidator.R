@@ -1,5 +1,9 @@
+source(file.path(MIRO_APP_PATH, "components", "json.R"), local = TRUE)
+
 MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
-  initialize = function() {
+  initialize = function(engineClient) {
+    private$engineClient <- engineClient
+    private$jsonValidator <- JSONValidator$new(miroRootDir = MIRO_APP_PATH)
     return(invisible(self))
   },
   getMIROVersion = function() {
@@ -28,6 +32,15 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
   },
   getAppDesc = function() {
     return(private$appDesc)
+  },
+  getAppEnv = function() {
+    return(private$appEnv)
+  },
+  getAppVersion = function() {
+    return(private$appVersion)
+  },
+  getAppAuthors = function() {
+    return(private$appAuthors)
   },
   setLogoFile = function(logoPath) {
     if (!length(logoPath) || !file.exists(logoPath)) {
@@ -124,7 +137,10 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     appInfo <- private$readAppInfo(miroAppFile, filesInBundle)
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
+    private$appVersion <- appInfo$version
+    private$appAuthors <- appInfo$authors
 
+    private$appEnv <- self$validateAppEnv(appInfo$environment)
     appIdTmp <- appInfo$appId
     if (is.null(appIdTmp)) {
       appIdTmp <- self$getModelId()
@@ -132,6 +148,57 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     self$validateAppId(appIdTmp)
     private$appId <- appIdTmp
     return(invisible(self))
+  },
+  validateAppEnv = function(appEnvRaw) {
+    if (is.null(appEnvRaw)) {
+      return(appEnvRaw)
+    }
+    if (length(appEnvRaw) > MAX_ENV_VARS) {
+      stop(sprintf("Only up to %d environment variables allowed", MAX_ENV_VARS), call. = FALSE)
+    }
+    if (!all(grepl("^[A-Z_][A-Z0-9_]*$", names(appEnvRaw), perl = TRUE))) {
+      stop("Invalid app environment. Variable name(s) do not follow the pattern: ^[A-Z_][A-Z0-9_]*$", call. = FALSE)
+    }
+    if (any(names(appEnvRaw) %in% RESTRICTED_ENV_KEYS)) {
+      stop("Environment variable names must not use restricted names (starting with 'MIRO_').", call. = FALSE)
+    }
+    for (envName in names(appEnvRaw)) {
+      envConfig <- appEnvRaw[[envName]]
+      for (configKey in names(envConfig)) {
+        if (configKey %in% c("description", "value")) {
+          if (!(is.character(envConfig[[configKey]]) &&
+            length(envConfig[[configKey]]) == 1L &&
+            nchar(envConfig[[configKey]]) <= 1000L)) {
+            stop(
+              sprintf(
+                "Invalid app environment. '%s' key (variable: '%s') must be character and no longer than 1000 characters.",
+                configKey, envName
+              ),
+              call. = FALSE
+            )
+          }
+          if (envName %in% paste0(
+            "MIRO_DEFAULT_SCEN_PERM_",
+            c("READ", "WRITE", "EXECUTE")
+          )) {
+            tryCatch(private$validateUserAccessGroups(envConfig[["value"]]),
+              error = function(err) {
+                stop(
+                  sprintf(
+                    "Invalid app environment. '%s' key is invalid: %s.",
+                    envName, conditionMessage(err)
+                  ),
+                  call. = FALSE
+                )
+              }
+            )
+          }
+        } else {
+          stop("Invalid app environment. Configuration of variable(s) include invalid keys.", call. = FALSE)
+        }
+      }
+    }
+    return(appEnvRaw)
   },
   validateAppId = function(appIdRaw) {
     if (is.null(appIdRaw) || !is.character(appIdRaw) || length(appIdRaw) != 1L) {
@@ -143,14 +210,19 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     return(TRUE)
   }
 ), private = list(
+  engineClient = NULL,
   appId = NULL,
+  appEnv = NULL,
   modelName = NULL,
   appTitle = NULL,
   appDesc = NULL,
+  appVersion = NULL,
+  appAuthors = NULL,
   apiVersion = NULL,
   miroVersion = NULL,
   logoB64 = NULL,
   logoFile = NULL,
+  jsonValidator = NULL,
   getStaticFilePath = function() {
     return(file.path(paste0("static_", self$getModelId())))
   },
@@ -212,11 +284,11 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
       files = filesInBundle[appInfoFile][1],
       junkpaths = TRUE, exdir = tempdir(check = TRUE)
     )
-
-    return(tryCatch(jsonlite::fromJSON(appInfoPath), error = function(e) {
-      flog.info("Invalid App Info file in bundle. Error message: %s", conditionMessage(e))
-      return(list())
-    }))
+    return(private$jsonValidator$validate(
+      appInfoPath,
+      file.path(MIRO_APP_PATH, "conf", "app_info_schema.json"),
+      returnRawData = TRUE
+    ))
   },
   validateModelname = function(modelNameRaw) {
     if (!identical(length(modelNameRaw), 1L) || !is.character(modelNameRaw) ||
@@ -227,5 +299,19 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
       stop("Invalid model name found in MIRO metadata file!", call. = FALSE)
     }
     return(modelNameRaw)
+  },
+  validateUserAccessGroups = function(accessGroupString) {
+    userGroups <- private$engineClient$getUserGroups()
+    for (accessGroup in strsplit(accessGroupString, ",", fixed = TRUE)[[1L]]) {
+      if (startsWith(accessGroup, "#")) {
+        if (!substring(accessGroup, 2L) %in% userGroups$groups) {
+          stop(sprintf("Invalid user group specified: '%s'.", substring(accessGroup, 2L)), call. = FALSE)
+        }
+        return()
+      }
+      if (!accessGroup %in% userGroups$users) {
+        stop(sprintf("Invalid user specified: '%s'.", accessGroup), call. = FALSE)
+      }
+    }
   }
 ))

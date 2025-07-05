@@ -39,14 +39,7 @@ Sys.sleep(0.5)
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-# get user name
-app$set_inputs(btEditMeta = "click")
-Sys.sleep(1)
-app$click(selector = "a[data-value='accessPerm']")
-Sys.sleep(1)
-user <- app$get_values()$input[["editMetaWritePerm"]][[1]]
-app$set_inputs(btUpdateMeta = "click")
-Sys.sleep(0.5)
+user <- Sys.info()[["user"]]
 
 # add view, save scenario newScen
 app$set_inputs(btEditMeta = "click")

@@ -82,6 +82,13 @@
         "author": "GAMS Development Corp, Janina Hasselbring",
         "desc": "Vehicle Routing Problem with Time Windows",
         "upvotes": 0
+    },
+    {
+        "id": "bess",
+        "title": "BESS",
+        "author": "GAMS Development Corp",
+        "desc": "A Battery Energy Storage System sizing problem",
+        "upvotes": 0
     }
     ]
 }

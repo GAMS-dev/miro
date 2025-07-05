@@ -4,7 +4,8 @@ JSONValidator <- R6Class(
     initialize = function(miroRootDir = ".") {
       private$ct <- V8::v8(global = "window")
       private$ct$source(file.path(miroRootDir, "JS", "ajv.min.js"))
-      private$ct$eval("const ajv=new Ajv({useDefaults:true,validateSchema:false});")
+      private$ct$source(file.path(miroRootDir, "JS", "better-ajv-errors.js"))
+      private$ct$eval("const ajv=new ajv7.Ajv({useDefaults:true,validateSchema:false,strict:false});")
     },
     validate = function(jsonFileLocation, jsonSchemaLocation, returnRawData = FALSE) {
       tryCatch(
@@ -26,8 +27,8 @@ JSONValidator <- R6Class(
       tryCatch(
         {
           dataTmp <- readr::read_file(jsonFileLocation)
-          private$ct$assign("data", dataTmp)
-          private$ct$eval("data=JSON.parse(data);")
+          private$ct$assign("dataRaw", dataTmp)
+          private$ct$eval("data=JSON.parse(dataRaw);")
         },
         error = function(e) {
           stop(
@@ -56,7 +57,6 @@ JSONValidator <- R6Class(
       )
       valid <- private$ct$get("valid")
       if (identical(valid, TRUE)) {
-        errors <- NULL
         if (returnRawData) {
           data <- jsonlite::fromJSON(dataTmp,
             simplifyDataFrame = FALSE,
@@ -69,10 +69,9 @@ JSONValidator <- R6Class(
           )
         }
       } else {
-        errors <- private$ct$get("ajv.errorsText(validate.errors)")
-        data <- NULL
+        stop(private$ct$get("window.betterAjvErrors(schema,data,validate.errors,{json:dataRaw})"), call. = FALSE)
       }
-      return(list(errors = errors, data = data))
+      return(data)
     }
   ),
   private = list(

@@ -10,9 +10,10 @@ Sys.sleep(1)
 app$set_inputs(outputTableView = "click")
 Sys.sleep(1)
 app$expect_values(output = "outputDataTitle")
-expect_true(grepl("<th>Scalar Description</th>", jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$container,
+expect_match(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$container,
+  "<th>Scalar Description</th>",
   fixed = TRUE
-))
+)
 expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$filter, "top")
 expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$decimals, 4L)
 expect_identical(jsonlite::fromJSON(app$get_values()$output[["table_tab_1_1-datatable"]])$x$options$pageLength, 5L)

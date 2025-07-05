@@ -47,6 +47,7 @@ Sys.setenv(MIRO_LOG_PATH = logPathTests)
 Sys.setenv(MIRO_TEST_LOAD_TIMEOUT = "30000")
 Sys.setenv(MIRO_TEST_TIMEOUT = "10000")
 Sys.setenv(NOT_CRAN = "true")
+Sys.setenv(CHROMOTE_HEADLESS = "new")
 if (Sys.info()[["sysname"]] == "Darwin") {
   # need to set chromium path manually until https://github.com/rstudio/chromote/issues/91 is closed
   chromePath <- "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
@@ -63,15 +64,41 @@ if (Sys.info()[["sysname"]] == "Darwin") {
   Sys.setenv(CHROMOTE_CHROME = chromePath)
 }
 
+if (is.na(Sys.getenv("GAMSPY_INTERPRETER_PATH", NA_character_))) {
+  runGAMSPyTests <- FALSE
+} else {
+  runGAMSPyTests <- TRUE
+  Sys.setenv(PYTHON_EXEC_PATH = Sys.getenv("GAMSPY_INTERPRETER_PATH"))
+}
+
+if (!is.na(Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY", NA_character_))) {
+  gamsLicFullPath <- file.path(getwd(), "gamslice.txt")
+  if (runGAMSPyTests) {
+    processx::run("gamspy", c(
+      "install",
+      "license", Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
+    ))
+  }
+  proc <- processx::run(
+    file.path(Sys.getenv("GAMS_SYS_DIR"), "gamsgetkey"),
+    Sys.getenv("MIRO_TEST_GAMS_LICENSE_KEY")
+  )
+  writeLines(proc$stdout, gamsLicFullPath)
+  Sys.setenv(MIRO_TEST_GAMS_LICE = gamsLicFullPath)
+}
+maxTestFailures <- as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))
+
 reporter <- MultiReporter$new(list(
-  ProgressReporter$new(max_failures = as.integer(Sys.getenv("MIRO_MAX_TEST_FAILURES", "1"))),
+  ProgressReporter$new(max_failures = maxTestFailures),
   JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
 stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
 testDir <- file.path(getwd(), "tests")
 
-# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure)
-test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+print(sprintf("Maximum test failures: %i, stop on failure: %s", maxTestFailures, stopOnFailure))
+
+# test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
 
 Sys.unsetenv(c("MIRO_LOG_PATH", "MIRO_TEST_TIMEOUT", "MIRO_TEST_LOAD_TIMEOUT"))

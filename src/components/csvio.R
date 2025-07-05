@@ -231,13 +231,42 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[3L]]
     return(scalarsDf)
   },
-  guessDelim = function(sample) {
-    return(private$supportedDelim[vapply(private$supportedDelim, function(delim) {
-      nbItems <- vapply(stri_split_fixed(sample, delim), length,
-        integer(1L),
-        USE.NAMES = FALSE
-      )
-      return(nbItems[1] > 1L && var(nbItems) == 0L)
-    }, logical(1L), USE.NAMES = FALSE)])
+  guessDelim = function(lines) {
+    # taken from vroom::guess_delim (https://github.com/tidyverse/vroom/blob/73c90c4fe490c0588b20ac527c40fcb1c683683e/R/vroom.R#L370)
+    # licensed under MIT license (Copyright (c) 2023 vroom authors)
+    # more info about license can be found in /src/LICENSE
+    # modified slightly to return multiple delimiters if ambiguous
+    if (length(lines) == 0) {
+      return("")
+    }
+
+    # blank text within quotes
+    lines <- gsub('"[^"]*"', "", lines)
+
+    splits <- lapply(private$supportedDelim, stri_split_fixed, str = lines)
+
+    counts <- lapply(splits, function(x) table(lengths(x)))
+
+    num_fields <- vapply(counts, function(x) as.integer(names(x)[[1]]), integer(1))
+
+    num_lines <- vapply(counts, function(x) (x)[[1]], integer(1))
+
+    top_lines <- 0
+    top_idx <- 0
+    for (i in seq_along(private$supportedDelim)) {
+      if (num_fields[[i]] >= 2 && num_lines[[i]] > top_lines ||
+        (top_lines == num_lines[[i]] && (top_idx[1] <= 0 || num_fields[[top_idx[1]]] <= num_fields[[i]]))) {
+        top_lines <- num_lines[[i]]
+        if (top_idx[1] > 0) {
+          top_idx <- c(top_idx, i)
+        } else {
+          top_idx <- i
+        }
+      }
+    }
+    if (top_idx[1] == 0) {
+      character(0L)
+    }
+    private$supportedDelim[top_idx]
   }
 ))

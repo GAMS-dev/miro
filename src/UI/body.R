@@ -58,16 +58,32 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL) {
   )
 }
 buildUI <- TRUE
+if (identical(miroColorTheme, "custom")) {
+  if (isShinyProxy) {
+    customColorCss <- Sys.getenv("MIRO_CUSTOM_THEME_COLORS", "")
+  } else {
+    customColorCss <- read_file(file.path(miroWorkspace, "colors_custom.css"))
+  }
+}
 if (!debugMode) {
+  if (identical(miroColorTheme, "custom")) {
+    miroColorThemeId <- digest::sha1(customColorCss)
+  } else {
+    miroColorThemeId <- miroColorTheme
+  }
   miroCacheFile <- paste0(
     appId, "_",
     MIROVersion, "_0_",
     miroLanguage, "_",
-    miroColorTheme,
+    miroColorThemeId,
     if (config$activateModules$remoteExecution) "_1" else "_0"
   )
   if (isShinyProxy) {
-    miroCacheFile <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache", miroCacheFile)
+    miroCacheDir <- Sys.getenv("MIRO_CACHE_DIR", NA_character_)
+    if (is.na(miroCacheDir)) {
+      miroCacheDir <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache")
+    }
+    miroCacheFile <- file.path(miroCacheDir, miroCacheFile)
   } else {
     miroCacheFile <- file.path(miroWorkspace, "cache", miroCacheFile)
   }
@@ -777,11 +793,11 @@ if (buildUI) {
           value = "log",
           tags$pre(
             id = "logStatusContainer",
-            class = "shiny-text-output noplaceholder"
+            class = "noplaceholder"
           ),
           tags$div(
             class = "update-mobile",
-            checkboxInput("logUpdate",
+            checkboxInput_SIMPLE("logUpdate",
               label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
               value = TRUE
             )
@@ -791,9 +807,9 @@ if (buildUI) {
           logTabsetList$miroLog <- tabPanel(
             title = tags$div(class = "log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
             value = "mirolog",
-            tagAppendAttributes(
-              class = "shiny-text-output noplaceholder pre-style-div",
-              uiOutput("miroLogContainer")
+            tags$div(
+              id = "miroLogContainer",
+              class = "noplaceholder pre-style-div"
             )
           )
         }
@@ -803,9 +819,9 @@ if (buildUI) {
           value = "mirolog",
           tags$div(
             id = "logStatusContainer",
-            class = "shiny-text-output noplaceholder pre-style-div"
+            class = "noplaceholder pre-style-div"
           ),
-          checkboxInput("logUpdate",
+          checkboxInput_SIMPLE("logUpdate",
             label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate,
             value = TRUE
           )
@@ -1135,11 +1151,27 @@ if (buildUI) {
           name = "color-scheme",
           content = if (identical(config$theme, "browser")) "dark light" else "normal"
         ),
-        tags$meta(name = "apple-mobile-web-app-capable", content = "yes"),
+        tags$meta(name = "mobile-web-app-capable", content = "yes"),
+        if (!is.null(config$themeColors) && length(config$themeColors)) {
+          cssLines <- sprintf(
+            "--%s:%s;",
+            gsub("_", "-", names(config$themeColors), fixed = TRUE),
+            unname(config$themeColors)
+          )
+          tags$style(
+            HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+          )
+        } else if (identical(miroColorTheme, "custom")) {
+          tags$style(
+            HTML(customColorCss)
+          )
+        } else {
+          tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
+        },
         tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
           paste0("static_", modelName, "/custom_theme.css")
         } else {
-          paste0(miroColorTheme, "_", config$theme, ".css")
+          paste0("default_", config$theme, ".css")
         }),
         tags$script(src = "miro.js", type = "application/javascript"),
         if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "manifest.json"))) {
@@ -1162,8 +1194,14 @@ if (buildUI) {
         tags$link(href = paste0(staticDir, "ipadpro1_splash.png"), media = "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
         tags$link(href = paste0(staticDir, "ipadpro3_splash.png"), media = "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
         tags$link(href = paste0(staticDir, "ipadpro2_splash.png"), media = "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)", rel = "apple-touch-startup-image"),
-        tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
-        tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png"),
+        if (staticDirExists && file.exists(file.path(currentModelDir, paste0("static_", modelName), "favicon.ico"))) {
+          tags$link(rel = "icon", type = "image/png", href = paste0("static_", modelName, "/favicon.ico"))
+        } else {
+          tagList(
+            tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "favicon-32x32.png"),
+            tags$link(rel = "icon", type = "image/png", sizes = "16x16", href = "favicon-16x16.png")
+          )
+        },
         tags$meta(name = "msapplication-TileColor", content = "#ff9900"),
         # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
@@ -1194,6 +1232,7 @@ if (buildUI) {
           )
         }
       ),
+      tags$div(id = "uiConfig", `data-color-scheme` = config$theme),
       HTML(paste0(
         '<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1227,7 +1266,7 @@ if (buildUI) {
   if (!debugMode) {
     cacheTestDir <- attr(rHandsontableOutput("test"), "html_dependencies")[[1]]$src$file
     if (!dir.exists(dirname(miroCacheFile))) {
-      dir.create(dirname(miroCacheFile), recursive = TRUE, mode = "0700")
+      dir.create(dirname(miroCacheFile), recursive = TRUE)
     }
     save(
       list = c("cacheTestDir", "miroBody"),

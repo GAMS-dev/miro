@@ -64,7 +64,7 @@ validateGraphConfig <- function(graphConfig, skipOutTypeCheck = FALSE) {
   return(errMsgTmp)
 }
 
-validateDashboardConfig <- function(graphConfig) {
+validateDashboardConfig <- function(graphConfig, dashboardType) {
   errMsgTmp <- NULL
 
   vb <- graphConfig$options$valueBoxes
@@ -87,12 +87,12 @@ validateDashboardConfig <- function(graphConfig) {
   }
 
   vbSymbols <- vb$valueScalar[!is.na(vb$valueScalar)]
-  noSymbol <- vbSymbols[!(vbSymbols %in% modelOut[[scalarsOutName]]$symnames)]
+  noSymbol <- vbSymbols[!(vbSymbols %in% c(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarEquationsOutName]]$symnames))]
   if (length(noSymbol)) {
     errMsgTmp <- paste(
       errMsgTmp,
       sprintf(
-        "\nNo scalar symbol '%s' found for valueBox",
+        "\nNo scalar symbol '%s' found for valueBox. Please make sure it is part of the MIRO app.",
         paste(noSymbol, collapse = ", ")
       )
     )
@@ -120,6 +120,16 @@ validateDashboardConfig <- function(graphConfig) {
     )
   }
 
+  noMatchingChartId <- chartIds[!chartIds %in% names(dc)]
+  if (length(noMatchingChartId)) {
+    errMsgTmp <- paste(
+      errMsgTmp,
+      sprintf(
+        "\nThe following dataView id(s) do not match with any dataViewsConfig id: '%s'",
+        paste(noMatchingChartId, collapse = ", ")
+      )
+    )
+  }
 
   for (view in names(dc)) {
     config <- dc[[view]]
@@ -128,7 +138,20 @@ validateDashboardConfig <- function(graphConfig) {
       # custom user output
       next
     }
-    if (length(config$data)) {
+    if (identical(dashboardType, "compare")) {
+      if (!is.null(config$data) && config$data %in% c(inputDsNames, names(modelOut))) {
+        symbol <- config$data
+      } else {
+        errMsgTmp <- paste(
+          errMsgTmp,
+          sprintf(
+            "\nSymbol '%s' in dataViewConfig '%s' not found among the symbols that the dashboard compare mode has access to. Make sure to provide a valid symbol name (property `data`).",
+            if (!is.null(config$data)) config$data else "[NULL]", view
+          )
+        )
+        next
+      }
+    } else if (length(config$data)) {
       if (config$data %in% c(graphConfig$options[["_metadata_"]]$symname, graphConfig$additionalData)) {
         symbol <- config$data
       } else {
@@ -145,13 +168,14 @@ validateDashboardConfig <- function(graphConfig) {
       symbol <- graphConfig$options[["_metadata_"]]$symname
     }
 
-    noNumericHeaders <- sum(vapply(modelOut[[symbol]]$header,
+    headers <- if (symbol %in% names(modelOut)) modelOut[[symbol]]$headers else modelIn[[symbol]]$headers
+    noNumericHeaders <- sum(vapply(headers,
       function(header) {
         identical(header$type, "numeric")
       }, logical(1L),
       USE.NAMES = FALSE
     ))
-    validHeaders <- names(modelOut[[symbol]]$headers)
+    validHeaders <- names(headers)
     if (noNumericHeaders > 1L) {
       validHeaders <- c(
         validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
@@ -160,8 +184,12 @@ validateDashboardConfig <- function(graphConfig) {
     } else {
       validHeaders <- validHeaders[-length(validHeaders)]
     }
+    if (identical(dashboardType, "compare")) {
+      validHeaders <- c(validHeaders, "_scenName")
+    }
 
-    for (id in c("rows", "cols", "aggregations", "filter", "userFilter")) {
+    allIndices <- c()
+    for (id in c("rows", "cols", "aggregations", "filter", "userFilter", "groupDimension")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
           if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
@@ -172,6 +200,7 @@ validateDashboardConfig <- function(graphConfig) {
         } else {
           indices <- names(config[[id]])
         }
+        allIndices <- c(allIndices, indices)
         invalidIndices <- !indices %in% validHeaders
         if (any(invalidIndices)) {
           errMsgTmp <- paste(
@@ -185,6 +214,22 @@ validateDashboardConfig <- function(graphConfig) {
           )
         }
       }
+    }
+    if (identical(dashboardType, "compare") && !"_scenName" %in% allIndices) {
+      errMsgTmp <- paste(
+        errMsgTmp,
+        paste0(
+          "\nMissing '_scenName' index in dataViewConfig '", view, "'"
+        )
+      )
+    }
+    if (length(config$baselineComparison$domain) && config$baselineComparison$domain %in% names(config$aggregations)) {
+      errMsgTmp <- paste(
+        errMsgTmp,
+        paste0(
+          "\nThe baseline comparison domain can't be aggregated (dataViewConfig '", view, "')"
+        )
+      )
     }
   }
 
@@ -281,7 +326,7 @@ if (is.null(errMsg)) {
   lapply(seq_along(jsonSchemaMap), function(i) {
     if (tryCatch(
       {
-        valid <- jsonValidator$validate(
+        validatedData <- jsonValidator$validate(
           jsonSchemaMap[[i]][1],
           jsonSchemaMap[[i]][2],
           returnRawData = identical(names(jsonSchemaMap)[[i]], "io_config")
@@ -302,31 +347,20 @@ if (is.null(errMsg)) {
       return()
     }
 
-    if (is.null(valid$errors)) {
-      if (identical(names(jsonSchemaMap)[[i]], "config")) {
-        config <<- valid$data
-      } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
-        config <<- c(config, valid$data)
-        if (is.null(config$modelTitle)) {
-          # we have to use jsonlite::readJSON instead of JSON.parse for parsing
-          # the data contract due to an issue with headers being reordered if they
-          # use integer values (e.g. "1", "2" etc.). Thus, AJV won't insert the
-          # defaults from the schema (only one luckily for the io_schema) into the data
-          # object. We have to do it manually.
-          config$modelTitle <- "Unnamed model"
-        }
-      } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
-        config$globalViews <<- valid$data
+    if (identical(names(jsonSchemaMap)[[i]], "config")) {
+      config <<- validatedData
+    } else if (identical(names(jsonSchemaMap)[[i]], "io_config")) {
+      config <<- c(config, validatedData)
+      if (is.null(config$modelTitle)) {
+        # we have to use jsonlite::readJSON instead of JSON.parse for parsing
+        # the data contract due to an issue with headers being reordered if they
+        # use integer values (e.g. "1", "2" etc.). Thus, AJV won't insert the
+        # defaults from the schema (only one luckily for the io_schema) into the data
+        # object. We have to do it manually.
+        config$modelTitle <- "Unnamed model"
       }
-    } else {
-      errMsg <<- paste(errMsg,
-        paste0(
-          "Some error occurred parsing JSON file: '",
-          basename(jsonFilesWithSchema[i]),
-          "'. Error message: ", valid$errors
-        ),
-        sep = "\n"
-      )
+    } else if (identical(names(jsonSchemaMap)[[i]], "views")) {
+      config$globalViews <<- validatedData
     }
   })
 }
@@ -2131,6 +2165,9 @@ if (is.null(errMsg)) {
     config[["symbolLinks"]] <- NULL
   }
   if (length(config$scripts)) {
+    warningMsgTmp <- "Custom scenario analysis scripts have been deprecated as of MIRO version 2.12. Please use custom renderers, custom input widgets and custom comparison modules instead. If you rely on this feature and don't want us to remove it in the future, please contact support@gams.com!"
+    warning(warningMsgTmp, call. = FALSE)
+    warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
     if (any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))) {
       errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
     }
@@ -2269,7 +2306,7 @@ if (is.null(errMsg)) {
                 viewList
               }
             })
-            validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]])
+            validGraphConfig <- validateDashboardConfig(configGraphsOut[[i]], "graph")
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
                 "Invalid graph config for symbol '", names(modelOut)[i],
@@ -2569,14 +2606,51 @@ if (is.null(errMsg)) {
 
 if (is.null(errMsg)) {
   compareModuleConfigs <- list()
-  for (compareModuleIdx in seq_along(config[["customCompareModules"]])) {
-    compareModuleConfig <- config[["customCompareModules"]][[compareModuleIdx]]
+  noCompareModules <- 0L
+  for (compareModuleIdx in seq_along(config[["compareModules"]])) {
+    compareModuleConfig <- config[["compareModules"]][[compareModuleIdx]]
+    if (identical(compareModuleConfig$type, "dashboard")) {
+      compareModuleConfig$options$dataViews <- lapply(compareModuleConfig$options$dataViews, function(viewList) {
+        if (is.null(names(viewList))) {
+          unlist(viewList, recursive = FALSE)
+        } else {
+          viewList
+        }
+      })
+      validGraphConfig <- validateDashboardConfig(compareModuleConfig, "compare")
+      if (!identical(validGraphConfig, TRUE)) {
+        errMsgTmp <- paste0(
+          "Invalid config for dashboard comparison '", compareModuleIdx,
+          "': ", validGraphConfig, "."
+        )
+        if (LAUNCHCONFIGMODE) {
+          warning(errMsgTmp, call. = FALSE)
+          next
+        }
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+        next
+      }
+
+      compareModuleConfig$id <- paste0("__dashboard_", compareModuleIdx)
+      compareModuleConfigs[[compareModuleConfig$id]] <- compareModuleConfig
+      compareModuleConfigs[[compareModuleConfig$id]][["outType"]] <- "dashboardCompare"
+      compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
+      compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
+      compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+    }
+    noCompareModules <- compareModuleIdx
+  }
+
+  for (customCompareModuleIdx in seq_along(config[["customCompareModules"]])) {
+    compareModuleIdx <- customCompareModuleIdx + noCompareModules
+    compareModuleConfig <- config[["customCompareModules"]][[customCompareModuleIdx]]
     if (compareModuleConfig$id %in% names(compareModuleConfigs)) {
       errMsg <- sprintf(
         "Analysis module ids must be unique (%s).",
         compareModuleConfig$id
       )
-    } else if (compareModuleConfig$id %in% c("split", "tab", "pivot")) {
+    } else if (compareModuleConfig$id %in% c("split", "tab", "pivot") ||
+      startsWith(compareModuleConfig$id, "__dashboard_")) {
       errMsg <- sprintf(
         "Analysis module id: '%s' is reserved and cannot be used.",
         compareModuleConfig$id
@@ -2638,4 +2712,12 @@ if (endsWith(tolower(modelGmsName), ".py")) {
   # lst/trace file not supported with gamspy
   config$activateModules$lstFile <- FALSE
   config$saveTraceFile <- FALSE
+  if (!isTRUE(config$activateModules$miroLogFile) && !isFALSE(config$parseLogForMiroLogSyntax)) {
+    config$parseLogForMiroLogSyntax <- TRUE
+  }
+}
+if (isTRUE(config$activateModules$miroLogFile) && isTRUE(config$parseLogForMiroLogSyntax)) {
+  warningMsgTmp <- "Both 'miroLog' and 'parseLogForMiroLogSyntax' are activated. Only the stdout will be parsed for MIRO log syntax!"
+  warning(warningMsgTmp, call. = FALSE)
+  warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
 }

@@ -53,7 +53,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -74,7 +74,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -108,7 +108,7 @@ getPivotCompGraphConfig <- function(sheetName) {
       options = c(
         graphOptionsTmp,
         list(
-          resetOnInit = isFALSE(isInRefreshMode),
+          resetOnInit = isFALSE(isInRefreshMode$get(paste0("_pivotCmp_", sheetName))),
           "_metadata_" = list(
             symname = sheetName,
             headers = c(
@@ -124,12 +124,14 @@ getPivotCompGraphConfig <- function(sheetName) {
       )
     )
   }
-  if (isTRUE(config$pivotCompSettings$enableHideEmptyCols)) {
-    graphConfig$options$enableHideEmptyCols <- TRUE
-    graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
-  }
+  graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   graphConfig$options$hidePivotControls <- config$pivotCompSettings$hidePivotControls
   graphConfig$options$fixedColumns <- config$pivotCompSettings$fixedColumns
+  graphConfig$options$tableSummarySettings <- config$pivotCompSettings$tableSummarySettings
+  graphConfig$options$hideEmptyCols <- config$pivotCompSettings$hideEmptyCols
+  graphConfig$options$customChartColors <- config$pivotCompSettings$customChartColors
+  graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
+  graphConfig$options$chartFontSize <- config$pivotCompSettings$chartFontSize
   return(graphConfig)
 }
 loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {
@@ -196,7 +198,8 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
           options = compareModuleConfig[["options"]],
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
-          views = views
+          views = views,
+          resetOninit = isFALSE(isInRefreshMode$get(refId))
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {

@@ -47,10 +47,14 @@ LocalFileIO <- R6::R6Class("LocalFileIO",
       valueColumnName <- names(private$metadata[[symName]]$headers)[3]
       requiredColumnsFound <- c(scalarColumnName, valueColumnName) %in% names(data)
       if (!all(requiredColumnsFound)) {
-        stop_custom("error_validation", sprintf(
-          "Invalid scalar dataframe. Required column(s): %s not found.",
-          paste(c(scalarColumnName, valueColumnName)[!requiredColumnsFound], collapse = ", ")
-        ))
+        if (ignoreInvalidScalars) {
+          return(self$getScalarTemplate(symName))
+        } else {
+          stop_custom("error_validation", sprintf(
+            "Invalid scalar dataframe. Required column(s): %s not found.",
+            paste(c(scalarColumnName, valueColumnName)[!requiredColumnsFound], collapse = ", ")
+          ))
+        }
       }
       scalarDfTmp <- self$getScalarTemplate(symName)
       scalarIds <- match(data[[scalarColumnName]], scalarDfTmp[[1L]])

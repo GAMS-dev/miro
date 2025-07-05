@@ -8,17 +8,28 @@ header <- dashboardHeader(
     ),
     tags$ul(
       class = "dropdown-menu", role = "menu",
-      tags$li(actionLink("btRemoveDuplicates", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-diagram-next"></i></div> ', lang$nav$header$scenario$removeDuplicates)))),
+      tags$li(actionLink("btRemoveDuplicates", tagList(tags$div(class = "menu-icon-align", tags$i(class = "fa fa-diagram-next")), lang$nav$header$scenario$removeDuplicates))),
       if (!config$activateModules$readonlyMode) tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-magnifying-glass"></i></div> ', lang$nav$header$scenario$edit)))),
       if (!config$activateModules$readonlyMode) tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-floppy-disk"></i></div> ', lang$nav$header$scenario$save)))),
       if (!config$activateModules$readonlyMode) tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
-      tags$li(HTML(paste0(
-        '<a href="#" class="action-button"
-                                      onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">
-                                      <div class="menu-icon-align"><i class="fa fa-file-export"></i></div> ',
-        lang$nav$header$scenario$export, "</a>"
-      ))),
-      if (!config$activateModules$readonlyMode) tags$li(actionLink("btDelete", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-trash"></i></div> ', lang$nav$header$scenario$delete))))
+      tags$li(tags$a(
+        href = "#", class = "action-button",
+        onclick = "Shiny.setInputValue('btExportScen', 1, {priority: 'event'})",
+        tags$div(
+          class = "menu-icon-align", tags$i(class = "fa fa-file-export")
+        ),
+        lang$nav$header$scenario$export
+      )),
+      if (!config$activateModules$readonlyMode) {
+        tags$li(tags$a(
+          href = "#", class = "action-button",
+          id = "btDelete",
+          tags$div(
+            class = "menu-icon-align", tags$i(class = "fa fa-trash")
+          ),
+          lang$nav$header$scenario$delete
+        ))
+      }
     )
   ),
   tags$li(
@@ -39,7 +50,7 @@ header <- dashboardHeader(
         lang$nav$header$help$doc
       )),
       tags$li(tags$a(
-        href = "https://forum.gamsworld.org/viewforum.php?f=14",
+        href = "https://forum.gams.com/c/gams-miro/12",
         target = "_blank",
         tags$div(
           class = "menu-icon-align",
@@ -57,7 +68,7 @@ header <- dashboardHeader(
       )),
       tags$li(
         tags$a(
-          hred = "#",
+          href = "#",
           class = "action-button",
           onclick = paste0(
             "Miro.confirmModalShow('About GAMS MIRO','",

@@ -393,6 +393,10 @@ observeEvent(input[["scenRemoteExportHandler"]], {
     return()
   }
   flog.debug("Data exported successfully.")
+  showNotification(sprintf(
+    lang$progressBar$exportScen$success,
+    customDataIO$getLabel()
+  ))
   if (!suppressRemoveModal) {
     removeModal()
   }

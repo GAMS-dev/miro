@@ -1,9 +1,7 @@
 aiofiles
 pydantic
 pydantic_settings
-fastapi
+fastapi[standard]
 PyYAML
 requests
 python-multipart
-uvicorn[standard]
-gunicorn

@@ -149,44 +149,6 @@ const arrayTypes = {
     };
     return ([elements, { uniqueItems: true }, 'symlink']);
   },
-  scripts_base(defaults) {
-    let id; let tabTitle; let command; let args; let outputFile; let
-      markdown; let timeout;
-    if (defaults !== undefined) {
-      ({
-        id, tabTitle, command, args, outputFile, markdown, timeout,
-      } = defaults);
-    }
-    const elements = {
-      scripts_base: ['text', lang.addScript.id, id],
-      scriptsB_title: ['text', lang.addScript.title, tabTitle],
-      scriptsB_cmd: ['text', lang.addScript.cmd, command],
-      scriptsB_args: ['select', lang.addScript.args, args, args, args, true, true],
-      scriptsB_outFile: ['text', lang.addScript.outFile, outputFile],
-      scriptsB_markdown: ['checkbox', lang.addScript.markdown, markdown === true],
-      scriptsB_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
-    };
-    return ([elements, { elRequired: false }, 'script']);
-  },
-  scripts_hcube(defaults) {
-    let id; let title; let command; let args; let outputFile; let
-      markdown; let timeout;
-    if (defaults !== undefined) {
-      ({
-        id, title, command, args, outputFile, markdown, timeout,
-      } = defaults);
-    }
-    const elements = {
-      scripts_hcube: ['text', lang.addScript.id, id],
-      scriptsH_title: ['text', lang.addScript.title, title],
-      scriptsH_cmd: ['text', lang.addScript.cmd, command],
-      scriptsH_args: ['select', lang.addScript.args, args, args, args, true, true],
-      scriptsH_outFile: ['text', lang.addScript.outFile, outputFile],
-      scriptsH_markdown: ['checkbox', lang.addScript.markdown, markdown === true],
-      scriptsH_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
-    };
-    return ([elements, { elRequired: false }, 'script']);
-  },
   general_output_attach(defaults) {
     let filename; let execPerm; let throwError;
     if (defaults !== undefined) {
@@ -751,5 +713,25 @@ $(document).ready(() => {
       { priority: 'event' },
     );
   }, 300));
+  $(document).on('input change', '.miro-color-picker', function () {
+    const col = $(this).val();
+    $(`#${this.id}_swatch`).css('background', col);
+  });
+  colorPickerBinding.setValue = function (el, value) {
+    $(el).colorpicker('setValue', value);
+  };
+  colorPickerBinding.receiveMessage = function (el, data) {
+    if (Object.prototype.hasOwnProperty.call(data, 'value')) {
+      $(el).colorpicker('setValue', data.value);
+      $(el).trigger('changeColor.colorpicker');
+    }
+  };
   Shiny.inputBindings.register(colorPickerBinding);
+  Shiny.addCustomMessageHandler('update-css', (vars) => {
+    const root = document.documentElement;
+
+    Object.entries(vars).forEach(([name, value]) => {
+      root.style.setProperty(name, value);
+    });
+  });
 });

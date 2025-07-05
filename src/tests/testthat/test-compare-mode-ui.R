@@ -58,6 +58,32 @@ test_that(
     source(file.path(testDir, "shinytest", "comparison_mode_test.R"), local = TRUE)
     unlink(file.path(modelDataPath, "pickstock.gdx"), force = TRUE)
 
+    # Dashboard comparison
+    createTestDb()
+    Sys.setenv(MIRO_MODE = "base")
+    testModelPath <- file.path(testDir, "model", "pickstock_dashboard")
+    Sys.setenv(MIRO_MODEL_PATH = file.path(
+      testModelPath,
+      "pickstock.gms"
+    ))
+
+    modelDataPath <- file.path(testModelPath, "data_pickstock")
+
+    file.copy2(
+      file.path(testDir, "data", "pickstock1.gdx"),
+      file.path(modelDataPath, "pickstock1.gdx")
+    )
+    file.copy2(
+      file.path(testDir, "data", "pickstock2.gdx"),
+      file.path(modelDataPath, "pickstock2.gdx")
+    )
+
+    context("UI tests - dashboard comparison mode")
+    source(file.path(testDir, "shinytest", "dashboard_comparison_mode_test.R"), local = TRUE)
+    unlink(file.path(modelDataPath, "pickstock1.gdx"), force = TRUE)
+    unlink(file.path(modelDataPath, "pickstock2.gdx"), force = TRUE)
+
+
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
   })
 )

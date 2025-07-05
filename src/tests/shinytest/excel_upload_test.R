@@ -47,7 +47,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
     "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)",
     "price (Input)", "_scalars (Input)", "_index"
   )))
-  expect_true(grepl("idontexist", app$get_text(selector = "#localDataImportError"), fixed = TRUE))
+  expect_match(app$get_text(selector = "#localDataImportError"), "idontexist", fixed = TRUE)
   app$upload_file(localInput = "../data/pickstock_index.xlsx")
   Sys.sleep(2)
   optionsTmp <- getSelectizeOptions(app, "#selExcelIndexSheet")

@@ -1,0 +1,92 @@
+{
+    "schedule": {
+        "asd": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "tableSummarySettings": {
+                "enabled": false,
+                "rowSummaryFunction": "sum",
+                "colSummaryFunction": "sum"
+            },
+            "rows": "i",
+            "filter": {
+                "Hdr": "quantities"
+            },
+            "cols": {
+                "j": null
+            },
+            "chartOptions": {
+                "title": "test",
+                "xTitle": "xxx",
+                "yTitle": "yyy",
+                "yMin": 15,
+                "yLogScale": false,
+                "showDataMarkers": false,
+                "showXGrid": false,
+                "showYGrid": true,
+                "multiChartSeries": "New-york",
+                "multiChartOptions": {
+                    "showMultiChartDataMarkers": true,
+                    "multiChartRenderer": "line",
+                    "stackMultiChartSeries": "no",
+                    "multiChartStepPlot": true
+                },
+                "customLineDashPatterns": {
+                    "New-york": [
+                        10,
+                        5
+                    ]
+                },
+                "customBorderWidths": {
+                    "New-york": 5
+                },
+                "y2axis": {
+                    "series": "Topeka",
+                    "title": "zzz",
+                    "showGrid": false,
+                    "logScale": true
+                }
+            },
+            "chartFontSize": 22
+        },
+        "def": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": {
+                "default": null
+            },
+            "hideEmptyCols": false,
+            "fixedColumns": true,
+            "tableSummarySettings": {
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum",
+                "colEnabled": false,
+                "colSummaryFunction": "sum"
+            },
+            "filter": {
+                "Hdr": "quantities"
+            },
+            "cols": {
+                "j": null,
+                "i": null
+            },
+            "chartOptions": {
+                "groupDimension": "i",
+                "yLogScale": false,
+                "showXGrid": true,
+                "showYGrid": true,
+                "singleStack": false,
+                "multiChartSeries": "Topeka",
+                "multiChartOptions": {
+                    "showMultiChartDataMarkers": false,
+                    "multiChartRenderer": "bar",
+                    "stackMultiChartSeries": "individualStack",
+                    "multiChartStepPlot": false
+                }
+            }
+        }
+    }
+}

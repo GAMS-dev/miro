@@ -5,30 +5,30 @@
 @slider-above-dark:        @text-color-dark;           //before: #333;
 @slider-below-dark:        darken(@text-color-dark, 14%, relative);           //before: #99a4ac;
 @dropdown-text-color-dark: @text-color-dark;           //before: #333333;
-@datepicker-selected-dark: if(@primary-dark-has-no-color, hsl(hue(@primary-color-dark), 0%, 45%), hsl(hue(@primary-color-dark), 34%, 60%)); //before: #286090;
+@datepicker-selected-dark: @if-7f94f006; //before: #286090;
 @datepicker-hover-dark:    @light-blue-dark;
 @datepicker-hover2-dark:   @widget-bg-dark;
-@datepicker-border-dark:   darken(@datepicker-selected-dark, 10%);
+@datepicker-border-dark:   @darken-8bbacd34;
 @dropdown-group-header-dark: #ffffff;
-@darker-primary-color-dark: darken(@primary-color-dark, 2%);
-@btn-bg-dark:               if(@primary-dark-has-no-color, #1d2121, if(@primary-dark-is-light, hsl(hue(@primary-color-dark), 84%, 40%), @darker-primary-color-dark));
+@darker-primary-color-dark: @darken-0efbf01c;
+@btn-bg-dark:               @if-deaa6f9b;
 
 ///////////////////////////////////////////////////////
 
 //light variables
 @widget-bg:                #ffffff;
-@light-blue:               if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 25%), hsl(hue(@primary-color), 75%, 46%));//#428bca;
-@focus-color:              if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 35%), hsl(hue(@primary-color), 76%, 62%));//#66afe9
+@light-blue:               @if-b3ce36b1;//#428bca;
+@focus-color:              @if-e44576b0;//#66afe9
 @slider-above:             #333;
 @slider-below:             #99a4ac;
 @dropdown-text-color:      #333333;
-@datepicker-selected:      if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 18%), hsl(hue(@primary-color), 85%, 31%));//#286090;
-@datepicker-hover:         if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 10%), hsl(hue(@primary-color), 85%, 14%));//#122b40;
+@datepicker-selected:      @if-249e30a5;//#286090;
+@datepicker-hover:         @if-ed1f2135;//#122b40;
 @datepicker-hover2:        #eeeeee;
-@datepicker-border:        if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 15%), hsl(hue(@primary-color), 85%, 25%));//#204d74;
+@datepicker-border:        @if-2db96ace;//#204d74;
 @dropdown-group-header:    #777777;
-@btn-bg:                   if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 30%), if(@primary-light-is-light, hsl(hue(@primary-color), 84%, 40%), hsl(hue(@primary-color), 40%, 40%)));//hsl(hue(@primary-color), 84%, 40%);//#337ab7;
-@darker-primary-color:     if(@primary-has-no-color, hsl(hue(@primary-color), 0%, 20%), hsl(hue(@primary-color), 96%, 34%));
+@btn-bg:                   @if-09b7c5a1;//#337ab7;
+@darker-primary-color:     @if-1f2de522;
 
 ///////////////////////////////////////////////////////
 @import "../../1_shiny_widgets/shiny_widgets.less";

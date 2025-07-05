@@ -9,6 +9,7 @@ app$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 user <- app$get_values()$input[["editMetaWritePerm"]][[1]]
 app$set_inputs(btUpdateMeta = "click")
 Sys.sleep(0.5)
@@ -27,8 +28,13 @@ saveNewDefault <- function(newName = NULL, discardPerm = FALSE) {
   app$set_inputs(btSaveAs = "click")
   Sys.sleep(0.5)
   app$set_inputs(scenName = newName)
+  app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
   if (isTRUE(discardPerm)) {
-    app$set_inputs(newScenDiscardPerm = "click")
+    app$set_inputs(
+      editMetaReadPerm = user,
+      editMetaWritePerm = user,
+      editMetaExecPerm = user
+    )
   }
   Sys.sleep(0.5)
   app$click(selector = "#shiny-modal #dialogSaveInit  .bt-gms-confirm")
@@ -41,6 +47,7 @@ app$set_inputs(btEditMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_identical(length(app$get_values()$input[["editMetaReadPerm"]]), 2L)
 expect_identical(length(app$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaExecPerm"]]), 2L)
@@ -59,7 +66,12 @@ Sys.sleep(1)
 # save as same name and discard permissions
 app$set_inputs(btSaveAs = "click")
 Sys.sleep(0.5)
-app$set_inputs(newScenDiscardPerm = "click")
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
+app$set_inputs(
+  editMetaReadPerm = user,
+  editMetaWritePerm = user,
+  editMetaExecPerm = user
+)
 Sys.sleep(0.5)
 app$click(selector = "#shiny-modal #dialogSaveInit .bt-gms-confirm")
 Sys.sleep(0.5)
@@ -69,6 +81,7 @@ app$set_inputs(btEditMeta = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_identical(length(app$get_values()$input[["editMetaReadPerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaExecPerm"]]), 1L)
@@ -84,6 +97,7 @@ app$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_identical(length(app$get_values()$input[["editMetaReadPerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaExecPerm"]]), 1L)
@@ -102,6 +116,7 @@ app$set_inputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$click(selector = "a[data-value='accessPerm']")
 Sys.sleep(0.5)
+app$wait_for_js("$('.access-perm-spinner').is(':visible')===false", timeout = 5000L)
 expect_identical(length(app$get_values()$input[["editMetaReadPerm"]]), 2L)
 expect_identical(length(app$get_values()$input[["editMetaWritePerm"]]), 1L)
 expect_identical(length(app$get_values()$input[["editMetaExecPerm"]]), 2L)

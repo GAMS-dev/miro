@@ -17,10 +17,14 @@ cjsSeries <- function(cjs, data, type, label, scale, ...) {
 #' @describeIn cjsSeries Add series to a bar chart
 #' @keywords internal
 #' @export
-cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NULL, fill = FALSE, fillOpacity = 0.7, scaleID = NULL, ...) {
+cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NULL, fill = FALSE, fillOpacity = 0.7, scaleID = NULL, borderDash = NULL, ...) {
   n <- length(cjs$x$data$datasets)
   colours <- cjs %>% cjs_get_colours(n, fill = fill, fillOpacity = fillOpacity, type = type)
-  dataset <- list(c(data = list(I(data)), colours, label = label, ...))
+  if(!is.null(borderDash)) {
+    dataset <- list(c(data = list(I(data)), colours, label = label, borderDash = list(borderDash), ...))
+  } else {
+    dataset <- list(c(data = list(I(data)), colours, label = label, ...))
+  }
   if (!is.null(type)) dataset[[1]]$type <- type
   if (!is.null(scale)) dataset[[1]]$yAxisID <- paste0("y-axis-", scale - 1)
   if (!is.null(scaleID)) {
@@ -38,10 +42,10 @@ cjsSeries.cjs_bar <- function(cjs, data, type = "bar", label = NULL, scale = NUL
 #' @keywords internal
 #' @export
 cjsSeries.cjs_line <- function(cjs, data, type = "line", label = NULL, scale = NULL,
-                               fill = FALSE, fillOpacity = 0.7, ...) {
+                               fill = FALSE, fillOpacity = 0.7, borderDash = NULL, ...) {
   cjsSeries.cjs_bar(cjs, data, type, label, scale,
-    lineTension = 0L, fill = fill,
-    fillOpacity = fillOpacity, ...
+                    lineTension = 0L, fill = fill,
+                    fillOpacity = fillOpacity, borderDash = borderDash, ...
   )
 }
 

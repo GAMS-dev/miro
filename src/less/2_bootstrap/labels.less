@@ -50,10 +50,24 @@
 
 .label-primary {
   .responsiveDark({
-     .label-variant(@label-primary-bg);
+    background-color: @label-primary-bg;
+
+    &[href] {
+      &:hover,
+      &:focus {
+        background-color: @darken-618fc861;
+      }
+    }
   },
   {
-     .label-variant(@label-primary-bg-dark);
+    background-color: @label-primary-bg-dark;
+
+    &[href] {
+      &:hover,
+      &:focus {
+        background-color: @darken-618fc862;
+      }
+    }
   });
 }
 

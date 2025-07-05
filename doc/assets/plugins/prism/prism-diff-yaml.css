@@ -30,19 +30,24 @@ pre[class*="language-"] {
 	hyphens: none;
 }
 
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+pre[class*="language-"]::-moz-selection,
+pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection,
+code[class*="language-"] ::-moz-selection {
 	text-shadow: none;
 	background: #b3d4fc;
 }
 
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection {
 	text-shadow: none;
 	background: #b3d4fc;
 }
 
 @media print {
+
 	code[class*="language-"],
 	pre[class*="language-"] {
 		text-shadow: none;
@@ -56,13 +61,13 @@ pre[class*="language-"] {
 	overflow: auto;
 }
 
-:not(pre) > code[class*="language-"],
+:not(pre)>code[class*="language-"],
 pre[class*="language-"] {
 	background: #f5f2f0;
 }
 
 /* Inline code */
-:not(pre) > code[class*="language-"] {
+:not(pre)>code[class*="language-"] {
 	padding: .1em;
 	border-radius: .3em;
 	white-space: normal;
@@ -133,6 +138,7 @@ pre[class*="language-"] {
 .token.bold {
 	font-weight: bold;
 }
+
 .token.italic {
 	font-style: italic;
 }
@@ -141,15 +147,15 @@ pre[class*="language-"] {
 	cursor: help;
 }
 
-pre.diff-highlight > code .token.deleted:not(.prefix),
-pre > code.diff-highlight .token.deleted:not(.prefix) {
+pre.diff-highlight>code .token.deleted:not(.prefix),
+pre>code.diff-highlight .token.deleted:not(.prefix) {
 	background-color: rgba(255, 0, 0, .1);
 	color: inherit;
 	display: block;
 }
 
-pre.diff-highlight > code .token.inserted:not(.prefix),
-pre > code.diff-highlight .token.inserted:not(.prefix) {
+pre.diff-highlight>code .token.inserted:not(.prefix),
+pre>code.diff-highlight .token.inserted:not(.prefix) {
 	background-color: rgba(0, 255, 128, .1);
 	color: inherit;
 	display: block;
@@ -159,5 +165,5 @@ pre > code.diff-highlight .token.inserted:not(.prefix) {
 	border: unset;
 	display: unset;
 	text-align: unset;
-    width: unset;
+	width: unset;
 }
