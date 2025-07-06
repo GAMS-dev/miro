@@ -195,7 +195,7 @@
                 },
                 "value": {
                     "type": "numeric",
-                    "alias": "value"
+                    "alias": "report_output"
                 }
             }
         },

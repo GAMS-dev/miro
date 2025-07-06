@@ -15,7 +15,7 @@
                 },
                 "value": {
                     "type": "numeric",
-                    "alias": "value"
+                    "alias": "price"
                 }
             }
         },
@@ -63,7 +63,7 @@
                 },
                 "value": {
                     "type": "numeric",
-                    "alias": "value"
+                    "alias": "stock_weight"
                 }
             }
         },
@@ -117,7 +117,7 @@
                 },
                 "value": {
                     "type": "numeric",
-                    "alias": "value"
+                    "alias": "pricemerge"
                 }
             }
         },
