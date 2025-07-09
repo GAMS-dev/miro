@@ -32,5 +32,9 @@ Sys.sleep(0.5)
 expect_true(app$get_js("$('#btInterrupt .fa-skull').is(':visible')"))
 app$wait_for_js("$('#btInterrupt').is(':enabled')", timeout = 2000L)
 app$set_inputs(btInterrupt = "click")
-app$wait_for_js("$('#modelStatus').text().includes('interrupted')", timeout = 5000L)
+if (endsWith(Sys.getenv("MIRO_MODEL_PATH"), ".py")) {
+  app$wait_for_js("$('#modelStatus').text().includes('did not terminate successfully')", timeout = 5000L)
+} else {
+  app$wait_for_js("$('#modelStatus').text().includes('interrupted')", timeout = 5000L)
+}
 app$stop()
