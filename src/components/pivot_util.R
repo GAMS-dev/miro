@@ -444,3 +444,132 @@ transformLabels <- function(originalLabels, customLabels) {
   }
   return(transformedLabels)
 }
+renderDataView <- function(dataView, options, userFilterChoices, ns) {
+  # Build and return the UI for a dashboard section/data-view
+  # (views that are visible when clicking on a value box).
+  # For a section/data-view the function:
+  #   - looks up every view's config in options$dataViewsConfig
+  #   - for each view the function adds a column with:
+  #     title, chart-type selector, download buttons,
+  #     user-filter dropdowns, a DT table output and a ChartJS chart output
+
+  dataViewsConfig <- options$dataViewsConfig
+  chartChoices <- setNames(
+    c(
+      "table", "heatmap", "pie", "doughnut", "bar", "horizontalbar",
+      "stackedbar", "horizontalstackedbar", "line", "scatter", "area",
+      "stackedarea", "radar", "timeseries"
+    ),
+    c(
+      lang$renderers$miroPivot$renderer$table,
+      lang$renderers$miroPivot$renderer$heatmap,
+      lang$renderers$miroPivot$renderer$pie,
+      lang$renderers$miroPivot$renderer$doughnut,
+      lang$renderers$miroPivot$renderer$bar,
+      lang$renderers$miroPivot$renderer$horizontalbar,
+      lang$renderers$miroPivot$renderer$stackedbar,
+      lang$renderers$miroPivot$renderer$horizontalstackedbar,
+      lang$renderers$miroPivot$renderer$line,
+      lang$renderers$miroPivot$renderer$scatter,
+      lang$renderers$miroPivot$renderer$area,
+      lang$renderers$miroPivot$renderer$stackedarea,
+      lang$renderers$miroPivot$renderer$radar,
+      lang$renderers$miroPivot$renderer$timeseries
+    )
+  )
+  viewList <- options$dataViews[[dataView]]
+  if (is.null(names(viewList))) {
+    viewList <- unlist(viewList, recursive = FALSE)
+  }
+  viewIds <- as.list(names(viewList))
+  titleList <- viewList
+  tags$div(
+    class = "dashboard-section-wrapper",
+    id = ns(paste0(dataView, "View")),
+    lapply(seq_along(viewIds), function(i) {
+      id <- viewIds[[i]]
+      title <- titleList[[i]]
+
+      if (is.list(dataViewsConfig[[id]])) {
+        userFilter <- NULL
+        if (length(dataViewsConfig[[id]]$userFilter)) {
+          userFilter <- dataViewsConfig[[id]]$userFilter
+        }
+
+        column(
+          width = if (length(dataViewsConfig[[id]]$colWidth)) as.numeric(dataViewsConfig[[id]]$colWidth) else 12,
+          class = if (!nchar(title)) "add-margin",
+          id = ns(paste0(id, "_wrapper")),
+          if (nchar(title)) {
+            tags$h4(title, class = "highlight-block")
+          },
+          tags$div(
+            style = "overflow:auto;",
+            tags$div(
+              class = "row table-chart-wide-widgets",
+              tags$div(
+                class = "charttype-and-btn-wrapper",
+                class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
+                tags$div(
+                  class = "custom-dropdown",
+                  selectizeInput(ns(paste0(id, "ChartType")),
+                    label = NULL,
+                    choices = chartChoices,
+                    selected = dataViewsConfig[[id]]$pivotRenderer,
+                    options = list(onInitialize = I(paste0("function(value) {
+              document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "ChartType")), "\"]').setAttribute('readonly', 'readonly');
+            }")))
+                  )
+                ),
+                uiOutput(ns(paste0(id, "DownloadButtons")))
+              ),
+              if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
+                singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
+                  dataViewsConfig[[id]]$singleDropdown
+                } else {
+                  character(0)
+                }
+
+                filterInputs <- lapply(userFilter, function(filterName) {
+                  multiple <- if (filterName %in% singleDropdownFilters) {
+                    FALSE
+                  } else {
+                    TRUE
+                  }
+
+                  tags$div(
+                    class = "custom-dropdown-wide user-filter",
+                    class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
+                    selectizeInput(ns(paste0(id, "userFilter_", filterName)),
+                      label = NULL,
+                      choices = userFilterChoices[[id]][[filterName]],
+                      multiple = multiple, width = "100%",
+                      options = list(onInitialize = I(paste0("function(value) {
+                                     document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
+                                   }")))
+                    )
+                  )
+                })
+
+                do.call(tagList, filterInputs)
+              }
+            ),
+            tags$div(
+              class = "table-chart-wide-wrapper",
+              DT::DTOutput(ns(paste0(id, "Table"))),
+              tags$div(
+                id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
+                style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
+                chartjs::chartjsOutput(ns(paste0(id, "Chart")),
+                  height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
+                )
+              )
+            )
+          )
+        )
+      } else {
+        uiOutput(ns(id))
+      }
+    })
+  )
+}
