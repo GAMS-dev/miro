@@ -4,6 +4,7 @@ app <- AppDriver$new("../../",
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
 getData <- function(id = "tab_1_1") {
+  app$wait_for_js(paste0("Chart.getChart('", id, "-miroPivot-pivotChart')!=null"), timeout = 5000L)
   return(jsonlite::fromJSON(app$get_values()$output[[paste0(id, "-miroPivot-pivotChart")]])$x$data$datasets$data)
 }
 Sys.sleep(2)
