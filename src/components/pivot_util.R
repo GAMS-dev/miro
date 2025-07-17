@@ -118,20 +118,6 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
     }
   }
 
-  if (length(baselineCompConfig)) {
-    baselineCompConfig$data <- dataTmp %>%
-      filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
-      select(any_of(setdiff(
-        c(rowIndexList, colFilterIndexList, valueColName),
-        baselineCompConfig$domain
-      ))) %>%
-      rename(.baseline = value)
-    if (length(baselineCompConfig$filterIndex)) {
-      dataTmp <- dataTmp %>%
-        filter(.data[[baselineCompConfig$filterIndex]] %in% baselineCompConfig$filterVal)
-    }
-  }
-
   # apply custom labels
   if (length(config$chartOptions$customLabels)) {
     labelCols <- dataTmp[, vapply(dataTmp, class, character(1L), USE.NAMES = FALSE) == "character"]
@@ -143,6 +129,28 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
           x
         }
       })
+    }
+  }
+
+  if (length(baselineCompConfig)) {
+    baselineCompRecord <- baselineCompConfig$record
+    if (baselineCompRecord %in% names(config$chartOptions$customLabels)) {
+      baselineCompRecord <- config$chartOptions$customLabels[[baselineCompRecord]]
+    }
+    baselineCompConfig$data <- dataTmp %>%
+      filter(.data[[baselineCompConfig$domain]] == baselineCompRecord) %>%
+      select(any_of(setdiff(
+        c(rowIndexList, colFilterIndexList, valueColName),
+        baselineCompConfig$domain
+      ))) %>%
+      rename(.baseline = value)
+    if (length(baselineCompConfig$filterIndex)) {
+      filterVal <- baselineCompConfig$filterVal
+      customFilterValIds <- match(filterVal, names(config$chartOptions$customLabels))
+      isCustomFilterVal <- !is.na(customFilterValIds)
+      filterVal[isCustomFilterVal] <- config$chartOptions$customLabels[customFilterValIds[isCustomFilterVal]]
+      dataTmp <- dataTmp %>%
+        filter(.data[[baselineCompConfig$filterIndex]] %in% filterVal)
     }
   }
 

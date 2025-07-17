@@ -469,7 +469,10 @@
               "rowSummaryFunction": "sum",
               "colSummaryFunction": "sum"
             },
-            "rows": "date",
+            "rows": null,
+            "filter": {
+              "date": ["2016-01-04", "2016-01-05", "2016-01-06", "2016-01-08"]
+            },
             "cols": {
               "Hdr": null
             },
@@ -478,10 +481,12 @@
               "xTitle": "Date",
               "yTitle": "Error",
               "customSeriesOrder": [
-                 "absolute error train",
-                 "absolute error test"
+                 "training error",
+                 "testing error"
               ],
               "customLabels": {
+                "absolute error train": "training error",
+                "absolute error test": "testing error",
                 "2016-01-05": "reference"
               },
               "customLabelsOrder": [
