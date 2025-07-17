@@ -891,7 +891,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
       }
       groupElements <- NULL
       if (length(currentView$chartOptions$groupDimension) &&
-        chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+        chartType %in% c("stackedbar", "horizontalstackedbar")) {
         groupElements <- unique(rawData[[indicator]][[currentView$chartOptions$groupDimension]])
       }
 

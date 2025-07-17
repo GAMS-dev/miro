@@ -834,7 +834,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
           groupElements <- NULL
           if (length(currentView$chartOptions$groupDimension) &&
-            chartType %in% c("horizontalbar", "horizontalstackedbar")) {
+            chartType %in% c("stackedbar", "horizontalstackedbar")) {
             groupElements <- unique(rawData[[indicator]][[currentView$chartOptions$groupDimension]])
           }
 
