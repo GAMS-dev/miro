@@ -1658,8 +1658,12 @@ Worker <- R6Class("Worker", public = list(
         {
           if (hardKill) {
             process$kill_tree()
-          } else if (isWindows() && "miroUtil" %in% installedPackages) {
-            miroUtil::windowsInterruptGAMS(process$get_pid())
+          } else if (isWindows()) {
+            if (!identical(private$metadata$isGamsPy, TRUE) && "miroUtil" %in% installedPackages) {
+              miroUtil::windowsInterruptGAMS(process$get_pid())
+            } else {
+              process$interrupt()
+            }
           } else {
             process$signal(tools::SIGINT)
           }

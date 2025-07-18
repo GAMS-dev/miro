@@ -21,6 +21,23 @@ test_that(
       saveAdditionalGamsClArgs(miroModelDir, modelToTest, additionalGamsClArgs)
     }
     source(file.path(testDir, "shinytest", "interrupt_model_test.R"), local = TRUE)
+
+    if (is.na(Sys.getenv("PYTHON_EXEC_PATH", NA_character_))) {
+      if (length(additionalGamsClArgs)) {
+        file.rename(
+          file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),
+          file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json"))
+        )
+      }
+      Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME"))
+      skip("Skipping GAMSPy test as no Python interpreter was set")
+    }
+
+    createTestDb()
+
+    Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir, paste0(modelToTest, ".py")))
+    source(file.path(testDir, "shinytest", "interrupt_model_test.R"), local = TRUE)
+
     if (length(additionalGamsClArgs)) {
       file.rename(
         file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),

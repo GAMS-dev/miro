@@ -1,6 +1,6 @@
 test_that(
   "Scenario permissions work",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  {
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping permissions tests as ENGINE_URL was not set."
@@ -98,5 +98,5 @@ test_that(
       "MIRO_DATA_DIR2",
       "MIRO_DATA_DIR3"
     ))
-  })
+  }
 )
