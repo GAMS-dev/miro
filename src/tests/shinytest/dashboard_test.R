@@ -22,7 +22,7 @@ expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testposi
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))
-expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart').is(':hidden');")))
+expect_identical(unname(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart')"))), list())
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_train'] .custom-info-box"))
 Sys.sleep(1)
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':hidden')")))
