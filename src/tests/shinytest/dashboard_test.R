@@ -19,6 +19,27 @@ expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_tr
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative .info-box-number').css('color')"), timeout = 50), "rgb(51, 51, 51)"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
+
+# check whether grouping dimensions in a stacked bar chart works
+configuration <- app$get_js(paste0("Chart.getChart('tab_1_3-", rendererName, "-dowVSindexStackChart').config._config"), timeout = 50)
+chart_id <- paste0("tab_1_3-", rendererName, "-dowVSindexStackChart")
+configuration <- app$get_js(paste0(
+  "(function () {",
+  "  const c = Chart.getChart('", chart_id, "');",
+  "  if (!c) return null;",
+  "  const cfg = c.config;",
+  "  return {",
+  "    type:    cfg.type,",
+  "    data:    cfg.data,",
+  "    options: cfg.options",
+  "  };",
+  "})()"
+), timeout = 50)
+
+expect_true(identical(configuration$type, "bar"))
+expect_true(identical(configuration$data$datasets[[1]]$stack, "stack1"))
+expect_true(identical(configuration$data$datasets[[2]]$stack, "stack2"))
+
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))

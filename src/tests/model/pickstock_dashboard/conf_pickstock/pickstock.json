@@ -329,6 +329,9 @@
             },
             {
               "abserror": "Absolute Error"
+            },
+            {
+              "dowVSindexStack": "Stacked bar chart; group stacks by Hdr dimension"
             }
           ],
           "error_train": [
@@ -452,6 +455,38 @@
             },
             "data": "dowvsindex",
             "decimals": 2
+          },
+          "dowVSindexStack": {
+              "aggregationFunction": "sum",
+              "pivotRenderer": "stackedbar",
+              "domainFilter": {
+                  "default": null
+              },
+              "hideEmptyCols": false,
+              "fixedColumns": true,
+              "tableSummarySettings": {
+                  "rowEnabled": false,
+                  "rowSummaryFunction": "sum",
+                  "colEnabled": false,
+                  "colSummaryFunction": "sum"
+              },
+              "filter": {
+                  "date": [
+                      "2016-01-04",
+                      "2016-01-05"
+                  ]
+              },
+              "cols": {
+                  "Hdr": null
+              },
+              "chartOptions": {
+                  "groupDimension": "Hdr",
+                  "yLogScale": false,
+                  "showXGrid": true,
+                  "showYGrid": true,
+                  "singleStack": false
+              },
+              "data": "dowvsindex"
           },
           "abserror": {
             "aggregationFunction": "sum",
