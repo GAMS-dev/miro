@@ -37,7 +37,7 @@ expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').click();"),
 Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))
-expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':hidden');"))
+expect_identical(unname(app$get_js(paste0("$('#cmpCustom___dashboard_1-stockWeightChart')"))), list())
 
 expect_identical(
   app$get_js("$('#cmpCustom___dashboard_1-abserrorTable tr').filter(function(el){return ['2016-06-02','2016-06-07'].includes($('td:first-child',this).text())}).map(function(el){return $('td',this).map(function(el2){return $(this).text()}).toArray()}).toArray()"),
