@@ -1,4 +1,4 @@
-matchSeriesLabel <- function(key, label, exact = FALSE) {
+dashboardMatchSeriesLabel <- function(key, label, exact = FALSE) {
   if (exact && key == label) {
     return(TRUE)
   }
@@ -8,16 +8,7 @@ matchSeriesLabel <- function(key, label, exact = FALSE) {
       endsWith(label, paste0("\u2024", key))
   )
 }
-matchLabel <- function(key, label, exact = FALSE) {
-  if (exact) {
-    exact <- (key == label)
-  }
-  contained <- grepl(paste0("\u2024", key, "\u2024"), label)
-  starts <- grepl(paste0("^", key, "\u2024"), label)
-  ends <- grepl(paste0("\u2024", key, "$"), label)
-  exact || contained || starts || ends
-}
-prepareData <- function(config, viewData, dataViewsConfigNames) {
+dashboardPrepareData <- function(config, viewData, dataViewsConfigNames) {
   dataTmp <- viewData
 
   filterIndexList <- names(config$filter)
@@ -151,7 +142,7 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
   if (length(rowIndexList)) {
     if (length(config$chartOptions$customLabelsOrder)) {
       # apply custom labels order
-      dataTmp <- applyCustomLabelsOrder(
+      dataTmp <- dashboardApplyCustomLabelsOrder(
         dataTmp,
         length(rowIndexList),
         config$chartOptions$customLabelsOrder
@@ -313,7 +304,7 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
   }
   return(dataTmp)
 }
-heatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
+dashboardHeatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
   if (heatmaptype == 1L) {
     brks <- quantile(symbolData[-seq_len(as.numeric(noRowHeaders))],
       probs = seq(.05, .95, .05), na.rm = TRUE
@@ -370,7 +361,7 @@ heatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
 
   return(list(brks = brks, clrs = clrs))
 }
-applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
+dashboardApplyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
   if (!is.list(customLabelsOrder)) {
     mergedCols <- paste0("\U2024", "mergedCols")
     orderCol <- paste0(mergedCols, "\U2024")
@@ -413,7 +404,7 @@ applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
   }
   return(data)
 }
-defaultColorPair <- function(i, globalPalette) {
+dashboardDefaultColorPair <- function(i, globalPalette) {
   pairIndex <- 2 * i
   if (pairIndex - 1 <= length(globalPalette)) {
     return(globalPalette[(pairIndex - 1):pairIndex])
@@ -425,7 +416,7 @@ defaultColorPair <- function(i, globalPalette) {
     # return(c("#666","#666"))
   }
 }
-transformLabels <- function(originalLabels, customLabels) {
+dashboardTransformLabels <- function(originalLabels, customLabels) {
   transformedLabels <- c()
   if (length(customLabels)) {
     transformedLabels <- vapply(originalLabels, function(label) {
@@ -444,7 +435,7 @@ transformLabels <- function(originalLabels, customLabels) {
   }
   return(transformedLabels)
 }
-renderDataView <- function(dataView, options, userFilterChoices, ns) {
+dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
   # Build and return the UI for a dashboard section/data-view
   # (views that are visible when clicking on a value box).
   # For a section/data-view the function:
@@ -597,4 +588,41 @@ renderDataView <- function(dataView, options, userFilterChoices, ns) {
       }
     })
   )
+}
+dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters) {
+  noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
+  dataTmp <- dashboardChartData[[indicator]]
+  if (length(dataViewsConfig[[indicator]]$decimals)) {
+    dataTmp <- dataTmp %>%
+      mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
+  }
+
+  # filter user selection
+  if (length(dataViewsConfig[[indicator]]$userFilter)) {
+    indicatorTmp <- indicator
+    if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
+      dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+      indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+    }
+
+    for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
+      filterEl <- selectedUserFilters[[filterName]]
+      if (length(filterEl)) {
+        if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
+          dataTmp <- dataTmp %>%
+            select(
+              seq_len(noRowHeaders),
+              (any_of(filterEl) |
+                contains(paste0("\U2024", filterEl, "\U2024")) |
+                starts_with(paste0(filterEl, "\U2024")) |
+                ends_with(paste0("\U2024", filterEl)))
+            )
+        } else {
+          dataTmp <- dataTmp %>%
+            filter(!!rlang::sym(filterName) %in% filterEl)
+        }
+      }
+    }
+  }
+  return(dataTmp)
 }
