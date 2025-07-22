@@ -966,7 +966,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       currContent.each((i, el) => {
         if (
           newContent[i][2] !== true
-          && newContent[i][1] === $(el).data('hash')
+          && newContent[i][1] === el.dataset.hash
         ) {
           return true;
         }

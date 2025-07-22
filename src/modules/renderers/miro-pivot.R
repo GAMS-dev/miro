@@ -2483,6 +2483,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregationIndexList <- isolate(input$aggregationIndexList)
           colIndexList <- isolate(input$colIndexList)
         }
+        if (any(duplicated(c(filterIndexList, aggregationIndexList, colIndexList)))) {
+          return()
+        }
         invalidFilters <- NULL
         getFilterDropdowns <- function(filterIndex, optionId = "filter") {
           allowEmpty <- optionId %in% c("aggregations", "cols")
