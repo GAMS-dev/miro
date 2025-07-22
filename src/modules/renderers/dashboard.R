@@ -379,10 +379,19 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               return()
             }
 
-            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-              input[[paste0(indicator, "userFilter_", fn)]]
-            })
-            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+            selectedUserFilters <- NULL
+            if (length(dataViewsConfig[[indicator]]$userFilter)) {
+              indicatorTmp <- indicator
+              if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
+                dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+                indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+              }
+
+              selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
+                input[[paste0(indicatorTmp, "userFilter_", fn)]]
+              })
+              names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+            }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
             noRowHeaders <- attr(tableData, "noRowHeaders")
@@ -562,10 +571,19 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               return()
             }
 
-            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-              input[[paste0(indicator, "userFilter_", fn)]]
-            })
-            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+            selectedUserFilters <- NULL
+            if (length(dataViewsConfig[[indicator]]$userFilter)) {
+              indicatorTmp <- indicator
+              if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
+                dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+                indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+              }
+
+              selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
+                input[[paste0(indicatorTmp, "userFilter_", fn)]]
+              })
+              names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+            }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
 
@@ -1001,10 +1019,19 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           output[[paste0(indicator, "DownloadCsv")]] <- downloadHandler(
             filename = paste0(indicator, ".csv"),
             content = function(file) {
-              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-                input[[paste0(indicator, "userFilter_", fn)]]
-              })
-              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+              selectedUserFilters <- NULL
+              if (length(dataViewsConfig[[indicator]]$userFilter)) {
+                indicatorTmp <- indicator
+                if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
+                  dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
+                  indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+                }
+
+                selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
+                  input[[paste0(indicatorTmp, "userFilter_", fn)]]
+                })
+                names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+              }
 
               dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
               return(write_csv(dataTmp, file, na = ""))

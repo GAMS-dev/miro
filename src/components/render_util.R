@@ -599,13 +599,7 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
 
   # filter user selection
   if (length(dataViewsConfig[[indicator]]$userFilter)) {
-    indicatorTmp <- indicator
-    if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-      dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-      indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
-    }
-
-    for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
+    for (filterName in names(selectedUserFilters)) {
       filterEl <- selectedUserFilters[[filterName]]
       if (length(filterEl)) {
         if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
