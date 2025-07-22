@@ -74,44 +74,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   dataViewsConfig <- options$dataViewsConfig
 
-  getData <- function(indicator, dashboardChartData, selectedUserFilters) {
-    noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
-    dataTmp <- dashboardChartData[[indicator]]
-    if (length(dataViewsConfig[[indicator]]$decimals)) {
-      dataTmp <- dataTmp %>%
-        mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
-    }
-
-    # filter user selection
-    if (length(dataViewsConfig[[indicator]]$userFilter)) {
-      indicatorTmp <- indicator
-      if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-        dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-        indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
-      }
-
-      for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
-        filterEl <- selectedUserFilters[[filterName]]
-        if (length(filterEl)) {
-          if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
-            dataTmp <- dataTmp %>%
-              select(
-                seq_len(noRowHeaders),
-                (any_of(filterEl) |
-                  contains(paste0("\U2024", filterEl, "\U2024")) |
-                  starts_with(paste0(filterEl, "\U2024")) |
-                  ends_with(paste0("\U2024", filterEl)))
-              )
-          } else {
-            dataTmp <- dataTmp %>%
-              filter(!!rlang::sym(filterName) %in% filterEl)
-          }
-        }
-      }
-    }
-    return(dataTmp)
-  }
-
   # Boxes for  KPIs (custom infobox)
   infoBoxCustom <-
     function(id = NULL,
@@ -372,7 +334,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     #   2. Iterate over every view in the section,
     #      fetch / transform its data and cache it (rawData, dashboardChartData),
     #      gather corresponding userFilter choices
-    #   3. Insert the finished UI for the section via `renderDataView()`.
+    #   3. Insert the finished UI for the section via `dashboardRenderDataView()`.
     #   4. For every view just inserted, register:
     #        - an `observeEvent()` that toggles chart-type controls,
     #        - a `renderDT()` table,
@@ -417,7 +379,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         viewData <- combineData(data$get(currentConfig$data), scenarioNames)
 
         rawData[[view]] <- viewData
-        preparedData <- prepareData(currentConfig, viewData, names(dataViewsConfig))
+        preparedData <- dashboardPrepareData(currentConfig, viewData, names(dataViewsConfig))
         dashboardChartData[[view]] <- preparedData
 
         # Retrieve user-defined filters to pass to the renderer
@@ -452,7 +414,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     insertUI(
       selector = paste0("#", ns(paste0("sectionContent_", av))), where = "afterBegin",
-      ui = renderDataView(av, options, allUserFilterChoices, ns)
+      ui = dashboardRenderDataView(av, options, allUserFilterChoices, ns)
     )
 
     lapply(names(unlist(options$dataViews[[av]])), function(indicator) {
@@ -477,15 +439,15 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         })
         names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
 
-        dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
+        dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
         noRowHeaders <- attr(tableData, "noRowHeaders")
 
         # heatmap
         if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
           if (identical(dataViewsConfig[[indicator]]$chartOptions$heatmapType, 2L)) {
-            dataColors <- heatmapColors(dataTmp, noRowHeaders, 2L)
+            dataColors <- dashboardHeatmapColors(dataTmp, noRowHeaders, 2L)
           } else {
-            dataColors <- heatmapColors(dataTmp, noRowHeaders, 1L)
+            dataColors <- dashboardHeatmapColors(dataTmp, noRowHeaders, 1L)
           }
         }
 
@@ -660,7 +622,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         })
         names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
 
-        dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
+        dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
 
         chartType <- tolower(input[[paste0(indicator, "ChartType")]])
         currentView <- dataViewsConfig[[indicator]]
@@ -687,7 +649,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
         if (length(currentView$chartOptions$customChartColors) &&
           length(names(currentView$chartOptions$customChartColors))) {
-          colorLabelsNew <- transformLabels(
+          colorLabelsNew <- dashboardTransformLabels(
             originalLabels = names(currentView$chartOptions$customChartColors),
             customLabels = currentView$chartOptions$customLabels
           )
@@ -695,7 +657,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           numSeries <- length(currentSeriesLabels)
           colorList <- vector("list", numSeries)
           for (i in seq_len(numSeries)) {
-            colorList[[i]] <- defaultColorPair(i, customColors)
+            colorList[[i]] <- dashboardDefaultColorPair(i, customColors)
           }
 
           for (i in seq_along(currentSeriesLabels)) {
@@ -705,7 +667,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             if (length(exactIdx) == 1) {
               colorList[[i]] <- currentView$chartOptions$customChartColors[[exactIdx]]
             } else {
-              patternMatches <- which(vapply(colorLabelsNew, matchSeriesLabel, logical(1L), label = seriesLab, USE.NAMES = FALSE))
+              patternMatches <- which(vapply(colorLabelsNew, dashboardMatchSeriesLabel, logical(1L), label = seriesLab, USE.NAMES = FALSE))
 
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[1]
@@ -899,7 +861,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           lineDash <- NULL
           if (length(currentView$chartOptions$customLineDashPatterns) &&
             length(names(currentView$chartOptions$customLineDashPatterns))) {
-            transformedLineDashNames <- transformLabels(
+            transformedLineDashNames <- dashboardTransformLabels(
               originalLabels = names(currentView$chartOptions$customLineDashPatterns),
               customLabels = currentView$chartOptions$customLabels
             )
@@ -908,7 +870,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
             if (length(exactIdx) == 1) {
               lineDash <- currentView$chartOptions$customLineDashPatterns[[exactIdx]]
             } else {
-              patternMatches <- which(vapply(transformedLineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+              patternMatches <- which(vapply(transformedLineDashNames, dashboardMatchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[1]
                 lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
@@ -921,7 +883,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           borderWidth <- NULL
           if (length(currentView$chartOptions$customBorderWidths) &&
             length(names(currentView$chartOptions$customBorderWidths)) > 0) {
-            transformedBorderWidthNames <- transformLabels(
+            transformedBorderWidthNames <- dashboardTransformLabels(
               originalLabels = names(currentView$chartOptions$customBorderWidths),
               customLabels = currentView$chartOptions$customLabels
             )
@@ -934,7 +896,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
                 borderWidth <- borderWidthCandidate
               }
             } else {
-              patternMatches <- which(vapply(transformedBorderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+              patternMatches <- which(vapply(transformedBorderWidthNames, dashboardMatchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[1]
                 borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
@@ -948,7 +910,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
           stack <- NULL
           if (length(groupElements) && chartType %in% c("stackedbar", "horizontalstackedbar")) {
-            patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = originalLabel, exact = TRUE, USE.NAMES = FALSE))
+            patternMatches <- which(vapply(groupElements, dashboardMatchSeriesLabel, logical(1L), label = originalLabel, exact = TRUE, USE.NAMES = FALSE))
             if (length(patternMatches) == 0) {
               stack <- NULL
             } else {
@@ -961,7 +923,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           multiChartSeries <- FALSE
           if (length(currentView$chartOptions$multiChartSeries)) {
             series <- currentView$chartOptions$multiChartSeries
-            if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
+            if (any(vapply(series, dashboardMatchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
               multiChartSeries <- TRUE
             }
           }
@@ -1099,7 +1061,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
           })
           names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
 
-          dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
+          dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
           return(write_csv(dataTmp, file, na = ""))
         }
       )
