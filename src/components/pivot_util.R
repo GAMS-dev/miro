@@ -493,7 +493,7 @@ renderDataView <- function(dataView, options, userFilterChoices, ns) {
       if (is.list(dataViewsConfig[[id]])) {
         userFilter <- NULL
         if (length(dataViewsConfig[[id]]$userFilter)) {
-          userFilter <- dataViewsConfig[[id]]$userFilter
+          userFilter <- unique(dataViewsConfig[[id]]$userFilter)
         }
 
         column(
@@ -521,7 +521,32 @@ renderDataView <- function(dataView, options, userFilterChoices, ns) {
             }")))
                   )
                 ),
-                uiOutput(ns(paste0(id, "DownloadButtons")))
+                tags$div(
+                  class = " dashboard-btn-wrapper",
+                  tags$a(
+                    id = ns(paste0(id, "DownloadCsv")),
+                    class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
+                    href = "",
+                    target = "_blank",
+                    download = NA,
+                    tags$div(
+                      tags$i(class = "fa fa-file-csv")
+                    ),
+                    title = lang$renderers$miroPivot$btDownloadCsv
+                  ),
+                  tags$a(
+                    id = ns(paste0(id, "DownloadPng")),
+                    class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
+                    style = if (dataViewsConfig[[id]]$pivotRenderer %in% c("table", "heatmap")) "display:none;",
+                    download = paste0(id, "Chart", ".png"),
+                    href = "#",
+                    `data-canvasid` = ns(paste0(id, "Chart")),
+                    tags$div(
+                      tags$i(class = "fa fa-file-image")
+                    ),
+                    title = lang$renderers$miroPivot$btDownloadPng
+                  )
+                ),
               ),
               if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
                 singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
