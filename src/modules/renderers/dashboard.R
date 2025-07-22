@@ -37,9 +37,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
       dataViewsConfig <- options$dataViewsConfig
 
-      getData <- function(indicator) {
-        noRowHeaders <- attr(dashboardChartData[[indicator]](), "noRowHeaders")
-        dataTmp <- dashboardChartData[[indicator]]()
+      getData <- function(indicator, dashboardChartData, selectedUserFilters) {
+        noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
+        dataTmp <- dashboardChartData[[indicator]]
         if (length(dataViewsConfig[[indicator]]$decimals)) {
           dataTmp <- dataTmp %>%
             mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
@@ -54,8 +54,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
           }
 
           for (filterName in dataViewsConfig[[indicatorTmp]]$userFilter) {
-            if (length(input[[paste0(indicatorTmp, "userFilter_", filterName)]])) {
-              filterEl <- input[[paste0(indicatorTmp, "userFilter_", filterName)]]
+            filterEl <- selectedUserFilters[[filterName]]
+            if (length(filterEl)) {
               if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
                 dataTmp <- dataTmp %>%
                   select(
@@ -271,17 +271,20 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       # show/hide Chart for view with multi-chart layout. Show/hide table is done in renderDT() directly
       toggleChartType <- function(indicator) {
         if (input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap")) {
+          hideEl(session, paste0("#", session$ns(paste0(indicator, "DownloadPng"))))
           hideEl(session, paste0("#", session$ns(paste0(indicator, "ChartWrapper"))))
         } else {
+          showEl(session, paste0("#", session$ns(paste0(indicator, "DownloadPng"))))
           showEl(session, paste0("#", session$ns(paste0(indicator, "ChartWrapper"))))
         }
       }
 
-      dashboardChartData <- lapply(names(dataViewsConfig), function(el) reactiveVal(NULL))
-      names(dashboardChartData) <- names(dataViewsConfig)
+      dashboardChartData <- setNames(
+        vector("list", length(dataViewsConfig)),
+        names(dataViewsConfig)
+      )
 
-      rawData <- lapply(names(dataViewsConfig), function(x) reactiveVal(NULL))
-      names(rawData) <- names(dataViewsConfig)
+      rawData <- dashboardChartData
 
       renderedSections <- list()
 
@@ -297,7 +300,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
         #        - an `observeEvent()` that toggles chart-type controls,
         #        - a `renderDT()` table,
         #        - a `renderChartjs()` chart,
-        #        - two download handlers (CSV + PNG).
+        #        - CSV download handler.
 
         av <- req(activeView())
 
@@ -313,14 +316,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         isolate({
           views <- names(unlist(options$dataViews[[av]]))
-
-          if (length(views) >= 1) {
-            if (!is.null(dashboardChartData[[views[[1L]]]]())) {
-              # section was already rendered
-              return()
-            }
-          }
-
           allUserFilterChoices <- setNames(vector("list", length(views)), views)
 
           for (view in views) {
@@ -336,7 +331,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 currentConfig[setdiff(names(currentConfig), c("pivotRenderer", "decimals"))],
                 dataViewsConfig[[view]][setdiff(names(dataViewsConfig[[view]]), c("pivotRenderer", "decimals"))]
               )) {
-              dashboardChartData[[view]](preparedData)
+              dashboardChartData[[view]] <- preparedData
               next
             }
 
@@ -366,11 +361,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 )
             }
 
-            rawData[[view]](viewData)
+            rawData[[view]] <- viewData
             preparedData <- prepareData(currentConfig, viewData, names(dataViewsConfig))
-            dashboardChartData[[view]](preparedData)
-
-
+            dashboardChartData[[view]] <- preparedData
 
             # Retrieve user-defined filters to pass to the renderer
             userFilter <- NULL
@@ -384,7 +377,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 }
                 allUserFilterChoices[[view]] <- setNames(
                   lapply(userFilter, function(filterName) {
-                    choices <- attr(dashboardChartData[[view]](), paste0("userFilterData_", filterName))
+                    choices <- attr(dashboardChartData[[view]], paste0("userFilterData_", filterName))
                     if (!filterName %in% singleDropdown) {
                       choices <- c("All" = "", choices)
                     }
@@ -396,6 +389,11 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
           }
         })
+
+        removeUI(
+          selector = paste0("#", ns(paste0("sectionContent_", av)), " .dashboard-section-wrapper"),
+          multiple = TRUE
+        )
 
         insertUI(
           selector = paste0("#", ns(paste0("sectionContent_", av))), where = "afterBegin",
@@ -409,7 +407,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           # table for each view
           output[[paste0(indicator, "Table")]] <- renderDT({
-            tableData <- dashboardChartData[[indicator]]()
+            tableData <- dashboardChartData[[indicator]]
             if (is.null(tableData)) {
               return()
             }
@@ -419,7 +417,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               return()
             }
 
-            dataTmp <- getData(indicator)
+            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+              input[[paste0(indicator, "userFilter_", fn)]]
+            })
+            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+
+            dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
             noRowHeaders <- attr(tableData, "noRowHeaders")
 
             # heatmap
@@ -587,7 +590,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
           # charts output
           output[[paste0(indicator, "Chart")]] <- chartjs::renderChartjs({
-            chartData <- dashboardChartData[[indicator]]()
+            chartData <- dashboardChartData[[indicator]]
             if (is.null(chartData)) {
               return()
             }
@@ -597,7 +600,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               return()
             }
 
-            dataTmp <- getData(indicator)
+            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+              input[[paste0(indicator, "userFilter_", fn)]]
+            })
+            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+
+            dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
 
             chartType <- tolower(input[[paste0(indicator, "ChartType")]])
             currentView <- dataViewsConfig[[indicator]]
@@ -612,7 +620,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               return()
             }
 
-            rowHeaderLen <- attr(dashboardChartData[[indicator]](), "noRowHeaders")
+            rowHeaderLen <- attr(dashboardChartData[[indicator]], "noRowHeaders")
             noSeries <- length(dataTmp) - rowHeaderLen
 
             labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
@@ -885,7 +893,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
               stack <- NULL
               if (length(groupElements) && chartType %in% c("stackedbar", "horizontalstackedbar")) {
-                patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
+                patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = originalLabel, exact = TRUE, USE.NAMES = FALSE))
                 if (length(patternMatches) == 0) {
                   stack <- NULL
                 } else {
@@ -1027,45 +1035,16 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             return(chartJsObj)
           })
 
-          # download buttons: png & csv
-          output[[paste0(indicator, "DownloadButtons")]] <- renderUI({
-            canvasId <- paste0(indicator, "Chart")
-
-            tagList(
-              tags$div(
-                class = " dashboard-btn-wrapper",
-                tags$a(
-                  id = ns(paste0(indicator, "DownloadCsv")),
-                  class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
-                  href = "",
-                  target = "_blank",
-                  download = NA,
-                  tags$div(
-                    tags$i(class = "fa fa-file-csv")
-                  ),
-                  title = lang$renderers$miroPivot$btDownloadCsv
-                ),
-                tags$a(
-                  id = ns(paste0(indicator, "DownloadPng")),
-                  class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
-                  style = if (input[[paste0(indicator, "ChartType")]] %in% c("table", "heatmap")) "display:none;",
-                  download = paste0(canvasId, ".png"),
-                  href = "#",
-                  `data-canvasid` = ns(canvasId),
-                  tags$div(
-                    tags$i(class = "fa fa-file-image")
-                  ),
-                  title = lang$renderers$miroPivot$btDownloadPng
-                )
-              )
-            )
-          })
-
           # download csv data
           output[[paste0(indicator, "DownloadCsv")]] <- downloadHandler(
             filename = paste0(indicator, ".csv"),
             content = function(file) {
-              dataTmp <- getData(indicator)
+              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+                input[[paste0(indicator, "userFilter_", fn)]]
+              })
+              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+
+              dataTmp <- getData(indicator, dashboardChartData, selectedUserFilters)
               return(write_csv(dataTmp, file, na = ""))
             }
           )
