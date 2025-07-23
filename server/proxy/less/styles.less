@@ -422,14 +422,15 @@ a.btn-primary:focus,
 a.btn-primary:active,
 a.btn-primary.active,
 a.btn-primary.hover {
-  color: #fff !important;
   .responsiveDark({
     border: 1px solid @primary-color;
     background: @primary-color-focus;
+    color: @launch-text-color !important;
   },
   {
     border: 1px solid @primary-color-dark;
     background: @primary-color-focus-dark;
+    color: @launch-text-color-dark !important;
   });
 }
 .form-control {
@@ -669,7 +670,13 @@ select {
   border-top-right-radius: 0;
 }
 .btn-login,
-.btn-logout {
+.btn-logout > a,
+.btn-login:hover,
+.btn-logout > a:hover,
+.btn-login:active,
+.btn-logout > a:active,
+.btn-login:focus,
+.btn-logout > a:focus {
   .responsiveDark({
     color: @launch-text-color;
   },
