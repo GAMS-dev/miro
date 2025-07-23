@@ -668,6 +668,15 @@ select {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.btn-login,
+.btn-logout {
+  .responsiveDark({
+    color: @launch-text-color;
+  },
+  {
+    color: @launch-text-color-dark;
+  });
+}
 
 /* error screen */
 #error {
