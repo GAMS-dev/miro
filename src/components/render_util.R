@@ -8,7 +8,18 @@ dashboardMatchSeriesLabel <- function(key, label, exact = FALSE) {
       endsWith(label, paste0("\u2024", key))
   )
 }
-dashboardPrepareData <- function(config, viewData, dataViewsConfigNames) {
+dashboardPreprocessDataViewsConfig <- function(dataViewsConfig) {
+  return(lapply(dataViewsConfig, function(dataViewConfig) {
+    if (length(dataViewConfig$userFilter) == 1 &&
+      dataViewConfig$userFilter %in% names(dataViewsConfig)) {
+      # user filter from external dataView
+      dataViewConfig$.userFilterExternalSymbol <- dataViewConfig$userFilter
+      dataViewConfig$userFilter <- dataViewsConfig[[dataViewConfig$userFilter]]$userFilter
+    }
+    return(dataViewConfig)
+  }))
+}
+dashboardPrepareData <- function(config, viewData) {
   dataTmp <- viewData
 
   filterIndexList <- names(config$filter)
@@ -163,8 +174,7 @@ dashboardPrepareData <- function(config, viewData, dataViewsConfigNames) {
 
   userFilterData <- list()
 
-  if (length(config$userFilter) &&
-    !(length(config$userFilter) == 1 && config$userFilter %in% dataViewsConfigNames)) {
+  if (is.null(config$.userFilterExternalSymbol)) {
     for (filter in config$userFilter) {
       userFilterData[[filter]] <- unique(dataTmp[[filter]])
     }
@@ -244,7 +254,7 @@ dashboardPrepareData <- function(config, viewData, dataViewsConfigNames) {
               left_join(colLevels, by = colFilterIndexList) %>%
               mutate(.key = .row + (.col * nrow(rowLevels))) %>%
               arrange(.key) %>%
-              select(all_of(c(".primary", ".secondary")))
+              select(all_of(c(config$userFilter, ".primary", ".secondary")))
           } else {
             baselineComp$secondaryData <- baselineCompDataTmp %>%
               complete(
@@ -252,10 +262,13 @@ dashboardPrepareData <- function(config, viewData, dataViewsConfigNames) {
               ) %>%
               left_join(colLevels, by = colFilterIndexList) %>%
               arrange(.col) %>%
-              select(all_of(c(".primary", ".secondary")))
+              select(all_of(c(config$userFilter, ".primary", ".secondary")))
           }
         } else {
-          baselineComp$secondaryData <- select(baselineCompDataTmp, all_of(c(".primary", ".secondary")))
+          baselineComp$secondaryData <- select(
+            baselineCompDataTmp,
+            all_of(c(config$userFilter, ".primary", ".secondary"))
+          )
         }
       }
     }
@@ -607,6 +620,11 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
 
   # filter user selection
   if (length(dataViewsConfig[[indicator]]$userFilter)) {
+    if (length(attr(dataTmp, "baselineComp"))) {
+      secondaryData <- attr(dataTmp, "baselineComp")$secondaryData
+    } else {
+      secondaryData <- NULL
+    }
     for (filterName in names(selectedUserFilters)) {
       filterEl <- selectedUserFilters[[filterName]]
       if (length(filterEl)) {
@@ -623,7 +641,14 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
           dataTmp <- dataTmp %>%
             filter(!!rlang::sym(filterName) %in% filterEl)
         }
+        if (length(secondaryData)) {
+          secondaryData <- secondaryData %>%
+            filter(!!rlang::sym(filterName) %in% filterEl)
+        }
       }
+    }
+    if (length(secondaryData)) {
+      attr(dataTmp, "baselineComp")$secondaryData <- secondaryData
     }
   }
   return(dataTmp)

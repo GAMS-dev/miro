@@ -35,7 +35,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
     function(input, output, session) {
       ns <- session$ns
 
-      dataViewsConfig <- options$dataViewsConfig
+      dataViewsConfig <- dashboardPreprocessDataViewsConfig(options$dataViewsConfig)
 
       # Boxes for  KPIs (custom infobox)
       infoBoxCustom <-
@@ -324,7 +324,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
 
             rawData[[view]] <- viewData
-            preparedData <- dashboardPrepareData(currentConfig, viewData, names(dataViewsConfig))
+            preparedData <- dashboardPrepareData(currentConfig, viewData)
             dashboardChartData[[view]] <- preparedData
 
             # Retrieve user-defined filters to pass to the renderer
@@ -381,16 +381,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             selectedUserFilters <- NULL
             if (length(dataViewsConfig[[indicator]]$userFilter)) {
-              indicatorTmp <- indicator
-              if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-                dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-                indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+              userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+              if (is.null(userFilterIndicator)) {
+                userFilterIndicator <- indicator
               }
-
-              selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
-                input[[paste0(indicatorTmp, "userFilter_", fn)]]
+              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+                input[[paste0(userFilterIndicator, "userFilter_", fn)]]
               })
-              names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
             }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -573,16 +571,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             selectedUserFilters <- NULL
             if (length(dataViewsConfig[[indicator]]$userFilter)) {
-              indicatorTmp <- indicator
-              if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-                dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-                indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+              userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+              if (is.null(userFilterIndicator)) {
+                userFilterIndicator <- indicator
               }
-
-              selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
-                input[[paste0(indicatorTmp, "userFilter_", fn)]]
+              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+                input[[paste0(userFilterIndicator, "userFilter_", fn)]]
               })
-              names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
             }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -1021,16 +1017,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             content = function(file) {
               selectedUserFilters <- NULL
               if (length(dataViewsConfig[[indicator]]$userFilter)) {
-                indicatorTmp <- indicator
-                if (length(dataViewsConfig[[indicator]]$userFilter) == 1 &&
-                  dataViewsConfig[[indicator]]$userFilter %in% names(dataViewsConfig)) {
-                  indicatorTmp <- dataViewsConfig[[indicator]]$userFilter
+                userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+                if (is.null(userFilterIndicator)) {
+                  userFilterIndicator <- indicator
                 }
-
-                selectedUserFilters <- lapply(dataViewsConfig[[indicatorTmp]]$userFilter, function(fn) {
-                  input[[paste0(indicatorTmp, "userFilter_", fn)]]
+                selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+                  input[[paste0(userFilterIndicator, "userFilter_", fn)]]
                 })
-                names(selectedUserFilters) <- dataViewsConfig[[indicatorTmp]]$userFilter
+                names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
               }
 
               dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)

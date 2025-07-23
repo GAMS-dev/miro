@@ -70,4 +70,14 @@ expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
   list("reference", "0.55 (0%)", "", "2016-01-04", "2.18 (294.23%)", "", "2016-01-06", "0.01 (-98.40%)", "", "2016-01-08", "0.49 (-11.73%)", "")
 )
+app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_test'] .custom-info-box"))
+do.call(app$set_inputs, setNames(
+  list(c("reference", "2016-01-04"), c("training error")),
+  paste0("tab_1_3-", rendererName, "-abserroruserFilter_", c("date", "Hdr"))
+))
+app$wait_for_idle()
+expect_identical(
+  app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
+  list("reference", "0.55 (0%)", "2016-01-04", "2.18 (294.23%)")
+)
 app$stop()

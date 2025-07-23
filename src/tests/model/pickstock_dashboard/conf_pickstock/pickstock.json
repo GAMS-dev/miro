@@ -499,6 +499,7 @@
               "record": "2016-01-05",
               "metrics": ["value", "percentage difference"]
             },
+            "userFilter": ["date", "Hdr"],
             "tableSummarySettings": {
               "enabled": false,
               "rowSummaryFunction": "sum",
