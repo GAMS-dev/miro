@@ -10,7 +10,7 @@ dashboardMatchSeriesLabel <- function(key, label, exact = FALSE) {
 }
 dashboardPreprocessDataViewsConfig <- function(dataViewsConfig) {
   return(lapply(dataViewsConfig, function(dataViewConfig) {
-    if (length(dataViewConfig$userFilter) == 1 &&
+    if (is.list(dataViewConfig) && length(dataViewConfig$userFilter) == 1 &&
       dataViewConfig$userFilter %in% names(dataViewsConfig)) {
       # user filter from external dataView
       dataViewConfig$.userFilterExternalSymbol <- dataViewConfig$userFilter
