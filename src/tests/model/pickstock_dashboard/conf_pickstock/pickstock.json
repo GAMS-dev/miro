@@ -343,6 +343,9 @@
             },
             {
               "dowVSindex0": "Stock Weight"
+            },
+            {
+              "testaliasfilter": "Test filter with alias dimensions"
             }
           ],
           "error_ratio": [
@@ -488,6 +491,30 @@
               },
               "data": "dowvsindex"
           },
+          "testaliasfilter": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "hideEmptyCols": false,
+            "fixedColumns": true,
+            "tableSummarySettings": {
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum",
+                "colEnabled": false,
+                "colSummaryFunction": "sum"
+            },
+            "cols": {
+              "symbol": null,
+              "s": null
+            },
+            "userFilter": [
+              "s",
+              "symbol"
+            ],
+            "data": "testaliasfilter"
+          },
           "abserror": {
             "aggregationFunction": "sum",
             "pivotRenderer": "table",
@@ -567,6 +594,7 @@
         "dowvsindex",
         "abserror",
         "pricemerge",
+        "testaliasfilter",
         "_scalarsve_out"
       ]
     }

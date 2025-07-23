@@ -628,14 +628,17 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
     for (filterName in names(selectedUserFilters)) {
       filterEl <- selectedUserFilters[[filterName]]
       if (length(filterEl)) {
-        if (filterName %in% names(dataViewsConfig[[indicator]]$cols)) {
+        filterColIdx <- match(filterName, names(dataViewsConfig[[indicator]]$cols))
+        if (!is.na(filterColIdx)) {
+          cols <- if (noRowHeaders == 0) names(dataTmp) else names(dataTmp)[-seq_len(noRowHeaders)]
+          filterDimElements <- vapply(
+            strsplit(cols, "\U2024", fixed = TRUE),
+            "[[", character(1), filterColIdx
+          )
           dataTmp <- dataTmp %>%
             select(
               seq_len(noRowHeaders),
-              (any_of(filterEl) |
-                contains(paste0("\U2024", filterEl, "\U2024")) |
-                starts_with(paste0(filterEl, "\U2024")) |
-                ends_with(paste0("\U2024", filterEl)))
+              all_of(which(filterDimElements == filterEl) + noRowHeaders)
             )
         } else {
           dataTmp <- dataTmp %>%
