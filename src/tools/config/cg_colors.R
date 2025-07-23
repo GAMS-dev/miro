@@ -634,15 +634,20 @@ output$downloadTheme <- downloadHandler(
   content = function(file) {
     pal <- palette()
 
+    miro_server_launch_text_color <- if (goodContrast("#494d55", input$server_primary_color)) "#494d55" else "#fff"
+    miro_server_launch_text_color_dark <- if (goodContrast("#fff", input$server_primary_color_dark)) "#fff" else "#494d55"
+
     miroServerColors <- list(
-      miro_server_primary_color        = input$server_primary_color,
-      miro_server_body_bg              = input$server_body_bg,
-      miro_server_main_bg              = input$server_main_bg,
-      miro_server_login_header_bg      = input$server_login_header_bg,
-      miro_server_primary_color_dark   = input$server_primary_color_dark,
-      miro_server_body_bg_dark         = input$server_body_bg_dark,
-      miro_server_main_bg_dark         = input$server_main_bg_dark,
-      miro_server_login_header_bg_dark = input$server_login_header_bg_dark
+      miro_server_primary_color = input$server_primary_color,
+      miro_server_body_bg = input$server_body_bg,
+      miro_server_main_bg = input$server_main_bg,
+      miro_server_login_header_bg = input$server_login_header_bg,
+      miro_server_launch_text_color = miro_server_launch_text_color,
+      miro_server_primary_color_dark = input$server_primary_color_dark,
+      miro_server_body_bg_dark = input$server_body_bg_dark,
+      miro_server_main_bg_dark = input$server_main_bg_dark,
+      miro_server_login_header_bg_dark = input$server_login_header_bg_dark,
+      miro_server_launch_text_color_dark = miro_server_launch_text_color_dark
     )
 
     miroServerColors <- miroServerColors[!vapply(miroServerColors, is.null, logical(1))]
