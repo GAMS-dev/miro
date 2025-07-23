@@ -41,6 +41,25 @@ Sys.sleep(0.5)
 expect_equal(getData(paste0("tab_1_3-", rendererName, "-stockWeightChart")), list(0.6))
 expect_equal(getData(paste0("tab_1_3-", rendererName, "-stockWeight2Chart")), list(0.6))
 
+# userFilter with alias dimensions in cols
+expect_equal(getData(paste0("tab_1_3-", rendererName, "-testaliasfilterChart")), list(3, 2, 1, 4))
+do.call(app$set_inputs, setNames(
+  list("DD"),
+  paste0("tab_1_3-", rendererName, "-testaliasfilteruserFilter_s")
+))
+Sys.sleep(0.5)
+expect_equal(getData(paste0("tab_1_3-", rendererName, "-testaliasfilterChart")), list(2))
+do.call(app$set_inputs, setNames(
+  list(character(0)),
+  paste0("tab_1_3-", rendererName, "-testaliasfilteruserFilter_s")
+))
+do.call(app$set_inputs, setNames(
+  list("DD"),
+  paste0("tab_1_3-", rendererName, "-testaliasfilteruserFilter_symbol")
+))
+Sys.sleep(0.5)
+expect_equal(getData(paste0("tab_1_3-", rendererName, "-testaliasfilterChart")), list(1))
+
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio'] .custom-info-box"))
 Sys.sleep(1)
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_date')[0].multiple")), TRUE))
