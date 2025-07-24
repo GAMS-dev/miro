@@ -254,7 +254,7 @@ dashboardPrepareData <- function(config, viewData) {
               left_join(colLevels, by = colFilterIndexList) %>%
               mutate(.key = .row + (.col * nrow(rowLevels))) %>%
               arrange(.key) %>%
-              select(all_of(c(config$userFilter, ".primary", ".secondary")))
+              select(any_of(c(config$userFilter, ".primary", ".secondary")))
           } else {
             baselineComp$secondaryData <- baselineCompDataTmp %>%
               complete(
@@ -262,12 +262,12 @@ dashboardPrepareData <- function(config, viewData) {
               ) %>%
               left_join(colLevels, by = colFilterIndexList) %>%
               arrange(.col) %>%
-              select(all_of(c(config$userFilter, ".primary", ".secondary")))
+              select(any_of(c(config$userFilter, ".primary", ".secondary")))
           }
         } else {
           baselineComp$secondaryData <- select(
             baselineCompDataTmp,
-            all_of(c(config$userFilter, ".primary", ".secondary"))
+            any_of(c(config$userFilter, ".primary", ".secondary"))
           )
         }
       }
@@ -625,7 +625,7 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
     } else {
       secondaryData <- NULL
     }
-    for (filterName in names(selectedUserFilters)) {
+    for (filterName in names(selectedUserFilters)[names(selectedUserFilters) %in% c(names(dataTmp)[seq_len(noRowHeaders)], names(dataViewsConfig[[indicator]]$cols))]) {
       filterEl <- selectedUserFilters[[filterName]]
       if (length(filterEl)) {
         filterColIdx <- match(filterName, names(dataViewsConfig[[indicator]]$cols))
