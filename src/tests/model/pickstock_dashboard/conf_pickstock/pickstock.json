@@ -329,6 +329,9 @@
             },
             {
               "abserror": "Absolute Error"
+            },
+            {
+              "dowVSindexStack": "Stacked bar chart; group stacks by Hdr dimension"
             }
           ],
           "error_train": [
@@ -340,6 +343,9 @@
             },
             {
               "dowVSindex0": "Stock Weight"
+            },
+            {
+              "testaliasfilter": "Test filter with alias dimensions"
             }
           ],
           "error_ratio": [
@@ -453,6 +459,62 @@
             "data": "dowvsindex",
             "decimals": 2
           },
+          "dowVSindexStack": {
+              "aggregationFunction": "sum",
+              "pivotRenderer": "stackedbar",
+              "domainFilter": {
+                  "default": null
+              },
+              "hideEmptyCols": false,
+              "fixedColumns": true,
+              "tableSummarySettings": {
+                  "rowEnabled": false,
+                  "rowSummaryFunction": "sum",
+                  "colEnabled": false,
+                  "colSummaryFunction": "sum"
+              },
+              "filter": {
+                  "date": [
+                      "2016-01-04",
+                      "2016-01-05"
+                  ]
+              },
+              "cols": {
+                  "Hdr": null
+              },
+              "chartOptions": {
+                  "groupDimension": "Hdr",
+                  "yLogScale": false,
+                  "showXGrid": true,
+                  "showYGrid": true,
+                  "singleStack": false
+              },
+              "data": "dowvsindex"
+          },
+          "testaliasfilter": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "hideEmptyCols": false,
+            "fixedColumns": true,
+            "tableSummarySettings": {
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum",
+                "colEnabled": false,
+                "colSummaryFunction": "sum"
+            },
+            "cols": {
+              "symbol": null,
+              "s": null
+            },
+            "userFilter": [
+              "s",
+              "symbol"
+            ],
+            "data": "testaliasfilter"
+          },
           "abserror": {
             "aggregationFunction": "sum",
             "pivotRenderer": "table",
@@ -464,12 +526,16 @@
               "record": "2016-01-05",
               "metrics": ["value", "percentage difference"]
             },
+            "userFilter": ["date", "Hdr"],
             "tableSummarySettings": {
               "enabled": false,
               "rowSummaryFunction": "sum",
               "colSummaryFunction": "sum"
             },
-            "rows": "date",
+            "rows": null,
+            "filter": {
+              "date": ["2016-01-04", "2016-01-05", "2016-01-06", "2016-01-08"]
+            },
             "cols": {
               "Hdr": null
             },
@@ -478,10 +544,12 @@
               "xTitle": "Date",
               "yTitle": "Error",
               "customSeriesOrder": [
-                 "absolute error train",
-                 "absolute error test"
+                 "training error",
+                 "testing error"
               ],
               "customLabels": {
+                "absolute error train": "training error",
+                "absolute error test": "testing error",
                 "2016-01-05": "reference"
               },
               "customLabelsOrder": [
@@ -526,6 +594,7 @@
         "dowvsindex",
         "abserror",
         "pricemerge",
+        "testaliasfilter",
         "_scalarsve_out"
       ]
     }

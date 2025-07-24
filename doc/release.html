@@ -107,6 +107,33 @@
                         Fix interrupt not working on Windows for GAMSPy apps.
                       </li>
                       <li>
+                        Dashboard: Fix issue where the baseline comparison
+                        feature failed to function when used alongside
+                        <kbd>customLabels</kbd> and/or <kbd>userFilter</kbd>.
+                      </li>
+                      <li>
+                        Dashboard: Fix issue where
+                        <kbd>groupDimension</kbd> feature did not work with the
+                        <kbd>stackedbar</kbd> chart type.
+                      </li>
+                      <li>
+                        Fix performance issues in
+                        <a href="./charts.html#dashboard"
+                          >dashboard renderer</a
+                        >
+                        and
+                        <a
+                          href="./configuration_json_only.html#dashboard-compare"
+                          >dashboard compare</a
+                        >
+                        when handling many views.
+                      </li>
+                      <li>
+                        Fix issue in dashboard where the user filter did not
+                        work properly when multiple aliased dimensions were
+                        present in the columns of a view.
+                      </li>
+                      <li>
                         Add missing button text color to the MIRO Server color
                         palette.
                       </li>

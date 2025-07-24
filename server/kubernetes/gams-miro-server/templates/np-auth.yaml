@@ -27,6 +27,11 @@ spec:
           protocol: UDP
         - port: 53
           protocol: TCP
+      to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
     # Allow outbound connections to PostgreSQL
     {{- if not .Values.db.externalHost }}
     - ports:

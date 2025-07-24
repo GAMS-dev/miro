@@ -1,4 +1,4 @@
-matchSeriesLabel <- function(key, label, exact = FALSE) {
+dashboardMatchSeriesLabel <- function(key, label, exact = FALSE) {
   if (exact && key == label) {
     return(TRUE)
   }
@@ -8,16 +8,18 @@ matchSeriesLabel <- function(key, label, exact = FALSE) {
       endsWith(label, paste0("\u2024", key))
   )
 }
-matchLabel <- function(key, label, exact = FALSE) {
-  if (exact) {
-    exact <- (key == label)
-  }
-  contained <- grepl(paste0("\u2024", key, "\u2024"), label)
-  starts <- grepl(paste0("^", key, "\u2024"), label)
-  ends <- grepl(paste0("\u2024", key, "$"), label)
-  exact || contained || starts || ends
+dashboardPreprocessDataViewsConfig <- function(dataViewsConfig) {
+  return(lapply(dataViewsConfig, function(dataViewConfig) {
+    if (is.list(dataViewConfig) && length(dataViewConfig$userFilter) == 1 &&
+      dataViewConfig$userFilter %in% names(dataViewsConfig)) {
+      # user filter from external dataView
+      dataViewConfig$.userFilterExternalSymbol <- dataViewConfig$userFilter
+      dataViewConfig$userFilter <- dataViewsConfig[[dataViewConfig$userFilter]]$userFilter
+    }
+    return(dataViewConfig)
+  }))
 }
-prepareData <- function(config, viewData, dataViewsConfigNames) {
+dashboardPrepareData <- function(config, viewData) {
   dataTmp <- viewData
 
   filterIndexList <- names(config$filter)
@@ -118,20 +120,6 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
     }
   }
 
-  if (length(baselineCompConfig)) {
-    baselineCompConfig$data <- dataTmp %>%
-      filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
-      select(any_of(setdiff(
-        c(rowIndexList, colFilterIndexList, valueColName),
-        baselineCompConfig$domain
-      ))) %>%
-      rename(.baseline = value)
-    if (length(baselineCompConfig$filterIndex)) {
-      dataTmp <- dataTmp %>%
-        filter(.data[[baselineCompConfig$filterIndex]] %in% baselineCompConfig$filterVal)
-    }
-  }
-
   # apply custom labels
   if (length(config$chartOptions$customLabels)) {
     labelCols <- dataTmp[, vapply(dataTmp, class, character(1L), USE.NAMES = FALSE) == "character"]
@@ -146,12 +134,34 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
     }
   }
 
+  if (length(baselineCompConfig)) {
+    baselineCompRecord <- baselineCompConfig$record
+    if (baselineCompRecord %in% names(config$chartOptions$customLabels)) {
+      baselineCompRecord <- config$chartOptions$customLabels[[baselineCompRecord]]
+    }
+    baselineCompConfig$data <- dataTmp %>%
+      filter(.data[[baselineCompConfig$domain]] == baselineCompRecord) %>%
+      select(any_of(setdiff(
+        c(rowIndexList, colFilterIndexList, valueColName),
+        baselineCompConfig$domain
+      ))) %>%
+      rename(.baseline = value)
+    if (length(baselineCompConfig$filterIndex)) {
+      filterVal <- baselineCompConfig$filterVal
+      customFilterValIds <- match(filterVal, names(config$chartOptions$customLabels))
+      isCustomFilterVal <- !is.na(customFilterValIds)
+      filterVal[isCustomFilterVal] <- config$chartOptions$customLabels[customFilterValIds[isCustomFilterVal]]
+      dataTmp <- dataTmp %>%
+        filter(.data[[baselineCompConfig$filterIndex]] %in% filterVal)
+    }
+  }
+
   dataTmp <- dataTmp %>% select(all_of(c(rowIndexList, colFilterIndexList, valueColName)))
 
   if (length(rowIndexList)) {
     if (length(config$chartOptions$customLabelsOrder)) {
       # apply custom labels order
-      dataTmp <- applyCustomLabelsOrder(
+      dataTmp <- dashboardApplyCustomLabelsOrder(
         dataTmp,
         length(rowIndexList),
         config$chartOptions$customLabelsOrder
@@ -164,8 +174,7 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
 
   userFilterData <- list()
 
-  if (length(config$userFilter) &&
-    !(length(config$userFilter) == 1 && config$userFilter %in% dataViewsConfigNames)) {
+  if (is.null(config$.userFilterExternalSymbol)) {
     for (filter in config$userFilter) {
       userFilterData[[filter]] <- unique(dataTmp[[filter]])
     }
@@ -245,7 +254,7 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
               left_join(colLevels, by = colFilterIndexList) %>%
               mutate(.key = .row + (.col * nrow(rowLevels))) %>%
               arrange(.key) %>%
-              select(all_of(c(".primary", ".secondary")))
+              select(all_of(c(config$userFilter, ".primary", ".secondary")))
           } else {
             baselineComp$secondaryData <- baselineCompDataTmp %>%
               complete(
@@ -253,10 +262,13 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
               ) %>%
               left_join(colLevels, by = colFilterIndexList) %>%
               arrange(.col) %>%
-              select(all_of(c(".primary", ".secondary")))
+              select(all_of(c(config$userFilter, ".primary", ".secondary")))
           }
         } else {
-          baselineComp$secondaryData <- select(baselineCompDataTmp, all_of(c(".primary", ".secondary")))
+          baselineComp$secondaryData <- select(
+            baselineCompDataTmp,
+            all_of(c(config$userFilter, ".primary", ".secondary"))
+          )
         }
       }
     }
@@ -313,7 +325,7 @@ prepareData <- function(config, viewData, dataViewsConfigNames) {
   }
   return(dataTmp)
 }
-heatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
+dashboardHeatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
   if (heatmaptype == 1L) {
     brks <- quantile(symbolData[-seq_len(as.numeric(noRowHeaders))],
       probs = seq(.05, .95, .05), na.rm = TRUE
@@ -370,7 +382,7 @@ heatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
 
   return(list(brks = brks, clrs = clrs))
 }
-applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
+dashboardApplyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
   if (!is.list(customLabelsOrder)) {
     mergedCols <- paste0("\U2024", "mergedCols")
     orderCol <- paste0(mergedCols, "\U2024")
@@ -413,7 +425,7 @@ applyCustomLabelsOrder <- function(data, noRowHeaders, customLabelsOrder) {
   }
   return(data)
 }
-defaultColorPair <- function(i, globalPalette) {
+dashboardDefaultColorPair <- function(i, globalPalette) {
   pairIndex <- 2 * i
   if (pairIndex - 1 <= length(globalPalette)) {
     return(globalPalette[(pairIndex - 1):pairIndex])
@@ -425,7 +437,7 @@ defaultColorPair <- function(i, globalPalette) {
     # return(c("#666","#666"))
   }
 }
-transformLabels <- function(originalLabels, customLabels) {
+dashboardTransformLabels <- function(originalLabels, customLabels) {
   transformedLabels <- c()
   if (length(customLabels)) {
     transformedLabels <- vapply(originalLabels, function(label) {
@@ -443,4 +455,204 @@ transformLabels <- function(originalLabels, customLabels) {
     transformedLabels <- originalLabels
   }
   return(transformedLabels)
+}
+dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
+  # Build and return the UI for a dashboard section/data-view
+  # (views that are visible when clicking on a value box).
+  # For a section/data-view the function:
+  #   - looks up every view's config in options$dataViewsConfig
+  #   - for each view the function adds a column with:
+  #     title, chart-type selector, download buttons,
+  #     user-filter dropdowns, a DT table output and a ChartJS chart output
+
+  dataViewsConfig <- options$dataViewsConfig
+  chartChoices <- setNames(
+    c(
+      "table", "heatmap", "pie", "doughnut", "bar", "horizontalbar",
+      "stackedbar", "horizontalstackedbar", "line", "scatter", "area",
+      "stackedarea", "radar", "timeseries"
+    ),
+    c(
+      lang$renderers$miroPivot$renderer$table,
+      lang$renderers$miroPivot$renderer$heatmap,
+      lang$renderers$miroPivot$renderer$pie,
+      lang$renderers$miroPivot$renderer$doughnut,
+      lang$renderers$miroPivot$renderer$bar,
+      lang$renderers$miroPivot$renderer$horizontalbar,
+      lang$renderers$miroPivot$renderer$stackedbar,
+      lang$renderers$miroPivot$renderer$horizontalstackedbar,
+      lang$renderers$miroPivot$renderer$line,
+      lang$renderers$miroPivot$renderer$scatter,
+      lang$renderers$miroPivot$renderer$area,
+      lang$renderers$miroPivot$renderer$stackedarea,
+      lang$renderers$miroPivot$renderer$radar,
+      lang$renderers$miroPivot$renderer$timeseries
+    )
+  )
+  viewList <- options$dataViews[[dataView]]
+  if (is.null(names(viewList))) {
+    viewList <- unlist(viewList, recursive = FALSE)
+  }
+  viewIds <- as.list(names(viewList))
+  titleList <- viewList
+  tags$div(
+    class = "dashboard-section-wrapper",
+    id = ns(paste0(dataView, "View")),
+    lapply(seq_along(viewIds), function(i) {
+      id <- viewIds[[i]]
+      title <- titleList[[i]]
+
+      if (is.list(dataViewsConfig[[id]])) {
+        userFilter <- NULL
+        if (length(dataViewsConfig[[id]]$userFilter)) {
+          userFilter <- unique(dataViewsConfig[[id]]$userFilter)
+        }
+
+        column(
+          width = if (length(dataViewsConfig[[id]]$colWidth)) as.numeric(dataViewsConfig[[id]]$colWidth) else 12,
+          class = if (!nchar(title)) "add-margin",
+          id = ns(paste0(id, "_wrapper")),
+          if (nchar(title)) {
+            tags$h4(title, class = "highlight-block")
+          },
+          tags$div(
+            style = "overflow:auto;",
+            tags$div(
+              class = "row table-chart-wide-widgets",
+              tags$div(
+                class = "charttype-and-btn-wrapper",
+                class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
+                tags$div(
+                  class = "custom-dropdown",
+                  selectizeInput(ns(paste0(id, "ChartType")),
+                    label = NULL,
+                    choices = chartChoices,
+                    selected = dataViewsConfig[[id]]$pivotRenderer,
+                    options = list(onInitialize = I(paste0("function(value) {
+              document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "ChartType")), "\"]').setAttribute('readonly', 'readonly');
+            }")))
+                  )
+                ),
+                tags$div(
+                  class = " dashboard-btn-wrapper",
+                  tags$a(
+                    id = ns(paste0(id, "DownloadCsv")),
+                    class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
+                    href = "",
+                    target = "_blank",
+                    download = NA,
+                    tags$div(
+                      tags$i(class = "fa fa-file-csv")
+                    ),
+                    title = lang$renderers$miroPivot$btDownloadCsv
+                  ),
+                  tags$a(
+                    id = ns(paste0(id, "DownloadPng")),
+                    class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
+                    style = if (dataViewsConfig[[id]]$pivotRenderer %in% c("table", "heatmap")) "display:none;",
+                    download = paste0(id, "Chart", ".png"),
+                    href = "#",
+                    `data-canvasid` = ns(paste0(id, "Chart")),
+                    tags$div(
+                      tags$i(class = "fa fa-file-image")
+                    ),
+                    title = lang$renderers$miroPivot$btDownloadPng
+                  )
+                ),
+              ),
+              if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
+                singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
+                  dataViewsConfig[[id]]$singleDropdown
+                } else {
+                  character(0)
+                }
+
+                filterInputs <- lapply(userFilter, function(filterName) {
+                  multiple <- if (filterName %in% singleDropdownFilters) {
+                    FALSE
+                  } else {
+                    TRUE
+                  }
+
+                  tags$div(
+                    class = "custom-dropdown-wide user-filter",
+                    class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
+                    selectizeInput(ns(paste0(id, "userFilter_", filterName)),
+                      label = NULL,
+                      choices = userFilterChoices[[id]][[filterName]],
+                      multiple = multiple, width = "100%",
+                      options = list(onInitialize = I(paste0("function(value) {
+                                     document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
+                                   }")))
+                    )
+                  )
+                })
+
+                do.call(tagList, filterInputs)
+              }
+            ),
+            tags$div(
+              class = "table-chart-wide-wrapper",
+              DT::DTOutput(ns(paste0(id, "Table"))),
+              tags$div(
+                id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
+                style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
+                chartjs::chartjsOutput(ns(paste0(id, "Chart")),
+                  height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
+                )
+              )
+            )
+          )
+        )
+      } else {
+        uiOutput(ns(id))
+      }
+    })
+  )
+}
+dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters) {
+  noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
+  dataTmp <- dashboardChartData[[indicator]]
+  if (length(dataViewsConfig[[indicator]]$decimals)) {
+    dataTmp <- dataTmp %>%
+      mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
+  }
+
+  # filter user selection
+  if (length(dataViewsConfig[[indicator]]$userFilter)) {
+    if (length(attr(dataTmp, "baselineComp"))) {
+      secondaryData <- attr(dataTmp, "baselineComp")$secondaryData
+    } else {
+      secondaryData <- NULL
+    }
+    for (filterName in names(selectedUserFilters)) {
+      filterEl <- selectedUserFilters[[filterName]]
+      if (length(filterEl)) {
+        filterColIdx <- match(filterName, names(dataViewsConfig[[indicator]]$cols))
+        if (!is.na(filterColIdx)) {
+          cols <- if (noRowHeaders == 0) names(dataTmp) else names(dataTmp)[-seq_len(noRowHeaders)]
+          filterDimElements <- vapply(
+            strsplit(cols, "\U2024", fixed = TRUE),
+            "[[", character(1), filterColIdx
+          )
+          dataTmp <- dataTmp %>%
+            select(
+              seq_len(noRowHeaders),
+              all_of(which(filterDimElements == filterEl) + noRowHeaders)
+            )
+        } else {
+          dataTmp <- dataTmp %>%
+            filter(!!rlang::sym(filterName) %in% filterEl)
+        }
+        if (length(secondaryData)) {
+          secondaryData <- secondaryData %>%
+            filter(!!rlang::sym(filterName) %in% filterEl)
+        }
+      }
+    }
+    if (length(secondaryData)) {
+      attr(dataTmp, "baselineComp")$secondaryData <- secondaryData
+    }
+  }
+  return(dataTmp)
 }

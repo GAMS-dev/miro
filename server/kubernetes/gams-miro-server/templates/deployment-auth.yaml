@@ -65,7 +65,11 @@ spec:
         - name: ENGINE_NS
           value: "{{ .Values.proxy.config.engine.namespace }}"
         - name: GMS_MIRO_DATABASE_HOST
+          {{- if .Values.db.externalHost }}
+          value: {{ .Values.db.externalHost | quote }}
+          {{- else }}
           value: {{ include "common.names.fullname" . }}-db
+          {{- end }}
         - name: GMS_MIRO_DATABASE_PORT
           value: "{{ .Values.db.port | default 5432 }}"
         - name: GMS_MIRO_DATABASE
