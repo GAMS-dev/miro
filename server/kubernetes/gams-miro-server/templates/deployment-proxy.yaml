@@ -134,6 +134,11 @@ spec:
           mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
           subPath: custom.css
         {{- end }}
+        {{- if eq .Values.proxy.config.colorTheme "custom" }}
+        - name: customize-volume
+          mountPath: /home/miroproxy/templates/2col/assets/css/themes/colors_custom.css
+          subPath: colors_custom.css
+        {{- end }}
         {{- if .Values.global.securityContext.enabled }}
         securityContext:
           allowPrivilegeEscalation: false

@@ -254,7 +254,7 @@ data:
           export:
             enabled: true
     {{- end }}
-{{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+{{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled (eq .Values.proxy.config.colorTheme "custom") }}
 ---
 apiVersion: v1
 kind: Secret
@@ -267,13 +267,5 @@ metadata:
   {{- end }}
 type: Opaque
 data:
-  {{- if .Values.proxy.config.logo.enabled }}
-  logo.png: {{ .Values.proxy.config.logo.base64 | default ( .Files.Get .Values.proxy.config.logo.path | b64enc ) }}
-  {{- end }}
-  {{- if .Values.proxy.config.favicon.enabled }}
-  favicon.ico: {{ .Values.proxy.config.favicon.base64 | default ( .Files.Get .Values.proxy.config.favicon.path | b64enc ) }}
-  {{- end }}
-  {{- if .Values.proxy.config.customCSS.enabled }}
-  custom.css: {{ .Values.proxy.config.customCSS.base64 | default ( .Files.Get .Values.proxy.config.customCSS.path | b64enc ) }}
-  {{- end }}
+{{ include "gams-miro-server.v1.customFiles" . | indent 2 }}
 {{- end }}
