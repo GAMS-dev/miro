@@ -1005,7 +1005,7 @@ if (is.null(errMsg)) {
     {
       gdxio <<- GdxIO$new(
         file.path(
-          .libPaths()[1], "gdxrrwMIRO",
+          find.package("gdxrrwMIRO"),
           if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
             file.path("bin", "x64")
           } else {
