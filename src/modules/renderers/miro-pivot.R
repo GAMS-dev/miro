@@ -2614,7 +2614,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if (sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
           length(input$rowIndexList) != length(setIndices) ||
-          any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))) {
+          any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE)) ||
+          any(duplicated(unlist(newFilters, use.names = FALSE)))) {
           # UI not initialised
           return()
         }

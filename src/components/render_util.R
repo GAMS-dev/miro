@@ -622,6 +622,10 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
   if (length(dataViewsConfig[[indicator]]$userFilter)) {
     if (length(attr(dataTmp, "baselineComp"))) {
       secondaryData <- attr(dataTmp, "baselineComp")$secondaryData
+      if (length(dataViewsConfig[[indicator]]$decimals)) {
+        secondaryData <- secondaryData %>%
+          mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
+      }
     } else {
       secondaryData <- NULL
     }
@@ -638,7 +642,7 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
           dataTmp <- dataTmp %>%
             select(
               seq_len(noRowHeaders),
-              all_of(which(filterDimElements == filterEl) + noRowHeaders)
+              all_of(which(filterDimElements %in% filterEl) + noRowHeaders)
             )
         } else {
           dataTmp <- dataTmp %>%

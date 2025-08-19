@@ -469,13 +469,13 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   if (type !== 'display') {
     return data;
   }
-  const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+  const pm=", if (length(roundPrecision)) paste0("DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0')") else "data;",
               if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
                 paste0(
                   "
   const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
   const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
-  const refData=", toJSON(round(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]], digits = roundPrecision)), "[offset];
+  const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
   if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
     window.alertPushed = '", tableSessionId, "';
     Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
