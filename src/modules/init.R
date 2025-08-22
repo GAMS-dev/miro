@@ -192,11 +192,43 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
     for (id in c("rows", "cols", "aggregations", "filter", "userFilter", "groupDimension")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
-          if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
+          if (identical(id, "userFilter")) {
+            uf <- config[[id]]
             # If a dataViewsConfig ID is set as userFilter, the IDs filters are applied here as well.
-            next
+            if (is.character(uf) && length(uf) == 1 && uf %in% names(dc)) {
+              next
+            }
+
+            if (is.character(uf)) {
+              dims <- uf
+            } else if (is.list(uf)) {
+              dims <- unlist(lapply(uf, function(x) {
+                if (is.character(x) && length(x) == 1) {
+                  x
+                } else if (is.list(x) && !is.null(x$dimension)) {
+                  as.character(x$dimension)
+                } else {
+                  NA_character_
+                }
+              }), use.names = FALSE)
+            } else {
+              dims <- character(0)
+            }
+            dimsClean <- dims[!is.na(dims) & nzchar(dims)]
+            duplicateDims <- unique(dimsClean[duplicated(dimsClean)])
+            if (length(duplicateDims)) {
+              errMsgTmp <- paste(
+                errMsgTmp,
+                paste0(
+                  "\nDuplicate userFilter dimensions in view ", view, ": ",
+                  paste(duplicateDims, collapse = ", ")
+                )
+              )
+            }
+            indices <- unique(dimsClean)
+          } else {
+            indices <- config[[id]]
           }
-          indices <- config[[id]]
         } else {
           indices <- names(config[[id]])
         }

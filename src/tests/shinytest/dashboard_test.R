@@ -99,4 +99,21 @@ expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
   list("reference", "0.55 (0%)", "2016-01-04", "2.18 (294.23%)")
 )
+# new userFilter format
+app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio'] .custom-info-box"))
+Sys.sleep(1)
+idUni <- sprintf("#tab_1_3-%s-pricemerge2userFilter_uni", rendererName)
+idDate <- sprintf("#tab_1_3-%s-pricemerge2userFilter_date", rendererName)
+idDatePlaceholder <- sprintf("#tab_1_3-%s-pricemerge3userFilter_date-selectized", rendererName)
+
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_date')[0].multiple")), TRUE))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_uni-selectized')[0].multiple")), FALSE))
+expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idUni)), "testlabel")
+expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idDate)), "testlabel2")
+expect_equal(app$get_js(sprintf("$('%s').attr('placeholder')", idDatePlaceholder)), "All items")
+expect_equal(app$get_js(sprintf("(function(){var el=$('%s')[0]; return el.selectize ? el.selectize.getValue() : $('%s').val();})()", idUni, idUni)), "DD")
+expect_identical(
+  app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2Table td').map(function(index){return $(this).text()}).toArray()")),
+  list("2016-01-04", "63.07", "2016-01-05", "64.28", "2016-01-06", "63.38", "2016-12-30", "73.40")
+)
 app$stop()

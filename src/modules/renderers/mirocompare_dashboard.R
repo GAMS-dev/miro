@@ -356,6 +356,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     isolate({
       views <- names(unlist(options$dataViews[[av]]))
       allUserFilterChoices <- setNames(vector("list", length(views)), views)
+      userFilterDefaults <- allUserFilterChoices
 
       for (view in views) {
         if (!view %in% names(options$dataViewsConfig) ||
@@ -382,27 +383,31 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         preparedData <- dashboardPrepareData(currentConfig, viewData)
         dashboardChartData[[view]] <- preparedData
 
-        # Retrieve user-defined filters to pass to the renderer
-        userFilter <- NULL
-        if (length(dataViewsConfig[[view]]$userFilter)) {
-          userFilter <- dataViewsConfig[[view]]$userFilter
-          if (!(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
-            singleDropdown <- if (!is.null(dataViewsConfig[[view]]$singleDropdown)) {
-              dataViewsConfig[[view]]$singleDropdown
-            } else {
-              character(0)
+        userFilter <- dataViewsConfig[[view]]$userFilter
+        if (length(userFilter)) {
+          dims <- vapply(userFilter, `[[`, character(1), "dimension")
+
+          choicesList <- lapply(userFilter, function(f) {
+            dim <- f$dimension
+            ch <- attr(dashboardChartData[[view]], paste0("userFilterData_", dim))
+            if (is.null(ch)) ch <- character(0)
+            if (is.null(names(ch))) names(ch) <- ch
+
+            if (isTRUE(f$multiple)) {
+              placeholder <- if (length(f$placeholder)) f$placeholder else "All"
+              ch <- c(setNames("", placeholder), ch)
             }
-            allUserFilterChoices[[view]] <- setNames(
-              lapply(userFilter, function(filterName) {
-                choices <- attr(dashboardChartData[[view]], paste0("userFilterData_", filterName))
-                if (!filterName %in% singleDropdown) {
-                  choices <- c("All" = "", choices)
-                }
-                choices
-              }),
-              userFilter
-            )
-          }
+            ch
+          })
+          names(choicesList) <- dims
+          allUserFilterChoices[[view]] <- choicesList
+
+          userFilterDefaults[[view]] <- setNames(
+            lapply(seq_along(userFilter), function(i) {
+              dashboardGetSelectedValues(choicesList[[i]], userFilter[[i]]$selected, userFilter[[i]]$multiple)
+            }),
+            dims
+          )
         }
       }
     })
@@ -414,7 +419,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     insertUI(
       selector = paste0("#", ns(paste0("sectionContent_", av))), where = "afterBegin",
-      ui = dashboardRenderDataView(av, options, allUserFilterChoices, ns)
+      ui = dashboardRenderDataView(dataViewsConfig, av, options$dataViews, allUserFilterChoices, userFilterDefaults, ns)
     )
 
     lapply(names(unlist(options$dataViews[[av]])), function(indicator) {
@@ -435,15 +440,19 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        if (length(dataViewsConfig[[indicator]]$userFilter)) {
+        uf <- dataViewsConfig[[indicator]]$userFilter
+        if (length(uf)) {
           userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
           if (is.null(userFilterIndicator)) {
             userFilterIndicator <- indicator
           }
-          selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-            input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-          })
-          names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+          dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
+          selectedUserFilters <- setNames(
+            lapply(dims, function(dim) {
+              input[[paste0(userFilterIndicator, "userFilter_", dim)]]
+            }),
+            dims
+          )
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -625,15 +634,19 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        if (length(dataViewsConfig[[indicator]]$userFilter)) {
+        uf <- dataViewsConfig[[indicator]]$userFilter
+        if (length(uf)) {
           userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
           if (is.null(userFilterIndicator)) {
             userFilterIndicator <- indicator
           }
-          selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-            input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-          })
-          names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+          dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
+          selectedUserFilters <- setNames(
+            lapply(dims, function(dim) {
+              input[[paste0(userFilterIndicator, "userFilter_", dim)]]
+            }),
+            dims
+          )
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -1071,15 +1084,19 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         filename = paste0(indicator, ".csv"),
         content = function(file) {
           selectedUserFilters <- NULL
-          if (length(dataViewsConfig[[indicator]]$userFilter)) {
+          uf <- dataViewsConfig[[indicator]]$userFilter
+          if (length(uf)) {
             userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
             if (is.null(userFilterIndicator)) {
               userFilterIndicator <- indicator
             }
-            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-              input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-            })
-            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+            dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
+            selectedUserFilters <- setNames(
+              lapply(dims, function(dim) {
+                input[[paste0(userFilterIndicator, "userFilter_", dim)]]
+              }),
+              dims
+            )
           }
 
           dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)

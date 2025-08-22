@@ -2470,7 +2470,7 @@ firstDayTraining(td)                   = td.pos = 1;
                   <div class="section-block">
                     <p>
                       A dashboard is an interactive tool with different data
-                      views. It is navigated via the ‘tiles’ (value boxes) on
+                      views. It is navigated via the 'tiles' (value boxes) on
                       the right-hand side of the screen. A data view is shown
                       if the corresponding value box is clicked. It can display
                       multiple charts and tables. Further possible interactions
@@ -2986,10 +2986,11 @@ firstDayTraining(td)                   = td.pos = 1;
                             renderer is based on should be used.
                           </li>
                           <li>
-                            <code class="language-json">"userFilter"</code>:
-                            Adds multi drop down menu(s) to a chart/table in
-                            which elements of the configured dimension can be
-                            selected for being rendered.
+                            <p id="dashboard-dropdown-filter">
+                              <code class="language-json">"userFilter"</code>:
+                              Adds one or more dropdown filters to a
+                              chart/table so users can limit what's rendered.
+                            </p>
                             <div
                               class="section-block"
                               style="text-align: left"
@@ -3000,20 +3001,157 @@ firstDayTraining(td)                   = td.pos = 1;
                                 alt="user filter"
                               />
                             </div>
-                            Instead of providing symbol dimensions, one can
-                            also set a
+                            <p>
+                              Dropdown filters are configured as a list of
+                              filter objects:
+                            </p>
+                            <pre><code class="language-json">"userFilter": [
+  {
+    "dimension": "dimA",
+    "multiple": true,
+    "placeholder": "All items",
+    "selected": {
+      "mode": "explicit",
+      "values": ["a_Agriculture", "a_Food", "a_Services"]
+    }
+  },
+  {
+    "dimension": "dimB",
+    "multiple": false,
+    "selected": {
+      "mode": "position",
+      "values": "first"
+    }
+  }
+]
+</code></pre>
+                            <ul>
+                              <li>
+                                <p>
+                                  <code class="language-json"
+                                    >"dimension"</code
+                                  >
+                                  <em>(string, required)</em><br />
+                                  The symbol dimension to filter on (e.g.,
+                                  <code class="language-json">"mac"</code>,
+                                  <code class="language-json">"region"</code>).
+                                </p>
+                              </li>
+                              <li>
+                                <p>
+                                  <code class="language-json">"multiple"</code>
+                                  <em
+                                    >(boolean, optional; default:
+                                    <code class="language-json">true</code
+                                    >)</em
+                                  ><br />
+                                  Whether the dropdown allows multiple
+                                  selection.
+                                </p>
+                              </li>
+                              <li>
+                                <p>
+                                  <code class="language-json">"label"</code>
+                                  <em
+                                    >(string, optional; default:
+                                    <code class="language-json">null</code
+                                    >)</em
+                                  ><br />
+                                  A label that is displayed above the dropdown
+                                  filter.
+                                </p>
+                              </li>
+                              <li>
+                                <p>
+                                  <code class="language-json"
+                                    >"placeholder"</code
+                                  >
+                                  <em
+                                    >(string, optional; default:
+                                    <code class="language-json">"All"</code>
+                                    when
+                                    <code class="language-json"
+                                      >"multiple": true</code
+                                    >)</em
+                                  ><br />
+                                  A placeholder that is displayed inside the
+                                  dropdown filter as long as nothing is
+                                  selected.
+                                </p>
+                              </li>
+                              <li>
+                                <p>
+                                  <code class="language-json">"selected"</code>
+                                  <em>(object, optional)</em> - initial
+                                  selection.
+                                </p>
+                                <ul>
+                                  <li>
+                                    <p>
+                                      <code class="language-json"
+                                        >"mode": "explicit"</code
+                                      ><br />
+                                      <code class="language-json"
+                                        >"values"</code
+                                      >
+                                      is an array of strings matching actual
+                                      option values.
+                                    </p>
+                                    <pre><code class="language-json">"selected": { "mode": "explicit", "values": ["a_Agriculture", "a_Food", "a_Services"] }</code></pre>
+                                  </li>
+                                  <li>
+                                    <p>
+                                      <code class="language-json"
+                                        >"mode": "position"</code
+                                      ><br />
+                                      <code class="language-json"
+                                        >"values"</code
+                                      >
+                                      can be:
+                                    </p>
+                                    <ul>
+                                      <li>
+                                        <code class="language-json"
+                                          >"first"</code
+                                        >
+                                        or
+                                        <code class="language-json"
+                                          >"last"</code
+                                        >
+                                      </li>
+                                      <li>
+                                        a 1-based integer (e.g.,
+                                        <code class="language-json">1</code>,
+                                        <code class="language-json">3</code>)
+                                      </li>
+                                      <li>
+                                        an array combining the above (e.g.,
+                                        <code class="language-json"
+                                          >["first", 3, "last"]</code
+                                        >)
+                                      </li>
+                                    </ul>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
+                            Instead of providing individual dropdown filters,
+                            one can also reference another view's filters by
+                            using its
                             <code class="language-json"
                               >"dataViewsConfig"</code
                             >
-                            ID. As a result, the filter(s) set in the
-                            corresponding chart of that ID is/are also applied
-                            here. Example:
+                            ID. The current view will then not render its own
+                            filter inputs; it mirrors whatever the referenced
+                            view selects. Example:
                             <pre><code class="language-json">{
-  "macroperc": {
-      "macro1": {
-          ...,
-          "data": "macroperc",
-          "userFilter": "mac"
+"macroperc": {
+    "macro1": {
+        ...,
+        "data": "macroperc",
+        "userFilter": [
+          { "dimension": "mac" }
+        ]
       },
       "macro2": {
         ...,
@@ -3023,20 +3161,32 @@ firstDayTraining(td)                   = td.pos = 1;
   }
 }
 </code></pre>
-                            In this example, the
-                            <code class="language-json">"macro1"</code> chart
-                            will have a filter drop down menu based on all
-                            elements in the
-                            <code class="language-json">"mac"</code> dimension
-                            of the symbol
-                            <code class="language-json">"macroperc"</code>.
-                            Filters selected in that chart will automatically
-                            be applied to
-                            <code class="language-json">"macro2"</code> as well
-                            since it uses
-                            <code class="language-json"
-                              >"userFilter": "macro1"</code
-                            >.
+                            <p>
+                              In this example, the
+                              <code class="language-json">"macro1"</code> chart
+                              will have a filter drop down menu based on all
+                              elements in the
+                              <code class="language-json">"mac"</code>
+                              dimension of the symbol
+                              <code class="language-json">"macroperc"</code>.
+                              Filters selected in that chart will automatically
+                              be applied to
+                              <code class="language-json">"macro2"</code> as
+                              well since it uses
+                              <code class="language-json"
+                                >"userFilter": "macro1"</code
+                              >.
+                            </p>
+                            <p>
+                              Legacy format: array of dimensions (still
+                              supported):
+                            </p>
+                            <pre><code class="language-json">"userFilter": ["dimA", "dimB"]
+</code></pre>
+                            <p>
+                              Equivalent to the list of lists format with
+                              defaults (multiple: true, no default selection).
+                            </p>
                           </li>
                           <li>
                             <code class="language-json">"customLabels"</code>:

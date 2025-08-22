@@ -1064,14 +1064,102 @@
                 "type": "integer"
               },
               "userFilter": {
-                "description": "Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
-                "type": [
-                  "string",
-                  "array"
-                ],
-                "items": {
-                  "type": "string"
-                }
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": [
+                      "array"
+                    ],
+                    "minItems": 1,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "dimension"
+                      ],
+                      "properties": {
+                        "dimension": {
+                          "type": "string"
+                        },
+                        "multiple": {
+                          "type": "boolean"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "placeholder": {
+                          "type": "string"
+                        },
+                        "selected": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "values"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "explicit",
+                                "position"
+                              ]
+                            },
+                            "values": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                {
+                                  "type": [
+                                    "array",
+                                    "string"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 1,
+                                  "items": {
+                                    "oneOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 1
+                                      },
+                                      {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "colWidth": {
                 "description": "Specifies the width of the chart. Must be between 1 and 12.",

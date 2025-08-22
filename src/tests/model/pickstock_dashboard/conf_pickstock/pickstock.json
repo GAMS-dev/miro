@@ -351,6 +351,12 @@
           "error_ratio": [
             {
               "pricemerge": "All index prices including DJ"
+            },
+            {
+              "pricemerge2": "new userFilter configuration"
+            },
+            {
+              "pricemerge3": "new userFilter configuration"
             }
           ]
         },
@@ -585,6 +591,82 @@
               "date"
             ],
             "singleDropdown": "uni",
+            "data": "pricemerge",
+            "decimals": 2
+          },
+          "pricemerge2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "uni": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              {
+                "dimension": "uni",
+                "multiple": false,
+                "label": "testlabel",
+                "placeholder": "All items",
+                "selected": {
+                  "mode": "explicit",
+                  "values": "DD"
+                }
+              },
+              {
+                "dimension": "date",
+                "multiple": true,
+                "label": "testlabel2",
+                "placeholder": "All items",
+                "selected": {
+                  "mode": "position",
+                  "values": ["first", 2, 3, "last"]
+                }
+              }
+            ],
+            "data": "pricemerge",
+            "decimals": 2
+          },
+          "pricemerge3": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "uni": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              {
+                "dimension": "date",
+                "multiple": true,
+                "label": "testlabel2",
+                "placeholder": "All items"
+              }
+            ],
             "data": "pricemerge",
             "decimals": 2
           }

@@ -8,16 +8,100 @@ dashboardMatchSeriesLabel <- function(key, label, exact = FALSE) {
       endsWith(label, paste0("\u2024", key))
   )
 }
-dashboardPreprocessDataViewsConfig <- function(dataViewsConfig) {
-  return(lapply(dataViewsConfig, function(dataViewConfig) {
-    if (is.list(dataViewConfig) && length(dataViewConfig$userFilter) == 1 &&
-      dataViewConfig$userFilter %in% names(dataViewsConfig)) {
-      # user filter from external dataView
-      dataViewConfig$.userFilterExternalSymbol <- dataViewConfig$userFilter
-      dataViewConfig$userFilter <- dataViewsConfig[[dataViewConfig$userFilter]]$userFilter
+dashboardNormalizeUserFilter <- function(uf, singleDropdown = NULL) {
+  if (is.null(uf)) {
+    return(NULL)
+  }
+
+  isNewFormat <- is.list(uf) && (
+    length(uf) == 0 ||
+      all(vapply(uf, function(it) is.list(it) && !is.null(it$dimension), logical(1)))
+  )
+
+  if (isNewFormat) {
+    for (i in seq_along(uf)) {
+      if (is.null(uf[[i]]$multiple)) {
+        uf[[i]]$multiple <- !(length(singleDropdown) && uf[[i]]$dimension %in% singleDropdown)
+      }
     }
-    return(dataViewConfig)
-  }))
+    return(uf)
+  }
+
+  if (is.character(uf)) {
+    return(lapply(uf, function(dim) {
+      list(
+        dimension = dim,
+        multiple = !(length(singleDropdown) && dim %in% singleDropdown),
+        selected = NULL,
+        placeholder = "All"
+      )
+    }))
+  }
+
+  uf
+}
+dashboardPreprocessDataViewsConfig <- function(dataViewsConfig) {
+  out <- lapply(names(dataViewsConfig), function(viewName) {
+    dataViewConfig <- dataViewsConfig[[viewName]]
+
+    if (!is.list(dataViewConfig)) {
+      return(dataViewConfig)
+    }
+
+    uf <- dataViewConfig$userFilter
+
+    # user filter from external dataView
+    if (!is.null(uf) && is.character(uf) && length(uf) == 1 && uf %in% names(dataViewsConfig)) {
+      dataViewConfig$.userFilterExternalSymbol <- uf
+      uf <- dataViewsConfig[[uf]]$userFilter
+    }
+
+    dataViewConfig$userFilter <- dashboardNormalizeUserFilter(
+      uf,
+      singleDropdown = dataViewConfig$singleDropdown
+    )
+
+    dataViewConfig
+  })
+
+  names(out) <- names(dataViewsConfig)
+  out
+}
+dashboardGetSelectedValues <- function(choices, selected, multiple) {
+  if (is.null(selected)) {
+    return(NULL)
+  }
+
+  effectiveChoices <- if (!isFALSE(multiple)) choices[unname(choices) != ""] else choices
+  if (length(effectiveChoices) == 0) {
+    return(NULL)
+  }
+
+  toIndex <- function(values, n) {
+    if (is.numeric(values)) {
+      return(as.integer(values))
+    }
+    if (is.character(values)) {
+      map <- c(first = 1L, last = n)
+      suppressWarnings(num <- as.integer(values))
+      index <- ifelse(is.na(num) & (values %in% names(map)), map[values], num)
+      return(as.integer(index))
+    }
+    integer(0)
+  }
+
+  vals <- NULL
+  if (identical(selected$mode, "explicit")) {
+    vals <- selected$values
+    vals <- vals[vals %in% unname(effectiveChoices)]
+  } else if (identical(selected$mode, "position")) {
+    idx <- toIndex(selected$values, length(effectiveChoices))
+    idx <- idx[!is.na(idx) & idx >= 1 & idx <= length(effectiveChoices)]
+    vals <- unname(effectiveChoices)[idx]
+  }
+
+  if (!isTRUE(multiple) && length(vals) > 1) vals <- vals[1]
+  if (length(vals) == 0) NULL else vals
 }
 dashboardPrepareData <- function(config, viewData) {
   dataTmp <- viewData
@@ -173,10 +257,19 @@ dashboardPrepareData <- function(config, viewData) {
   }
 
   userFilterData <- list()
-
+  dims <- character(0)
   if (is.null(config$.userFilterExternalSymbol)) {
-    for (filter in config$userFilter) {
-      userFilterData[[filter]] <- unique(dataTmp[[filter]])
+    uf <- config$userFilter
+    if (length(uf)) {
+      dims <- unique(vapply(uf, function(f) f$dimension, character(1)))
+      for (dim in dims) {
+        col <- dataTmp[[dim]]
+        if (!is.null(col)) {
+          userFilterData[[dim]] <- unique(col)
+        } else {
+          userFilterData[[dim]] <- character(0)
+        }
+      }
     }
   }
 
@@ -254,7 +347,7 @@ dashboardPrepareData <- function(config, viewData) {
               left_join(colLevels, by = colFilterIndexList) %>%
               mutate(.key = .row + (.col * nrow(rowLevels))) %>%
               arrange(.key) %>%
-              select(any_of(c(config$userFilter, ".primary", ".secondary")))
+              select(any_of(c(dims, ".primary", ".secondary")))
           } else {
             baselineComp$secondaryData <- baselineCompDataTmp %>%
               complete(
@@ -262,12 +355,12 @@ dashboardPrepareData <- function(config, viewData) {
               ) %>%
               left_join(colLevels, by = colFilterIndexList) %>%
               arrange(.col) %>%
-              select(any_of(c(config$userFilter, ".primary", ".secondary")))
+              select(any_of(c(dims, ".primary", ".secondary")))
           }
         } else {
           baselineComp$secondaryData <- select(
             baselineCompDataTmp,
-            any_of(c(config$userFilter, ".primary", ".secondary"))
+            any_of(c(dims, ".primary", ".secondary"))
           )
         }
       }
@@ -456,16 +549,15 @@ dashboardTransformLabels <- function(originalLabels, customLabels) {
   }
   return(transformedLabels)
 }
-dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
+dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFilterChoices, userFilterDefaults, ns) {
   # Build and return the UI for a dashboard section/data-view
   # (views that are visible when clicking on a value box).
   # For a section/data-view the function:
-  #   - looks up every view's config in options$dataViewsConfig
+  #   - looks up every view's config in dataViewsConfig
   #   - for each view the function adds a column with:
   #     title, chart-type selector, download buttons,
   #     user-filter dropdowns, a DT table output and a ChartJS chart output
 
-  dataViewsConfig <- options$dataViewsConfig
   chartChoices <- setNames(
     c(
       "table", "heatmap", "pie", "doughnut", "bar", "horizontalbar",
@@ -489,7 +581,7 @@ dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
       lang$renderers$miroPivot$renderer$timeseries
     )
   )
-  viewList <- options$dataViews[[dataView]]
+  viewList <- dataViews[[dataView]]
   if (is.null(names(viewList))) {
     viewList <- unlist(viewList, recursive = FALSE)
   }
@@ -503,16 +595,51 @@ dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
       title <- titleList[[i]]
 
       if (is.list(dataViewsConfig[[id]])) {
-        userFilter <- NULL
-        if (length(dataViewsConfig[[id]]$userFilter)) {
-          userFilter <- unique(dataViewsConfig[[id]]$userFilter)
+        uf <- dataViewsConfig[[id]]$userFilter
+        filterInputs <- list()
+        inlineClass <- "one-inline"
+        if (length(uf)) {
+          dims <- vapply(uf, `[[`, character(1), "dimension")
+          inlineClass <- if (length(uf) %% 2 == 0) "even-inline" else if (length(uf) == 1) "one-inline" else "odd-inline"
+
+          if (is.null(dataViewsConfig[[id]]$.userFilterExternalSymbol)) {
+            filterInputs <- lapply(seq_along(uf), function(i) {
+              f <- uf[[i]]
+              dim <- dims[i]
+
+              choices <- userFilterChoices[[id]][[dim]]
+              if (is.null(choices)) choices <- character(0)
+
+              selected <- NULL
+              if (!is.null(userFilterDefaults[[id]]) && length(userFilterDefaults[[id]][[dim]])) {
+                selected <- userFilterDefaults[[id]][[dim]]
+              }
+              tags$div(
+                class = paste("custom-dropdown-wide user-filter", inlineClass),
+                selectizeInput(
+                  ns(paste0(id, "userFilter_", dim)),
+                  label = if (!is.null(f$label) && nzchar(f$label)) f$label else NULL,
+                  selected = selected,
+                  choices = choices,
+                  multiple = isTRUE(f$multiple),
+                  width = "100%",
+                  options = list(
+                    onInitialize = I(sprintf(
+                      "function(value){document.querySelector('.selectize-input input[id^=\"%s\"]').setAttribute('readonly','readonly');}",
+                      ns(paste0(id, "userFilter_", dim))
+                    ))
+                  )
+                )
+              )
+            })
+          }
         }
 
         column(
           width = if (length(dataViewsConfig[[id]]$colWidth)) as.numeric(dataViewsConfig[[id]]$colWidth) else 12,
-          class = if (!nchar(title)) "add-margin",
+          class = if (!nzchar(title)) "add-margin",
           id = ns(paste0(id, "_wrapper")),
-          if (nchar(title)) {
+          if (nzchar(title)) {
             tags$h4(title, class = "highlight-block")
           },
           tags$div(
@@ -520,8 +647,7 @@ dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
             tags$div(
               class = "row table-chart-wide-widgets",
               tags$div(
-                class = "charttype-and-btn-wrapper",
-                class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
+                class = paste("charttype-and-btn-wrapper", inlineClass),
                 tags$div(
                   class = "custom-dropdown",
                   selectizeInput(ns(paste0(id, "ChartType")),
@@ -534,7 +660,7 @@ dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
                   )
                 ),
                 tags$div(
-                  class = " dashboard-btn-wrapper",
+                  class = "dashboard-btn-wrapper",
                   tags$a(
                     id = ns(paste0(id, "DownloadCsv")),
                     class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
@@ -558,38 +684,9 @@ dashboardRenderDataView <- function(dataView, options, userFilterChoices, ns) {
                     ),
                     title = lang$renderers$miroPivot$btDownloadPng
                   )
-                ),
+                )
               ),
-              if (length(userFilter) && !(length(userFilter) == 1 && userFilter %in% names(dataViewsConfig))) {
-                singleDropdownFilters <- if (!is.null(dataViewsConfig[[id]]$singleDropdown)) {
-                  dataViewsConfig[[id]]$singleDropdown
-                } else {
-                  character(0)
-                }
-
-                filterInputs <- lapply(userFilter, function(filterName) {
-                  multiple <- if (filterName %in% singleDropdownFilters) {
-                    FALSE
-                  } else {
-                    TRUE
-                  }
-
-                  tags$div(
-                    class = "custom-dropdown-wide user-filter",
-                    class = if (length(userFilter) %% 2 == 0) "even-inline" else if (length(userFilter) == 1) "one-inline" else "odd-inline",
-                    selectizeInput(ns(paste0(id, "userFilter_", filterName)),
-                      label = NULL,
-                      choices = userFilterChoices[[id]][[filterName]],
-                      multiple = multiple, width = "100%",
-                      options = list(onInitialize = I(paste0("function(value) {
-                                     document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "userFilter_", filterName)), "\"]').setAttribute('readonly', 'readonly');
-                                   }")))
-                    )
-                  )
-                })
-
-                do.call(tagList, filterInputs)
-              }
+              do.call(tagList, filterInputs)
             ),
             tags$div(
               class = "table-chart-wide-wrapper",
