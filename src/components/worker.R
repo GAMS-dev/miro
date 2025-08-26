@@ -35,32 +35,55 @@ Worker <- R6Class("Worker", public = list(
             if (!identical(apiInfo[["in_kubernetes"]], TRUE)) {
               return(list(error = FALSE, instancesSupported = FALSE, apiInfo = apiInfo))
             }
-            instances <- httr::GET(
-              url = paste0(metadata$url, "/usage/instances/", URLencode(metadata$username, reserved = TRUE)),
-              httr::add_headers(
+            urls <- c(
+              instances = paste0(metadata$url, "/usage/instances/", URLencode(metadata$username, reserved = TRUE)),
+              pools     = paste0(metadata$url, "/usage/pools/", URLencode(metadata$username, reserved = TRUE)),
+              default   = paste0(metadata$url, "/usage/instances/", URLencode(metadata$username, reserved = TRUE), "/default")
+            )
+
+            mkHandle <- function() {
+              h <- curl::new_handle()
+              curl::handle_setheaders(
+                h,
                 Authorization = authHeader,
                 Timestamp = as.character(Sys.time(), usetz = TRUE)
-              ),
-              httr::timeout(10L)
-            )
-            if (!identical(httr::status_code(instances), 200L)) {
-              errMsg <- httr::content(instances,
-                type = "application/json",
-                encoding = "utf-8"
               )
-              stop(sprintf(
-                "Invalid status code when fetching instances: %s. Error message: %s",
-                httr::status_code(instances), errMsg[["message"]]
-              ), call. = FALSE)
+              curl::handle_setopt(h, timeout = 10L)
+              h
             }
-            instances <- httr::content(instances,
-              type = "application/json",
-              encoding = "utf-8"
-            )
+
+            pool <- curl::new_pool()
+            out <- vector("list", length(urls))
+            names(out) <- names(urls)
+
+            lapply(names(urls), function(nm) {
+              curl::curl_fetch_multi(
+                urls[[nm]],
+                handle = mkHandle(),
+                done = function(res) {
+                  if (res$status_code != 200L) {
+                    msg <- tryCatch(jsonlite::fromJSON(rawToChar(res$content))[["message"]], error = function(e) NA_character_)
+                    stop(sprintf(
+                      "[%s] Invalid status code: %s. Error message: %s",
+                      nm, res$status_code, ifelse(is.na(msg), "<no message>", msg)
+                    ), call. = FALSE)
+                  }
+                  out[[nm]] <<- jsonlite::fromJSON(rawToChar(res$content), simplifyVector = FALSE, simplifyDataFrame = FALSE)
+                },
+                fail = function(err) {
+                  stop(sprintf("[%s] Request failed: %s", nm, err$message), call. = FALSE)
+                },
+                pool = pool
+              )
+            })
+
+            curl::multi_run(pool = pool)
+
             return(list(
               error = FALSE, instancesSupported = TRUE, apiInfo = apiInfo,
-              instances = instances[["instances_available"]],
-              default = instances[["default_instance"]]
+              instances = out$instances[["instances_available"]],
+              pools = out$pools[["instance_pools_available"]],
+              default = out$default[["default_instance"]]
             ))
           },
           error = function(e) {
@@ -71,7 +94,7 @@ Worker <- R6Class("Worker", public = list(
       globals = list(
         metadata = private$metadata, authHeader = private$authHeader, apiInfoGlobal = private$apiInfo
       ),
-      packages = c("curl", "httr")
+      packages = c("curl", "httr", "jsonlite")
     )
     getInstances <- function(instanceInfo) {
       if (!identical(instanceInfo[["error"]], FALSE)) {
@@ -82,9 +105,15 @@ Worker <- R6Class("Worker", public = list(
         private$apiInfo <- instanceInfo[["apiInfo"]]
       }
       instanceToStr <- function(instance) {
+        if ("instance" %in% names(instance)) {
+          # pool instance
+          instanceDetails <- instance[["instance"]]
+        } else {
+          instanceDetails <- instance
+        }
         return(paste0(
-          instance[["label"]], " (", instance[["cpu_request"]], " vCPU, ",
-          instance[["memory_request"]], " MiB RAM, ", instance[["multiplier"]], "x)"
+          instance[["label"]], " (", instanceDetails[["cpu_request"]], " vCPU, ",
+          instanceDetails[["memory_request"]], " MiB RAM, ", round(instanceDetails[["multiplier"]], 1), "x)"
         ))
       }
       if (identical(instanceInfo[["instancesSupported"]], FALSE)) {
@@ -95,12 +124,14 @@ Worker <- R6Class("Worker", public = list(
         flog.info("No instances found for user: %s.", private$metadata$username)
         return(list(valid = TRUE, instancesSupported = FALSE))
       }
-      availableInstances <- instanceInfo[["instances"]][vapply(instanceInfo[["instances"]], function(instance) {
-        !identical(instance[["pool_cancelling"]], TRUE)
+      availableInstancePools <- instanceInfo[["pools"]][vapply(instanceInfo[["pools"]], function(poolInfo) {
+        !identical(poolInfo[["cancelling"]], TRUE)
       }, logical(1L), USE.NAMES = FALSE)]
-      isInstancePool <- vapply(availableInstances, function(instance) {
-        identical(instance[["is_pool"]], TRUE)
-      }, logical(1L), USE.NAMES = FALSE)
+      availableInstances <- c(instanceInfo[["instances"]], availableInstancePools)
+      isInstancePool <- vector("logical", length(availableInstances))
+      if (length(availableInstancePools)) {
+        isInstancePool[seq(length(instanceInfo[["instances"]]) + 1L, length(availableInstances))] <- TRUE
+      }
 
       availableInstances <- setNames(
         vapply(availableInstances, "[[", character(1L), "label", USE.NAMES = FALSE),
