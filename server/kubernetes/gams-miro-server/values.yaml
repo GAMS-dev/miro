@@ -17,7 +17,7 @@ global:
   # tolerationsSts: tolerations for pod assignment of stateful sets (database)
   tolerationsSts: []
   networkPolicy:
-    enabled: true
+    enabled: false
     # The IP adress of the Kubernetes API Server.
     # kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}'
     apiServerIp: ''
