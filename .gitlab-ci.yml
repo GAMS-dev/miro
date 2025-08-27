@@ -78,6 +78,19 @@ image:
   - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
   - export AWS_SESSION_TOKEN="${STS[2]}"
 
+.assume_role_s3_helm: &assume_role_s3_helm
+  - >
+    STS=($(aws sts assume-role-with-web-identity
+    --role-arn ${AWS_S3_HELM_ROLE_ARN}
+    --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+    --web-identity-token $ID_TOKEN
+    --duration-seconds 3600
+    --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+    --output text))
+  - export AWS_ACCESS_KEY_ID="${STS[0]}"
+  - export AWS_SECRET_ACCESS_KEY="${STS[1]}"
+  - export AWS_SESSION_TOKEN="${STS[2]}"
+
 .assume_role_ecr: &assume_role_ecr
   - >
     STS=($(aws sts assume-role-with-web-identity
@@ -1028,6 +1041,57 @@ upload_dockerhub:
         python3 miro_server.py push
         python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
       popd
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+upload_helm_chart:
+  tags:
+    - linux
+  image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  id_tokens:
+    ID_TOKEN:
+      aud: https://git.gams.com
+  stage: deploy
+  variables:
+    CHART_DIR: "server/kubernetes/gams-miro-server"
+  before_script:
+    - aws configure set default.region us-east-1
+    - *assume_role_s3_helm
+    - echo "$HELM_GPG_PRIVATE_KEY_ARMOR" > /tmp/priv.asc
+    - export GNUPGHOME="${CI_PROJECT_DIR}/.gnupg"
+    - mkdir -p "$GNUPGHOME" && chmod 700 "$GNUPGHOME"
+    - gpg --batch --import /tmp/priv.asc
+    - echo -e "5\ny\n" | gpg --command-fd 0 --expert --batch --edit-key "$HELM_GPG_KEY_FPR" trust quit
+    - gpg --export > "${GNUPGHOME}/pubring.gpg"
+    - gpg --export-secret-keys --pinentry-mode loopback --passphrase $HELM_GPG_PASSPHRASE > "${GNUPGHOME}/secring.gpg"
+    - gpg --list-secret-keys --keyid-format LONG
+  script:
+    - helm dependency update "$CHART_DIR" || true
+    - helm lint "$CHART_DIR" || true
+    - echo -n "$HELM_GPG_PASSPHRASE" > /tmp/helm-passphrase.txt
+    - chmod 600 /tmp/helm-passphrase.txt
+    - |
+      helm package --sign "$CHART_DIR" \
+        --key "${HELM_GPG_KEY_NAME}" \
+        --keyring "${GNUPGHOME}/secring.gpg" \
+        --passphrase-file /tmp/helm-passphrase.txt
+    - |
+      for f in ./*.tgz ./*.tgz.prov; do
+        [ -f "$f" ] || continue;
+        echo "Uploading $f";
+        aws s3 cp "$f" "s3://${HELM_REPO_S3_BUCKET}/" \
+          --cache-control "public, max-age=31536000, immutable" \
+          --only-show-errors;
+      done
+    - ./ci/update-helm-index.sh
+  artifacts:
+    paths:
+      - "*.tgz"
+      - "*.tgz.prov"
+      - index.yaml
+    expire_in: 1 week
+  dependencies: []
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
