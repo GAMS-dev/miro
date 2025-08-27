@@ -865,8 +865,8 @@ report_output[j, &quot;load_demand&quot;] = load_demand[j]</code></pre>
                         target="_blank"
                         >MIRO log syntax</a
                       >
-                      here, any invalid data will be highlighted directly above
-                      the corresponding input data sheet in MIRO.
+                      , any invalid data will be highlighted directly above the
+                      corresponding input data sheet in MIRO.
                     </p>
                     <p>
                       The syntax that must be used for MIRO to jump directly to
@@ -3355,7 +3355,7 @@ renderMirorenderer_battery_power &lt;- function(input, output, session, data, op
                         will define lists for all three and fill them based on
                         our data.
                       </p>
-                      <pre><code  class="language-r">link = list(
+                      <pre><code  class="language-R">link = list(
     source = sankey_source,
     target = sankey_target,
     value =  sankey_value
@@ -3709,7 +3709,7 @@ renderMirorenderer_report_output &lt;- function(input, output, session, data, op
                           >"BatteryStorage": "customCode"</code
                         >, instead of a view configuration as before:
                       </p>
-                      <pre><code class="language-R">&quot;dataViewsConfig&quot;: {
+                      <pre><code class="language-json">&quot;dataViewsConfig&quot;: {
   &quot;BatteryStorage&quot;: &quot;customCode&quot;,
   ...
 }</code></pre>
@@ -4645,7 +4645,7 @@ resetTable &lt;- function() {
                         >, create a JSON file—e.g., <em>miro-env.js</em>—that
                         looks like:
                       </p>
-                      <pre><code class="language-js">{
+                      <pre><code class="language-json">{
     &quot;DB_USERNAME&quot;: &quot;User1&quot;,
     &quot;DB_PASSWORD&quot;: &quot;mySuperSecretPassword!&quot;
 }</code></pre>

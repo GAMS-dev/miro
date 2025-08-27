@@ -13,6 +13,19 @@ getVisibleDtData <- function(app, id, timeout = 5000L) {
     .name_repair = "universal"
   ))
 }
+getVisibleDtHeader <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, "').data('datatable')!=null"), timeout = timeout)
+  json <- app$get_js(paste0(
+    "(function(){",
+    "var dt=$('#", id, "').data('datatable');",
+    "var arr=dt.columns().header().to$().map(function(i, el){ return $(el).text().trim(); }).get();",
+    "return JSON.stringify(arr);",
+    "})()"
+  ))
+
+  out <- tryCatch(jsonlite::fromJSON(json), error = function(e) character())
+  as.character(out)
+}
 getHotData <- function(app, id, timeout = 5000L) {
   hotToR <- function(data) {
     return(suppressWarnings(as_tibble(

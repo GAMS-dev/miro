@@ -641,7 +641,7 @@
           },
           "pricemerge3": {
             "aggregationFunction": "sum",
-            "pivotRenderer": "timeseries",
+            "pivotRenderer": "table",
             "domainFilter": {
               "default": null
             },
@@ -650,10 +650,7 @@
               "rowSummaryFunction": "sum",
               "colSummaryFunction": "sum"
             },
-            "rows": "date",
-            "cols": {
-              "uni": null
-            },
+            "rows": ["date","uni"],
             "chartOptions": {
               "title": "Price (stocks and DJ)",
               "xTitle": "Date",
@@ -703,7 +700,8 @@
       "options": {
         "dataViews": {
           "error_ratio": {
-            "pricemerge": "All index prices including DJ"
+            "pricemerge": "All index prices including DJ",
+            "pricemerge2": "test overwriteHeaderAliases"
           },
           "error_test": {
             "dowVSindex": "dow VS index",
@@ -760,6 +758,33 @@
             "rows": "date",
             "cols": {
               "uni": null,
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              "uni",
+              "date"
+            ],
+            "data": "pricemerge",
+            "decimals": 2
+          },
+          "pricemerge2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": ["date","uni"],
+            "cols": {
               "_scenName": null
             },
             "chartOptions": {
@@ -1030,6 +1055,15 @@
       ]
     }
   ],
+  "overwriteHeaderAliases": {
+      "pricemerge": {
+          "newHeaders": [
+              "test Header",
+              "12345",
+              "asd"
+          ]
+      }
+  },
   "handsontable": {
     "stretchH": "all",
     "readonly": false,

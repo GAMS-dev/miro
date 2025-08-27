@@ -116,4 +116,9 @@ expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2Table td').map(function(index){return $(this).text()}).toArray()")),
   list("2016-01-04", "63.07", "2016-01-05", "64.28", "2016-01-06", "63.38", "2016-12-30", "73.40")
 )
+# overwriteHeaderAliases used in table
+hdr2 <- getVisibleDtHeader(app, sprintf("tab_1_3-%s-pricemerge2Table", rendererName))
+hdr3 <- getVisibleDtHeader(app, sprintf("tab_1_3-%s-pricemerge3Table", rendererName))
+expect_equal(hdr2, c("test Header", "DD"))
+expect_equal(hdr3, c("test Header", "12345", "value"))
 app$stop()

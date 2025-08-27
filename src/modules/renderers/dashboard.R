@@ -402,6 +402,45 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
             noRowHeaders <- attr(tableData, "noRowHeaders")
+            nonNumericCols <- names(dataTmp)[!vapply(dataTmp, is.numeric, logical(1))]
+
+            if (!is.null(dataViewsConfig[[indicator]]$data)) {
+              symbolName <- tolower(dataViewsConfig[[indicator]]$data)
+            } else {
+              symbolName <- options[["_metadata_"]]$symname
+            }
+
+            rowHeaders <- {
+              src <- if (symbolName %in% names(ioConfig$modelIn)) {
+                ioConfig$modelIn
+              } else if (symbolName %in% names(ioConfig$modelOut)) {
+                ioConfig$modelOut
+              } else {
+                NULL
+              }
+
+              headers <- if (!is.null(src)) {
+                x <- src[[symbolName]]
+                if (!is.null(x)) x$headers else NULL
+              } else {
+                NULL
+              }
+
+              if (is.null(headers)) {
+                character(0)
+              } else {
+                cols <- intersect(names(headers), nonNumericCols)
+                aliases <- vapply(
+                  headers[cols],
+                  function(h) {
+                    a <- if (is.null(h)) NULL else h$alias
+                    if (is.null(a) || is.na(a) || !nzchar(a)) NA_character_ else as.character(a)
+                  },
+                  character(1L)
+                )
+                unname(aliases[!is.na(aliases)])
+              }
+            }
 
             # heatmap
             if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
@@ -514,7 +553,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               container = DTbuildColHeaderContainer(
                 names(dataTmp),
                 noRowHeaders,
-                nonNumericCols,
+                rowHeaders,
                 colSummary = colSummarySettings
               ),
               options = list(
