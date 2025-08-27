@@ -250,6 +250,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
       renderedSections <- list()
 
+      debouncedUserFilters <- list()
+
       rendererEnv[[ns("viewsToRender")]] <- observe({
         # Lazily build the entire section/data-view that corresponds to the
         # currently active dashboard view (clicked value box; activeView()):
@@ -367,6 +369,18 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             toggleChartType(indicator)
           })
 
+          if (length(dataViewsConfig[[indicator]]$userFilter)) {
+            userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+            if (is.null(userFilterIndicator)) {
+              userFilterIndicator <- indicator
+            }
+            debouncedUserFilters[[indicator]] <- debounce(reactive({
+              setNames(selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+                input[[paste0(userFilterIndicator, "userFilter_", fn)]]
+              }), dataViewsConfig[[indicator]]$userFilter)
+            }), 200)
+          }
+
           # table for each view
           output[[paste0(indicator, "Table")]] <- renderDT({
             tableData <- dashboardChartData[[indicator]]
@@ -380,15 +394,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
 
             selectedUserFilters <- NULL
-            if (length(dataViewsConfig[[indicator]]$userFilter)) {
-              userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-              if (is.null(userFilterIndicator)) {
-                userFilterIndicator <- indicator
-              }
-              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-                input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-              })
-              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+            if (length(debouncedUserFilters[[indicator]])) {
+              selectedUserFilters <- debouncedUserFilters[[indicator]]()
             }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -570,15 +577,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
 
             selectedUserFilters <- NULL
-            if (length(dataViewsConfig[[indicator]]$userFilter)) {
-              userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-              if (is.null(userFilterIndicator)) {
-                userFilterIndicator <- indicator
-              }
-              selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-                input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-              })
-              names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+            if (length(debouncedUserFilters[[indicator]])) {
+              selectedUserFilters <- debouncedUserFilters[[indicator]]()
             }
 
             dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -1016,17 +1016,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             filename = paste0(indicator, ".csv"),
             content = function(file) {
               selectedUserFilters <- NULL
-              if (length(dataViewsConfig[[indicator]]$userFilter)) {
-                userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-                if (is.null(userFilterIndicator)) {
-                  userFilterIndicator <- indicator
-                }
-                selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-                  input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-                })
-                names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+              if (length(debouncedUserFilters[[indicator]])) {
+                selectedUserFilters <- debouncedUserFilters[[indicator]]()
               }
-
               dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
               return(write_csv(dataTmp, file, na = ""))
             }
