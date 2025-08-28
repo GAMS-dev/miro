@@ -1,0 +1,29 @@
+{{- /*
+Copyright GAMS Development Corp. All Rights Reserved.
+SPDX-License-Identifier: GPL-3.0-only
+*/}}
+
+{{- if and .Values.proxy.config.metrics.enabled .Values.proxy.config.metrics.serviceMonitorEnabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "common.names.fullname" . }}-proxy
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.global.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.global.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  endpoints:
+  - path: /actuator/prometheus
+    port: metrics
+    metricRelabelings:
+    - targetLabel: miroserver_realm
+      replacement: {{ .Values.proxy.config.metrics.realm | default "default" | quote }}
+    - targetLabel: miroserver_instance
+      replacement: {{ .Release.Name | quote }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "common.names.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

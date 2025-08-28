@@ -36,6 +36,7 @@ data:
       same-site-cookie: {{ .Values.proxy.config.security.sameSiteCookie }}
       admin-groups: admins
       container-backend: kubernetes
+      usage-stats-micrometer-prefix: miroserver
       container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
       default-proxy-max-lifetime: {{ .Values.proxy.config.proxyMaxLifetimeMinutes | default -1 }}
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}

@@ -122,6 +122,12 @@ proxy:
       anonymousPassword: '' # only relevant if authentication is none
     metrics:
       enabled: false
+      # Specifies whether a serviceMonitor object should be created. Requires Prometheus Operator CRDs.
+      # Requires metrics to be enabled.
+      serviceMonitorEnabled: false
+      # configures a custom realm label to be exposed in the metrics
+      # (only relevant when serviceMonitorEnabled is true)
+      realm: default
       port: 9090
 
 auth:
