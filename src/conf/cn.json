@@ -1130,6 +1130,7 @@
         "headerPivotcompare": "枢轴比较模式",
         "descriptionPivotcompare": "这些设置是用户的默认值，但可以在会话期间随时更改。",
         "headerRenderers": "默认渲染器",
+        "headerLanguage": "自定义语言",
         "headerAppearance": "外观",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "组合选项卡",
@@ -1245,6 +1246,11 @@
       "defaultRenderer":{
         "labelOutput": "输出数据的默认渲染器",
         "choicesOutput": ["数据透视表", "桌子"]
+      },
+      "customLanguage":{
+        "checkbox": "使用自定义语言文件",
+        "tooltip": "允许您覆盖并个性化所有或个别界面文本和标签。",
+        "label": "语言文件名称"
       },
       "logo":{
         "header": "预览标志:",

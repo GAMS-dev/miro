@@ -336,6 +336,107 @@
                         explicitly, it will be used instead.
                       </p>
                     </div>
+                    <div id="custom-language" class="section-block">
+                      <h3 class="block-title">Custom Language</h3>
+                      <p>
+                        This feature allows you to personalize the user
+                        interface by overriding the default text, labels, and
+                        messages. You can tailor terminology, create
+                        translations for unsupported languages, or simply
+                        change any wording you prefer.
+                      </p>
+                      <p>
+                        GAMS MIRO uses a fallback mechanism. When a piece of
+                        text needs to be displayed, it first looks for it in
+                        the custom language file. If the entry is found, the
+                        custom text is displayed. If the entry is not found, it
+                        automatically falls back to the text from the default
+                        language file. This means you only need to include the
+                        specific labels you wish to change in your custom file,
+                        not the entire set of translations.
+                      </p>
+                      <p>
+                        The custom file must be a valid JSON file (.json) and
+                        follow the exact structure of the default language
+                        files. The different language files to use as a
+                        template can be found here here:
+                        <a
+                          href="https://github.com/GAMS-dev/miro/tree/master/src/conf"
+                          target="_blank"
+                          >https://github.com/GAMS-dev/miro/tree/master/src/conf</a
+                        >. For a technical definition of the required
+                        structure, the JSON schema is available
+                        <a
+                          href="https://github.com/GAMS-dev/miro/blob/master/src/conf/language_schema.json"
+                          target="_blank"
+                          >here</a
+                        >. Save your custom language file
+                        <span class="code">&lt;customLanguage&gt;.json</span>
+                        in the
+                        <span class="code"
+                          >&lt;modeldirectory&gt;/conf_&lt;modelname&gt</span
+                        >
+                        configuration directory.
+                      </p>
+                      <p>
+                        Example: The default
+                        <a
+                          href="https://github.com/GAMS-dev/miro/blob/master/src/conf/en.json"
+                          target="_blank"
+                          >en.json</a
+                        >
+                        file contains the following labels which define the
+                        text that is displayed in the sidebar menu.:
+                      </p>
+                      <pre><code class="language-json">{
+  ...
+  "nav":{
+    ...
+    "sidebarMenu":{
+      "inputScreen":"Input",
+      "outputScreen":"Output",
+      "gams":"GAMS interaction",
+      "load": "Load scenarios",
+      "scen":"Compare scenarios"
+    },
+    "sidebarButtons":{
+      "importInput":"Load data",
+      "solve":"Solve model",
+      ...
+    },
+    ...
+  }
+}
+</code></pre>
+                      <p>
+                        If you only want to change these labels, your custom
+                        language file (e.g., custom.json) would look like this:
+                      </p>
+                      <pre><code class="language-json">{
+  "nav":{
+    "sidebarMenu":{
+      "inputScreen":"My custom input",
+      "outputScreen":"My custom output",
+      "gams":"My custom interaction",
+      "load": "My custom scenarios",
+      "scen":"My custom comparison"
+    },
+    "sidebarButtons":{
+      "importInput":"My custom data",
+      "solve":"My custom solve"
+    }
+  }
+}
+</code></pre>
+                      <div class="section-block">
+                        <img
+                          class="img-fluid"
+                          style="max-height: 325pt"
+                          src="assets/images/configuration_mode/custom_language.png"
+                          alt="Custom language"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </section>
                 <section
@@ -993,6 +1094,11 @@ putclose log;
                       class="nav-link scrollto save-space"
                       href="#default-output-renderer"
                       >Default Output Renderer</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#custom-language"
+                      >Custom Language</a
                     >
                   </nav>
                   <a

@@ -1130,6 +1130,7 @@
         "headerPivotcompare": "Pivot-Szenariovergleichsmodus",
         "descriptionPivotcompare": "Diese Einstellungen dienen als Standardwerte für den Benutzer, können jedoch jederzeit während einer Sitzung angepasst werden.",
         "headerRenderers": "Standard-Renderer",
+        "headerLanguage": "Benutzerdefinierte Sprache",
         "headerAppearance": "Erscheinungsbild",
         "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
@@ -1246,6 +1247,11 @@
       "defaultRenderer":{
         "labelOutput": "Standard-Renderer für Ausgabedaten",
         "choicesOutput": ["Pivot-Tabelle", "Tabelle"]
+      },
+      "customLanguage":{
+        "checkbox": "Benutzerdefinierte Sprachdatei verwenden",
+        "tooltip": "Ermöglicht es, alle oder einzelne Texte und Bezeichnungen der Benutzeroberfläche zu überschreiben.",
+        "label": "Name der Sprachdatei"
       },
       "logo":{
         "header": "Logo Vorschau:",

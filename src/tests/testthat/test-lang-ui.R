@@ -35,6 +35,26 @@ test_that(
         source(file.path(testDir, "shinytest", "lang_test.R"), local = TRUE)
       }
     }
+
+    # custom language file
+    testModelPath <- file.path(testDir, "model", "pickstock")
+    configJSONFileName <- file.path(
+      testDir, "model", "pickstock", "conf_pickstock", "pickstock.json"
+    )
+    file.copy(configJSONFileName, file.path(
+      dirname(configJSONFileName), "pickstock_tmp.json"
+    ), overwrite = TRUE)
+    configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName,
+      simplifyDataFrame = FALSE,
+      simplifyMatrix = FALSE
+    ))
+    configJSON$customLanguage <- "customlang"
+    jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+    source(file.path(testDir, "shinytest", "lang_test_custom.R"), local = TRUE)
+    file.rename(
+      file.path(dirname(configJSONFileName), "pickstock_tmp.json"),
+      file.path(dirname(configJSONFileName), "pickstock.json")
+    )
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "GMSMODELNAME", "MIRO_LANG", "MIRO_MODE"))
   })
 )

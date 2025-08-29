@@ -1130,6 +1130,7 @@
         "headerPivotcompare": "Pivot comparison mode",
         "descriptionPivotcompare": "These settings serve as default values for the user, but they can be adjusted at any time during a session.",
         "headerRenderers": "Default Renderers",
+        "headerLanguage": "Custom Language",
         "headerAppearance": "Appearance",
         "headerSymbolDisplay": "Hide symbols",
         "headerTabGrouping": "Tab grouping",
@@ -1246,6 +1247,11 @@
       "defaultRenderer":{
         "labelOutput": "Default renderer for output data",
         "choicesOutput": ["Pivot table", "Table"]
+      },
+      "customLanguage":{
+        "checkbox": "Use a custom language file",
+        "tooltip": "Allows you to override and personalize all or individual interface text and labels.",
+        "label": "Name of the language file"
       },
       "logo":{
         "header": "Logo preview:",

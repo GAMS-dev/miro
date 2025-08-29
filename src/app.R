@@ -234,10 +234,21 @@ if (is.null(errMsg)) {
       )
     )
   }
-  lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
-    simplifyDataFrame = FALSE,
-    simplifyMatrix = FALSE
-  )
+  if (!identical(miroLanguage, "") && !identical(miroLanguage, config$language) &&
+    file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
+    lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
+      simplifyDataFrame = FALSE,
+      simplifyMatrix = FALSE
+    )
+    config$language <- miroLanguage
+  } else {
+    lang <<- fromJSON(file.path(".", "conf", "en.json"),
+      simplifyDataFrame = FALSE,
+      simplifyMatrix = FALSE
+    )
+    config$language <- "en"
+    flog.warn("No language file '%s.json' found. Using default (en).", miroLanguage)
+  }
   if (debugMode) {
     source("./modules/init.R", local = TRUE)
   } else if (!file.exists(rSaveFilePath)) {
@@ -373,6 +384,28 @@ if (is.null(errMsg)) {
     }
   }
 
+  if (!is.null(config$customLanguage) && !identical(config$customLanguage, "")) {
+    customLangFile <- file.path(
+      currentModelDir,
+      paste0("conf_", modelName),
+      paste0(config$customLanguage, ".json")
+    )
+
+    if (file.exists(customLangFile)) {
+      flog.info("Found custom language file: '%s'. Merging translations.", paste0(config$customLanguage, ".json"))
+
+      customLangData <- fromJSON(customLangFile,
+        simplifyDataFrame = FALSE,
+        simplifyMatrix = FALSE
+      )
+      lang <<- utils::modifyList(lang, customLangData)
+    } else {
+      flog.warn(
+        "Custom language '%s' was configured, but the file was not found at: '%s'.",
+        config$customLanguage, customLangFile
+      )
+    }
+  }
   config$activateModules$readonlyMode <- !miroDeploy && identical(tolower(Sys.getenv("MIRO_MODE")), "readonly")
 
   if (isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")) {
@@ -558,15 +591,6 @@ if (is.null(errMsg)) {
           currentModelDir <- modelPath
         }
       }
-    }
-  }
-  if (!identical(miroLanguage, "") && !identical(miroLanguage, config$language)) {
-    if (file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
-      lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
-        simplifyDataFrame = FALSE,
-        simplifyMatrix = FALSE
-      )
-      config$language <- miroLanguage
     }
   }
 }

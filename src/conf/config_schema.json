@@ -2648,6 +2648,10 @@
         "cn"
       ]
     },
+    "customLanguage": {
+      "description": "Custom language used for MIRO",
+      "type": "string"
+    },
     "pageTitle": {
       "description": "Name of the page (displayed in browser tab)",
       "type": "string"

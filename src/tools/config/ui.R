@@ -1007,6 +1007,34 @@ font-size: 12px;
                           setNames(c("miroPivot", "datatable"), lang$adminMode$general$defaultRenderer$choicesOutput),
                           selected = configJSON$defaultRendererOutput
                         )
+                      ),
+                      tags$div(class = "space"),
+                      tags$div(class = "space"),
+                      tags$h2(lang$adminMode$general$ui$headerLanguage, class = "option-category"),
+                      checkboxInput_SIMPLE("custom_lang_check",
+                        labelTooltip(
+                          lang$adminMode$general$customLanguage$checkbox,
+                          paste0(
+                            lang$adminMode$general$customLanguage$tooltip, " - ",
+                            tolower(lang$adminMode$general$ui$tooltipDocs)
+                          ),
+                          "https://gams.com/miro/configuration_general.html#custom-language"
+                        ),
+                        value = if (length(configJSON$customLanguage) &&
+                          nchar(configJSON$customLanguage)) {
+                          TRUE
+                        } else {
+                          FALSE
+                        }
+                      ),
+                      conditionalPanel(
+                        condition = "input.custom_lang_check===true",
+                        tags$div(
+                          class = "option-wrapper", style = "margin-top:-10px;padding-left: 25px;",
+                          textInput("general_custom_lang_name", lang$adminMode$general$customLanguage$label,
+                            value = if (length(configJSON$customLanguage)) configJSON$customLanguage else ""
+                          )
+                        )
                       )
                     )),
                     tags$div(class = "space")

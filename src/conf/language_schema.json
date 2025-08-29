@@ -4391,6 +4391,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerLanguage": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerAppearance": {
                   "type": "string",
                   "minLength": 1
@@ -4448,7 +4452,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 25
+              "minProperties": 26
             },
             "modalDialog": {
               "type": "object",
@@ -4855,6 +4859,25 @@
               },
               "minProperties": 2
             },
+            "customLanguage": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "checkbox": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 3
+            },
             "logo": {
               "type": "object",
               "additionalProperties": false,
@@ -5061,7 +5084,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 40
         },
         "tables": {
           "type": "object",

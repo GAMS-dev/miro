@@ -180,6 +180,26 @@ observeEvent(input$general_defaultRendererOutput, {
     rv$generalConfig$defaultRendererOutput <<- "miroPivot"
   }
 })
+observeEvent(input$custom_lang_check, {
+  if (identical(input$custom_lang_check, TRUE) && nchar(sub("\\.json$", "", input$general_custom_lang_name))) {
+    rv$generalConfig$customLanguage <<- sub("\\.json$", "", input$general_custom_lang_name)
+  } else {
+    rv$generalConfig$customLanguage <<- NULL
+    configJSON$customLanguage <<- NULL
+  }
+})
+observeEvent(input$general_custom_lang_name, {
+  if (!identical(input$custom_lang_check, TRUE)) {
+    return()
+  }
+  language <- sub("\\.json$", "", input$general_custom_lang_name)
+  if (nchar(language)) {
+    rv$generalConfig$customLanguage <<- language
+  } else {
+    rv$generalConfig$customLanguage <<- NULL
+    configJSON$customLanguage <<- NULL
+  }
+})
 observeEvent(input$widget_general_logo_upload, {
   inFile <- input$widget_general_logo_upload
   filePath <- inFile$datapath
