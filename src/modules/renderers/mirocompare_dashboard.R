@@ -327,6 +327,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   renderedSections <- list()
 
+  debouncedUserFilters <- list()
+
   rendererEnv[[ns("viewsToRender")]] <- observe({
     # Lazily build the entire section/data-view that corresponds to the
     # currently active dashboard view (clicked value box; activeView()):
@@ -422,6 +424,18 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         toggleChartType(indicator)
       })
 
+      if (length(dataViewsConfig[[indicator]]$userFilter)) {
+        userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+        if (is.null(userFilterIndicator)) {
+          userFilterIndicator <- indicator
+        }
+        debouncedUserFilters[[indicator]] <- debounce(reactive({
+          setNames(selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
+            input[[paste0(userFilterIndicator, "userFilter_", fn)]]
+          }), dataViewsConfig[[indicator]]$userFilter)
+        }), 200)
+      }
+
       # table for each view
       output[[paste0(indicator, "Table")]] <- renderDT({
         tableData <- dashboardChartData[[indicator]]
@@ -435,15 +449,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        if (length(dataViewsConfig[[indicator]]$userFilter)) {
-          userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-          if (is.null(userFilterIndicator)) {
-            userFilterIndicator <- indicator
-          }
-          selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-            input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-          })
-          names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+        if (length(debouncedUserFilters[[indicator]])) {
+          selectedUserFilters <- debouncedUserFilters[[indicator]]()
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -469,13 +476,13 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   if (type !== 'display') {
     return data;
   }
-  const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+  const pm=", if (length(roundPrecision)) paste0("DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0')") else "data;",
               if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
                 paste0(
                   "
   const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
   const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
-  const refData=", toJSON(round(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]], digits = roundPrecision)), "[offset];
+  const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
   if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
     window.alertPushed = '", tableSessionId, "';
     Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
@@ -625,15 +632,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        if (length(dataViewsConfig[[indicator]]$userFilter)) {
-          userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-          if (is.null(userFilterIndicator)) {
-            userFilterIndicator <- indicator
-          }
-          selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-            input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-          })
-          names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+        if (length(debouncedUserFilters[[indicator]])) {
+          selectedUserFilters <- debouncedUserFilters[[indicator]]()
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -1071,17 +1071,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         filename = paste0(indicator, ".csv"),
         content = function(file) {
           selectedUserFilters <- NULL
-          if (length(dataViewsConfig[[indicator]]$userFilter)) {
-            userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-            if (is.null(userFilterIndicator)) {
-              userFilterIndicator <- indicator
-            }
-            selectedUserFilters <- lapply(dataViewsConfig[[indicator]]$userFilter, function(fn) {
-              input[[paste0(userFilterIndicator, "userFilter_", fn)]]
-            })
-            names(selectedUserFilters) <- dataViewsConfig[[indicator]]$userFilter
+          if (length(debouncedUserFilters[[indicator]])) {
+            selectedUserFilters <- debouncedUserFilters[[indicator]]()
           }
-
           dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
           return(write_csv(dataTmp, file, na = ""))
         }
