@@ -424,9 +424,73 @@ expect_chartjs(
   list(c(600, 350)),
   c("San-Diego", "Seattle")
 )
-
 app$click(selector = "a[data-value='inputData']")
 Sys.sleep(0.5)
+# decimals
+app$set_inputs(inputTabset = "inputTabset_5")
+Sys.sleep(0.5)
+app$set_inputs(btGraphIn = "click")
+Sys.sleep(2)
+
+app$set_inputs(`in_4-miroPivot-showSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(app$get_js("$('#in_4-miroPivot-decimals').get(0).value"), "2")
+app$click(selector = "#in_4-miroPivot-settingsTabs a[data-value='Tables']")
+Sys.sleep(0.5)
+expect_true(app$get_js("$('#in_4-miroPivot-fixedColumns').get(0).checked"))
+app$set_inputs(`in_4-miroPivot-fixedColumns` = FALSE)
+Sys.sleep(0.5)
+app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(
+  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  tibble(
+    value = c(
+      "San-Diego", "lat", "32.72", "", "lng", "-117.16", "Seattle",
+      "lat", "47.61", "", "lng", "-122.34", "", "lng", "", "lng",
+      "San-Diego", "lat", "Seattle", "lat"
+    )
+  )
+)
+app$set_inputs(`in_4-miroPivot-showSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(app$get_js("$('#in_4-miroPivot-decimals').get(0).value"), "2")
+app$set_inputs(`in_4-miroPivot-decimals` = "4")
+app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(
+  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  tibble(
+    value = c(
+      "San-Diego", "lat", "32.7157", "", "lng", "-117.1611", "Seattle",
+      "lat", "47.6080", "", "lng", "-122.3352", "", "lng", "", "lng",
+      "San-Diego", "lat", "Seattle", "lat"
+    )
+  )
+)
+app$set_inputs(`in_4-miroPivot-showSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(app$get_js("$('#in_4-miroPivot-decimals').get(0).value"), "4")
+app$set_inputs(`in_4-miroPivot-decimals` = "-1")
+app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
+Sys.sleep(0.5)
+expect_identical(
+  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  tibble(
+    value = c(
+      "San-Diego", "lat", "32.715736", "", "lng", "-117.161087", "Seattle",
+      "lat", "47.608013", "", "lng", "-122.335167", "", "lng", "", "lng",
+      "San-Diego", "lat", "Seattle", "lat"
+    )
+  )
+)
+
 app$set_inputs(inputTabset = "inputTabset_4")
 Sys.sleep(1)
 app$click(selector = "#btRemove1")

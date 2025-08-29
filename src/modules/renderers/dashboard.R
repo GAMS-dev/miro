@@ -29,7 +29,7 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...)
   )
 }
 
-renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+renderDashboard <- function(id, data, options = NULL, roundPrecision = 2L, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -173,8 +173,9 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (length(valueTmp) == 0) {
               abortSafe(sprintf("No scalar symbol '%s' found for valueBox '%s'", valueScalarName, options$valueBoxes$id[i]))
             }
-            if (!is.na(options$valueBoxes$decimals[i])) {
-              valueTmp <- round(valueTmp, digits = as.numeric(options$valueBoxes$decimals[i]))
+            decimals <- suppressWarnings(as.integer(options$valueBoxes$decimals[i]))
+            if (length(decimals) == 1 && !is.na(decimals) && decimals >= 0) {
+              valueTmp <- round(valueTmp, digits = decimals)
             }
           }
 
@@ -456,8 +457,17 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               }
             }
 
+            rawDecimals <- suppressWarnings(as.integer(dataViewsConfig[[indicator]]$decimals))
+            decimals <- if (length(rawDecimals) == 1 && !is.na(rawDecimals)) {
+              if (rawDecimals < 0) {
+                NULL
+              } else {
+                rawDecimals
+              }
+            } else {
+              roundPrecision
+            }
             # baseline comparison
-            roundPrecision <- if (length(dataViewsConfig[[indicator]]$decimals)) as.numeric(dataViewsConfig[[indicator]]$decimals) else 2L
             if (length(attr(dataTmp, "baselineComp"))) {
               tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
               baselineCompRenderFn <- list(list(
@@ -467,12 +477,22 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
   if (type !== 'display') {
     return data;
   }
-  const pm=", if (length(roundPrecision)) paste0("DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0')") else "data;",
+  const pm=", if (!is.null(decimals)) paste0("DTWidget.formatRound(data,", as.character(decimals), ",3,',','.','0');") else "data;",
                   if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
+                    secondaryMetric <- if (!is.null(decimals)) {
+                      paste0(
+                        "DTWidget.formatRound(",
+                        toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],",
+                        decimals,
+                        ",3,',','.','0')"
+                      )
+                    } else {
+                      paste0(toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset]")
+                    }
                     paste0(
                       "
   const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
-  const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
+  const secondaryMetric=", secondaryMetric, ";
   const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
   if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
     window.alertPushed = '", tableSessionId, "';
@@ -539,16 +559,21 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             if (fullSummaryEnabled || identical(dataViewsConfig[[indicator]]$tableSummarySettings$colEnabled, TRUE)) {
               tablesummarySettings <- dataViewsConfig[[indicator]]$tableSummarySettings
               colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tablesummarySettings$colSummaryFunction]])
-              if (identical(tablesummarySettings$colSummaryFunction, "count")) {
-                colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
+              summaryData <- if (identical(tablesummarySettings$colSummaryFunction, "count")) {
+                colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
                   logical(1L),
                   USE.NAMES = FALSE
-                )])), digits = roundPrecision)
+                )]))
               } else {
-                colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
+                as.numeric(slice(summarise(dataTmp, across(
                   where(is.numeric),
                   \(x) match.fun(tablesummarySettings$colSummaryFunction)(x, na.rm = TRUE)
-                )), 1L)), digits = roundPrecision)
+                )), 1L))
+              }
+              if (!is.null(decimals)) {
+                colSummarySettings$data <- round(summaryData, digits = decimals)
+              } else {
+                colSummarySettings$data <- summaryData
               }
             }
 
@@ -572,6 +597,12 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 drawCallback = if (identical(input[[paste0(indicator, "ChartType")]], "heatmap")) JS('function() {$(this.api().table().body()).addClass("heatmap") }')
               )
             )
+
+            if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "baselineComp")) && !is.null(decimals)) {
+              tableObj <- formatRound(tableObj, seq(noRowHeaders + 1, length(dataTmp)),
+                digits = decimals
+              )
+            }
 
             if (!identical(input[[paste0(indicator, "ChartType")]], "heatmap")) {
               return(tableObj)
@@ -925,6 +956,27 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 stack <- if (chartType %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
               }
 
+              rawDecimals <- suppressWarnings(as.integer(dataViewsConfig[[indicator]]$decimals))
+              decimals <- if (length(rawDecimals) == 1 && !is.na(rawDecimals)) {
+                if (rawDecimals < 0) {
+                  NULL
+                } else {
+                  rawDecimals
+                }
+              } else {
+                roundPrecision
+              }
+              if (is.null(decimals)) {
+                seriesData <- dataTmp[[rowHeaderLen + i]]
+              } else {
+                seriesData <- round(dataTmp[[rowHeaderLen + i]], digits = decimals)
+                tooltip <- sprintf(
+                  "function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } label += context.raw.toFixed(%d); return label; }",
+                  decimals
+                )
+                chartJsObj$x$options$plugins$tooltip$callbacks$label <- JS(tooltip)
+              }
+
               multiChartSeries <- FALSE
               if (length(currentView$chartOptions$multiChartSeries)) {
                 series <- currentView$chartOptions$multiChartSeries
@@ -947,7 +999,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
                 args <- list(
                   chartJsObj,
-                  dataTmp[[rowHeaderLen + i]],
+                  seriesData,
                   label = label,
                   type = multiChartRenderer,
                   showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
@@ -984,7 +1036,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
                 args <- list(
                   chartJsObj,
-                  dataTmp[[rowHeaderLen + i]],
+                  seriesData,
                   label = label,
                   fill = chartType %in% c("area", "stackedarea"),
                   fillOpacity = fillOpacity,

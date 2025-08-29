@@ -196,6 +196,7 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
         callModule(match.fun(compareModuleConfig[["rendererFnName"]]), refId,
           data = CustomComparisonData$new(scenData, refId, attachments),
           options = compareModuleConfig[["options"]],
+          roundPrecision = roundPrecision,
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
           views = views,

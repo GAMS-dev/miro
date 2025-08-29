@@ -315,8 +315,8 @@
             "testpositive"
           ],
           "decimals": [
-            2,
-            2,
+            -1,
+            null,
             2,
             2,
             2
@@ -564,7 +564,7 @@
               ]
             },
             "data": "abserror",
-            "decimals": 2
+            "decimals": 3
           },
           "pricemerge": {
             "aggregationFunction": "sum",
@@ -637,7 +637,7 @@
               }
             ],
             "data": "pricemerge",
-            "decimals": 2
+            "decimals": -1
           },
           "pricemerge3": {
             "aggregationFunction": "sum",

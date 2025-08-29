@@ -710,19 +710,11 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
 dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters) {
   noRowHeaders <- attr(dashboardChartData[[indicator]], "noRowHeaders")
   dataTmp <- dashboardChartData[[indicator]]
-  if (length(dataViewsConfig[[indicator]]$decimals)) {
-    dataTmp <- dataTmp %>%
-      mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
-  }
 
   # filter user selection
   if (length(dataViewsConfig[[indicator]]$userFilter)) {
     if (length(attr(dataTmp, "baselineComp"))) {
       secondaryData <- attr(dataTmp, "baselineComp")$secondaryData
-      if (length(dataViewsConfig[[indicator]]$decimals)) {
-        secondaryData <- secondaryData %>%
-          mutate(across(where(is.numeric), ~ round(., as.numeric(dataViewsConfig[[indicator]]$decimals))))
-      }
     } else {
       secondaryData <- NULL
     }

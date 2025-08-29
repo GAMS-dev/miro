@@ -12,10 +12,11 @@ Sys.sleep(2)
 app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
 
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61357"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 50), "rgb(61, 153, 112)"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.17$"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.1662$"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)"))
+expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 50), "ERROR RATIO\n+11.95$"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative .info-box-number').css('color')"), timeout = 50), "rgb(51, 51, 51)"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
@@ -87,7 +88,7 @@ expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemer
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_uni-selectized')[0].multiple")), FALSE))
 expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
-  list("reference", "0.55 (0%)", "", "2016-01-04", "2.18 (294.23%)", "", "2016-01-06", "0.01 (-98.40%)", "", "2016-01-08", "0.49 (-11.73%)", "")
+  list("reference", "0.552 (0%)", "", "2016-01-04", "2.175 (294.231%)", "", "2016-01-06", "0.009 (-98.405%)", "", "2016-01-08", "0.487 (-11.733%)", "")
 )
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_test'] .custom-info-box"))
 do.call(app$set_inputs, setNames(
@@ -97,7 +98,7 @@ do.call(app$set_inputs, setNames(
 app$wait_for_idle()
 expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
-  list("reference", "0.55 (0%)", "2016-01-04", "2.18 (294.23%)")
+  list("reference", "0.552 (0%)", "2016-01-04", "2.175 (294.231%)")
 )
 # new userFilter format
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio'] .custom-info-box"))
@@ -113,8 +114,12 @@ expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idDate)), "testla
 expect_equal(app$get_js(sprintf("$('%s').attr('placeholder')", idDatePlaceholder)), "All items")
 expect_equal(app$get_js(sprintf("(function(){var el=$('%s')[0]; return el.selectize ? el.selectize.getValue() : $('%s').val();})()", idUni, idUni)), "DD")
 expect_identical(
-  app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2Table td').map(function(index){return $(this).text()}).toArray()")),
-  list("2016-01-04", "63.07", "2016-01-05", "64.28", "2016-01-06", "63.38", "2016-12-30", "73.40")
+  getRoundedDtData(app, paste0("tab_1_3-", rendererName, "-pricemerge2Table")),
+  tibble(
+    value = c(
+      "2016-01-04", "63.07", "2016-01-05", "64.279999", "2016-01-06", "63.380001", "2016-12-30", "73.400002"
+    )
+  )
 )
 # overwriteHeaderAliases used in table
 hdr2 <- getVisibleDtHeader(app, sprintf("tab_1_3-%s-pricemerge2Table", rendererName))

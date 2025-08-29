@@ -504,6 +504,13 @@
                         visible data. Read more about this option
                         <a href="#hide-empty-columns" class="scrollto">here</a
                         >.<br />
+                        <b>Number of decimals</b>: Number of decimal places to
+                        be displayed in a chart/table. A negative value implies
+                        no rounding. If no value is provided, the
+                        <a href="./configuration_general.html#decimal-places"
+                          >global setting</a
+                        >
+                        (default: 2 decimals) is used.<br />
                         <b
                           >Dimension(s) to limit to a single-selection dropdown
                           filter</b
@@ -2765,6 +2772,13 @@ firstDayTraining(td)                   = td.pos = 1;
                       <li>
                         <code class="language-json">"decimals"</code>: Number
                         of decimal places that should be displayed for a value.
+                        A negative value implies no rounding. If
+                        <code class="language-json">null</code> is provided,
+                        the
+                        <a href="./configuration_general.html#decimal-places"
+                          >global setting</a
+                        >
+                        (default: 2 decimals) is used.
                       </li>
                     </ul>
                     <p>Example:</p>
@@ -3389,7 +3403,13 @@ firstDayTraining(td)                   = td.pos = 1;
                           <li>
                             <code class="language-json">"decimals"</code>:
                             Number of decimal places to be displayed in a
-                            chart/table.
+                            chart/table. A negative value implies no rounding.
+                            If no value is provided, the
+                            <a
+                              href="./configuration_general.html#decimal-places"
+                              >global setting</a
+                            >
+                            (default: 2 decimals) is used.
                           </li>
                           <li>
                             <code class="language-json">"colWidth"</code>:
@@ -3616,8 +3636,8 @@ firstDayTraining(td)                   = td.pos = 1;
     ns <- NS(id)
     ...
   }
-- renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-+ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
+- renderDashboard <- function(id, data, options = NULL, roundPrecision = 2L, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
++ renderMirorenderer_macrolevel <- function(input, output, roundPrecision = 2L, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
 -   moduleServer(
 -     id,
 -     function(input, output, session) {

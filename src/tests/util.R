@@ -13,6 +13,27 @@ getVisibleDtData <- function(app, id, timeout = 5000L) {
     .name_repair = "universal"
   ))
 }
+getRoundedDtData <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, " table tbody tr').length > 0"), timeout = timeout)
+
+  dtData <- app$get_js(paste0(
+    "
+    JSON.stringify($('#", id, " table').dataTable().api().rows({ page: 'current' }).nodes().to$().map(function() {
+      return $(this).find('td').map(function() {
+        return $(this).text();
+      }).get();
+    }).get());
+    "
+  ))
+
+  if (is.null(dtData) || dtData == "[]") {
+    return(tibble::tibble())
+  }
+
+  return(tibble::as_tibble(jsonlite::fromJSON(dtData),
+    .name_repair = "universal"
+  ))
+}
 getVisibleDtHeader <- function(app, id, timeout = 5000L) {
   app$wait_for_js(paste0("$('#", id, "').data('datatable')!=null"), timeout = timeout)
   json <- app$get_js(paste0(
