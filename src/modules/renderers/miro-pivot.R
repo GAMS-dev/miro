@@ -2651,15 +2651,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           currentFilters(newFilters)
         })
       })
-      throttledFilters <- vector("list", length(setIndices))
+      debouncedFilters <- vector("list", length(setIndices))
       lapply(setIndices, function(filterIndex) {
-        throttledFilters[[filterIndex]] <<- throttle(reactive({
+        debouncedFilters[[filterIndex]] <<- debounce(reactive({
           input[[paste0("filter_", filterIndex)]]
         }), if (bigData) 2000 else 500)
         rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
           isInitialized <- TRUE
           if (!filterIndex %in% rendererEnv[[ns("filtersInitialized")]] &&
-            (!initData || length(throttledFilters[[filterIndex]]()))) {
+            (!initData || length(debouncedFilters[[filterIndex]]()))) {
             isInitialized <- FALSE
             if (length(rendererEnv[[ns("filtersInitialized")]])) {
               rendererEnv[[ns("filtersInitialized")]] <- c(
@@ -2670,7 +2670,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               rendererEnv[[ns("filtersInitialized")]] <- filterIndex
             }
           }
-          if (is.null(throttledFilters[[filterIndex]]())) {
+          if (is.null(debouncedFilters[[filterIndex]]())) {
             if (!isInitialized ||
               !filterIndex %in% isolate(c(
                 input$aggregationIndexList,

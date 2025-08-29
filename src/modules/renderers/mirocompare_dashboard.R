@@ -327,6 +327,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
   renderedSections <- list()
 
+  debouncedUserFilters <- list()
+
   rendererEnv[[ns("viewsToRender")]] <- observe({
     # Lazily build the entire section/data-view that corresponds to the
     # currently active dashboard view (clicked value box; activeView()):
@@ -427,6 +429,20 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         toggleChartType(indicator)
       })
 
+      uf <- dataViewsConfig[[indicator]]$userFilter
+      if (length(uf)) {
+        userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
+        if (is.null(userFilterIndicator)) {
+          userFilterIndicator <- indicator
+        }
+        dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
+        debouncedUserFilters[[indicator]] <- debounce(reactive({
+          setNames(selectedUserFilters <- lapply(dims, function(dim) {
+            input[[paste0(userFilterIndicator, "userFilter_", dim)]]
+          }), dims)
+        }), 200)
+      }
+
       # table for each view
       output[[paste0(indicator, "Table")]] <- renderDT({
         tableData <- dashboardChartData[[indicator]]
@@ -440,19 +456,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        uf <- dataViewsConfig[[indicator]]$userFilter
-        if (length(uf)) {
-          userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-          if (is.null(userFilterIndicator)) {
-            userFilterIndicator <- indicator
-          }
-          dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
-          selectedUserFilters <- setNames(
-            lapply(dims, function(dim) {
-              input[[paste0(userFilterIndicator, "userFilter_", dim)]]
-            }),
-            dims
-          )
+        if (length(debouncedUserFilters[[indicator]])) {
+          selectedUserFilters <- debouncedUserFilters[[indicator]]()
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -673,19 +678,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
 
         selectedUserFilters <- NULL
-        uf <- dataViewsConfig[[indicator]]$userFilter
-        if (length(uf)) {
-          userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-          if (is.null(userFilterIndicator)) {
-            userFilterIndicator <- indicator
-          }
-          dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
-          selectedUserFilters <- setNames(
-            lapply(dims, function(dim) {
-              input[[paste0(userFilterIndicator, "userFilter_", dim)]]
-            }),
-            dims
-          )
+        if (length(debouncedUserFilters[[indicator]])) {
+          selectedUserFilters <- debouncedUserFilters[[indicator]]()
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -1123,21 +1117,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         filename = paste0(indicator, ".csv"),
         content = function(file) {
           selectedUserFilters <- NULL
-          uf <- dataViewsConfig[[indicator]]$userFilter
-          if (length(uf)) {
-            userFilterIndicator <- dataViewsConfig[[indicator]]$.userFilterExternalSymbol
-            if (is.null(userFilterIndicator)) {
-              userFilterIndicator <- indicator
-            }
-            dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
-            selectedUserFilters <- setNames(
-              lapply(dims, function(dim) {
-                input[[paste0(userFilterIndicator, "userFilter_", dim)]]
-              }),
-              dims
-            )
+          if (length(debouncedUserFilters[[indicator]])) {
+            selectedUserFilters <- debouncedUserFilters[[indicator]]()
           }
-
           dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
           return(write_csv(dataTmp, file, na = ""))
         }

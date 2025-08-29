@@ -254,7 +254,7 @@ test_that("MIRO pivot renderer handles aggregation", {
       session$setInputs(
         colIndexList = "e",
         filter_a = paste0("a", c("1", "2", "3")),
-        aggregationIndexList = letters[1:5],
+        aggregationIndexList = c(letters[1:4], "f"),
         aggregationFunction = "median"
       )
       expect_identical(convert_to_df(dataToRender()), data.frame(
