@@ -20,9 +20,11 @@ spec:
     metadata:
       labels:
         app: {{ include "common.names.fullname" . }}-auth
-      {{- if .Values.auth.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        {{- if .Values.auth.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
     spec:
       automountServiceAccountToken: false
       {{- if .Values.global.securityContext.enabled }}
