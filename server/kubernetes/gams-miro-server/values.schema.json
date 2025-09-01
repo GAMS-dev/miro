@@ -43,7 +43,29 @@
         }
       },
       "required": ["networkPolicy"]
+    },
+    "db": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "user": {
+          "type": "string",
+          "minLength": 1
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["port", "user", "password", "name"]
     }
   },
-  "required": ["global"]
+  "required": ["global", "db"]
 }
