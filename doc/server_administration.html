@@ -104,28 +104,42 @@
                   <div class="section-block">
                     <p>
                       MIRO Server uses the authentication service of GAMS
-                      Engine. Everyone who wants to use MIRO Server needs a
-                      GAMS Engine user account with at least execute
-                      permissions on the
-                      <a
-                        href="https://gams.com/engine/administration.html#namespaces"
-                        >namespace</a
-                      >
-                      to be used. Or the other way around: Once you are a
-                      registered GAMS Engine user with the required
-                      permissions, you can use MIRO Server. Users without
-                      permissions in the namespace can log in if they can see a
-                      user group associated with a model.
+                      Engine. To access MIRO Server, a user must satisfy one of
+                      the following conditions:
                     </p>
+                    <ul>
+                      <li>
+                        <b>Have execute permission</b> on the namespace to be
+                        used in GAMS Engine.
+                      </li>
+                      <li>
+                        <b>Be a member of a user group</b> that has been
+                        granted access to an app registered in MIRO.
+                      </li>
+                    </ul>
                     <p>
-                      If you are GAMS Engine administrator or inviter, you can
-                      manage users and namespaces for MIRO Server directly in
-                      the Engine UI. Read more about this in the
-                      <a
-                        href="https://www.gams.com/engine/administration.html#user-management"
-                        >GAMS Engine documentation</a
-                      >.
+                      In other words: Either you are an Engine user with the
+                      required execute permission, <b>or</b> you belong to a
+                      group that has been assigned to at least one MIRO app.
                     </p>
+                    <ul>
+                      <li>
+                        <b>User management</b> (inviting users, creating
+                        groups, adding users to groups) is done through the
+                        <a
+                          href="https://gams.com/engine/clients.html#engine-ui"
+                          target="_blank"
+                          >GAMS Engine UI</a
+                        >.
+                      </li>
+                      <li>
+                        <b>App management</b> (adding/removing apps,
+                        assigning/removing groups to apps) is done through the
+                        <a href="#admin-panel" class="scrollto"
+                          >MIRO Server Admin Panel</a
+                        >.
+                      </li>
+                    </ul>
                     <p>
                       If you decide to use MIRO Server without authentication
                       (e.g. to showcase applications as in the case of the
