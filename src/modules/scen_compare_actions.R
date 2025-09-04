@@ -73,7 +73,7 @@ observeEvent(input[["btCmpTabCloseAll"]], {
   }
   numberScenTabs <<- 0L
   occupiedSidSlots[] <<- FALSE
-  hideEl(session, "#btCmpTabCloseAll")
+  activeScenTabId(NULL)
   showEl(session, "#cmpTabNoScenWrapper")
   disableEl(session, "#btCompareScen")
 })
@@ -93,7 +93,7 @@ observeEvent(input[["btScenClose"]], {
   numberScenTabs <<- numberScenTabs - 1
   occupiedSidSlots[tabsetId - 3] <<- FALSE
   if (!numberScenTabs) {
-    hideEl(session, "#btCmpTabCloseAll")
+    activeScenTabId(NULL)
     showEl(session, "#cmpTabNoScenWrapper")
   } else if (numberScenTabs == 1) {
     disableEl(session, "#btCompareScen")

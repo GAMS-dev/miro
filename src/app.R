@@ -1212,15 +1212,27 @@ if (!is.null(errMsg)) {
   }
   ui_initError <- fluidPage(
     tags$head(
-      if (!is.list(config) || !is.character(config$theme)) {
-        tags$link(type = "text/css", rel = "stylesheet", href = "default_light.css")
+      if (!is.null(config$themeColors) && length(config$themeColors)) {
+        cssLines <- sprintf(
+          "--%s:%s;",
+          gsub("_", "-", names(config$themeColors), fixed = TRUE),
+          unname(config$themeColors)
+        )
+        tags$style(
+          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+        )
+      } else if (identical(miroColorTheme, "custom")) {
+        tags$style(
+          HTML(customColorCss)
+        )
       } else {
-        tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
-          paste0("static_", modelName, "/custom_theme.css")
-        } else {
-          paste0(miroColorTheme, "_", config$theme, ".css")
-        })
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
       },
+      tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
+        paste0("static_", modelName, "/custom_theme.css")
+      } else {
+        paste0("default_", config$theme, ".css")
+      }),
       tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(

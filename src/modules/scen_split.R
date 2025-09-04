@@ -116,6 +116,11 @@ observeEvent(input$loadActiveScenSplitComp, {
   loadSandboxScen(id, refresh = FALSE)
 })
 closeScenSplitBox <- function(tabsetId) {
+  removeUI(
+    selector = paste0("#split", tabsetId - 1L, "_actionButtonsPlaceholder > div"),
+    immediate = TRUE
+  )
+
   tabsetIdChar <- as.character(tabsetId)
   if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]])) {
     dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]][["content"]][] <<- FALSE
@@ -126,6 +131,7 @@ closeScenSplitBox <- function(tabsetId) {
   # show button and hide content
   resetCompTabset(tabsetIdChar)
   hideEl(session, paste0("#cmpScenTitle_", tabsetIdChar))
+  hideEl(session, paste0("#cmpScenDate_", tabsetIdChar))
   hideEl(session, paste0("#scenSplit", tabsetId - 1L, "_content"))
   showEl(session, paste0("#scenSplit", tabsetId - 1L, "_open"))
 }

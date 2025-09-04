@@ -51,9 +51,11 @@ sidebar <- dashboardSidebar(
     if (!config$activateModules$readonlyMode) menuItem(lang$nav$sidebarMenu$gams, tabName = "gamsinter", icon = icon("gear")),
     menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("database")),
     menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("table-columns")),
+    tags$hr(id = "sidebarSeparator", class = "sidebar-separator"),
     actionButton("btImport", lang$nav$sidebarButtons$importInput,
+      icon = icon("file-import"),
       width = "85%",
-      class = "bt-highlight-3 btn-custom",
+      class = "btn-import btn-align-sidebar",
       style = "display:block;"
     ),
     if (!config$activateModules$readonlyMode) {
@@ -61,13 +63,13 @@ sidebar <- dashboardSidebar(
         tags$div(
           class = "btn-group btSolve", style = "width:100%",
           tags$button(
-            class = "btn btn-default bt-highlight-2", type = "button", id = "btSolve",
+            class = "btn btn-default bt-highlight-2 btn-solve btn-align-sidebar", type = "button", id = "btSolve",
             style = "width:168px;margin:6px 0px 6px 15px;border-right:0px;",
             onclick = "Shiny.setInputValue('btSolve',1,{priority:'event'});",
             lang$nav$sidebarButtons$solve
           ),
           tags$button(
-            class = "btn btn-default bt-highlight-2 dropdown-toggle", `data-toggle` = "dropdown",
+            class = "btn btn-default bt-highlight-2 btn-solve btn-align-sidebar dropdown-toggle", `data-toggle` = "dropdown",
             style = "margin:6px 0px 6px 0;display:block;",
             tags$span(class = "caret"),
             tags$span(class = "sr-only", "toggle dropdown")
@@ -104,13 +106,15 @@ sidebar <- dashboardSidebar(
         )
       } else {
         actionButton("btSolve", lang$nav$sidebarButtons$solve,
-          width = "85%", class = "bt-highlight-2 btSolve", style = "display:block;"
+          icon = icon("play"),
+          width = "85%", class = "bt-highlight-2 btSolve btn-solve btn-align-sidebar", style = "display:block;"
         )
       }
     },
     tagAppendAttributes(
       actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt,
-        width = "85%", class = "bt-highlight-2", style = "display:block;"
+        icon = icon("stop"),
+        width = "85%", class = "bt-highlight-2 btn-stop btn-align-sidebar", style = "display:block;"
       ),
       disabled = ""
     ),
@@ -118,7 +122,7 @@ sidebar <- dashboardSidebar(
       tags$div(
         class = "btn-group btSplitView", style = "width:100%",
         tags$button(
-          class = "btn btn-default bt-highlight-2 dropdown-toggle btn-cmp-mode-dropdown", `data-toggle` = "dropdown",
+          class = "btn btn-default bt-highlight-2 dropdown-toggle btn-cmp-mode-dropdown btn-compare btn-align-sidebar", `data-toggle` = "dropdown",
           tags$span(
             id = "btSelectCompareMode",
             if (identical(config$defCompMode, "tab")) {
@@ -147,7 +151,7 @@ sidebar <- dashboardSidebar(
         )
       ),
       actionButton("btCompareScen",
-        class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart,
+        class = "btn-sync btn-align-sidebar", lang$nav$sidebarButtons$compareStart,
         width = "85%", style = "display:block;",
         "data-noshow" = if (identical(config$defCompMode, "split") || identical(config$defCompMode, "tab")) "false" else "true"
       )

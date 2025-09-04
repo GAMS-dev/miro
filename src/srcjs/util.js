@@ -52,14 +52,16 @@ export function changeActiveButtons(tabId) {
     case 'inputData':
       $('#btImport').show();
       $('.btSolve').show();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
       break;
 
     case 'outputData':
-      $('#btImport').hide();
-      $('.btSolve').hide();
+      $('#btImport').show();
+      $('.btSolve').show();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
@@ -68,6 +70,7 @@ export function changeActiveButtons(tabId) {
     case 'gamsinter':
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').show();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
@@ -76,6 +79,7 @@ export function changeActiveButtons(tabId) {
     case 'scenarios':
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').show();
       if ($('#btCompareScen').attr('data-noshow') === 'false') {
@@ -86,6 +90,7 @@ export function changeActiveButtons(tabId) {
     default:
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').hide();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();

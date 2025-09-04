@@ -726,7 +726,7 @@ runGAMSJob <- function() {
   }
 
   # activate Interrupt button as GAMS is running now
-  updateActionButton(session, "btInterrupt", icon = character(0L))
+  updateActionButton(session, "btInterrupt", icon = icon("stop"))
   enableEl(session, "#btInterrupt")
   enableEl(session, "#btDetachCurrentJob")
   switchTab(session, "gamsinter")

@@ -450,6 +450,7 @@ $(() => {
 
   $('#btImport').show();
   $('.btSolve').show();
+  $('#sidebarSeparator').show();
   $('#btInterrupt').hide();
   $('.btSplitView').hide();
   $('#btCompareScen').hide();
@@ -624,7 +625,13 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     scriptOutputContainer.show();
   });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
-    $(data.id).text(data.txt).show();
+    const el = $(data.id);
+    if (el.length > 0) {
+      el.text(data.txt).show();
+      if (typeof data.title !== 'undefined') {
+        el.attr('title', data.title);
+      }
+    }
   });
   Shiny.addCustomMessageHandler('gms-setContent', (data) => {
     $(data.selector).html(data.content);

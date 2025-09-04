@@ -115,7 +115,10 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   ))
 
   tabContent <- tags$div(
-    class = "tab-content tab-mobile",
+    class = paste0(
+      "tab-content tab-mobile",
+      if (hideTabs) " no-tabs" else ""
+    ),
     `data-tabsetid` = tabsetId, divTagList
   )
 

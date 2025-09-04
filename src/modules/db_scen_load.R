@@ -395,7 +395,7 @@ observeEvent(input$btRefreshComp, {
   )
   showElReplaceTxt(
     session, paste0("#cmpScenDate_", tabsetId),
-    metaTmp[["_stime"]][1]
+    format(as.POSIXct(metaTmp[["_stime"]][1]), "%Y-%m-%d %H:%M:%S")
   )
 })
 
