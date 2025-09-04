@@ -1,14 +1,79 @@
 html,
 body {
-    background-color: #e2e3e8;
     font-family: "montserratlight",sans-serif;
+    background-color: #e2e3e8;
+    background-image: linear-gradient(to bottom, #e2e3e8, #ffffff);
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    background-repeat: no-repeat;
 }
 @media (prefers-color-scheme: dark) {
   html,
   body {
       color: #eeeeee;
       background-color: #292D33;
+      background: linear-gradient(to bottom, #292D33, #191B1F);
   }
+}
+.header-text-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-logo {
+  height: 28px;
+  width: auto;
+  margin-right: 12px;
+}
+#appsWrapper {
+    min-height: calc(100vh - 50px);
+    padding-top: 2rem;
+}
+#welcomeMessage h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+#welcomeMessage p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.empty-state-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: calc(100vh - 150px);
+  gap: 2rem;
+}
+
+.empty-state-text {
+  max-width: 500px;
+  text-align: left;
+}
+
+.empty-state-text h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.empty-state-text p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+@media (prefers-color-scheme: dark) {
+  .empty-state-text p {
+    color: #a6adb3 !important;
+  }
+}
+.empty-state-container .add-app-box,
+.miro-app-item {
+  min-width: 350px;
+}
+.empty-state-container .app-box {
+  width: 350px;
 }
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
@@ -40,6 +105,7 @@ a:hover {
 #btEditWrapper {
   -webkit-app-region: no-drag;
   cursor: pointer;
+  font-size: 1.1rem;
 }
 #btEdit:hover {
   transition: 1s ease;
@@ -179,11 +245,19 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
+}
+#expandedAddAppWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+#expandedAddAppWrapper .app-description {
+  flex-grow: 1;
 }
 .app-wrapper {
     position: relative;
@@ -198,10 +272,20 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    min-height: 500px;
+}
+.edit-mode-active .app-box:hover {
+  cursor: pointer;
+  box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.20);
+}
+@media (prefers-color-scheme: dark) {
+  .edit-mode-active .app-box:hover {
+    box-shadow: 0 6px 20px 0 rgba(255, 255, 255, 0.07);
+  }
 }
 #expandedAddAppWrapper{
   position: relative;
@@ -225,31 +309,16 @@ a:hover {
 .app-box-fixed-height {
     height: 500px;
 }
-.app-box-hover:hover {
-    cursor: text;
-    background-color: #fffefc;
-    box-shadow: 0 2px 4px 0 #ff99005c, 0 2px 10px 0 #ff990040;
-    transition: box-shadow .15s ease-in-out, background-color .15s linear;
-}
-@media (prefers-color-scheme: dark) {
-  .app-box-hover:hover {
-    background: #54565d;
-  }
-  .nav-tabs .nav-link.active {
-    color: #eeeeee;
-    background: #393e46;
-  }
-}
 .manage-box {
     margin: 50px auto;
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
 }
 .modify-box {
     margin: 50px auto;
@@ -258,11 +327,11 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
 }
 .drag-drop-area {
   background-color: #e9ecef;
@@ -273,20 +342,53 @@ a:hover {
 }
 @media (prefers-color-scheme: dark) {
   .drag-drop-area {
-    background-color: #8790a0;
+    background: linear-gradient(to bottom, #292D33, #191B1F);
+    background-color: #292D33;
     border: 1px solid #000;
   }
+}
+.drag-drop-plus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  font-size: 4rem;
+  opacity: 0.1;
+}
+.add-app-text-wrapper {
+  z-index: 1;
+}
+#btAddExamplesInForm {
+  background-color: #e9ecef;
+}
+@media (prefers-color-scheme: dark) {
+  #btAddExamplesInForm {
+    background-color: #2D3748;
+  }
+}
+#btAddExamplesInForm:hover {
+  cursor: pointer;
+  background-color: #f90;
+  color: #212529;
 }
 .drag-drop-area-text {
   padding: 8px;
   margin:auto;
   cursor: pointer;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0,0,0,0.7);
   color: #fff;
 }
 .empty {
-  color: #494d55;
+  color: #2D3748;
   background-color: unset;
+  font-size: 15px;
+  font-weight: bold;
+}
+@media (prefers-color-scheme: dark) {
+  .empty {
+    color: #fff;
+  }
 }
 .not-empty {
   background-color: rgba(0,0,0,0.3);
@@ -386,9 +488,10 @@ a:hover {
   top:0;
   z-index:2000;
   text-align:center;
-  background: #494d55;
+  background: #2D3748;
+  background-image: linear-gradient(to right, #4A5568, #2D3748);
   color: rgba(255, 255, 255, 0.85);
-  border-bottom: 4px solid #f90;
+  border-bottom: 3px solid #f90;
   margin-left: auto;
   margin-right: auto;
 }
@@ -398,21 +501,24 @@ a:hover {
   }
 }
 .header-text-wrapper {
-  display: inline-block;
-  text-align: center;
   margin: auto;
+  width: 100%;
 }
 .header-text {
   margin-bottom: 0;
 }
 .btn-edit-wrapper {
   display: inline-block;
-  width: 110px;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .header-items {
   align-items: center;
   padding-top: 5px;
   padding-bottom: 5px;
+  position: relative;
 }
 .btn {
     font-family: Arial;
@@ -423,29 +529,34 @@ a:hover {
     background: #f90;
     text-shadow: none;
     border: none;
-    color: #494d55;
+    color: #212529;
 }
 .confirm-btn:hover:enabled {
     background: #e18d0f;
-    color: #494d55;
+    color: #212529;
 }
 .cancel-btn {
     background: #fff;
-    color: #494d55 !important;
+    color: #212529 !important;
     border-color: #9a9fa8;
     cursor: pointer;
 }
 .cancel-btn:hover {
-    background: #f6f5f5;
-    color: #494d55 !important;
+    background-color: #f6f5f5;
+    color: #212529 !important;
     border-color: #9a9fa8;
+}
+#btAddExamplesInForm {
+  .cancel-btn:hover {
+      background-color: #d1cfcf;
+  }
 }
 .editable .fileInput{
   cursor: pointer;
   border: 1px solid #fff;
   text-align:left;
   display: block;
-  color: #494d55;
+  color: #212529;
   background-clip: padding-box;
 }
 .editable {
@@ -459,7 +570,7 @@ a:hover {
   cursor: text;
   border: 1px solid #000;
   background-color: #fff;
-  outline-color:#494d55;
+  outline-color:#212529;
 }
 @media (prefers-color-scheme: dark) {
   .editable {
@@ -474,7 +585,7 @@ a:hover {
   .editable:focus {
     border: 1px solid #000;
     background-color: #292D33;
-    outline-color:#494d55;
+    outline-color:#212529;
   }
 }
 .editable .fileInput{
@@ -506,7 +617,7 @@ a:hover {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: #494d55;
+  background-color: #2D3748;
   color: white;
 }
 .column1 {
@@ -523,7 +634,7 @@ a:hover {
 }
 @media (prefers-color-scheme: dark) {
   .modal-content {
-      background-color: #494d55;
+      background-color: #2D3748;
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -632,7 +743,7 @@ a:hover {
   text-decoration: none;
   cursor: pointer;
   background-color:lightgray;
-  transition: background-color .15s linear;
+  transition: background .15s linear;
 }
 @media (prefers-color-scheme: dark) {
   .delete-app-button:hover,
@@ -642,12 +753,12 @@ a:hover {
 }
 .btn-add-app {
   position:absolute;
-  font-size: 100px;
+  font-size: 64px;
   font-weight: bold;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  color:#b4b6bd !important;
+  color:#f90 !important;
 }
 .add-app-box {
     margin: 65px auto;
@@ -656,20 +767,38 @@ a:hover {
     outline: #c7c9d0 dashed 2px;
     background-clip: padding-box;
 }
+.app-box-hover:hover {
+    cursor: text;
+    background-color: #fffefc;
+    box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
+                0 2px 10px 0 rgba(61, 66, 87, 0.25);
+    outline: none;
+    transition: box-shadow .15s ease-in-out, background-color .15s linear;
+}
+@media (prefers-color-scheme: dark) {
+  .app-box-hover:hover {
+    background: #454853;
+  }
+  .nav-tabs .nav-link.active {
+    color: #eeeeee;
+    background: #393e46;
+  }
+}
 .add-app-box:hover,
 .add-app-box:focus {
     background-color:#ced1da;
     cursor:pointer;
-    box-shadow: 0 2px 4px 0 #ff99005c, 0 2px 10px 0 #ff990040;
-    transition: background-color .15s linear, box-shadow .15s linear;
+    box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
+                0 2px 10px 0 rgba(61, 66, 87, 0.25);
+    outline: none;
+    transition: background .15s linear, box-shadow .15s linear;
 }
 @media (prefers-color-scheme: dark) {
-  .btn-add-app {
-    color:#848991 !important;
-  }
   .add-app-box:hover,
-  .add-app-box:focus {
-    background-color:#54565d;
+  .add-app-box:focus,
+  .index-dragover .add-app-box {
+    background-color:#454853;
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
   }
 }
 .index-dragover {
@@ -677,17 +806,22 @@ a:hover {
   outline-offset: -20px;
   outline-color: #b1b3b9;
   background-color: #ced1da;
-  box-shadow: 0 2px 4px 0 #ff99005c, 0 2px 10px 0 #ff990040;
-  transition: outline-offset .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s linear;
+  box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
+              0 2px 10px 0 rgba(61, 66, 87, 0.25);
+  transition: outline-offset .15s ease-in-out, box-shadow .15s ease-in-out, background .15s linear;
 }
 @media (prefers-color-scheme: dark) {
   .index-dragover {
     outline-color: #b1b3b9;
-    background-color: #54565d;
+    background-color: #454853;
   }
 }
+
+
+
+
 .btn-add-app-dragover {
-  font-size: 120px;
+  font-size: 100px;
   transition: font-size .15s ease-in-out;
 }
 .add-app-box-logo {
@@ -695,11 +829,12 @@ a:hover {
     display:block;
     margin:auto;
     background-color:#d9dbe2;
+    background: linear-gradient(to bottom, #d9dbe2, #d1d4de);
 }
 .add-app-box-title {
     width:30%;
     height:25px;
-    background-color:#d9dbe2;
+    background-color:#d1d4de;
     margin-top: 15pt;
     margin-bottom: .5rem;
     font-weight: 500;
@@ -708,19 +843,41 @@ a:hover {
 .add-app-box-desc {
     width:80%;
     height:15px;
-    background-color:#d9dbe2;
+    background-color:#d1d4de;
     margin-top: 0;
     margin-bottom: 1rem;
 }
+#addAppBox:hover .add-app-box-logo,
+.index-dragover .add-app-box-logo {
+    background: #a0a3ac;
+    background: linear-gradient(to bottom, #b9bbc3, #a0a3ac);
+}
+#addAppBox:hover .add-app-box-title,
+#addAppBox:hover .add-app-box-desc,
+.index-dragover .add-app-box-title,
+.index-dragover .add-app-box-desc {
+    background-color: #a0a3ac;
+}
 @media (prefers-color-scheme: dark) {
-  .add-app-box-logo {
+  .add-app-box-logo,
+  .index-dragover .add-app-box-logo {
+    background: #393e46;
+    background: linear-gradient(to bottom, #4a4f57, #393e46);
+  }
+  .add-app-box-title,
+  .add-app-box-desc,
+  .index-dragover .add-app-box-title,
+  .index-dragover .add-app-box-desc {
       background-color: #393e46;
   }
-  .add-app-box-title {
-      background-color: #393e46;
-  }
-  .add-app-box-desc {
-      background-color: #393e46;
+  #addAppBox:hover .add-app-box-logo,
+  #addAppBox:hover .add-app-box-title,
+  #addAppBox:hover .add-app-box-desc,
+  .index-dragover .add-app-box-logo,
+  .index-dragover .add-app-box-title,
+  .index-dragover .add-app-box-desc {
+      background: #292D33;
+      background: linear-gradient(to bottom, #292D33, #191B1F);
   }
 }
 .reset-db-path {
@@ -736,10 +893,10 @@ a:hover {
     height:60px;
 }
 .btn-launch {
-    background-color: #f90;
     text-shadow: none;
-    border: none;
-    color: #494d55;
+    border: 2px solid #f90;
+    border-radius: 5px;
+    color: #2D3748;
     width: 100%;
     height: 100%;
     font-size: large;
@@ -750,8 +907,9 @@ a:hover {
 .btn-launch:hover,
 .btn-launch:active,
 .btn-launch:focus {
-    background-color: #e18d0f !important;
-    color: #494d55 !important;
+    background-color: #f90 !important;
+    border-color: #f90 !important;
+    color: #212529 !important;
 }
 .btn-add-examples {
   margin-top: 30px;
@@ -777,7 +935,7 @@ a:hover {
 .btn-add-examples:focus {
   background-color: inherit;
   color: inherit;
-  transition: background-color .15s ease-in-out,box-shadow .15s ease-in-out, color .15s ease-in-out;
+  transition: background .15s ease-in-out,box-shadow .15s ease-in-out, color .15s ease-in-out;
 }
 .dropdown-menu.show {
   right: 0px;
@@ -875,7 +1033,7 @@ a:hover {
   top: 0;
   z-index: 2000;
   text-align: left;
-  background: #494d55;
+  background: #2D3748;
   color: rgba(255, 255, 255, 0.85);
   border-bottom: 4px solid #f90;
   margin-left: auto;
@@ -896,10 +1054,10 @@ a:hover {
   padding: 45px 10px 90px 10px;
   background: #fff;
   position: relative;
-  border: 1px solid #f0f0f0;
+  border: 1px solid #e0e0e0;
   border-radius: 5px;
   background-clip: padding-box;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
   position: relative;
   font-family: montserratregular,'Open Sans',sans-serif;
   font-size: 14px;
@@ -1013,6 +1171,9 @@ a:hover {
 .env-button-wrapper {
   padding: 10px;
 }
+.btn-outline-secondary {
+  color: #212529;
+}
 @media (prefers-color-scheme: dark) {
   #envTableWrapper table {
     color: #fff;
@@ -1035,4 +1196,7 @@ select.form-control, select.form-control:focus {
     select.form-control, select.form-control:focus {
       background-color: #393e46;
     }
+}
+.btn {
+  transition: color 0.1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out;
 }
