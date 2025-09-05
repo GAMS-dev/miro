@@ -132,7 +132,6 @@ $(() => {
       $('#addAppWrapper').fadeOut(200);
       $('.edit-bt-group').hide();
       $('.db-path-field').hide();
-      $('.btn-launch-wrapper').fadeIn(200);
       $('.launch-app-box').removeClass('app-box-hover');
       $('.app-box').attr({
         draggable: 'false',
@@ -148,7 +147,6 @@ $(() => {
       }
       btEdit.textContent = lang.btEditDone;
       newAppConfig = null;
-      $('.btn-launch-wrapper').hide();
       $('.edit-info').fadeIn(200);
       $('.app-id-field').fadeIn(200);
       $('.delete-app-button').fadeIn(200);
@@ -602,7 +600,11 @@ $(() => {
       return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${unicodeToHTMLID(app.id)}"
                  data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                  data-apiver="${app.apiversion}" data-mirover="${app.miroversion}">
-                   <div id="appBox_${unicodeToHTMLID(app.id)}" class="app-box launch-app-box app-box-fixed-height" data-id="${unicodeToHTMLID(app.id)}">
+                   <div id="appBox_${unicodeToHTMLID(app.id)}"
+                     class="app-box launch-app-box app-box-fixed-height launch-app"
+                     data-id="${unicodeToHTMLID(app.id)}" data-dbpath="${app.dbpath == null ? '' : unicodeToHTMLID(app.dbpath)}"
+                     data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
+                     data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}" data-gms-name="${unicodeToHTMLID(app.gmsName == null ? `${app.id}.gms` : app.gmsName)}">
                      <div id="appSpinner_${unicodeToHTMLID(app.id)}" class="app-spinner">
                         <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
                           <div id="appProgress_${unicodeToHTMLID(app.id)}" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -646,12 +648,6 @@ $(() => {
                             <small><i>by ${escapeHtml(app.authors.join(', '))}</i></small>
                           </div>`: ''}
                        </div>
-                       <div class="dropdown mb-3 btn-launch-wrapper">
-                        <button class="btn btn-outline-secondary btn-launch launch-app"
-                         type="button" data-id="${unicodeToHTMLID(app.id)}" data-dbpath="${app.dbpath == null ? '' : unicodeToHTMLID(app.dbpath)}"
-                         data-usetmpdir="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
-                         data-apiversion="${app.apiversion}" data-miroversion="${app.miroversion}" data-gms-name="${unicodeToHTMLID(app.gmsName == null ? `${app.id}.gms` : app.gmsName)}">${escapeHtml(lang.btLaunch)}</button>
-                      </div>
                    </div>
                    <div style="text-align:right;display:none;" class="edit-bt-group">
                        <input data-id="${unicodeToHTMLID(app.id)}" class="btn btn-secondary cancel-btn" id="btCancelChanges" value="${escapeHtml(lang.btCancel)}" type="reset">

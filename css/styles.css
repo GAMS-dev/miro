@@ -50,7 +50,7 @@ body {
 }
 
 .empty-state-text {
-  max-width: 500px;
+  max-width: 450px;
   text-align: left;
 }
 
@@ -240,7 +240,7 @@ a:hover {
 }
 .main-box {
     margin: 50px auto;
-    height: 500px;
+    height: 450px;
     width: 385px;
     padding: 45px 30px;
     background: #fff;
@@ -267,7 +267,7 @@ a:hover {
     font-size: 14px;
 }
 .app-box {
-    margin: 65px auto;
+    margin: 30px auto;
     margin-bottom: 32.5px;
     padding: 45px 30px;
     background: #fff;
@@ -276,7 +276,12 @@ a:hover {
     border-radius: 5px;
     background-clip: padding-box;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    min-height: 500px;
+    min-height: 450px;
+}
+body:not(.edit-mode-active) .launch-app-box:hover {
+  cursor: pointer;
+  box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.20);
+  transform: scale(1.005);
 }
 .edit-mode-active .app-box:hover {
   cursor: pointer;
@@ -307,7 +312,7 @@ a:hover {
   }
 }
 .app-box-fixed-height {
-    height: 500px;
+    height: 450px;
 }
 .manage-box {
     margin: 50px auto;
@@ -322,7 +327,7 @@ a:hover {
 }
 .modify-box {
     margin: 50px auto;
-    height: 500px;
+    height: 450px;
     width: 385px;
     padding: 45px 30px;
     background: #fff;
@@ -761,7 +766,7 @@ a:hover {
   color:#f90 !important;
 }
 .add-app-box {
-    margin: 65px auto;
+    margin: 30px auto;
     padding: 45px 30px;
     position: relative;
     outline: #c7c9d0 dashed 2px;
@@ -769,11 +774,11 @@ a:hover {
 }
 .app-box-hover:hover {
     cursor: text;
-    background-color: #fffefc;
+    background-color: #fff;
     box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
                 0 2px 10px 0 rgba(61, 66, 87, 0.25);
     outline: none;
-    transition: box-shadow .15s ease-in-out, background-color .15s linear;
+    transition: box-shadow .1s ease-in-out, background-color .1s linear;
 }
 @media (prefers-color-scheme: dark) {
   .app-box-hover:hover {
@@ -791,14 +796,14 @@ a:hover {
     box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
                 0 2px 10px 0 rgba(61, 66, 87, 0.25);
     outline: none;
-    transition: background .15s linear, box-shadow .15s linear;
+    transition: background .1s linear, box-shadow .1s linear;
 }
 @media (prefers-color-scheme: dark) {
   .add-app-box:hover,
   .add-app-box:focus,
   .index-dragover .add-app-box {
     background-color:#454853;
-    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.1);
   }
 }
 .index-dragover {
