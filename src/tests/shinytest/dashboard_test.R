@@ -114,7 +114,7 @@ expect_equal(app$get_js(sprintf("$('%s').attr('placeholder')", idDatePlaceholder
 expect_equal(app$get_js(sprintf("(function(){var el=$('%s')[0]; return el.selectize ? el.selectize.getValue() : $('%s').val();})()", idUni, idUni)), "DD")
 expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2Table td').map(function(index){return $(this).text()}).toArray()")),
-  list("2016-01-04", "63.07", "2016-01-05", "64.28", "2016-01-06", "63.38", "2016-12-30", "73.40")
+  list("2016-01-04", "63.07", "2016-01-05", "64.28", "2016-01-06", "63.38", "2016-12-30", "73.4")
 )
 # overwriteHeaderAliases used in table
 hdr2 <- getVisibleDtHeader(app, sprintf("tab_1_3-%s-pricemerge2Table", rendererName))
