@@ -599,11 +599,6 @@ server <- function(input, output, session) {
 
         extractAppData(filePath, paste0("~$", appId), modelId, miroProc)
 
-        engineClient$updateModel(appId,
-          userGroups = FALSE,
-          modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip"))
-        )
-
         addDataFiles(appId, dataDirTmp, progressSelector,
           "updateApp",
           appDir = appDirTmp,
@@ -613,6 +608,10 @@ server <- function(input, output, session) {
           appConfig = appConfig, customCallback = function() {
             tryCatch(
               {
+                engineClient$updateModel(appId,
+                  userGroups = FALSE,
+                  modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip"))
+                )
                 moveFilesFromTemp(appId)
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
                   containerEnv = appConfig$containerEnv,
