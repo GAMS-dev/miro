@@ -175,7 +175,7 @@ lint_job:
   before_script:
     - mkdir -p $R_CACHE_ROOTPATH
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
-    - yarn install
+    - yarn install --frozen-lockfile
   script:
     - pre-commit run --all-files
     - ./scripts/fix_copyright.sh
@@ -210,7 +210,7 @@ build_linux_job:
     NODE_OPTIONS: --openssl-legacy-provider
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-    - yarn install
+    - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
     - yarn dist
@@ -487,7 +487,7 @@ build_windows_job:
     CSC_LINK: cert.p12
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
     - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
   script:
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
@@ -531,7 +531,7 @@ build_macos_job:
     GIT_SUBMODULE_STRATEGY: normal
     SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
@@ -576,7 +576,7 @@ build_macos_arm_job:
     GIT_SUBMODULE_STRATEGY: normal
     SKIP_NOTARIZATION: '$[[ inputs.skip-notarization ]]'
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
     - export PATH="/usr/bin:${PATH}"
@@ -623,7 +623,7 @@ test_windows_job:
   variables:
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
     - $env:FORCE_RELEASE = if ("$[[ inputs.force-release ]]" -ceq "true") { "yes" } else { "no" }
   script:
     - 'if ("$[[ inputs.skip-tests ]]" -ceq "true") { "Skipping tests"; Exit }'
@@ -679,7 +679,7 @@ test_macos_job:
     LANG: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
@@ -735,7 +735,7 @@ test_macos_arm_job:
     LANG: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
-    - yarn install
+    - yarn install --frozen-lockfile
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
   script:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
