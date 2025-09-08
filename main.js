@@ -1,5 +1,5 @@
 import {
-  app, BrowserWindow, Menu, TouchBar, ipcMain, dialog, session,
+  app, BrowserWindow, Menu, TouchBar, ipcMain, dialog, session, shell,
 } from 'electron';
 import path from 'node:path';
 import fs from 'fs-extra';
@@ -18,6 +18,7 @@ import verifyApp from './components/verify-app.js';
 import addMiroscen from './components/miroscen-parser.js';
 import AppDataStore from './components/AppDataStore.js';
 import ConfigManager from './components/ConfigManager.js';
+import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
 import {
@@ -41,15 +42,6 @@ const miroDevelopMode = process.env.MIRO_DEV_MODE === 'true' || miroBuildMode;
 if (!DEVELOPMENT_MODE) {
   log.transports.console.level = false;
 }
-(async () => {
-  try {
-    if (!fs.existsSync(miroWorkspaceDir)) {
-      fs.mkdirSync(miroWorkspaceDir);
-    }
-  } catch (e) {
-    log.error('Could not create miro workspace!');
-  }
-})();
 let errMsg;
 const appRootDir = DEVELOPMENT_MODE
   ? app.getAppPath() : path.dirname(process.execPath);
@@ -111,6 +103,7 @@ platform: ${process.platform}, arch: ${process.arch}, \
 version: ${process.getSystemVersion()})...`);
 
 let mainWindow;
+let whatsNewWindow;
 let settingsWindow;
 let checkForUpdateWindow;
 let aboutDialogWindow;
@@ -1077,6 +1070,43 @@ if (!miroDevelopMode) {
   }
 }
 
+async function createWhatsNewWindow() {
+    const whatsNewManager = new WhatsNewManager(configData, path.join(__dirname, 'src', 'whats-new'), miroVersion);
+    const whatsNewContent = await whatsNewManager.getContent();
+    if (whatsNewContent == null) {
+      return;
+    }
+  whatsNewWindow = new BrowserWindow({
+    title: "What's New",
+    width: 760,
+    height: 820,
+    resizable: false,
+    show: false,
+    icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: false,
+      enableRemoteModule: false,
+    },
+  });
+
+  await whatsNewWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(whatsNewContent)}`,
+    { baseURLForDataURL: `file://${path.join(app.getAppPath(), "/")}` });
+  whatsNewWindow.show()
+  whatsNewWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  whatsNewWindow.webContents.on("will-navigate", (event, url) => {
+    const current = whatsNewWindow.webContents.getURL();
+    if (url !== current) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
+}
+
 function createMainWindow(showRunningApps = false, focus = true, onSuccess = null) {
   log.debug('Creating main window..');
   if (mainWindow) {
@@ -1123,6 +1153,7 @@ function createMainWindow(showRunningApps = false, focus = true, onSuccess = nul
       lang.general,
     );
     log.debug(`App data (${appsData.apps.length} app(s)) loaded into main window.`);
+    createWhatsNewWindow()
     if (onSuccess) {
       onSuccess();
     }

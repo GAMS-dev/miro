@@ -587,6 +587,10 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        dialogWhatsNewTitle: {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: ['title', 'welcomeTitle', 'welcomeText', 'noApps', 'btEdit', 'btEditDone', 'btAddExamples', 'appFilesPlaceholder', 'appNamePlaceholder',
         'appDescPlaceholder', 'appDbPathPlaceholder', 'appLogoPlaceholder', 'appDbPathReset', 'editAppInfoText', 'btLaunch', 'btLaunchBase',
@@ -596,7 +600,7 @@ const schema = {
         'dialogErrHdr', 'dialogErrMsg', 'dialogNewAppFilesHdr', 'dialogNewAppFilesMsg', 'dialogNewAppFilesBtn',
         'dialogNewScenFilesHdr', 'dialogNewScenFilesMsg', 'dialogNewScenFilesBtn', 'dialogNewScenFilesFilter',
         'dialogBadFileTypeHdr', 'dialogBadFileTypeMsg', 'dialogCustomCodeHdr', 'dialogCustomCodeMsg', 'dialogCustomCodeBtnAbort',
-        'dialogCustomCodeBtnAdd', 'dialogAddPublicKeyMsg', 'dialogAddPublicKeyBtnTrust',
+        'dialogCustomCodeBtnAdd', 'dialogAddPublicKeyMsg', 'dialogAddPublicKeyBtnTrust', 'dialogWhatsNewTitle',
       ],
     },
     menu: {
@@ -1265,6 +1269,7 @@ const en = {
     dialogCustomCodeBtnAbort: 'No, abort',
     dialogCustomCodeBtnAdd: 'Yes, add anyway',
     dialogAddPublicKeyMsg: 'The app you are about to add contains code that could potentially be harmful to your computer!\n\nThe developer of this application could not be verified (SHA256 fingerprint: %s).\n\nDo you want to trust the developer and add the app anyway?',
+    dialogWhatsNewTitle: 'What\'s New',
     dialogAddPublicKeyBtnTrust: 'Yes, trust this developer',
   },
   menu: {
@@ -1534,6 +1539,7 @@ const de = {
     dialogCustomCodeBtnAbort: 'Nein, abbrechen',
     dialogCustomCodeBtnAdd: 'Ja, trotzdem hinzufügen',
     dialogAddPublicKeyMsg: 'Die Anwendung, die Sie hinzufügen möchten, enthält Code, der möglicherweise schädlich für Ihren Computer ist!\n\nDer Entwickler dieser Anwendung konnte nicht verifiziert werden (SHA256 Fingerabdruck: %s).\n\nMöchten Sie dem Entwickler vertrauen und die Anwendung trotzdem hinzufügen?',
+    dialogWhatsNewTitle: 'Neuigkeiten',
     dialogAddPublicKeyBtnTrust: 'Ja, diesem Entwickler vertrauen',
   },
   menu: {
@@ -1802,6 +1808,7 @@ const cn = {
     dialogCustomCodeBtnAbort: '不，中止',
     dialogCustomCodeBtnAdd: '是的，无论如何添加',
     dialogAddPublicKeyMsg: '您要添加的应用程序包含可能对您的计算机有害的自定义代码！\n\n无法验证此应用程序的开发者（SHA256 指纹：%s）。\n\n您是否要信任开发者和 还是要添加应用程序？',
+    dialogWhatsNewTitle: '新内容',
     dialogAddPublicKeyBtnTrust: '是的，相信这个开发者',
   },
   menu: {

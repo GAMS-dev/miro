@@ -13,6 +13,10 @@ const minPython = '3.8';
 const gamsDirNameRegex = /^(GAMS)?(\d+\.\d+)$/;
 
 const schema = {
+  previousMIROVersion: {
+    type: 'string',
+    minLength: 2,
+  },
   configpath: {
     type: 'string',
     minLength: 2,
@@ -114,6 +118,11 @@ const schema = {
 
 class ConfigManager extends Store {
   constructor(appRootDir, miroWorkspaceDir) {
+    let isNewMiroInstallation = false;
+    if (!fs.existsSync(miroWorkspaceDir)) {
+      isNewMiroInstallation = true;
+      fs.mkdirSync(miroWorkspaceDir);
+    }
     let configPathTmp = miroWorkspaceDir;
     super({
       schema,
@@ -135,7 +144,7 @@ class ConfigManager extends Store {
           name: 'settings',
         });
         ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-          'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+          'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv', 'previousMIROVersion'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
         this.important = superPathConfigData.get('important', []);
@@ -144,13 +153,14 @@ class ConfigManager extends Store {
       }
     }
 
+    this.isNewMiroInstallation = isNewMiroInstallation;
     this.appRootDir = appRootDir;
     this.configpath = configPathTmp;
     this.configpathDefault = miroWorkspaceDir;
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
     ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-      'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+      'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv', 'previousMIROVersion'].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
       }
