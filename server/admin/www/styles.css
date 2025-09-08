@@ -37,6 +37,11 @@
 html,
 body {
     background-color: #e2e3e8;
+    background-image: linear-gradient(to bottom, #e2e3e8, #ffffff);
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    background-repeat: no-repeat;
     font-family: "montserratlight",sans-serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -44,6 +49,7 @@ body {
   body {
       color: #eeeeee;
       background-color: #292D33;
+      background: linear-gradient(to bottom, #292D33, #191B1F);
   }
 }
 :not(input):not(textarea),
@@ -148,6 +154,7 @@ a:hover {
 }
 #btEditWrapper {
   cursor: pointer;
+  font-size: 1.1rem;
 }
 #btEdit:hover {
   transition: 1s ease;
@@ -293,11 +300,11 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
 }
 .app-wrapper {
     position: relative;
@@ -307,15 +314,16 @@ a:hover {
     font-size: 14px;
 }
 .app-box {
-    margin: 65px auto;
+    margin: 30px auto;
     margin-bottom: 32.5px;
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    min-height: 450px;
 }
 @media (prefers-color-scheme: dark) {
   .app-box {
