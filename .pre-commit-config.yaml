@@ -39,6 +39,7 @@ repos:
           (?x)^(
               src/.*|
               server/.*|
+              scripts/.*|
           )$
         additional_dependencies:
           - eslint@8.3.0

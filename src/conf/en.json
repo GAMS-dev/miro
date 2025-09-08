@@ -54,6 +54,7 @@
         "title": "Help",
         "doc": "Documentation",
         "forum": "GAMS Forum",
+        "whatsNew": "What's New",
         "commandPalette": "Command palette",
         "about": "About"
       }
@@ -452,6 +453,12 @@
         "title": "Bad step size",
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
       }
+    },
+    "dialogWhatsNew": {
+      "title": "What's New",
+      "newFeaturesHdr": "New features",
+      "minorImprovementsHdr": "Minor new features and improvements",
+      "cancelButton": "Close"
     },
     "importJobsDialog":{
       "title": "Currently active jobs",

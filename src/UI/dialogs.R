@@ -13,6 +13,31 @@ showReadonlyDialog <- function() {
   ))
 }
 
+showWhatsNewDialog <- function(whatsNewData) {
+  makeSection <- function(title, items) {
+    if (is.null(items) || length(items) == 0) {
+      return(NULL)
+    }
+    tags$div(
+      tags$h4(title),
+      tags$ul(
+        lapply(items, function(x) tags$li(HTML(x)))
+      ),
+      tags$hr()
+    )
+  }
+  showModal(modalDialog(
+    title = lang$nav$dialogWhatsNew$title,
+    tags$div(
+      class = "container-fluid",
+      makeSection(lang$nav$dialogWhatsNew$newFeaturesHdr, whatsNewData$major),
+      makeSection(lang$nav$dialogWhatsNew$minorImprovementsHdr, whatsNewData$minor)
+    ),
+    footer = modalButton(lang$nav$dialogWhatsNew$cancelButton),
+    size = "l", fade = TRUE, easyClose = TRUE
+  ))
+}
+
 showInconsistentOutputDialog <- function() {
   showModal(modalDialog(
     title = lang$nav$dialogInconsistentOutput$title,
