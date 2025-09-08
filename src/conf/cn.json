@@ -54,6 +54,7 @@
         "title":"帮助",
         "doc":"文档",
         "forum": "GAMS Forum",
+        "whatsNew": "最新动态",
         "commandPalette": "命令调色板",
         "about":"关于"
       }
@@ -452,6 +453,12 @@
         "title":"错误的步长大小",
         "desc":"无法处理指定的步长大小。请选择有效的步长,再重试。"
       }
+    },
+    "dialogWhatsNew": {
+      "title": "新内容",
+      "newFeaturesHdr": "New features",
+      "minorImprovementsHdr": "Minor new features and improvements",
+      "cancelButton": "关闭"
     },
     "importJobsDialog":{
         "title":"当前活跃的Hypercube作业",

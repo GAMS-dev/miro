@@ -54,6 +54,7 @@
         "title": "Hilfe",
         "doc": "Dokumentation",
         "forum": "GAMS Forum",
+        "whatsNew": "Neuigkeiten",
         "commandPalette": "Befehlspalette",
         "about": "Über"
       }
@@ -452,6 +453,12 @@
         "title": "Falsche Schrittweite",
         "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
       }
+    },
+    "dialogWhatsNew": {
+      "title": "Neuigkeiten",
+      "newFeaturesHdr": "New features",
+      "minorImprovementsHdr": "Minor new features and improvements",
+      "cancelButton": "Schließen"
     },
     "importJobsDialog":{
       "title": "Derzeit aktive Jobs",

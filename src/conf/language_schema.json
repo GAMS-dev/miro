@@ -222,6 +222,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "whatsNew": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "commandPalette": {
                   "type": "string",
                   "minLength": 1
@@ -231,7 +235,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 5
+              "minProperties": 6
             }
           },
           "minProperties": 3
@@ -1770,6 +1774,29 @@
           },
           "minProperties": 16
         },
+        "dialogWhatsNew": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newFeaturesHdr": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minorImprovementsHdr": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 4
+        },
         "importJobsDialog": {
           "type": "object",
           "additionalProperties": false,
@@ -2456,7 +2483,7 @@
           }
         }
       },
-      "minProperties": 48
+      "minProperties": 49
     },
     "renderers": {
       "description": "language specific objects of renderers",

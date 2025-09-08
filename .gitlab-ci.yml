@@ -179,6 +179,7 @@ lint_job:
   script:
     - pre-commit run --all-files
     - ./scripts/fix_copyright.sh
+    - ./scripts/fix_whats_new.sh
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     R_CACHE_ROOTPATH: ${PRE_COMMIT_HOME}/R.cache

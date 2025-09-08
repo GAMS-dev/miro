@@ -59,6 +59,16 @@ header <- dashboardHeader(
         lang$nav$header$help$forum
       )),
       tags$li(tags$a(
+        href = "#",
+        id = "btOpenWhatsNewDialog",
+        class = "action-button",
+        tags$div(
+          class = "menu-icon-align",
+          tags$i(class = "fa fa-bullhorn")
+        ),
+        lang$nav$header$help$whatsNew
+      )),
+      tags$li(tags$a(
         href = "#", class = "action-button", id = "btShowCommandPalette",
         tags$div(
           class = "menu-icon-align",
