@@ -1,4 +1,5 @@
 $(function () {
+  $('#navHome').removeClass('active');
   const currLocation = window.location.pathname;
   if (!(currLocation.endsWith("app/admin") || currLocation.endsWith("app/admin/"))) {
     let timer;
@@ -17,7 +18,7 @@ $(function () {
       }, 600);
     });
   } else {
-    $('#navAdminPanel').addClass('active').attr('href', '#');
+    $('#navAdminPanel').attr('href', '#').closest('.navbar-nav').addClass('active');
     $("#navbarWrapper").show().attr('href', '#');
   }
 

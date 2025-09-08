@@ -73,7 +73,10 @@
             th:if="${app.id != 'admin'}"
             class="col-xxl-3 col-lg-4 col-sm-6 col-12"
           >
-            <div class="app-box app-box-fixed-height">
+            <div
+              class="app-box launch-app-box app-box-fixed-height"
+              th:data-launch-url="@{/app/}+${app.id}"
+            >
               <div>
                 <div style="height: 200px">
                   <div
@@ -95,13 +98,6 @@
                       class="app-desc app-desc-fixed app-item-desc"
                     ></p>
                   </div>
-                </div>
-                <div class="dropdown mb-3 btn-launch-wrapper">
-                  <a
-                    class="btn btn-outline-secondary btn-launch launch-app"
-                    th:href="@{/app/}+${app.id}"
-                    >Launch</a
-                  >`
                 </div>
               </div>
             </div>

@@ -1,7 +1,13 @@
-$(document).ready(function() {
+(function ($) {
     if ($(".app-wrapper .app-box").length === 0) {
       $("#noAppsInfo").show();
     }
+    $('.launch-app-box').on('click', function() {
+        const url = this.dataset.launchUrl;
+        if (url) {
+          window.location.href = url;
+        }
+    });
 
     /* ===== Stickyfill ===== */
     /* Ref: https://github.com/wilddeer/stickyfill */
@@ -14,18 +20,6 @@ $(document).ready(function() {
     $(window).on('load resize', function() {
         $(window).trigger('scroll');
     });
-
-    /* Activate scrollspy menu */
-    $('body').scrollspy({target: '#doc-menu', offset: 100});
-
-    /* Smooth scrolling */
-	$('a.scrollto').on('click', function(e){
-        //store hash
-        var target = this.hash;
-        e.preventDefault();
-		$('body').scrollTo(target, 800, {offset: 0, 'axis':'y'});
-
-	});
 
 
     /* ======= jQuery Responsive equal heights plugin ======= */
@@ -41,10 +35,6 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).ekkoLightbox();
     });
-
-
-});
-(function ($) {
     /**
      * jquery-match-height master by @liabru
      * http://brm.io/jquery-match-height/
@@ -434,23 +424,11 @@ $(document).ready(function() {
 
     });
 
-    $( document ).ready(function($) {
-        $('button.navbar-toggle').click(function () {
-            if ($(window).width() < 1075) {
-                $(this).toggleClass('collapsed');
-                $('#navbar-collapse-gams').toggleClass('collapse');
-            }
-        });
-        $('#gams-scope .matchHeight').matchHeight();
-
-        $('.dropdown').hover(
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn('fast');
-            },
-
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut('fast');
-            }
-        );
+    $('button.navbar-toggle').on('click', function () {
+        if ($(window).width() < 1075) {
+            $(this).toggleClass('collapsed');
+            $('#navbar-collapse-gams').toggleClass('collapse');
+        }
     });
+    $('#gams-scope .matchHeight').matchHeight();
 })(jQuery);

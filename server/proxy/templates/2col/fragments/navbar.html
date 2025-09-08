@@ -42,36 +42,45 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" th:href="@{/}"> Home </a>
+          <a
+            id="navHome"
+            class="navbar-brand navbar-nav active"
+            th:href="@{/}"
+          >
+            My Apps
+          </a>
         </div>
         <div class="container-fluid collapse navbar-collapse" id="mainNavbar">
           <ul class="nav navbar-nav" th:if="${isAdmin}">
             <li>
-              <a
-                id="navAdminPanel"
-                th:href="@{/app/}+'admin'"
-                th:if="${isAdmin}"
-                >Admin Panel</a
-              >
+              <a id="navAdminPanel" th:href="@{/app/}+'admin'">Admin Panel</a>
             </li>
           </ul>
-          <div
-            class="navbar-form navbar-right btn-logout"
-            style="margin-right: 0"
+          <ul
+            class="nav navbar-nav navbar-right navbar-user"
+            sec:authorize="isAuthenticated()"
           >
-            <a
-              role="button"
-              class="btn btn-navbar"
-              th:href="@{/logout}"
-              th:if="${isLoggedIn}"
-              >Sign Out</a
-            >
-          </div>
-          <div class="navbar-right" sec:authorize="isAuthenticated()">
-            <span class="navbar-text">
-              <span sec:authentication="name"></span>
-            </span>
-          </div>
+            <li class="dropdown">
+              <a
+                href="#"
+                class="dropdown-toggle"
+                data-toggle="dropdown"
+                role="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span class="user-name" sec:authentication="name">User</span>
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-right user-menu">
+                <li>
+                  <a href="https://gams.com/miro/" target="_blank">Help</a>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li><a th:href="@{/logout}">Sign Out</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </nav>
     </div>

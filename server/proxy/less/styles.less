@@ -208,16 +208,15 @@ body {
     font-size: 14px;
 }
 .app-box {
-    margin: 65px auto;
+    margin: 30px auto;
     margin-bottom: 32.5px;
     padding: 45px 30px;
     position: relative;
     border-radius: 5px;
     background-clip: padding-box;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     .responsiveDark({
       background: @main-bg;
-      border-color: #f0f0f0;
       border: 1px solid @app-box-border;
     },
     {
@@ -225,8 +224,13 @@ body {
       border: 1px solid @main-bg-dark;
     });
 }
+.launch-app-box:hover {
+  cursor: pointer;
+  box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.20);
+  transform: scale(1.005);
+}
 .app-box-fixed-height {
-    height: 500px;
+    height: 450px;
 }
 .app-logo {
   height:180px;
@@ -256,41 +260,6 @@ body {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-}
-.btn-launch-wrapper {
-    text-align: right;
-    height:60px;
-}
-.btn-launch {
-  .responsiveDark({
-    background-color: @primary-color;
-    color: @launch-text-color;
-  },
-  {
-    background-color: @primary-color-dark;
-    color: @launch-text-color-dark;
-  });
-  text-shadow: none;
-  border: none;
-  width: 100%;
-  height: 100%;
-  font-size: large;
-  position: absolute;
-  line-height:2.5;
-  bottom: 0;
-  left: 0;
-}
-.btn-launch:hover,
-.btn-launch:active,
-.btn-launch:focus {
-    .responsiveDark({
-      color: #494d55 !important;
-      background-color: @primary-color-focus !important;
-    },
-    {
-      color: @btn-text-dark !important;
-      background-color: @primary-color-focus-dark !important;
-    });
 }
 .btn-navbar {
     .responsiveDark({
@@ -375,13 +344,11 @@ a:focus {
   text-decoration: none;
 }
 .navbar-inverse {
-  background-color: rgb(73, 77, 85) !important;
-  .responsiveDark({
-     border-color: @primary-color;
-  },
-  {
-     border-color: @primary-color-dark;
-  });
+  background-color: #2D3748 !important;
+  background-image: linear-gradient(to right, #4A5568, #2D3748);
+}
+.navbar-fixed-top {
+  border: 0;
 }
 .navbar-inverse a, .navbar-inverse .navbar-text {
   color: rgba(255, 255, 255, 0.85) !important;
@@ -609,11 +576,6 @@ select {
     padding: 30px 15px;
   }
 }
-.navbar-nav .active,
-.navbar-nav .active:hover {
-  background-color: #000 !important;
-  color: #fff !important;
-}
 .no-apps-container {
   text-align:center;
   margin-top: 200px;
@@ -626,11 +588,34 @@ select {
 }
 #mainNavbar {
   .responsiveDark({
-    border-bottom: 4px solid @primary-color;
+    border-bottom: 3px solid @primary-color;
   },
   {
-    border-bottom: 4px solid @primary-color-dark;
+    border-bottom: 3px solid @primary-color-dark;
   });
+}
+.navbar-right {
+  margin: unset;
+}
+.navbar-nav .dropdown-menu {
+  background: #2D3748;
+}
+.navbar-inverse .navbar-brand {
+  height: unset;
+}
+.navbar-nav {
+  border-bottom: 3px solid transparent;
+}
+.navbar-inverse .navbar-nav.active, .navbar-inverse .navbar-brand:active, .navbar-inverse .navbar-brand:hover, .navbar-nav:hover, .navbar-nav:active, .navbar-nav .active {
+  .responsiveDark({
+    border-bottom: 3px solid @primary-color;
+  },
+  {
+    border-bottom: 3px solid @primary-color-dark;
+  });
+}
+.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
+  background: #080808;
 }
 
 .form-signin {
