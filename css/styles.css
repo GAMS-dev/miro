@@ -310,6 +310,10 @@ body:not(.edit-mode-active) .launch-app-box:hover {
     background: #393e46;
     border-color: #393e46;
   }
+  .card {
+    background: #393e46;
+    border-color: #393e46;
+  }
 }
 .app-box-fixed-height {
     height: 450px;
