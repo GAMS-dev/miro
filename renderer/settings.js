@@ -1,10 +1,12 @@
 const { ipcRenderer, shell } = require('electron');
 window.Bootstrap = require('bootstrap');
 const $ = require('jquery');
-const { OAuthClient } = require('../components/oauth.cjs');
+const { OAuthClient } = require('./oauth');
 const {
-  EngineConfig, getEngineAuthProviders,
-  getEngineUserInfo, getEngineJwt,
+  EngineConfig,
+  getEngineAuthProviders,
+  getEngineUserInfo,
+  getEngineJwt,
   EngineError,
 } = require('../components/engine.cjs');
 
@@ -24,7 +26,9 @@ let engineUrlAbortController;
 let lang = {};
 
 $('#helpLink').on('click', () => {
-  shell.openExternal('https://gams.com/miro/deployment.html#sbs-customize-app');
+  shell.openExternal(
+    'https://gams.com/miro/deployment.html#sbs-customize-app',
+  );
 });
 let oldConfig = {};
 const newConfig = {};
@@ -55,25 +59,35 @@ const pathConfig = {
   configpath: {
     requiresRestart: true,
   },
-  gamspath: {
-  },
-  pythonpath: {
-  },
-  rpath: {
-  },
-  logpath: {
-  },
+  gamspath: {},
+  pythonpath: {},
+  rpath: {},
+  logpath: {},
 };
 
-[inputLogLifetime, inputLanguage, inputColorTheme, inputLogLevel,
-  cbLaunchExternal, cbRemoteExecution,
-  $('#engineNs'), $('#engineUsername'), $('#enginePassword'), $('#engineJWT')].forEach((el) => {
+[
+  inputLogLifetime,
+  inputLanguage,
+  inputColorTheme,
+  inputLogLevel,
+  cbLaunchExternal,
+  cbRemoteExecution,
+  $('#engineNs'),
+  $('#engineUsername'),
+  $('#enginePassword'),
+  $('#engineJWT'),
+].forEach((el) => {
   el.on('change', () => {
     saveButton.attr('disabled', false);
   });
 });
 
-[$('#engineNs'), $('#engineUsername'), $('#enginePassword'), $('#engineJWT')].forEach((el) => {
+[
+  $('#engineNs'),
+  $('#engineUsername'),
+  $('#enginePassword'),
+  $('#engineJWT'),
+].forEach((el) => {
   el.on('input', () => {
     saveButton.attr('disabled', false);
   });
@@ -88,7 +102,11 @@ function updateEnvTable(envData) {
   if (envData && Object.keys(envData).length > 0) {
     btEnvReset.attr('disabled', false);
     newConfig.miroEnv = envData;
-    $('#env tbody').html(Object.entries(envData).map((entry) => `<tr><td>${entry[0]}</td><td>${entry[1]}</td></tr>`).join(''));
+    $('#env tbody').html(
+      Object.entries(envData)
+        .map((entry) => `<tr><td>${entry[0]}</td><td>${entry[1]}</td></tr>`)
+        .join(''),
+    );
   } else {
     newConfig.miroEnv = null;
     btEnvReset.attr('disabled', true);
@@ -112,37 +130,55 @@ $('#btEnvReset').on('click', () => {
 const fetchEngineLoginMethods = async (url, options) => {
   $('#engineLoginPassword').hide();
   $('#engineLoginJWT').hide();
-  $('#engineLoginMethod').empty().append($('<option>', {
-    value: '_main',
-    text: lang.engineLoginMethodUserPass,
-  }), $('<option>', {
-    value: '_jwt',
-    text: 'JWT',
-  }));
+  $('#engineLoginMethod')
+    .empty()
+    .append(
+      $('<option>', {
+        value: '_main',
+        text: lang.engineLoginMethodUserPass,
+      }),
+      $('<option>', {
+        value: '_jwt',
+        text: 'JWT',
+      }),
+    );
   try {
-    const authProvidersTmp = await getEngineAuthProviders(url, options?.signal);
-    engineConfig.oauthProviders = authProvidersTmp.filter((idp) => {
-      if (idp?.oidc != null || idp?.oauth != null) {
-        $('#engineLoginMethod').append($('<option>', {
-          value: idp.name,
-          text: idp.label,
-        }));
-        return true;
-      }
-      return false;
-    }).map((idp) => idp.name);
-    engineConfig.ldapProviders = authProvidersTmp.filter((idp) => {
-      if (idp?.is_ldap_identity_provider === true) {
-        $('#engineLoginMethod').append($('<option>', {
-          value: idp.name,
-          text: idp.label,
-        }));
-        return true;
-      }
-      return false;
-    }).map((idp) => idp.name);
+    const authProvidersTmp = await getEngineAuthProviders(
+      url,
+      options?.signal,
+    );
+    engineConfig.oauthProviders = authProvidersTmp
+      .filter((idp) => {
+        if (idp?.oidc != null || idp?.oauth != null) {
+          $('#engineLoginMethod').append(
+            $('<option>', {
+              value: idp.name,
+              text: idp.label,
+            }),
+          );
+          return true;
+        }
+        return false;
+      })
+      .map((idp) => idp.name);
+    engineConfig.ldapProviders = authProvidersTmp
+      .filter((idp) => {
+        if (idp?.is_ldap_identity_provider === true) {
+          $('#engineLoginMethod').append(
+            $('<option>', {
+              value: idp.name,
+              text: idp.label,
+            }),
+          );
+          return true;
+        }
+        return false;
+      })
+      .map((idp) => idp.name);
   } catch (err) {
-    __electronLog.info(`Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`);
+    __electronLog.info(
+      `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
+    );
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
@@ -201,41 +237,52 @@ $('#engineUrl').on('input', async function onEngineUrlInput() {
     engineUrlAbortController.abort();
   }
   engineUrlAbortController = new AbortController();
-  fetchEngineLoginMethods(enteredUrl, { signal: engineUrlAbortController.signal });
+  fetchEngineLoginMethods(enteredUrl, {
+    signal: engineUrlAbortController.signal,
+  });
 });
 
-$('#engineLoginMethod').on('change', async function onEngineLoginMethodInput() {
-  saveButton.attr('disabled', false);
-  const loginMethod = $(this).val();
-  $('#engineLoginMethod').removeClass('is-invalid is-valid');
-  $('#engineLoginPassword').hide();
-  $('#engineLoginJWT').hide();
-  if (loginMethod === '' || loginMethod == null) {
-    return;
-  }
-  if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
-    $('#engineLoginPassword').show();
-    return;
-  }
-  if (loginMethod === '_jwt') {
-    $('#engineLoginJWT').show();
-    return;
-  }
-  oAuthClient = await OAuthClient.build();
-  let engineUIUrl = engineConfig.url;
-  if (engineUIUrl.endsWith('/api')) {
-    engineUIUrl = engineUIUrl.substring(0, engineUIUrl.length - '/api'.length);
-  }
-  const ncPublicKey = await oAuthClient.getB64URLEncodedPublicKey();
-  const queryParams = [
-    'nc_id=com.gams.miro',
-    'nc_redirect_uri=/auth/engine/oauth',
-    `provider=${loginMethod}`,
-    `nc_public_key=${ncPublicKey}`,
-  ];
-  engineConfig.jwt = null;
-  shell.openExternal(`${engineUIUrl}/login?${queryParams.join('&')}`);
-});
+$('#engineLoginMethod').on(
+  'change',
+  async function onEngineLoginMethodInput() {
+    saveButton.attr('disabled', false);
+    const loginMethod = $(this).val();
+    $('#engineLoginMethod').removeClass('is-invalid is-valid');
+    $('#engineLoginPassword').hide();
+    $('#engineLoginJWT').hide();
+    if (loginMethod === '' || loginMethod == null) {
+      return;
+    }
+    if (
+      loginMethod === '_main' ||
+      engineConfig.ldapProviders.includes(loginMethod)
+    ) {
+      $('#engineLoginPassword').show();
+      return;
+    }
+    if (loginMethod === '_jwt') {
+      $('#engineLoginJWT').show();
+      return;
+    }
+    oAuthClient = await OAuthClient.build();
+    let engineUIUrl = engineConfig.url;
+    if (engineUIUrl.endsWith('/api')) {
+      engineUIUrl = engineUIUrl.substring(
+        0,
+        engineUIUrl.length - '/api'.length,
+      );
+    }
+    const ncPublicKey = await oAuthClient.getB64URLEncodedPublicKey();
+    const queryParams = [
+      'nc_id=com.gams.miro',
+      'nc_redirect_uri=/auth/engine/oauth',
+      `provider=${loginMethod}`,
+      `nc_public_key=${ncPublicKey}`,
+    ];
+    engineConfig.jwt = null;
+    shell.openExternal(`${engineUIUrl}/login?${queryParams.join('&')}`);
+  },
+);
 
 ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
   try {
@@ -250,11 +297,15 @@ ipcRenderer.on('oauth-response-received', async (_, oauthResponse) => {
     __electronLog.warn(`Problems decoding JWT. Error message: ${err.message}`);
     $('#engineLoginMethod').addClass('is-invalid');
     $('#engineLoginMethod').removeClass('is-valid');
-    ipcRenderer.send('show-error-msg', {
-      type: 'error',
-      title: 'Could not decrypt JWT',
-      message: 'Problems decrypting JWT. Check logs for more info.',
-    }, 'settings');
+    ipcRenderer.send(
+      'show-error-msg',
+      {
+        type: 'error',
+        title: 'Could not decrypt JWT',
+        message: 'Problems decrypting JWT. Check logs for more info.',
+      },
+      'settings',
+    );
   }
 });
 
@@ -284,13 +335,22 @@ saveButton.on('click', async () => {
     }
     newConfig.logLevel = inputLogLevel.val();
     saveButton.attr('disabled', true);
-    newConfig.remoteExecution = cbRemoteExecution.is(':checked') && engineConfig.url != null;
+    newConfig.remoteExecution =
+      cbRemoteExecution.is(':checked') && engineConfig.url != null;
     if (newConfig.remoteExecution) {
       const loginMethod = $('#engineLoginMethod').val();
       let jwt;
-      if (loginMethod === '_main' || engineConfig.ldapProviders.includes(loginMethod)) {
+      if (
+        loginMethod === '_main' ||
+        engineConfig.ldapProviders.includes(loginMethod)
+      ) {
         try {
-          jwt = await getEngineJwt($('#engineUsername').val(), $('#enginePassword').val(), loginMethod, engineConfig);
+          jwt = await getEngineJwt(
+            $('#engineUsername').val(),
+            $('#enginePassword').val(),
+            loginMethod,
+            engineConfig,
+          );
         } catch (err) {
           __electronLog.info(`Failed to log in Engine user: ${err.message}`);
           $('#engine-tab').tab('show');
@@ -299,11 +359,16 @@ saveButton.on('click', async () => {
             $('#enginePassword').addClass('is-invalid');
             return;
           }
-          ipcRenderer.send('show-error-msg', {
-            type: 'error',
-            title: 'Unexpected error',
-            message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
-          }, 'settings');
+          ipcRenderer.send(
+            'show-error-msg',
+            {
+              type: 'error',
+              title: 'Unexpected error',
+              message:
+                'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
+            },
+            'settings',
+          );
           return;
         }
         $('#engineUsername').removeClass('is-invalid');
@@ -320,7 +385,11 @@ saveButton.on('click', async () => {
         }
       }
       try {
-        const engineUserInfo = await getEngineUserInfo(jwt, engineConfig, $('#engineNs').val().trim());
+        const engineUserInfo = await getEngineUserInfo(
+          jwt,
+          engineConfig,
+          $('#engineNs').val().trim(),
+        );
         newConfig.remoteConfig = engineUserInfo;
         $('#engineNs').removeClass('is-invalid');
         $('#engineJWT').removeClass('is-invalid');
@@ -330,9 +399,11 @@ saveButton.on('click', async () => {
         if (err instanceof EngineError) {
           if (err.field === 'namespace') {
             if (err.statusCode === 404) {
-              document.getElementById('engineNsValidation').innerText = lang.engineNsValidation;
+              document.getElementById('engineNsValidation').innerText =
+                lang.engineNsValidation;
             } else {
-              document.getElementById('engineNsValidation').innerText = lang.engineNsValidationPerm;
+              document.getElementById('engineNsValidation').innerText =
+                lang.engineNsValidationPerm;
             }
             $('#engineNs').addClass('is-invalid');
             return;
@@ -346,11 +417,16 @@ saveButton.on('click', async () => {
           }
           __electronLog.error(`Invalid field in error object: ${err.field}`);
         }
-        ipcRenderer.send('show-error-msg', {
-          type: 'error',
-          title: 'Unexpected error',
-          message: 'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
-        }, 'settings');
+        ipcRenderer.send(
+          'show-error-msg',
+          {
+            type: 'error',
+            title: 'Unexpected error',
+            message:
+              'An unexpected error occurred when logging into GAMS Engine. Please check the log for more information.',
+          },
+          'settings',
+        );
         return;
       }
     } else {
@@ -389,8 +465,7 @@ ipcRenderer.on('settings-new-path-selected', (e, id, pathSelected) => {
   saveButton.attr('disabled', false);
   pathValidating = false;
   newConfig[id] = pathSelected;
-  $(`#btPathSelect_${id}`)
-    .siblings('label').text(pathSelected);
+  $(`#btPathSelect_${id}`).siblings('label').text(pathSelected);
 
   if (pathConfig[id].requiresRestart === true) {
     requireRestart = true;
@@ -405,18 +480,23 @@ ipcRenderer.on('update-miroEnv', (e, envData) => {
 Object.keys(pathConfig).forEach((id) => {
   $(`#btPathSelect_${id}`).on('click', genPathSelectHandler(id));
 
-  $(`#btPathSelect_${id}`).siblings('.btn-reset').on('click', function resetClickPath() {
-    const elKey = this.dataset.key;
-    newConfig[elKey] = '';
-    saveButton.attr('disabled', false);
-    if (Object.keys(pathConfig).find((id2) => id2 === elKey
-      && pathConfig[id2].requiresRestart === true)) {
-      requireRestart = true;
-    }
-    const $this = $(this);
-    $this.siblings('label').text(defaultValues[elKey]);
-    $this.hide();
-  });
+  $(`#btPathSelect_${id}`)
+    .siblings('.btn-reset')
+    .on('click', function resetClickPath() {
+      const elKey = this.dataset.key;
+      newConfig[elKey] = '';
+      saveButton.attr('disabled', false);
+      if (
+        Object.keys(pathConfig).find(
+          (id2) => id2 === elKey && pathConfig[id2].requiresRestart === true,
+        )
+      ) {
+        requireRestart = true;
+      }
+      const $this = $(this);
+      $this.siblings('label').text(defaultValues[elKey]);
+      $this.hide();
+    });
 });
 $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   saveButton.attr('disabled', false);
@@ -441,122 +521,210 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
       __electronLog.error('COULD NOT FIND INPUT EL!!');
       return;
     }
-    inputElTmp.val(Object.keys(optionAliasMap[elKey])
-      .find((key) => optionAliasMap[elKey][key] === defaultValues[elKey]));
+    inputElTmp.val(
+      Object.keys(optionAliasMap[elKey]).find(
+        (key) => optionAliasMap[elKey][key] === defaultValues[elKey],
+      ),
+    );
   } else if (elKey === 'logLevel') {
     inputLogLevel.val(defaultValues[elKey]);
   }
   $(this).hide();
 });
 
-ipcRenderer.on('settings-loaded', (e, data, defaults, langData, customColorsFileExists) => {
-  if (langData != null && lang.title == null) {
-    lang = langData;
-    ['colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
-      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine', 'colorThemeOptionCustom'].forEach((id) => {
-      optionAliasMap.colorTheme[lang[id]] = optionAliasMap.colorTheme[id];
-      delete optionAliasMap.colorTheme[id];
-    });
-    ['title', 'general-tab', 'paths-tab', 'env-tab', 'launchBrowser', 'browserReset', 'generalLanguage', 'languageReset',
-      'generalRemoteExec', 'remoteExecReset', 'generalLogging', 'loggingReset', 'generalLoglife', 'loglifeReset',
-      'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset',
-      'pathPython', 'pathPythonSelect', 'pathPythonReset', 'pathLog', 'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect',
-      'pathRReset', 'needHelp', 'btSave', 'btEnvImport', 'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal',
-      'generalColorTheme', 'colorThemeReset', 'colorThemeOptionDefault', 'colorThemeOptionBlackWhite',
-      'colorThemeOptionForest', 'colorThemeOptionTawny', 'colorThemeOptionDarkBlue', 'colorThemeOptionRedWine', 'colorThemeOptionCustom',
-      'engineUrlLabel', 'engineNsLabel', 'engineLoginMethodLabel', 'engineUsernameLabel', 'enginePasswordLabel',
-      'engineJWTLabel', 'engineNsValidation', 'engineLoginMethodValidation', 'engineLoginMethodValidationSuccess',
-      'engineUsernameValidation', 'enginePasswordValidation', 'engineJWTValidation'].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.innerText = lang[id];
-      }
-    });
-    noEnvDesc = lang.noEnvDesc;
-    document.getElementById('btCancel').value = lang.btCancel;
-    ['pathMiroappSelect', 'pathGamsSelect', 'pathPythonSelect', 'pathLogSelect', 'pathRSelect'].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        $(el).addClass('browseLang').attr('content-after', lang.browseFiles);
-      }
-    });
-    if (customColorsFileExists !== true) {
-      $('#colorThemeOptionCustom').remove();
-    }
-  }
-  oldConfig = data;
-  saveButton.attr('disabled', true);
-  defaultValues = defaults;
-  if (!data.important) {
-    importantKeys = [];
-  } else if (Array.isArray(data.important)) {
-    importantKeys = data.important;
-  } else {
-    importantKeys = [data.important];
-  }
-  requireRestart = false;
-  Object.entries(data).forEach(async ([key, value]) => {
-    if (key === 'important') {
-      return;
-    }
-    let newValue = value;
-    let isImportant = false;
-    if (importantKeys.find((el) => el === key)) {
-      isImportant = true;
-    }
-    if (newValue == null || newValue === '') {
-      newValue = defaultValues[key];
-    } else if (!isImportant) {
-      if (['launchExternal', 'remoteExecution', 'logLifeTime',
-        'language', 'colorTheme', 'logLevel'].includes(key)) {
-        if (newValue !== defaultValues[key]) {
-          $(`[data-key="${key}"]`).show();
+ipcRenderer.on(
+  'settings-loaded',
+  (e, data, defaults, langData, customColorsFileExists) => {
+    if (langData != null && lang.title == null) {
+      lang = langData;
+      [
+        'colorThemeOptionDefault',
+        'colorThemeOptionBlackWhite',
+        'colorThemeOptionForest',
+        'colorThemeOptionTawny',
+        'colorThemeOptionDarkBlue',
+        'colorThemeOptionRedWine',
+        'colorThemeOptionCustom',
+      ].forEach((id) => {
+        optionAliasMap.colorTheme[lang[id]] = optionAliasMap.colorTheme[id];
+        delete optionAliasMap.colorTheme[id];
+      });
+      [
+        'title',
+        'general-tab',
+        'paths-tab',
+        'env-tab',
+        'launchBrowser',
+        'browserReset',
+        'generalLanguage',
+        'languageReset',
+        'generalRemoteExec',
+        'remoteExecReset',
+        'generalLogging',
+        'loggingReset',
+        'generalLoglife',
+        'loglifeReset',
+        'pathMiroapp',
+        'pathMiroappSelect',
+        'resetPathMiroapp',
+        'pathGams',
+        'pathGamsSelect',
+        'pathGamsReset',
+        'pathPython',
+        'pathPythonSelect',
+        'pathPythonReset',
+        'pathLog',
+        'pathLogSelect',
+        'pathLogReset',
+        'pathR',
+        'pathRSelect',
+        'pathRReset',
+        'needHelp',
+        'btSave',
+        'btEnvImport',
+        'btEnvExport',
+        'btEnvReset',
+        'miroEnvHdrVar',
+        'miroEnvHdrVal',
+        'generalColorTheme',
+        'colorThemeReset',
+        'colorThemeOptionDefault',
+        'colorThemeOptionBlackWhite',
+        'colorThemeOptionForest',
+        'colorThemeOptionTawny',
+        'colorThemeOptionDarkBlue',
+        'colorThemeOptionRedWine',
+        'colorThemeOptionCustom',
+        'engineUrlLabel',
+        'engineNsLabel',
+        'engineLoginMethodLabel',
+        'engineUsernameLabel',
+        'enginePasswordLabel',
+        'engineJWTLabel',
+        'engineNsValidation',
+        'engineLoginMethodValidation',
+        'engineLoginMethodValidationSuccess',
+        'engineUsernameValidation',
+        'enginePasswordValidation',
+        'engineJWTValidation',
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerText = lang[id];
         }
-      } else {
-        $(`#btPathSelect_${key}`).siblings('.btn-reset').show();
+      });
+      noEnvDesc = lang.noEnvDesc;
+      document.getElementById('btCancel').value = lang.btCancel;
+      [
+        'pathMiroappSelect',
+        'pathGamsSelect',
+        'pathPythonSelect',
+        'pathLogSelect',
+        'pathRSelect',
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          $(el).addClass('browseLang').attr('content-after', lang.browseFiles);
+        }
+      });
+      if (customColorsFileExists !== true) {
+        $('#colorThemeOptionCustom').remove();
       }
     }
-    if (key === 'launchExternal') {
-      cbLaunchExternal.prop('checked', newValue);
-      if (isImportant) {
-        cbLaunchExternal.attr('disabled', true);
-      }
-    } else if (key === 'remoteExecution') {
-      cbRemoteExecution.prop('checked', newValue);
-      if (newValue === true) {
-        $('#engineLoginForm').show();
-      }
-      if (isImportant) {
-        cbRemoteExecution.attr('disabled', true);
-      }
-    } else if (key === 'remoteConfig') {
-      if (newValue.url != null) {
-        engineConfig.init();
-        $('#engineUrl').val(newValue.url);
-        $('#engineNs').val(newValue.namespace);
-        $('#engineJWT').val(newValue.jwt);
-        fetchEngineLoginMethods(newValue.url, { defaultMethod: '_jwt', clearJWT: false });
-        if (isImportant) {
-          $('#engineLoginMethod').attr('disabled', true);
-          $('#engineUrl').attr('disabled', true);
-          $('#engineNs').attr('disabled', true);
-          $('#engineJWT').attr('disabled', true);
-        }
-      }
-    } else if (['logLifeTime', 'logLevel', 'language', 'colorTheme'].find((el) => el === key)) {
-      $(`#${key}`).val(Object.keys(optionAliasMap).includes(key) ? Object.keys(optionAliasMap[key])
-        .find((keyp) => optionAliasMap[key][keyp] === newValue) : newValue);
-      if (isImportant) {
-        $(`#${key}`).attr('disabled', true);
-      }
-    } else if (key === 'miroEnv') {
-      updateEnvTable(newValue);
+    oldConfig = data;
+    saveButton.attr('disabled', true);
+    defaultValues = defaults;
+    if (!data.important) {
+      importantKeys = [];
+    } else if (Array.isArray(data.important)) {
+      importantKeys = data.important;
     } else {
-      const pathSelectEl = $(`#btPathSelect_${key}`);
-      if (isImportant) {
-        pathSelectEl.addClass('path-disabled');
-      }
-      pathSelectEl.siblings('label').text(newValue);
+      importantKeys = [data.important];
     }
-  });
-});
+    requireRestart = false;
+    Object.entries(data).forEach(async ([key, value]) => {
+      if (key === 'important') {
+        return;
+      }
+      let newValue = value;
+      let isImportant = false;
+      if (importantKeys.find((el) => el === key)) {
+        isImportant = true;
+      }
+      if (newValue == null || newValue === '') {
+        newValue = defaultValues[key];
+      } else if (!isImportant) {
+        if (
+          [
+            'launchExternal',
+            'remoteExecution',
+            'logLifeTime',
+            'language',
+            'colorTheme',
+            'logLevel',
+          ].includes(key)
+        ) {
+          if (newValue !== defaultValues[key]) {
+            $(`[data-key="${key}"]`).show();
+          }
+        } else {
+          $(`#btPathSelect_${key}`).siblings('.btn-reset').show();
+        }
+      }
+      if (key === 'launchExternal') {
+        cbLaunchExternal.prop('checked', newValue);
+        if (isImportant) {
+          cbLaunchExternal.attr('disabled', true);
+        }
+      } else if (key === 'remoteExecution') {
+        cbRemoteExecution.prop('checked', newValue);
+        if (newValue === true) {
+          $('#engineLoginForm').show();
+        }
+        if (isImportant) {
+          cbRemoteExecution.attr('disabled', true);
+        }
+      } else if (key === 'remoteConfig') {
+        if (newValue.url != null) {
+          engineConfig.init();
+          $('#engineUrl').val(newValue.url);
+          $('#engineNs').val(newValue.namespace);
+          $('#engineJWT').val(newValue.jwt);
+          fetchEngineLoginMethods(newValue.url, {
+            defaultMethod: '_jwt',
+            clearJWT: false,
+          });
+          if (isImportant) {
+            $('#engineLoginMethod').attr('disabled', true);
+            $('#engineUrl').attr('disabled', true);
+            $('#engineNs').attr('disabled', true);
+            $('#engineJWT').attr('disabled', true);
+          }
+        }
+      } else if (
+        ['logLifeTime', 'logLevel', 'language', 'colorTheme'].find(
+          (el) => el === key,
+        )
+      ) {
+        $(`#${key}`).val(
+          Object.keys(optionAliasMap).includes(key)
+            ? Object.keys(optionAliasMap[key]).find(
+                (keyp) => optionAliasMap[key][keyp] === newValue,
+              )
+            : newValue,
+        );
+        if (isImportant) {
+          $(`#${key}`).attr('disabled', true);
+        }
+      } else if (key === 'miroEnv') {
+        updateEnvTable(newValue);
+      } else {
+        const pathSelectEl = $(`#btPathSelect_${key}`);
+        if (isImportant) {
+          pathSelectEl.addClass('path-disabled');
+        }
+        pathSelectEl.siblings('label').text(newValue);
+      }
+    });
+  },
+);

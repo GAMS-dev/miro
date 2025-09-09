@@ -5,7 +5,13 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { format } from 'node:util';
 
-async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appPath) {
+async function verifyApp(
+  configData,
+  libPath,
+  miroResourcePath,
+  mainWindow,
+  appPath,
+) {
   const rpath = configData.get('rpath');
   const workspacePath = configData.getConfigPath();
 
@@ -13,7 +19,8 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
 
   let publicKeys = [];
   if (fs.existsSync(knownKeysPath)) {
-    publicKeys = fs.readdirSync(knownKeysPath, { withFileTypes: true })
+    publicKeys = fs
+      .readdirSync(knownKeysPath, { withFileTypes: true })
       .filter((file) => !file.isDirectory())
       .map((file) => ['-p', path.join(knownKeysPath, file.name)]);
   }
@@ -28,7 +35,8 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
   };
 
   const getFingerprint = (output) => {
-    const fingerprintTmp = output.split('\n')
+    const fingerprintTmp = output
+      .split('\n')
       .filter((line) => line.startsWith('mfprnt:::'))
       .map((line) => line.substring(9));
     if (fingerprintTmp.length > 0) {
@@ -40,9 +48,17 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
   const verifySignature = async (keys) => {
     const procPromise = execa(
       path.join(await rpath, 'bin', 'R'),
-      ['--no-echo', '--no-restore', '--vanilla',
-        '-f', path.join(miroResourcePath, 'tools', 'verify_app', 'verify.R'),
-        '--args', '-m', path.normalize(appPath), ...keys],
+      [
+        '--no-echo',
+        '--no-restore',
+        '--vanilla',
+        '-f',
+        path.join(miroResourcePath, 'tools', 'verify_app', 'verify.R'),
+        '--args',
+        '-m',
+        path.normalize(appPath),
+        ...keys,
+      ],
       {
         env: {
           WITHIN_ELECTRON: '1',
@@ -58,20 +74,28 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
     );
     try {
       const { all, exitCode } = await procPromise;
-      log.debug(`Verify-app-signature-process finished with exit code: ${exitCode}. Output: ${all.toString()}`);
+      log.debug(
+        `Verify-app-signature-process finished with exit code: ${exitCode}. Output: ${all.toString()}`,
+      );
       const fingerprint = getFingerprint(all);
       return { exitCode, fingerprint };
     } catch (err) {
       const { all, exitCode } = err;
-      log.debug(`Verify-app-signature-process finished with exit code: ${exitCode}. Output: ${all.toString()}`);
+      log.debug(
+        `Verify-app-signature-process finished with exit code: ${exitCode}. Output: ${all.toString()}`,
+      );
       return { exitCode, fingerprint: null };
     }
   };
 
   try {
-    const { exitCode, fingerprint } = await verifySignature(publicKeys.flat(1));
+    const { exitCode, fingerprint } = await verifySignature(
+      publicKeys.flat(1),
+    );
     if (exitCode === 0) {
-      log.info(`MIRO app with valid signature found (fingerprint: ${fingerprint}).`);
+      log.info(
+        `MIRO app with valid signature found (fingerprint: ${fingerprint}).`,
+      );
       return true;
     }
     if (exitCode === 1) {
@@ -85,7 +109,10 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
         log.info('App contains no public key.');
         return false;
       }
-      const newKeyOutput = await verifySignature(['-p', path.join(appPath, '.miro_pubkey')]);
+      const newKeyOutput = await verifySignature([
+        '-p',
+        path.join(appPath, '.miro_pubkey'),
+      ]);
       if (newKeyOutput.exitCode !== 0) {
         log.info('MIRO app contains an invalid public key.');
         showError(global.lang.main.ErrorAppInvalidSig);
@@ -94,9 +121,14 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
       const addNewKeySelection = dialog.showMessageBoxSync(mainWindow, {
         type: 'warning',
         title: global.lang.general.dialogCustomCodeHdr,
-        message: format(global.lang.general.dialogAddPublicKeyMsg, newKeyOutput.fingerprint),
-        buttons: [global.lang.general.dialogAddPublicKeyBtnTrust,
-          global.lang.general.dialogCustomCodeBtnAbort],
+        message: format(
+          global.lang.general.dialogAddPublicKeyMsg,
+          newKeyOutput.fingerprint,
+        ),
+        buttons: [
+          global.lang.general.dialogAddPublicKeyBtnTrust,
+          global.lang.general.dialogCustomCodeBtnAbort,
+        ],
         cancelId: 1,
       });
       if (addNewKeySelection !== 0) {
@@ -115,9 +147,11 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
         return keyName;
       };
       let i = 0;
-      // eslint-disable-next-line no-constant-condition
       while (true) {
-        const keyNameTmp = path.join(knownKeysPath, path.basename(appPath) + createKeySuffix());
+        const keyNameTmp = path.join(
+          knownKeysPath,
+          path.basename(appPath) + createKeySuffix(),
+        );
         if (!fs.existsSync(keyNameTmp)) {
           fs.copyFileSync(path.join(appPath, '.miro_pubkey'), keyNameTmp);
           break;
@@ -129,7 +163,9 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
           return false;
         }
       }
-      log.debug(`Added new RSA public key with fingerprint: ${newKeyOutput.fingerprint} to list of trusted keys.`);
+      log.debug(
+        `Added new RSA public key with fingerprint: ${newKeyOutput.fingerprint} to list of trusted keys.`,
+      );
       return true;
     }
     if (exitCode === 3) {
@@ -138,8 +174,10 @@ async function verifyApp(configData, libPath, miroResourcePath, mainWindow, appP
         type: 'warning',
         title: global.lang.general.dialogCustomCodeHdr,
         message: global.lang.general.dialogCustomCodeMsg,
-        buttons: [global.lang.general.dialogCustomCodeBtnAdd,
-          global.lang.general.dialogCustomCodeBtnAbort],
+        buttons: [
+          global.lang.general.dialogCustomCodeBtnAdd,
+          global.lang.general.dialogCustomCodeBtnAbort,
+        ],
         cancelId: 1,
       });
       if (addAppSelection !== 0) {

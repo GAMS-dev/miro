@@ -38,7 +38,7 @@ const schema = {
           items: {
             type: 'string',
             minLength: 1,
-          }
+          },
         },
         apiversion: {
           type: 'integer',
@@ -57,14 +57,18 @@ const schema = {
           minItems: 1,
           items: {
             type: 'string',
-            enum: [
-              'base',
-              'hcube',
-            ],
+            enum: ['base', 'hcube'],
           },
         },
       },
-      required: ['id', 'title', 'modesAvailable', 'usetmpdir', 'apiversion', 'miroversion'],
+      required: [
+        'id',
+        'title',
+        'modesAvailable',
+        'usetmpdir',
+        'apiversion',
+        'miroversion',
+      ],
     },
   },
 };
@@ -120,7 +124,9 @@ class AppDataStore extends Store {
   }
 
   isUniqueId(id) {
-    if (this.apps.filter((t) => t.id.toLowerCase() === id.toLowerCase()).length) {
+    if (
+      this.apps.filter((t) => t.id.toLowerCase() === id.toLowerCase()).length
+    ) {
       return false;
     }
     return true;

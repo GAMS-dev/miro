@@ -8,7 +8,14 @@ const jQuery = require('jquery');
 const $ = require('jquery');
 
 let lang = {};
-const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
+const supportedDataFileTypes = [
+  'gdx',
+  'miroscen',
+  'xlsx',
+  'xlsm',
+  'xls',
+  'zip',
+];
 const appPath = querystring.parse(global.location.search)['?appPath'];
 $(() => {
   const appsWrapper = $('#appsWrapper');
@@ -56,7 +63,9 @@ $(() => {
   };
 
   function unicodeToHTMLID(str) {
-    const idTmp = window.btoa(encodeURIComponent(str)).replace(/\+/g, '-')
+    const idTmp = window
+      .btoa(encodeURIComponent(str))
+      .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
     return `a${idTmp}`;
@@ -87,18 +96,25 @@ $(() => {
       return;
     }
     const oldAppData = appData.find((app) => app.id === appID);
-    const appDbPath = oldAppData.dbpath ? oldAppData.dbpath : lang.appDbPathPlaceholder;
+    const appDbPath = oldAppData.dbpath
+      ? oldAppData.dbpath
+      : lang.appDbPathPlaceholder;
     let logoPath = path.join(appPath, 'static', 'default_logo.png');
     if (oldAppData.logoPath) {
       logoPath = path.join(dataPath, appID, oldAppData.logoPath);
     }
     newAppConfig = null;
-    $(`#appLogo_${unicodeToHTMLID(appID)}`).css('background-image', `url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}')`);
+    $(`#appLogo_${unicodeToHTMLID(appID)}`).css(
+      'background-image',
+      `url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}')`,
+    );
     $(`#appTitle_${unicodeToHTMLID(appID)}`).text(oldAppData.title);
     $(`#appDesc_${unicodeToHTMLID(appID)}`).text(oldAppData.description);
     $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).text(appDbPath);
     if (appDbPath === lang.appDbPathPlaceholder) {
-      $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).siblings('.reset-db-path').hide();
+      $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`)
+        .siblings('.reset-db-path')
+        .hide();
     }
   }
   function exitOverlayMode() {
@@ -107,8 +123,14 @@ $(() => {
     }
     if ($overlay.is(':visible')) {
       $('.app-logo').empty().removeClass('drag-drop-area');
-      $('.app-item-title').removeClass('editable').addClass('app-title-fixed').attr('contenteditable', false);
-      $('.app-item-desc').removeClass('editable').addClass('app-desc-fixed').attr('contenteditable', false);
+      $('.app-item-title')
+        .removeClass('editable')
+        .addClass('app-title-fixed')
+        .attr('contenteditable', false);
+      $('.app-item-desc')
+        .removeClass('editable')
+        .addClass('app-desc-fixed')
+        .attr('contenteditable', false);
       $('.app-id-field').show();
       $('.db-path-field').slideUp(200);
       $('.edit-bt-group').slideUp(200);
@@ -187,10 +209,14 @@ $(() => {
                                  <div class="add-app-text-wrapper position-relative text-center">
                                      <p>${lang.appFilesPlaceholder}</p>
 
-                                     ${appData.length === 0 ? `
+                                     ${
+                                       appData.length === 0
+                                         ? `
                                        <div class="empty small">or</div>
                                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btAddExamplesInForm">Add Example Apps</button>
-                                     ` : ''}
+                                     `
+                                         : ''
+                                     }
                                  </div>
                                </div>
                              </div>
@@ -217,16 +243,23 @@ $(() => {
 
   $body.on('click', '.app-box', function appBoxClick(e) {
     const $target = $(e.target);
-    if (!isInEditMode || $overlay.is(':visible')
-      || $target.hasClass('cancel-btn')
-      || $target.hasClass('delete-app-button')
-      || $target.parents('.delete-app-button').length) {
+    if (
+      !isInEditMode ||
+      $overlay.is(':visible') ||
+      $target.hasClass('cancel-btn') ||
+      $target.hasClass('delete-app-button') ||
+      $target.parents('.delete-app-button').length
+    ) {
       return;
     }
     const $this = $(this);
     const appID = HTMLIDToUnicode(this.dataset.id);
     if (appID) {
-      newAppConfig = $.extend(true, {}, appData.find((app) => app.id === appID));
+      newAppConfig = $.extend(
+        true,
+        {},
+        appData.find((app) => app.id === appID),
+      );
       if (!newAppConfig) {
         ipcRenderer.send('show-error-msg', {
           type: 'error',
@@ -235,11 +268,23 @@ $(() => {
         });
         return;
       }
-      $(`#appBox_${unicodeToHTMLID(appID)}`).removeClass('app-box-fixed-height');
-      $(`#appLogo_${unicodeToHTMLID(appID)}`).html(`<div class='drag-drop-area-text'>${lang.appLogoPlaceholder}</div>`).addClass('drag-drop-area');
-      $(`#appTitle_${unicodeToHTMLID(appID)}`).addClass('editable').removeClass('app-title-fixed').attr('contenteditable', true);
+      $(`#appBox_${unicodeToHTMLID(appID)}`).removeClass(
+        'app-box-fixed-height',
+      );
+      $(`#appLogo_${unicodeToHTMLID(appID)}`)
+        .html(
+          `<div class='drag-drop-area-text'>${lang.appLogoPlaceholder}</div>`,
+        )
+        .addClass('drag-drop-area');
+      $(`#appTitle_${unicodeToHTMLID(appID)}`)
+        .addClass('editable')
+        .removeClass('app-title-fixed')
+        .attr('contenteditable', true);
       const appDescField = $(`#appDesc_${unicodeToHTMLID(appID)}`);
-      appDescField.addClass('editable').removeClass('app-desc-fixed').attr('contenteditable', true);
+      appDescField
+        .addClass('editable')
+        .removeClass('app-desc-fixed')
+        .attr('contenteditable', true);
       if (!appDescField.text().trim()) {
         appDescField.text(lang.appDescPlaceholder);
       }
@@ -288,7 +333,9 @@ $(() => {
       });
       return;
     }
-    const appTitle = $(`#appTitle_${unicodeToHTMLID(appID)}`).text().trim();
+    const appTitle = $(`#appTitle_${unicodeToHTMLID(appID)}`)
+      .text()
+      .trim();
     if (!appTitle || appTitle === lang.appNamePlaceholder) {
       ipcRenderer.send('show-error-msg', {
         type: 'info',
@@ -298,7 +345,9 @@ $(() => {
       return;
     }
     newAppConfig.title = appTitle;
-    const appDescription = $(`#appDesc_${unicodeToHTMLID(appID)}`).text().trim();
+    const appDescription = $(`#appDesc_${unicodeToHTMLID(appID)}`)
+      .text()
+      .trim();
     if (appDescription && appDescription !== lang.appDescPlaceholder) {
       newAppConfig.description = appDescription;
     } else {
@@ -308,7 +357,9 @@ $(() => {
   });
   appsWrapper.on('click', '.reset-db-path', function resetDbPathHandler() {
     const appID = HTMLIDToUnicode(this.dataset.id);
-    $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).text(lang.appDbPathPlaceholder);
+    $(`#appDbPathLabel_${unicodeToHTMLID(appID)}`).text(
+      lang.appDbPathPlaceholder,
+    );
     $(this).hide();
     if (newAppConfig) {
       delete newAppConfig.dbpath;
@@ -363,22 +414,36 @@ $(() => {
     $('.app-box').removeClass('drag-drop-area-dragover');
     $this.removeClass('index-dragover').removeClass('drag-drop-area-dragover');
     $this.children('.drag-drop-area-text').text(lang.appLogoPlaceholder);
-    const filePath = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
-    ipcRenderer.send('validate-logo', filePath, HTMLIDToUnicode(this.dataset.id));
+    const filePath = [...e.originalEvent.dataTransfer.files].map((el) =>
+      webUtils.getPathForFile(el),
+    );
+    ipcRenderer.send(
+      'validate-logo',
+      filePath,
+      HTMLIDToUnicode(this.dataset.id),
+    );
   });
   appsWrapper.on('click', '.app-logo', function browseLogoHandler() {
     if (!isInEditMode || !$overlay.is(':visible')) {
       return;
     }
-    ipcRenderer.send('browse-app', {
-      title: lang.dialogSelectAppLogoHdr,
-      message: lang.dialogSelectAppLogoMsg,
-      buttonLabel: lang.dialogSelectAppLogoBtn,
-      properties: ['openFile'],
-      filters: [
-        { name: lang.dialogSelectAppLogoFilter, extensions: ['jpg', 'png', 'jpeg'] },
-      ],
-    }, 'validateLogo', HTMLIDToUnicode(this.dataset.id));
+    ipcRenderer.send(
+      'browse-app',
+      {
+        title: lang.dialogSelectAppLogoHdr,
+        message: lang.dialogSelectAppLogoMsg,
+        buttonLabel: lang.dialogSelectAppLogoBtn,
+        properties: ['openFile'],
+        filters: [
+          {
+            name: lang.dialogSelectAppLogoFilter,
+            extensions: ['jpg', 'png', 'jpeg'],
+          },
+        ],
+      },
+      'validateLogo',
+      HTMLIDToUnicode(this.dataset.id),
+    );
   });
   appsWrapper.on('dragenter', '#addAppBox', (e) => {
     if (!isInEditMode || reorderAppsMode) {
@@ -415,7 +480,9 @@ $(() => {
     dragAddAppCounter = 0;
     $('#addAppBox').removeClass('index-dragover');
     $('#addApp').removeClass('btn-add-app-dragover');
-    const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
+    const filePaths = [...e.originalEvent.dataTransfer.files].map((el) =>
+      webUtils.getPathForFile(el),
+    );
     ipcRenderer.send('validate-app', filePaths);
   });
   appsWrapper.on('dragover', '.drag-drop-area', (e) => {
@@ -449,27 +516,38 @@ $(() => {
     e.preventDefault();
     e.stopPropagation();
     dragAddAppCounter = 0;
-    $('#newAppFiles').removeClass('index-dragover').text(lang.appFilesPlaceholder);
-    const filePaths = [...e.originalEvent.dataTransfer.files].map((el) => webUtils.getPathForFile(el));
+    $('#newAppFiles')
+      .removeClass('index-dragover')
+      .text(lang.appFilesPlaceholder);
+    const filePaths = [...e.originalEvent.dataTransfer.files].map((el) =>
+      webUtils.getPathForFile(el),
+    );
     ipcRenderer.send('validate-app', filePaths);
   });
   appsWrapper.on('click', '#newAppFiles', () => {
-    ipcRenderer.send('browse-app', {
-      title: lang.dialogNewAppFilesHdr,
-      message: lang.dialogNewAppFilesMsg,
-      buttonLabel: lang.dialogNewAppFilesBtn,
-      properties: ['openFile'],
-      filters: [
-        { name: lang.dialogNewAppFilesFilter, extensions: ['miroapp'] },
-      ],
-    }, 'validateApp');
+    ipcRenderer.send(
+      'browse-app',
+      {
+        title: lang.dialogNewAppFilesHdr,
+        message: lang.dialogNewAppFilesMsg,
+        buttonLabel: lang.dialogNewAppFilesBtn,
+        properties: ['openFile'],
+        filters: [
+          { name: lang.dialogNewAppFilesFilter, extensions: ['miroapp'] },
+        ],
+      },
+      'validateApp',
+    );
   });
   appsWrapper.on('dragstart', '.app-box', (e) => {
     reorderAppsMode = true;
     if (!isInEditMode || !reorderAppsMode) {
       return;
     }
-    e.originalEvent.dataTransfer.setData('text/plain', e.originalEvent.target.id);
+    e.originalEvent.dataTransfer.setData(
+      'text/plain',
+      e.originalEvent.target.id,
+    );
     e.originalEvent.target.style.opacity = 0.5;
   });
   appsWrapper.on('dragenter', '.app-box', (e) => {
@@ -513,13 +591,16 @@ $(() => {
       $(spinnerId).show();
       const filesTmp = [...e.originalEvent.dataTransfer.files];
       const filePaths = filesTmp.map((el) => webUtils.getPathForFile(el));
-      const fileTypes = filesTmp.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
+      const fileTypes = filesTmp.map((fileTmp) =>
+        fileTmp.name.split('.').pop().toLowerCase(),
+      );
       if (fileTypes.length === 1 && fileTypes[0] === 'miroapp') {
         ipcRenderer.send('update-app', filePaths, idTo);
         return;
       }
-      const invalidFileTypes = fileTypes
-        .filter((fileType) => !supportedDataFileTypes.includes(fileType));
+      const invalidFileTypes = fileTypes.filter(
+        (fileType) => !supportedDataFileTypes.includes(fileType),
+      );
       if (invalidFileTypes.length === 0) {
         ipcRenderer.send('update-app-data', filePaths, idTo);
         return;
@@ -528,14 +609,19 @@ $(() => {
       ipcRenderer.send('show-error-msg', {
         type: 'info',
         title: lang.dialogBadFileTypeHdr,
-        message: util.format(lang.dialogBadFileTypeMsg, supportedDataFileTypes.join(',')),
+        message: util.format(
+          lang.dialogBadFileTypeMsg,
+          supportedDataFileTypes.join(','),
+        ),
       });
       return;
     }
 
     const idFromRaw = e.originalEvent.dataTransfer.getData('text/plain');
     const idFrom = idFromRaw.slice(7);
-    const idxFrom = appData.findIndex((el) => el.id === HTMLIDToUnicode(idFrom));
+    const idxFrom = appData.findIndex(
+      (el) => el.id === HTMLIDToUnicode(idFrom),
+    );
     const idxTo = appData.findIndex((el) => el.id === idTo);
     [appData[idxFrom], appData[idxTo]] = [appData[idxTo], appData[idxFrom]];
     ipcRenderer.send('update-apps', appData);
@@ -548,16 +634,24 @@ $(() => {
     toggleEditMode();
   });
   appsWrapper.on('click', '.app-db-path', function browseDbPathHandler() {
-    ipcRenderer.send('browse-app', {
-      title: lang.dialogSelectDbPathHdr,
-      message: lang.dialogSelectDbPathMsg,
-      buttonLabel: lang.dialogSelectDbPathBtn,
-      properties: ['openDirectory', 'createDirectory'],
-    }, 'dbpath-received', HTMLIDToUnicode(this.dataset.id));
+    ipcRenderer.send(
+      'browse-app',
+      {
+        title: lang.dialogSelectDbPathHdr,
+        message: lang.dialogSelectDbPathMsg,
+        buttonLabel: lang.dialogSelectDbPathBtn,
+        properties: ['openDirectory', 'createDirectory'],
+      },
+      'dbpath-received',
+      HTMLIDToUnicode(this.dataset.id),
+    );
   });
   appsWrapper.on('click', '.launch-app', function launchAppHandler() {
     const appID = HTMLIDToUnicode(this.dataset.id);
-    if (isInEditMode || $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).is(':visible')) {
+    if (
+      isInEditMode ||
+      $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).is(':visible')
+    ) {
       return;
     }
     if (!appID) {
@@ -577,27 +671,37 @@ $(() => {
     appDataTmp.dbpath = HTMLIDToUnicode(appDataTmp.dbpath);
     ipcRenderer.send('launch-app', appDataTmp);
   });
-  ipcRenderer.on('apps-received', (e, apps, appDataPath, startup = false, deactivateEditMode = true, appsActive = [], langData = null) => {
-    if (isInEditMode) {
-      toggleEditMode();
-    }
-    if (langData != null && lang.btLaunch == null) {
-      lang = langData;
-      ['title', 'btEdit', 'noApps', 'btAddExamples'].forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.innerText = lang[id];
-        }
-      });
-    }
-    appData = apps;
-    dataPath = appDataPath;
-    const appItems = apps.reduce((html, app) => {
-      let logoPath = path.join(appPath, 'static', 'default_logo.png');
-      if (app.logoPath) {
-        logoPath = path.join(appDataPath, app.id, app.logoPath);
+  ipcRenderer.on(
+    'apps-received',
+    (
+      e,
+      apps,
+      appDataPath,
+      startup = false,
+      deactivateEditMode = true,
+      appsActive = [],
+      langData = null,
+    ) => {
+      if (isInEditMode) {
+        toggleEditMode();
       }
-      return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${unicodeToHTMLID(app.id)}"
+      if (langData != null && lang.btLaunch == null) {
+        lang = langData;
+        ['title', 'btEdit', 'noApps', 'btAddExamples'].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.innerText = lang[id];
+          }
+        });
+      }
+      appData = apps;
+      dataPath = appDataPath;
+      const appItems = apps.reduce((html, app) => {
+        let logoPath = path.join(appPath, 'static', 'default_logo.png');
+        if (app.logoPath) {
+          logoPath = path.join(appDataPath, app.id, app.logoPath);
+        }
+        return `${html}<div class="col-xxl-3 col-lg-4 col-6 miro-app-item" data-id="${unicodeToHTMLID(app.id)}"
                  data-usetmp="${app.usetmpdir}" data-mode="${app.modesAvailable[0]}"
                  data-apiver="${app.apiversion}" data-mirover="${app.miroversion}">
                    <div id="appBox_${unicodeToHTMLID(app.id)}"
@@ -641,12 +745,20 @@ $(() => {
                            <div class="app-id-field" style="display:none;" title="${escapeHtml(app.id)}">
                             <small>ID: <i>${escapeHtml(app.id)}</i></small>
                            </div>
-                           ${(app.version != null && app.version !== '') ? `<div class="app-id-field app-version-field" style="display:none;" title="${escapeHtml(app.version)}">
+                           ${
+                             app.version != null && app.version !== ''
+                               ? `<div class="app-id-field app-version-field" style="display:none;" title="${escapeHtml(app.version)}">
                             <small><i>${escapeHtml(app.version)}</i></small>
-                           </div>`: ''}
-                           ${(app.authors != null && app.authors.length > 0) ? `<div class="app-id-field app-authors-field" style="display:none;" title="${escapeHtml(app.authors.join(', '))}">
+                           </div>`
+                               : ''
+                           }
+                           ${
+                             app.authors != null && app.authors.length > 0
+                               ? `<div class="app-id-field app-authors-field" style="display:none;" title="${escapeHtml(app.authors.join(', '))}">
                             <small><i>by ${escapeHtml(app.authors.join(', '))}</i></small>
-                          </div>`: ''}
+                          </div>`
+                               : ''
+                           }
                        </div>
                    </div>
                    <div style="text-align:right;display:none;" class="edit-bt-group">
@@ -657,49 +769,50 @@ $(() => {
                    <a class="delete-app-button app-corner-button" data-id="${unicodeToHTMLID(app.id)}" style="display:none;"><i class="fas fa-times"></i></a>
                  </div>
                </div>`;
-    }, '');
-    const addAppWrapperHTMLFull = `<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-6" style="display:none;">
+      }, '');
+      const addAppWrapperHTMLFull = `<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-6" style="display:none;">
                                     ${addAppWrapperHTML}
                                   </div>`;
-    loadingScreen.hide();
-    if (appItems.length !== 0) {
-      btEditWrapper.show();
-      appsWrapper.html(`${appItems}${addAppWrapperHTMLFull}<div class="edit-info" style="display:none;">
+      loadingScreen.hide();
+      if (appItems.length !== 0) {
+        btEditWrapper.show();
+        appsWrapper.html(`${appItems}${addAppWrapperHTMLFull}<div class="edit-info" style="display:none;">
                           <p class="edit-info-text"><img class="edit-info-img img-fluid"
-                          src="${pathToFileURL(path.join(
-      appPath,
-      'static',
-      'arrow.png',
-    ))}" width="45px" align="middle" alt="arrow">${lang.editAppInfoText}</p>
+                          src="${pathToFileURL(
+                            path.join(appPath, 'static', 'arrow.png'),
+                          )}" width="45px" align="middle" alt="arrow">${lang.editAppInfoText}</p>
                       </div>`);
-      noAppsNotice.hide();
-    } else {
-      btEditWrapper.hide();
-      if (startup) {
-        animationScreen.css('display', 'flex');
-        setTimeout(() => { animationScreen.fadeOut(200); }, 1800);
-      }
+        noAppsNotice.hide();
+      } else {
+        btEditWrapper.hide();
+        if (startup) {
+          animationScreen.css('display', 'flex');
+          setTimeout(() => {
+            animationScreen.fadeOut(200);
+          }, 1800);
+        }
 
-     const welcomeTextHTML = `<div class="empty-state-text">
+        const welcomeTextHTML = `<div class="empty-state-text">
                                 <h1>${lang.welcomeTitle}<br>${lang.title}</h1>
                                 <p class="lead text-muted">${lang.welcomeText}</p>
                               </div>`;
-     const emptyStateLayout = `<div class="empty-state-container">
+        const emptyStateLayout = `<div class="empty-state-container">
                               <div id="addAppWrapper">${addAppWrapperHTML}</div>
                               ${welcomeTextHTML}
                             </div>`;
-      appsWrapper.html(emptyStateLayout);
-      // appsWrapper.html(welcomeTextHTML + addAppWrapperHTMLFull);
-      noAppsNotice.hide();
+        appsWrapper.html(emptyStateLayout);
+        // appsWrapper.html(welcomeTextHTML + addAppWrapperHTMLFull);
+        noAppsNotice.hide();
 
-      if (startup && !isInEditMode) {
+        if (startup && !isInEditMode) {
+          toggleEditMode();
+        }
+      }
+      if (deactivateEditMode === false) {
         toggleEditMode();
       }
-    }
-    if (deactivateEditMode === false) {
-      toggleEditMode();
-    }
-  });
+    },
+  );
   $('#downloadR').click(() => {
     shell.openExternal('https://gams.com/miro/download.html');
   });
@@ -748,7 +861,10 @@ $(() => {
     }
     newAppConfig.logoPath = logoData.path;
     newAppConfig.logoNeedsMove = true;
-    logoEl.css('background-image', `url('${pathToFileURL(newAppConfig.logoPath)}?v=${new Date().getTime()}')`);
+    logoEl.css(
+      'background-image',
+      `url('${pathToFileURL(newAppConfig.logoPath)}?v=${new Date().getTime()}')`,
+    );
   });
   ipcRenderer.on('validated-logo-received', (e, logoData) => {
     if (!newAppConfig) {
@@ -761,7 +877,10 @@ $(() => {
     } else {
       logoEl = $(`appLogo_${unicodeToHTMLID(appID)}`);
     }
-    logoEl.css('background-image', `url('${pathToFileURL(logoData.path)}?v=${new Date().getTime()}')`);
+    logoEl.css(
+      'background-image',
+      `url('${pathToFileURL(logoData.path)}?v=${new Date().getTime()}')`,
+    );
   });
   ipcRenderer.on('app-validated', (e, appConf) => {
     expandAddAppForm();
@@ -770,7 +889,10 @@ $(() => {
     const appDescField = $('#newAppDesc');
     $('#btAddApp').disabled = false;
     if (appConf.logoPathTmp) {
-      $('#newAppLogo').css('background-image', `url('${pathToFileURL(appConf.logoPathTmp)}?v=${new Date().getTime()}')`);
+      $('#newAppLogo').css(
+        'background-image',
+        `url('${pathToFileURL(appConf.logoPathTmp)}?v=${new Date().getTime()}')`,
+      );
       delete newAppConfig.logoPathTmp;
     }
     if (appNameField.text().trim() === lang.appNamePlaceholder) {
@@ -780,8 +902,10 @@ $(() => {
         appNameField.text(appConf.id);
       }
     }
-    if (appConf.description
-      && appDescField.text().trim() === lang.appDescPlaceholder) {
+    if (
+      appConf.description &&
+      appDescField.text().trim() === lang.appDescPlaceholder
+    ) {
       appDescField.text(appConf.description);
     }
     $('#newAppFiles').css('display', 'none');
@@ -800,7 +924,9 @@ $(() => {
       if (progress === 0) {
         $(spinnerId).show();
       }
-      $(progressId).css('width', `${progress}%`).attr('aria-valuenow', progress);
+      $(progressId)
+        .css('width', `${progress}%`)
+        .attr('aria-valuenow', progress);
     }
   });
   ipcRenderer.on('toggle-loading-screen-progress', (e, toggle) => {
@@ -814,22 +940,27 @@ $(() => {
     }
   });
   ipcRenderer.on('loading-screen-progress', (e, progress) => {
-    $('#loadingScreenProgress').css('width', `${progress}%`).attr('aria-valuenow', progress);
+    $('#loadingScreenProgress')
+      .css('width', `${progress}%`)
+      .attr('aria-valuenow', progress);
     if (progress === -1) {
       $('#loadingScreenProgressWrapper').hide();
       $('body').css('overflow', '');
     }
   });
-  ipcRenderer.on('activate-edit-mode', (e, openNewAppForm, scrollToBottom = false) => {
-    if (openNewAppForm) {
-      expandAddAppForm();
-    } else if (!isInEditMode) {
-      toggleEditMode();
-    }
-    if (scrollToBottom) {
-      $('html, body').scrollTop($(document).height());
-    }
-  });
+  ipcRenderer.on(
+    'activate-edit-mode',
+    (e, openNewAppForm, scrollToBottom = false) => {
+      if (openNewAppForm) {
+        expandAddAppForm();
+      } else if (!isInEditMode) {
+        toggleEditMode();
+      }
+      if (scrollToBottom) {
+        $('html, body').scrollTop($(document).height());
+      }
+    },
+  );
   ipcRenderer.on('app-closed', (e, appID) => {
     $(`#iconActive_${unicodeToHTMLID(appID)}`).fadeOut(200);
     $(`#appLoadingScreen_${unicodeToHTMLID(appID)}`).hide();
@@ -859,24 +990,15 @@ $(() => {
     });
     $('#installRPkgModal').modal('show');
   });
-  ipcRenderer.on(
-    'install-r-packages-stdout',
-    (e, data) => {
-      const logBox = $('#updateRPkgStatusLog');
-      logBox.append(document.createTextNode(data));
-      setTimeout(
-        () => {
-          logBox[0].scrollTop = logBox[0].scrollHeight;
-        },
-        200,
-      );
-    },
-  );
+  ipcRenderer.on('install-r-packages-stdout', (e, data) => {
+    const logBox = $('#updateRPkgStatusLog');
+    logBox.append(document.createTextNode(data));
+    setTimeout(() => {
+      logBox[0].scrollTop = logBox[0].scrollHeight;
+    }, 200);
+  });
   ipcRenderer.on('install-r-packages-installed', () => {
-    setTimeout(
-      () => $('#installRPkgModal').modal('hide'),
-      1000,
-    );
+    setTimeout(() => $('#installRPkgModal').modal('hide'), 1000);
   });
   $('#cancelInstallRPkgBtn').click(() => {
     ipcRenderer.send('kill-r-pkg-install');
