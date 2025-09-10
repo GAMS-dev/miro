@@ -106,12 +106,33 @@ export default defineConfig([
     files: ['renderer/**/*.js'],
     languageOptions: {
       sourceType: 'module',
-      globals: { ...globals.browser, ...globals.es2024 },
+      globals: { ...globals.browser, ...globals.es2024, $: 'readonly' },
     },
     rules: {
       // Prevent accidental Node-only APIs in renderer
       // (flip to "error" once you’re confident)
       'import/no-nodejs-modules': 'warn',
+    },
+  },
+
+  // ----------  PRELOAD (Node + limited DOM) ----------
+  {
+    files: ['preload/**/*.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: { ...globals.node, ...globals.browser },
+    },
+    rules: {
+      // Encourage safe bridging
+      'import/extensions': ['error', 'ignorePackages', { js: 'always' }],
+      'no-restricted-properties': [
+        'warn',
+        {
+          object: 'window',
+          property: 'require',
+          message: 'Expose via contextBridge in preload.',
+        },
+      ],
     },
   },
 

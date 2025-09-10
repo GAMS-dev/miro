@@ -1036,17 +1036,22 @@ function openAboutDialog() {
     title: 'About GAMS MIRO',
     width: 600,
     height: 380,
-    resizable: false,
     show: false,
-    frame: false,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    alwaysOnTop: true,
+    autoHideMenuBar: true,
     icon:
       process.platform === 'linux'
         ? path.join(__dirname, 'static', 'icon_64x64.png')
         : undefined,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: false,
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload', 'about.js'),
     },
   });
   aboutDialogWindow.loadFile(path.join(__dirname, 'renderer', 'about.html'), {
@@ -1055,6 +1060,18 @@ function openAboutDialog() {
       miroRelease,
       btClose: lang.update.btClose,
     },
+  });
+  aboutDialogWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  aboutDialogWindow.webContents.on('will-navigate', (event, url) => {
+    const current = whatsNewWindow.webContents.getURL();
+    if (url !== current) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
   });
   aboutDialogWindow.once('ready-to-show', async () => {
     log.debug('About dialog ready to show.');
