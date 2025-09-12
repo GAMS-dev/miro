@@ -1,6 +1,6 @@
-data.table, 1.17.4
+data.table, 1.17.8
 cpp11, 0.5.2
-xfun, 0.45
+xfun, 0.53
 fastmap, 1.2.0
 backports, 1.5.0
 assertthat, 0.2.1
@@ -9,13 +9,13 @@ glue, 1.8.0
 fansi, 1.0.6
 cli, 3.6.5
 utf8, 1.2.6
-Rcpp, 1.0.14
-R6, 2.5.1
+Rcpp, 1.1.0
+R6, 2.6.1
 BH, 1.87.0-1
-magrittr, 2.0.3
+magrittr, 2.0.4
 rlang, 1.1.6
 ellipsis, 0.3.2
-later, 1.4.2
+later, 1.4.4
 promises, 1.3.3
 httpuv, 1.6.16
 mime, 0.13
@@ -23,14 +23,14 @@ jsonlite
 digest, 0.6.37
 sourcetools, 0.1.7-1
 xtable, 1.8-4
-curl, 6.3.0
-V8, 6.0.4
+curl, 7.0.0
+V8, 7.0.0
 base64enc, 0.1-3
 htmltools, 0.5.8.1
 jquerylib, 0.1.4
 withr, 3.0.0
 leaflet.providers, 2.0.0
-commonmark, 1.9.5
+commonmark, 2.0.0
 cachem, 1.1.0
 memoise, 2.0.1
 fontawesome, 0.5.3
@@ -43,7 +43,7 @@ bslib, 0.9.0
 shiny
 shinyAce, 0.4.4
 colorspace, 2.1-1
-purrr, 1.0.4
+purrr, 1.1.0
 yaml, 2.3.10
 labeling, 0.4.3
 munsell, 0.5.1
@@ -61,11 +61,11 @@ raster, 3.4-13
 farver, 2.1.2
 scales, 1.4.0
 zeallot, 0.2.0
-crosstalk, 1.2.1
+crosstalk, 1.2.2
 DT
 gdxrrwMIRO
 leaflet
-pillar, 1.10.2
+pillar, 1.11.0
 tibble, 3.3.0
 generics, 0.1.4
 timechange, 0.3.0
@@ -79,7 +79,7 @@ stringi, 1.8.7
 DBI, 1.2.3
 blob, 1.2.4
 hms, 1.1.3
-stringr, 1.5.1
+stringr, 1.5.2
 tidyr, 1.3.1
 httr, 1.4.7
 plotly
@@ -93,7 +93,7 @@ cellranger, 1.1.0
 progress, 1.2.3
 lambda.r, 1.2.4
 futile.options, 1.0.1
-zoo, 1.8-12
+zoo, 1.8-14
 globals, 0.18.0
 listenv, 0.9.1
 processx, 3.8.6
@@ -104,8 +104,8 @@ zip, 2.3.3
 leaflet.minicharts, 0.6.2
 xts, 0.14.1
 dygraphs, 1.1.1.6
-parallelly, 1.45.0
-future, 1.58.0
+parallelly, 1.45.1
+future, 1.67.0
 bit, 4.6.0
 bit64, 4.6.0-1
 tzdb, 0.5.0
@@ -115,4 +115,4 @@ miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.4.1
+RSQLite, 2.4.3
