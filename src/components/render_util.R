@@ -262,10 +262,10 @@ dashboardPrepareData <- function(config, viewData) {
 
   userFilterData <- list()
   dims <- character(0)
-  if (is.null(config$.userFilterExternalSymbol)) {
-    uf <- config$userFilter
-    if (length(uf)) {
-      dims <- unique(vapply(uf, function(f) f$dimension, character(1)))
+  uf <- config$userFilter
+  if (length(uf)) {
+    dims <- unique(vapply(uf, function(f) f$dimension, character(1)))
+    if (is.null(config$.userFilterExternalSymbol)) {
       for (dim in dims) {
         col <- dataTmp[[dim]]
         if (!is.null(col)) {
