@@ -104,6 +104,10 @@ dashboardGetSelectedValues <- function(choices, selected, multiple) {
   if (length(vals) == 0) NULL else vals
 }
 dashboardPrepareData <- function(config, viewData) {
+  if (is.null(viewData)) {
+    return(NULL)
+  }
+
   dataTmp <- viewData
 
   filterIndexList <- names(config$filter)
