@@ -923,7 +923,7 @@ $appsWrapper.on('click', '.app-box', function (e) {
     $(`#appLogo_${appIDEncoded}`)
       .html(
         `<label for="updateMiroAppLogo" style="width:100%;height:100%;">
-                  <div class="drag-drop-area-text not-empty">
+                  <div class="drag-drop-area-text">
                   ${appLogoPlaceholder}
                   </div>
                 </label>
