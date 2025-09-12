@@ -73,7 +73,9 @@ RUN Invoke-WebRequest $('https://d37drm4t2jghv5.cloudfront.net/distributions/{0}
 ENV GAMS_SYS_DIR=C:/gams
 
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
-    choco install -y googlechrome git python
+    choco install -y git python
+
+RUN choco install -y --ignore-checksums googlechrome
 
 RUN pip install gamspy
 

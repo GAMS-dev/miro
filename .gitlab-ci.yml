@@ -133,7 +133,7 @@ build_build_image_linux:
     - apk update && apk add jq
   script:
     - cd ci/linux
-    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` .
+    - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` --build-arg GAMS_VERSION_FULL=`jq -r ".gamsVersion" ../../build-config.json` .
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
     - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
