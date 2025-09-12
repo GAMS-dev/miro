@@ -375,7 +375,7 @@ for (dbType in c("sqlite", "postgres")) {
     )
   }
   populateDb(procEnv, "pickstock")
-  db$finalize()
+  db$destroy()
   db <- Db$new(
     uid = "user", dbConf = dbConfig,
     slocktimeLimit = 20, modelName = modelName,
@@ -502,7 +502,7 @@ for (dbType in c("sqlite", "postgres")) {
     )
   }
   populateDb(procEnv, "indus89", modelPath = modelPathTmp)
-  # db$finalize()
+  # db$destroy()
   db <- Db$new(
     uid = "user", dbConf = dbConfig,
     slocktimeLimit = 20, modelName = modelName,
@@ -625,4 +625,4 @@ file.rename(
   file.path(modelPathTmp, "abc.gdx"),
   file.path(modelPathTmp, "data_indus89", "default.gdx")
 )
-db$finalize()
+db$destroy()

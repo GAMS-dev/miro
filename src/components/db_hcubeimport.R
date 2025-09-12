@@ -297,9 +297,6 @@ HcubeImport <- R6Class("HcubeImport",
       isDuplicated <- previousResults[["_sname"]] %in% scenNames
       private$duplicatedScenIds <- scenNames[isDuplicated]
       return(previousResults[isDuplicated, ])
-    },
-    finalize = function() {
-      NULL
     }
   ),
   private = list(
@@ -440,6 +437,9 @@ HcubeImport <- R6Class("HcubeImport",
     },
     fetchScenNames = function(filePaths) {
       return(unique(dirname(filePaths)))
+    },
+    finalize = function() {
+      NULL
     }
   )
 )

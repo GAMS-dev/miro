@@ -24,15 +24,6 @@ InputWidget <- R6::R6Class(
     setData = function(data) {
       stop_custom("error_not_implemented", "setData method not implemented")
     },
-    finalize = function() {
-      if (is.list(private$changeObs)) {
-        lapply(private$changeObs, function(obs) {
-          obs$destroy()
-        })
-      } else {
-        private$changeObs$destroy()
-      }
-    },
     reset = function() {
       private$isInitialized <- FALSE
       self$setData(private$config$defaultValue)
@@ -54,6 +45,15 @@ InputWidget <- R6::R6Class(
     isInitialized = FALSE,
     observeChanges = function() {
       stop_custom("error_not_implemented", "observeChanges method not implemented")
+    },
+    finalize = function() {
+      if (is.list(private$changeObs)) {
+        lapply(private$changeObs, function(obs) {
+          obs$destroy()
+        })
+      } else {
+        private$changeObs$destroy()
+      }
     }
   )
 )
