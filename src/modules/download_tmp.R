@@ -26,7 +26,7 @@ observeEvent(input$btDownloadTmpFiles, {
               label = lang$nav$dialogDownloadTmp$downloadAllButton
             ),
             tags$span(
-              `data-display-if` = "input.selectDownloadTmp.length>0",
+              `data-display-if` = "input.selectDownloadTmp?.length>0",
               downloadButton("btDownloadTmpConfirm",
                 label = lang$nav$dialogDownloadTmp$downloadButton,
                 class = "bt-highlight-1 bt-gms-confirm"
