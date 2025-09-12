@@ -1,25 +1,29 @@
 $(function () {
   $('#navHome').removeClass('active');
   const currLocation = window.location.pathname;
-  if (!(currLocation.endsWith("app/admin") || currLocation.endsWith("app/admin/"))) {
+  if (
+    !(
+      currLocation.endsWith('app/admin') || currLocation.endsWith('app/admin/')
+    )
+  ) {
     let timer;
-    $("#navbarHandle").on('mouseover', function () {
+    $('#navbarHandle').on('mouseover', function () {
       clearTimeout(timer);
-      $("#navbarWrapper").show();
+      $('#navbarWrapper').show();
     });
-    $("#navbarWrapper").on('mouseover', function () {
+    $('#navbarWrapper').on('mouseover', function () {
       clearTimeout(timer);
-      $("#navbarWrapper").show();
+      $('#navbarWrapper').show();
     });
-    $("#navbarWrapper").on('mouseleave', function () {
+    $('#navbarWrapper').on('mouseleave', function () {
       clearTimeout(timer);
       timer = setTimeout(function () {
-        $("#navbarWrapper").hide();
+        $('#navbarWrapper').hide();
       }, 600);
     });
   } else {
-    $('#navAdminPanel').attr('href', '#').closest('.navbar-nav').addClass('active');
-    $("#navbarWrapper").show().attr('href', '#');
+    $('#navAdminPanel').attr('href', '#').addClass('active');
+    $('#navbarWrapper').show().attr('href', '#');
   }
 
   $('.btn-restart-app').on('click', () => {
