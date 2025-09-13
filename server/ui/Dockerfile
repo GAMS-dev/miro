@@ -59,7 +59,9 @@ ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 
 RUN apt-get update && apt-get install -y \
-    r-base-dev=${R_BASE_VERSION}*
+    r-base-dev=${R_BASE_VERSION}* \
+    flex \
+    bison
 
 ARG OPENSSL_VERSION=3.0.3
 
@@ -94,8 +96,7 @@ RUN wget https://ftp.postgresql.org/pub/source/v${PQ_VERSION}/postgresql-${PQ_VE
     make && \
     make -C src/bin install && \
     make -C src/include install && \
-    make -C src/interfaces install && \
-    make -C doc install
+    make -C src/interfaces install
 
 ARG LD_LIBRARY_PATH=/usr/local/pgsql/lib
 
