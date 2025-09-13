@@ -105,7 +105,7 @@ EOF
                 --set proxy.service.nodePort=30080 \
                 --set auth.service.type=NodePort \
                 --set auth.service.nodePort=30081 \
-                --set db.password=mySuperStrongPassword \
+                --set secrets.dbPassword=mySuperStrongPassword \
                 --set persistence.local.path=/home/mnt \
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
                 --set proxy.config.engine.namespace=${ENGINE_NS} \

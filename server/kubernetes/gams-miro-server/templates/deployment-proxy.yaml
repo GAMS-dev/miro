@@ -22,6 +22,10 @@ spec:
         app: {{ include "common.names.fullname" . }}-proxy
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        checksum/secret-db: {{ include (print $.Template.BasePath "/secret-db.yaml") . | sha256sum }}
+        checksum/secret-oidc: {{ include (print $.Template.BasePath "/secret-oidc.yaml") . | sha256sum }}
+        checksum/secret-engine: {{ include (print $.Template.BasePath "/secret-engine.yaml") . | sha256sum }}
+        checksum/secret-logs3: {{ include (print $.Template.BasePath "/secret-logs3.yaml") . | sha256sum }}
         {{- if .Values.proxy.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.proxy.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -94,18 +98,29 @@ spec:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
+              name: {{ include "common.names.fullname" . }}-secdb
               key: db_password
+        {{- if eq .Values.proxy.config.authentication "none" }}
         - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: engine_anonymous_password
+              name: {{ include "common.names.fullname" . }}-seceng
+              key: anonymousPassword
+        {{- end }}
+        {{- if eq .Values.proxy.config.containerLogBackend.type "s3" }}
         - name: GMS_MIRO_CONTAINER_LOG_S3_ACCESS_SECRET
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: container_log_s3_access_secret
+              name: {{ include "common.names.fullname" . }}-secls3
+              key: secretAccessKey
+        {{- end }}
+        {{- if eq .Values.proxy.config.authentication "openid" }}
+        - name: GMS_MIRO_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secoidc
+              key: clientSecret
+        {{- end }}
         volumeMounts:
         - name: shared-data
           mountPath: /home/miroproxy/mnt

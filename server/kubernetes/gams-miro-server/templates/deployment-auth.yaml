@@ -22,6 +22,10 @@ spec:
         app: {{ include "common.names.fullname" . }}-auth
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        checksum/secret-db: {{ include (print $.Template.BasePath "/secret-db.yaml") . | sha256sum }}
+        checksum/secret-oidc: {{ include (print $.Template.BasePath "/secret-oidc.yaml") . | sha256sum }}
+        checksum/secret-engine: {{ include (print $.Template.BasePath "/secret-engine.yaml") . | sha256sum }}
+        checksum/secret-logs3: {{ include (print $.Template.BasePath "/secret-logs3.yaml") . | sha256sum }}
         {{- if .Values.auth.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -87,8 +91,8 @@ spec:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: db_password
+              name: {{ include "common.names.fullname" . }}-secdb
+              key: password
         volumeMounts:
         - name: tmp-volume
           mountPath: /tmp

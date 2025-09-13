@@ -57,8 +57,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: db_password
+              name: {{ include "common.names.fullname" . }}-secdb
+              key: password
         - name: POSTGRES_DB
           value: {{ .Values.db.name }}
         - name: PGDATA

@@ -61,7 +61,6 @@ data:
         jwks-url: {{ .Values.proxy.config.openid.jwksUrl | quote }}
         logout-url: {{ .Values.proxy.config.openid.logoutUrl | quote }}
         client-id: {{ .Values.proxy.config.openid.clientId | quote }}
-        client-secret: {{ .Values.proxy.config.openid.clientSecret | quote }}
         with-pkce: {{ .Values.proxy.config.openid.withPKCE }}
       database:
         {{- if .Values.db.externalHost }}

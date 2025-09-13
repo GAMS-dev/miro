@@ -31,6 +31,12 @@ image:
   # Global tag of the images. If not specified, AppVersion is used.
   tag: ''
 
+secrets:
+  dbPassword: ''
+  oidcClientSecret: ''
+  engineAnonymousPassword: ''
+  containerLogS3SecretAccessKey: ''
+
 proxy:
   image:
     registry: docker.io/gams
@@ -93,11 +99,11 @@ proxy:
     containerLogBackend:
       type: none # Container log backed. Currently supported none (disabled) or s3
       s3:
+        # NOTE: secrets.containerLogS3SecretAccessKey must be provided!
         bucketName: '' # Name of the s3 bucket
         bucketDir: '/' # Path to directory where log files are to be stored
         region: '' # AWS region e.g. us-east-1
         accessKeyId: '' # AWS access key ID
-        secretAccessKey: '' # AWS secret access key
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300
@@ -108,18 +114,18 @@ proxy:
       secureCookies: true
     authentication: password # password, openid or none
     openid:
+      # NOTE: secrets.oidcClientSecret must be provided!
       authUrl: ''
       tokenUrl: ''
       jwksUrl: ''
       logoutUrl: ''
       clientId: ''
-      clientSecret: ''
       withPKCE: false
     engine:
       apiUrl: ''
       namespace: ''
       anonymousUser: '' # only relevant if authentication is none
-      anonymousPassword: '' # only relevant if authentication is none
+      # NOTE: secrets.engineAnonymousPassword must be provided if anonymousUser is set!
     metrics:
       enabled: false
       # Specifies whether a serviceMonitor object should be created. Requires Prometheus Operator CRDs.
@@ -207,7 +213,7 @@ db:
   externalHost: '' # if not specified, a statefulset will be created
   port: 5432
   user: 'GMSMASTER'
-  password: ''
+  # NOTE: secrets.dbPassword must be provided!
   name: 'gamsmiro'
   volumeSize: 5Gi
   resources:
