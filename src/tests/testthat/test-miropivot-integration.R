@@ -393,6 +393,7 @@ test_that("MIRO pivot renderer views work", {
         domainFilter = list(default = NULL),
         hideEmptyCols = FALSE,
         fixedColumns = TRUE,
+        decimals = 2L,
         tableSummarySettings = list(
           rowEnabled = FALSE, rowSummaryFunction = "sum",
           colEnabled = FALSE, colSummaryFunction = "sum"
