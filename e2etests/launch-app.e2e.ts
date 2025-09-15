@@ -16,11 +16,14 @@ test('App launches in MIRO Desktop', async () => {
     },
    });
   const main = await app.firstWindow();
-  const AddExampleAppsButton = main.getByRole('button', { name: 'Add example apps' });
+  const AddAppBoxButton = main.locator('#addAppBox');
+  await AddAppBoxButton.waitFor({ state: 'visible' });
+  await AddAppBoxButton.click();
+  const AddExampleAppsButton = main.getByRole('button', { name: 'Add Example Apps' });
   await AddExampleAppsButton.waitFor({ state: 'visible' });
   await AddExampleAppsButton.click();
-  const transportAppContainer = main.locator('div[data-id="adHJhbnNwb3J0"]');
-  await transportAppContainer.getByRole('button', { name: 'Launch' }).click();
+  const transportAppContainer = main.locator('.launch-app-box[data-id="adHJhbnNwb3J0"]');
+  await transportAppContainer.click();
   const details = await app.waitForEvent('window');
   await expect(
     details.locator('text=/A Transportation Problem /'),
