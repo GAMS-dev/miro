@@ -46,8 +46,8 @@ test_that(
       x = dashboardRenderer
     )
     dashboardRenderer <- gsub(
-      pattern = "^renderDashboard <- function\\(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, \\.\\.\\.\\)",
-      replacement = "renderMirorenderer_stock_weight <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...)",
+      pattern = "^renderDashboard <- function\\(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, roundPrecision = 2L, \\.\\.\\.\\)",
+      replacement = "renderMirorenderer_stock_weight <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, roundPrecision = 2L, ...)",
       x = dashboardRenderer
     )
     dashboardRenderer <- paste(dashboardRenderer, collapse = "\n")
