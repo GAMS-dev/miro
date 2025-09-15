@@ -104,6 +104,10 @@ dashboardGetSelectedValues <- function(choices, selected, multiple) {
   if (length(vals) == 0) NULL else vals
 }
 dashboardPrepareData <- function(config, viewData) {
+  if (is.null(viewData)) {
+    return(NULL)
+  }
+
   dataTmp <- viewData
 
   filterIndexList <- names(config$filter)
@@ -258,10 +262,10 @@ dashboardPrepareData <- function(config, viewData) {
 
   userFilterData <- list()
   dims <- character(0)
-  if (is.null(config$.userFilterExternalSymbol)) {
-    uf <- config$userFilter
-    if (length(uf)) {
-      dims <- unique(vapply(uf, function(f) f$dimension, character(1)))
+  uf <- config$userFilter
+  if (length(uf)) {
+    dims <- unique(vapply(uf, function(f) f$dimension, character(1)))
+    if (is.null(config$.userFilterExternalSymbol)) {
       for (dim in dims) {
         col <- dataTmp[[dim]]
         if (!is.null(col)) {
@@ -618,17 +622,11 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                 class = paste("custom-dropdown-wide user-filter", inlineClass),
                 selectizeInput(
                   ns(paste0(id, "userFilter_", dim)),
-                  label = if (!is.null(f$label) && nzchar(f$label)) f$label else NULL,
+                  label = if (!is.null(f$label)) f$label else NULL,
                   selected = selected,
                   choices = choices,
                   multiple = isTRUE(f$multiple),
-                  width = "100%",
-                  options = list(
-                    onInitialize = I(sprintf(
-                      "function(value){document.querySelector('.selectize-input input[id^=\"%s\"]').setAttribute('readonly','readonly');}",
-                      ns(paste0(id, "userFilter_", dim))
-                    ))
-                  )
+                  width = "100%"
                 )
               )
             })
@@ -653,10 +651,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                   selectizeInput(ns(paste0(id, "ChartType")),
                     label = NULL,
                     choices = chartChoices,
-                    selected = dataViewsConfig[[id]]$pivotRenderer,
-                    options = list(onInitialize = I(paste0("function(value) {
-              document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "ChartType")), "\"]').setAttribute('readonly', 'readonly');
-            }")))
+                    selected = dataViewsConfig[[id]]$pivotRenderer
                   )
                 ),
                 tags$div(
