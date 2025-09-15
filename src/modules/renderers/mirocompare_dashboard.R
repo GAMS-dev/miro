@@ -30,7 +30,7 @@ dashboardCompareOutput <- function(id, height = NULL, options = NULL, path = NUL
   )
 }
 
-renderDashboardCompare <- function(input, output, session, data, options = NULL, roundPrecision = 2L, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, roundPrecision = 2L, ...) {
   ns <- session$ns
 
   removeTableHeader <- function(viewData) {

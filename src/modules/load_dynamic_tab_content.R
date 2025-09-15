@@ -196,11 +196,11 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
         callModule(match.fun(compareModuleConfig[["rendererFnName"]]), refId,
           data = CustomComparisonData$new(scenData, refId, attachments),
           options = compareModuleConfig[["options"]],
-          roundPrecision = roundPrecision,
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
           views = views,
-          resetOninit = isFALSE(isInRefreshMode$get(refId))
+          resetOninit = isFALSE(isInRefreshMode$get(refId)),
+          roundPrecision = roundPrecision
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {

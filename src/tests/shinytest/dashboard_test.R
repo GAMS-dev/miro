@@ -114,7 +114,7 @@ expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idDate)), "testla
 expect_equal(app$get_js(sprintf("$('%s').attr('placeholder')", idDatePlaceholder)), "All items")
 expect_equal(app$get_js(sprintf("(function(){var el=$('%s')[0]; return el.selectize ? el.selectize.getValue() : $('%s').val();})()", idUni, idUni)), "DD")
 expect_identical(
-  getRoundedDtData(app, paste0("tab_1_3-", rendererName, "-pricemerge2Table")),
+  getDisplayedDtData(app, paste0("tab_1_3-", rendererName, "-pricemerge2Table")),
   tibble(
     value = c(
       "2016-01-04", "63.07", "2016-01-05", "64.279999", "2016-01-06", "63.380001", "2016-12-30", "73.400002"

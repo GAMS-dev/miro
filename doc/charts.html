@@ -3636,8 +3636,8 @@ firstDayTraining(td)                   = td.pos = 1;
     ns <- NS(id)
     ...
   }
-- renderDashboard <- function(id, data, options = NULL, roundPrecision = 2L, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
-+ renderMirorenderer_macrolevel <- function(input, output, roundPrecision = 2L, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...) {
+- renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, roundPrecision = 2L, ...) {
++ renderMirorenderer_macrolevel <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, roundPrecision = 2L, ...) {
 -   moduleServer(
 -     id,
 -     function(input, output, session) {
