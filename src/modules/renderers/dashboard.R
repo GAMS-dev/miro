@@ -341,7 +341,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 if (is.null(names(ch))) names(ch) <- ch
 
                 if (isTRUE(f$multiple)) {
-                  placeholder <- if (length(f$placeholder)) f$placeholder else "All"
+                  placeholder <- if (length(f$placeholder)) f$placeholder else lang$renderers$miroPivot$allPlaceholder
                   ch <- c(setNames("", placeholder), ch)
                 }
                 ch
@@ -415,37 +415,14 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
               symbolName <- options[["_metadata_"]]$symname
             }
 
-            rowHeaders <- {
-              src <- if (symbolName %in% names(ioConfig$modelIn)) {
-                ioConfig$modelIn
-              } else if (symbolName %in% names(ioConfig$modelOut)) {
-                ioConfig$modelOut
-              } else {
-                NULL
-              }
-
-              headers <- if (!is.null(src)) {
-                x <- src[[symbolName]]
-                if (!is.null(x)) x$headers else NULL
-              } else {
-                NULL
-              }
-
-              if (is.null(headers)) {
-                character(0)
-              } else {
-                cols <- intersect(names(headers), nonNumericCols)
-                aliases <- vapply(
-                  headers[cols],
-                  function(h) {
-                    a <- if (is.null(h)) NULL else h$alias
-                    if (is.null(a) || is.na(a) || !nzchar(a)) NA_character_ else as.character(a)
-                  },
-                  character(1L)
-                )
-                unname(aliases[!is.na(aliases)])
-              }
+            if (symbolName %in% names(ioConfig$modelIn)) {
+              dimHeaders <- ioConfig$modelIn[[symbolName]]$headers
+            } else {
+              dimHeaders <- ioConfig$modelOut[[symbolName]]$headers
             }
+            dimHeaders <- dimHeaders[names(dimHeaders) %in% nonNumericCols]
+            rowHeaders <- vapply(dimHeaders, "[[", character(1L), "alias", USE.NAMES = FALSE)
+
 
             # heatmap
             if (input[[paste0(indicator, "ChartType")]] == "heatmap") {

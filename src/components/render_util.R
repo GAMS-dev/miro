@@ -622,17 +622,11 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                 class = paste("custom-dropdown-wide user-filter", inlineClass),
                 selectizeInput(
                   ns(paste0(id, "userFilter_", dim)),
-                  label = if (!is.null(f$label) && nzchar(f$label)) f$label else NULL,
+                  label = if (!is.null(f$label)) f$label else NULL,
                   selected = selected,
                   choices = choices,
                   multiple = isTRUE(f$multiple),
-                  width = "100%",
-                  options = list(
-                    onInitialize = I(sprintf(
-                      "function(value){document.querySelector('.selectize-input input[id^=\"%s\"]').setAttribute('readonly','readonly');}",
-                      ns(paste0(id, "userFilter_", dim))
-                    ))
-                  )
+                  width = "100%"
                 )
               )
             })
@@ -657,10 +651,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                   selectizeInput(ns(paste0(id, "ChartType")),
                     label = NULL,
                     choices = chartChoices,
-                    selected = dataViewsConfig[[id]]$pivotRenderer,
-                    options = list(onInitialize = I(paste0("function(value) {
-              document.querySelector('.selectize-input input[id^=\"", ns(paste0(id, "ChartType")), "\"]').setAttribute('readonly', 'readonly');
-            }")))
+                    selected = dataViewsConfig[[id]]$pivotRenderer
                   )
                 ),
                 tags$div(
