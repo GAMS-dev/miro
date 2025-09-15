@@ -13,6 +13,67 @@ showReadonlyDialog <- function() {
   ))
 }
 
+showSettingsDialog <- function() {
+  showModal(modalDialog(
+    title = lang$nav$dialogSettings$title,
+    tags$div(
+      id = "settingsDialogUnknownError", class = "gmsalert gmsalert-error",
+      style = "position:relative;",
+      lang$errMsg$unknownError
+    ),
+    tags$div(
+      id = "engineQuotaInfoSpinner",
+      genSpinner(
+        absolute = FALSE,
+        hidden = FALSE,
+        externalStyle = "left:50%;",
+        extraClasses = "gen-spinner-black"
+      )
+    ),
+    tags$div(
+      id = "engineQuotaInfoWrapper",
+      style = "display:none;",
+      tags$h4(lang$nav$dialogSettings$quotaInfoHeader),
+      tags$div(
+        class = "grid-2",
+        tags$div(tags$i(class = "fa fa-microchip"), lang$nav$dialogSettings$quotaVolumeLabel),
+        tags$div(class = "quota-info-volume"),
+        tags$div(tags$i(class = "fa fa-hard-drive"), lang$nav$dialogSettings$quotaDiskLabel),
+        tags$div(class = "quota-info-disk")
+      )
+    ),
+    tags$div(
+      id = "selEngineDefaultInstanceSpinner",
+      genSpinner(
+        absolute = FALSE,
+        hidden = FALSE,
+        externalStyle = "left:50%;",
+        extraClasses = "gen-spinner-black"
+      )
+    ),
+    tags$div(
+      id = "selEngineDefaultInstanceWrapper",
+      class = "mt-space",
+      style = "display:none;",
+      tags$h4(lang$nav$dialogSettings$selDefaultInstance),
+      selectizeInput("selEngineDefaultInstance",
+        NULL,
+        choices = NULL,
+        width = "100%"
+      ),
+      tags$div(class = "engine-instance-info"),
+      actionButton("btUpdateEngineDefaultInstance",
+        lang$nav$dialogSettings$btUpdateDefaultInstance,
+        class = "bt-highlight-1 bt-gms-confirm"
+      )
+    ),
+    footer = tagList(
+      modalButton(lang$nav$dialogSettings$closeButton),
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+}
+
 showWhatsNewDialog <- function(whatsNewData) {
   makeSection <- function(title, items) {
     if (is.null(items) || length(items) == 0) {
@@ -1093,7 +1154,7 @@ showHashExistsDialog <- function(scenData, uid) {
     fade = TRUE, easyClose = TRUE
   ))
 }
-showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanceInfo = NULL) {
+showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
   if (length(hashExistsData) && nrow(hashExistsData)) {
     if (length(hashExistsData[["_stag"]]) && !is.na(hashExistsData[["_stag"]]) &&
       nchar(hashExistsData[["_stag"]])) {
@@ -1166,23 +1227,22 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanc
           width = "100%"
         )
       ),
-      if (!length(instanceInfo)) {
-        tags$div(
-          id = "selWorkerInstanceSpinner",
-          style = "text-align:center;",
-          tags$div(class = "space"),
-          genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
-        )
-      },
+      tags$div(
+        id = "selWorkerInstanceSpinner",
+        style = "text-align:center;",
+        tags$div(class = "space"),
+        genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
+      ),
       tags$div(
         id = "selWorkerInstanceWrapper",
         class = "input-form-mobile",
-        style = if (!length(instanceInfo) || !identical(instanceInfo[["instancesSupported"]], TRUE)) "display:none;",
+        style = "display:none;",
         selectInput("selWorkerInstance",
           lang$nav$dialogJobSubmission$workerInstance,
-          choices = instanceInfo$choices, selected = instanceInfo$selected,
+          choices = NULL,
           width = "100%"
-        )
+        ),
+        tags$div(class = "engine-instance-info")
       ),
       tags$div(class = "small-space")
     ),

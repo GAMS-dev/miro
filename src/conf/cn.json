@@ -56,6 +56,7 @@
         "forum": "GAMS Forum",
         "whatsNew": "最新动态",
         "commandPalette": "命令调色板",
+        "settings": "引擎设置",
         "about":"关于"
       }
     },
@@ -459,6 +460,27 @@
       "newFeaturesHdr": "New features",
       "minorImprovementsHdr": "Minor new features and improvements",
       "cancelButton": "关闭"
+    },
+    "dialogSettings": {
+      "title": "GAMS Engine 设置",
+      "quotaInfoHeader": "剩余配额",
+      "quotaVolumeLabel": "卷配额",
+      "unlimitedQuotaLabel": "无限制",
+      "quotaDiskLabel": "磁盘配额",
+      "selDefaultInstance": "选择默认实例",
+      "instancePoolLabel": "实例池",
+      "instanceLabel": "实例",
+      "scalingUpLabel": "扩容中…",
+      "scalingDownLabel": "缩容中…",
+      "memoryLabel": "内存",
+      "cpuLabel": "CPU",
+      "multiplierLabel": "倍率",
+      "poolOwnerLabel": "所有者",
+      "activeWorkersLabel": "活动",
+      "busyWorkersLabel": "繁忙",
+      "desiredWorkersLabel": "目标",
+      "btUpdateDefaultInstance": "更新默认实例",
+      "closeButton": "关闭"
     },
     "importJobsDialog":{
         "title":"当前活跃的Hypercube作业",

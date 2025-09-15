@@ -56,6 +56,7 @@
         "forum": "GAMS Forum",
         "whatsNew": "What's New",
         "commandPalette": "Command palette",
+        "settings": "Engine Settings",
         "about": "About"
       }
     },
@@ -459,6 +460,27 @@
       "newFeaturesHdr": "New features",
       "minorImprovementsHdr": "Minor new features and improvements",
       "cancelButton": "Close"
+    },
+    "dialogSettings": {
+      "title": "GAMS Engine settings",
+      "quotaInfoHeader": "Remaining Quota",
+      "quotaVolumeLabel": "Volume quota",
+      "unlimitedQuotaLabel": "unlimited",
+      "quotaDiskLabel": "Disk quota",
+      "selDefaultInstance": "Select default instance",
+      "instancePoolLabel": "Instance Pool",
+      "instanceLabel": "Instance",
+      "scalingUpLabel": "Scaling up…",
+      "scalingDownLabel": "Scaling up…",
+      "memoryLabel": "memory",
+      "cpuLabel": "cpu",
+      "multiplierLabel": "multiplier",
+      "poolOwnerLabel": "owner",
+      "activeWorkersLabel": "active",
+      "busyWorkersLabel": "busy",
+      "desiredWorkersLabel": "desired",
+      "btUpdateDefaultInstance": "Update default instance",
+      "closeButton": "Close"
     },
     "importJobsDialog":{
       "title": "Currently active jobs",

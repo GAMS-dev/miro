@@ -363,4 +363,17 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeo
 expect_true(app$get_js("$('.shiny-notification-content').text().includes('Quota exceeded');"))
 expect_true(app$get_js("/volume quota: -?\\d+ s/.test($('.shiny-notification-content').text())"))
 app$run_js("$('.shiny-notification-close').click()")
+
+app$set_inputs(btShowSettingsDialog = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$wait_for_js("$('.quota-info-volume').is(':visible');", timeout = 10000L)
+expect_identical(app$get_js("$('.quota-info-disk').text()"), "unlimited")
+remainingQuota <- as.numeric(strsplit(app$get_js("$('.quota-info-volume').text()"), " ", fixed = TRUE)[[1L]][1L])
+expect_true(!is.na(remainingQuota) && remainingQuota < 0L)
+expect_false(app$get_js("$('#settingsDialogUnknownError').is(':visible');"))
+# Engine test server is Engine One -> no instances
+app$wait_for_js("$('#selEngineDefaultInstanceSpinner').is(':hidden');", timeout = 10000L)
+expect_true(app$get_js("$('#selEngineDefaultInstanceWrapper').is(':hidden');"))
+app$click(selector = "#shiny-modal button[data-dismiss='modal']")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 app$stop()

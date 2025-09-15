@@ -2077,11 +2077,14 @@ mergeDf <- function(a, b, isScalarsTable = FALSE) {
     select(-c(paste0(valueColName, c(".x", ".y")))))
 }
 calcRemainingQuota <- function(quotaList) {
+  if (!length(quotaList)) {
+    return(list(volume = Inf, disk = Inf))
+  }
   calcRemaining <- function(quotaObj, quotaKey, usedKey) {
     if (length(quotaObj[[quotaKey]])) {
       quota <- quotaObj[[quotaKey]]
     } else {
-      quota <- Inf
+      return(Inf)
     }
     return(as.numeric(quota - quotaObj[[usedKey]]))
   }

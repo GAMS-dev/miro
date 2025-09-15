@@ -237,7 +237,32 @@
                         sense especially if you want to solve multiple jobs in
                         a row without waiting for the results to come in.
                       </li>
+                      <li>
+                        <b>Submit Hypercube:</b><br />
+                        Submits a batch of jobs with varying scalar parameters,
+                        referred to as a
+                        <a href="./hc-module.html">Hypercube job</a>. See the
+                        corresponding chapter for details.
+                      </li>
                     </ul>
+                    <p>
+                      If your GAMS Engine backend supports
+                      <a
+                        href="https://gams.com/engine/administration.html#instances"
+                        target="_blank"
+                        >instances</a
+                      >
+                      (e.g., Engine SaaS), you can decide which instance to use
+                      for each run. When you select <i>Submit job</i> or
+                      <i>Submit Hypercube</i>, a dialog opens with your default
+                      instance already chosen, but you can change it there. If
+                      you want to update your default instance - especially
+                      important when running jobs via the <i>Solve</i> button,
+                      which does not offer a selection dialog - go to
+                      <i>Help</i> &rarr; <i>Engine Settings</i>. In this
+                      dialog, you can view your remaining volume and disk
+                      quotas and set a different default instance.
+                    </p>
                   </div>
                   <!--//section-block-->
                   <div id="job-list" class="section-block">

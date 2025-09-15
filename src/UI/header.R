@@ -76,6 +76,16 @@ header <- dashboardHeader(
         ),
         lang$nav$header$help$commandPalette
       )),
+      if (config$activateModules$remoteExecution) {
+        tags$li(tags$a(
+          href = "#", class = "action-button", id = "btShowSettingsDialog",
+          tags$div(
+            class = "menu-icon-align",
+            tags$i(class = "logo-engine")
+          ),
+          lang$nav$header$help$settings
+        ))
+      },
       tags$li(
         tags$a(
           href = "#",

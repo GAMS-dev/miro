@@ -230,12 +230,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "settings": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "about": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             }
           },
           "minProperties": 3
@@ -1797,6 +1801,89 @@
           },
           "minProperties": 4
         },
+        "dialogSettings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaInfoHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaVolumeLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unlimitedQuotaLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaDiskLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDefaultInstance": {
+              "type": "string",
+              "minLength": 1
+            },
+            "instancePoolLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "instanceLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scalingUpLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scalingDownLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "memoryLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cpuLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "multiplierLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "poolOwnerLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "activeWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "busyWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desiredWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btUpdateDefaultInstance": {
+              "type": "string",
+              "minLength": 1
+            },
+            "closeButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 19
+        },
         "importJobsDialog": {
           "type": "object",
           "additionalProperties": false,
@@ -2483,7 +2570,7 @@
           }
         }
       },
-      "minProperties": 49
+      "minProperties": 50
     },
     "renderers": {
       "description": "language specific objects of renderers",

@@ -820,6 +820,21 @@ body > .wrapper > .main-sidebar  {
 .small-space{
   height:1vh;
 }
+.mt-space {
+  margin-top: 3vh;
+}
+.mt-small-space {
+  margin-top: 1vh;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.engine-instance-info {
+  margin-bottom: 15px;
+  font-size: 9pt;
+}
 .modal-body {
   word-wrap: break-word;
 }
@@ -3570,4 +3585,17 @@ li.drop-index-item[data-col-hidden="true"] {
 }
 .tab-content.no-tabs {
   padding: 0;
+}
+
+.logo-engine::before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  -webkit-mask: url("./images/engine_logo.svg") no-repeat center;
+  -webkit-mask-size: contain;
+  mask: url("./images/engine_logo.svg") no-repeat center;
+  mask-size: contain;
+  vertical-align: -0.125em;
 }

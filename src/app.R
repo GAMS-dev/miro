@@ -60,7 +60,7 @@ filesToInclude <- c(
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R",
   "./components/custom_comparison_data.R", "./components/batch_loader.R",
-  "./components/sandbox_input_data.R"
+  "./components/sandbox_input_data.R", "./components/engine_client.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {
@@ -1974,6 +1974,11 @@ if (!is.null(errMsg)) {
       )
       if (length(credConfig)) {
         do.call(worker$setCredentials, credConfig)
+        engineClient <- EngineClient$new(
+          url = credConfig$url,
+          username = credConfig$username,
+          authHeader = worker$getAuthHeader()
+        )
       }
       if (isShinyProxy) {
         worker$setAppAccessGroups(csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", ""))))
@@ -2405,7 +2410,7 @@ if (!is.null(errMsg)) {
           initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
         }
       }
-      source("./modules/whats_new_dialog.R", local = TRUE)
+      source("./modules/help_menu.R", local = TRUE)
       hideEl(session, "#loading-screen")
     }
 

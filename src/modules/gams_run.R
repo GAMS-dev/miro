@@ -319,11 +319,8 @@ observeEvent(input$btSubmitJob, {
   if (is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))) {
     return(NULL)
   }
-  instanceInfo <- worker$getInstanceInfo()
-  showJobSubmissionDialog(jobNameTmp, scenWithSameHash, instanceInfo = instanceInfo)
-  if (!length(instanceInfo)) {
-    worker$fetchInstancesAsync(session, "selWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
-  }
+  showJobSubmissionDialog(jobNameTmp, scenWithSameHash)
+  engineClient$populateInstanceSelector(session, "selWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
 })
 observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
   flog.debug("Confirm new asynchronous job button clicked.")
@@ -345,7 +342,7 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
     return(NULL)
   }
   solveOptions <- NULL
-  instanceInfo <- worker$getInstanceInfo()
+  instanceInfo <- engineClient$getInstanceInfo()
   if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {
     solveOptions <- list(selectedInstance = input$selWorkerInstance)
   }
@@ -1250,8 +1247,6 @@ if (identical(config$activateModules$hcube, TRUE)) {
     }
     rv$refreshHcubeHashes <- rv$refreshHcubeHashes + 1L
 
-    instanceInfo <- worker$getInstanceInfo()
-
     showModal(modalDialog(
       class = "hc-modal",
       title = lang$nav$hcModule$submissionDialog$title,
@@ -1274,22 +1269,21 @@ if (identical(config$activateModules$hcube, TRUE)) {
         ),
         tags$div(
           class = "col-md-6",
-          if (!length(instanceInfo)) {
-            tags$div(
-              id = "selHcWorkerInstanceSpinner",
-              style = "text-align:center;",
-              tags$div(class = "space"),
-              genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
-            )
-          },
+          tags$div(
+            id = "selHcWorkerInstanceSpinner",
+            style = "text-align:center;",
+            tags$div(class = "space"),
+            genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
+          ),
           tags$div(
             id = "selHcWorkerInstanceWrapper",
-            style = if (!length(instanceInfo) || !identical(instanceInfo[["instancesSupported"]], TRUE)) "display:none;",
+            style = "display:none;",
             selectInput("selHcWorkerInstance",
               lang$nav$dialogJobSubmission$workerInstance,
-              choices = instanceInfo$choices, selected = instanceInfo$selected,
+              choices = NULL,
               width = "100%"
-            )
+            ),
+            tags$div(class = "engine-instance-info")
           )
         )
       ),
@@ -1314,9 +1308,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
       )
     ))
 
-    if (!length(instanceInfo)) {
-      worker$fetchInstancesAsync(session, "selHcWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
-    }
+    engineClient$populateInstanceSelector(session, "selHcWorkerInstance", lang$nav$dialogJobSubmission$instanceDropdownCategories)
 
     emptyEl(session, "#newHcWrapper")
     tryCatch(
@@ -1434,7 +1426,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
         )
         hcJobConfig$destroy()
         solveOptions <- NULL
-        instanceInfo <- worker$getInstanceInfo()
+        instanceInfo <- engineClient$getInstanceInfo()
         if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {
           solveOptions <- list(selectedInstance = input$selHcWorkerInstance)
         }

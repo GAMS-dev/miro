@@ -146,5 +146,6 @@ switchTab <- function(session, id) {
   session$sendCustomMessage("gms-switchTab", id)
 }
 toJSString <- function(string) {
+  stopifnot(is.character(string), length(string) == 1L)
   return(toJSON(string, auto_unbox = TRUE))
 }
