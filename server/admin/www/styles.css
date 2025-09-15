@@ -879,28 +879,6 @@ a:hover {
     color: #e18d0f;
     text-decoration:underline;
 }
-.btn-launch-wrapper {
-    text-align: right;
-    height:60px;
-}
-.btn-launch {
-    background-color: #f90;
-    text-shadow: none;
-    border: none;
-    color: #494d55;
-    width: 100%;
-    height: 100%;
-    font-size: large;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-.btn-launch:hover,
-.btn-launch:active,
-.btn-launch:focus {
-    background-color: #e18d0f !important;
-    color: #494d55 !important;
-}
 .btn-add-examples {
   margin-top: 30px;
   padding: 5px;
