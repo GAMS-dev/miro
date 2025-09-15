@@ -29,7 +29,7 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...)
   )
 }
 
-renderDashboard <- function(id, data, options = NULL, roundPrecision = 2L, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, roundPrecision = 2L, ...) {
   moduleServer(
     id,
     function(input, output, session) {
