@@ -426,8 +426,8 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
         wait.until(EC.visibility_of_element_located((By.ID, "loading")))
@@ -636,16 +636,16 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         self.assertTrue(
             len(visible_buttons) == 1,
-            "More than one visible 'launch-app' button found.",
+            "More than one visible 'launch-app-box' found.",
         )
         self.assertTrue(
-            visible_buttons[0].get_attribute("href").endswith("/app/test_app1"),
-            "The href of the launch-app link is not '/app/test_app1'.",
+            visible_buttons[0].get_attribute("data-launch-url").endswith("/app/test_app1"),
+            "The data-launch-url of the launch-app-box div is not '/app/test_app1'.",
         )
         visible_buttons[0].click()
         wait.until(EC.visibility_of_element_located((By.ID, "loading")))
@@ -825,7 +825,7 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
 
         def get_url_from_style(style: str) -> str:
             start_index = style.find("url(") + len("url(")
@@ -846,15 +846,15 @@ class UITests(unittest.TestCase):
             "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
             "Updated logo not displayed correctly in gallery",
         )
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         self.assertTrue(
             len(visible_buttons) == 1,
-            "More than one visible 'launch-app' button found.",
+            "More than one visible 'launch-app-box' found.",
         )
         self.assertTrue(
-            visible_buttons[0].get_attribute("href").endswith("/app/test_app1"),
-            "The href of the launch-app link is not '/app/test_app1'.",
+            visible_buttons[0].get_attribute("data-launch-url").endswith("/app/test_app1"),
+            "The data-launch-url of the launch-app-box is not '/app/test_app1'.",
         )
         visible_buttons[0].click()
         wait.until(EC.visibility_of_element_located((By.ID, "loading")))
@@ -1008,8 +1008,8 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
         wait.until(EC.visibility_of_element_located((By.ID, "loading")))
