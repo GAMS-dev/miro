@@ -153,22 +153,22 @@ inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidge
 
 #     ---------- THEME COLORS ----------
 baseColors <- list(
-  miro_primary_color           = "#3c8dbc",
+  miro_primary_color           = "#295f98",
   miro_secondary_color         = "#f39619",
-  miro_sidebar_color           = "#1d2121",
+  miro_sidebar_color           = "#1f2937",
   miro_navbar_color            = "#ffffff",
   miro_body_bg_color           = "#ECF1F4",
   miro_alert_color             = "#d11a2a",
   miro_main_bg                 = "#ffffff",
   miro_console_text_color      = "#333333",
-  miro_primary_color_dark      = "#00adb5",
+  miro_primary_color_dark      = "#295f98",
   miro_secondary_color_dark    = "#f39619",
   miro_sidebar_color_dark      = "#1d1f20",
   miro_navbar_color_dark       = "#1d2020",
   miro_body_bg_color_dark      = "#292D32",
   miro_alert_color_dark        = "#d11a2a",
   miro_main_bg_dark            = "#393e46",
-  miro_console_text_color_dark = "#3c8dbc",
+  miro_console_text_color_dark = "#295f98",
   miro_widget_bg_dark          = "#848991",
   miro_text_color              = "#eeeeee",
   miro_text_color_dark         = "#eeeeee"

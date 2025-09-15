@@ -1878,7 +1878,7 @@ addQueryBuilderBlock <- function(id, choices) {
     ui = tags$div(
       id = paste0("block", id), style = "position:relative;", if (id > 1L) {
         tags$div(
-          tags$hr(),
+          tags$hr(class = "or-separator"),
           tags$div(class = "or-sign", lang$nav$queryBuilder$orButton)
         )
       },

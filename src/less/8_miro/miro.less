@@ -19,7 +19,7 @@ header.main-header {
   font-size: 14pt;
 }
 .btn-default{
-  border: 2px solid @btn-border;
+  border: 1px solid @btn-border;
   background-color: rgba(0,0,0,0);
   transition: all 200ms ease;
 }
@@ -86,7 +86,7 @@ header.main-header {
      background-color: @highlight-bg;
   },
   {
-     color: @primary-color-dark;
+     color: @if-7f94f006;
      background-color: @if-4a0e097b;
   });
 }
@@ -123,28 +123,28 @@ textarea.readme-preview-markdown:focus {
   padding-bottom: 5px;
 }
 @media only screen and (max-width: 767px){
-.katex-display {
-  display: inline-block;
-  max-width: 100%;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  .katex-display {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .katex-display::-webkit-scrollbar {
+    height: 5px;
+  }
+  .katex-display > .katex {
+    display: inline-block;
+    white-space: nowrap;
+    text-align: initial;
+  }
+  .katex {
+    font: normal 1.21em KaTeX_Main, Times New Roman, serif;
+    line-height: 1.2;
+    white-space: normal;
+    text-indent: 0;
+  }
 }
-.katex-display::-webkit-scrollbar {
-  height: 5px;
-}
-.katex-display > .katex {
-  display: inline-block;
-  white-space: nowrap;
-  text-align: initial;
-}
-.katex {
-  font: normal 1.21em KaTeX_Main, Times New Roman, serif;
-  line-height: 1.2;
-  white-space: normal;
-  text-indent: 0;
-}
-}
-.btn-default:hover {
+.btn-default.hover, .btn-default:active, .btn-default:hover, .btn-default:focus {
   color: #000;
 }
 .err-msg, .config-array-err{
@@ -497,10 +497,10 @@ animation: none !important;
 /* sidebar*/
 .bt-highlight-1{
   .responsiveDark({
-    border: 2px solid @secondary-color;
+    border: 1px solid @secondary-color;
   },
   {
-    border: 2px solid @secondary-color-dark;
+    border: 1px solid @secondary-color-dark;
   });
 }
 .bt-highlight-1:hover{
@@ -526,11 +526,11 @@ animation: none !important;
 }
 .bt-highlight-2{
   .responsiveDark({
-    border: 2px solid @secondary-color;
+    border: 1px solid @secondary-color;
     border-color: @if-10618845;
   },
   {
-    border: 2px solid @secondary-color-dark;
+    border: 1px solid @secondary-color-dark;
     border-color: @if-94dad415;
   });
   background-color: @bt-highlight-2-bg;
@@ -539,10 +539,10 @@ animation: none !important;
   transition: all 350ms ease;
 }
 .bt-highlight-2:hover{
-  border: 2px solid @btn-border;
+  border: 1px solid @btn-border;
 }
 .bt-highlight-3{
-  border: 2px solid @btn-border;
+  border: 1px solid @btn-border;
   .responsiveDark({
     border-color: @if-1b7f3b8b;
   },
@@ -556,10 +556,10 @@ animation: none !important;
 }
 .bt-highlight-3:hover{
   .responsiveDark({
-    border: 2px solid @secondary-color;
+    border: 1px solid @secondary-color;
   },
   {
-    border: 2px solid @secondary-color-dark;
+    border: 1px solid @secondary-color-dark;
   });
 }
 .btn-import,
@@ -640,10 +640,10 @@ animation: none !important;
 }
 .bt-remove{
   .responsiveDark({
-    border: 2px solid @alert-color;
+    border: 1px solid @alert-color;
   },
   {
-    border: 2px solid @alert-color-dark;
+    border: 1px solid @alert-color-dark;
   });
 }
 .bt-remove:hover{
@@ -707,7 +707,7 @@ animation: none !important;
 .btSplitView .dropdown-toggle.btn-cmp-mode-dropdown {
   width: 85%;
   display: block;
-  margin: 6px 5px 6px 15px;
+  margin: 0 5px 6px 15px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1402,6 +1402,14 @@ html {
      color: @or-sign-dark;
      background-color: @modal-bg-dark;
      border-color: @modal-bg-dark;
+  });
+}
+.or-separator {
+  .responsiveDark({
+     border-color: @or-sign;
+  },
+  {
+     border-color: @or-sign-dark;
   });
 }
 .vertical-align {
