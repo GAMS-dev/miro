@@ -254,9 +254,9 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   } else if (type == "dashboard") {
     renderDashboard("dashboard", data,
       options = customOptions,
-      roundPrecision = roundPrecision,
       rendererEnv = rendererEnv, views = views,
-      outputScalarsFull = configData
+      outputScalarsFull = configData,
+      roundPrecision = roundPrecision
     )
   } else {
     tryCatch(
@@ -275,9 +275,9 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       {
         callModule(customRenderer, "custom", data,
           options = customOptions,
-          roundPrecision = roundPrecision,
           path = customRendererDir, rendererEnv = rendererEnv, views = views,
-          attachments = attachments, outputScalarsFull = configData
+          attachments = attachments, outputScalarsFull = configData,
+          roundPrecision = roundPrecision
         )
       },
       error = function(e) {

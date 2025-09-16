@@ -445,7 +445,7 @@ app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
 Sys.sleep(0.5)
 expect_identical(
-  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  getDisplayedDtData(app, "in_4-miroPivot-pivotTable"),
   tibble(
     value = c(
       "San-Diego", "lat", "32.72", "", "lng", "-117.16", "Seattle",
@@ -463,7 +463,7 @@ app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
 Sys.sleep(0.5)
 expect_identical(
-  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  getDisplayedDtData(app, "in_4-miroPivot-pivotTable"),
   tibble(
     value = c(
       "San-Diego", "lat", "32.7157", "", "lng", "-117.1611", "Seattle",
@@ -481,7 +481,7 @@ app$set_inputs(`in_4-miroPivot-updateSettings` = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
 Sys.sleep(0.5)
 expect_identical(
-  getRoundedDtData(app, "in_4-miroPivot-pivotTable"),
+  getDisplayedDtData(app, "in_4-miroPivot-pivotTable"),
   tibble(
     value = c(
       "San-Diego", "lat", "32.715736", "", "lng", "-117.161087", "Seattle",

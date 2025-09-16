@@ -13,7 +13,7 @@ getVisibleDtData <- function(app, id, timeout = 5000L) {
     .name_repair = "universal"
   ))
 }
-getRoundedDtData <- function(app, id, timeout = 5000L) {
+getDisplayedDtData <- function(app, id, timeout = 5000L) {
   app$wait_for_js(paste0("$('#", id, " table tbody tr').length > 0"), timeout = timeout)
 
   dtData <- app$get_js(paste0(
