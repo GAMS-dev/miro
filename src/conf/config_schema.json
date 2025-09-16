@@ -2651,7 +2651,7 @@
       ]
     },
     "customLanguage": {
-      "description": "Custom language used for MIRO. Should be the name of the custom language file without .json extension. File must be placed in conf_<modelName> directory.",
+      "description": "Custom language used for MIRO. Should be the name of the custom language file without .json extension. File must be placed in static_<modelName> directory.",
       "type": "string"
     },
     "pageTitle": {
