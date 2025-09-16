@@ -407,10 +407,6 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
-        noApps: {
-          type: 'string',
-          minLength: 1,
-        },
         btEdit: {
           type: 'string',
           minLength: 1,
@@ -592,7 +588,7 @@ const schema = {
           minLength: 1,
         },
       },
-      required: ['title', 'welcomeTitle', 'welcomeText', 'noApps', 'btEdit', 'btEditDone', 'btAddExamples', 'appFilesPlaceholder', 'appNamePlaceholder',
+      required: ['title', 'welcomeTitle', 'welcomeText', 'btEdit', 'btEditDone', 'btAddExamples', 'appFilesPlaceholder', 'appNamePlaceholder',
         'appDescPlaceholder', 'appDbPathPlaceholder', 'appLogoPlaceholder', 'appDbPathReset', 'editAppInfoText', 'btLaunch', 'btLaunchBase',
         'btLaunchHcube', 'btCancel', 'btSave', 'btAddApp', 'errNoAppTitleHdr', 'errNoAppTitleMsg', 'errInvalidDbPathHdr',
         'errInvalidDbPathMsg', 'dialogSelectAppLogoHdr', 'dialogSelectAppLogoMsg', 'dialogSelectAppLogoBtn',
@@ -1225,7 +1221,6 @@ const en = {
     title: 'GAMS MIRO Library',
     welcomeTitle: 'Welcome to Your',
     welcomeText: 'This is where your GAMS MIRO applications will appear once they are added. To get started, click the "+" button on the left. You can explore our collection of example apps or add your own existing MIRO app.',
-    noApps: 'No apps',
     btEdit: 'Edit apps',
     btEditDone: 'Save',
     btAddExamples: 'Add example apps',
@@ -1495,7 +1490,6 @@ const de = {
   },
   general: {
     title: 'MIRO Bibliothek',
-    noApps: 'Keine Apps',
     btEdit: 'Bearbeiten',
     btEditDone: 'Fertig',
     btAddExamples: 'Beispiel-Apps hinzufügen',
@@ -1764,7 +1758,6 @@ const cn = {
   },
   general: {
     title: 'MIRO库',
-    noApps: '无应用程序',
     btEdit: '编辑',
     btEditDone: '完成',
     btAddExamples: '添加示例应用程序',

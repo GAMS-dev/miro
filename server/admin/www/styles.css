@@ -879,32 +879,6 @@ a:hover {
     color: #e18d0f;
     text-decoration:underline;
 }
-.btn-add-examples {
-  margin-top: 30px;
-  padding: 5px;
-  background-color: #d9dbe2;
-  border: 2px solid #f90;
-  border-color: #f90;
-  text-shadow: none;
-  color: inherit;
-  width: 25%;
-  height: 75px;
-  font-size: large;
-  line-height: 1.5;
-  border-radius: .25rem;
-}
-@media (prefers-color-scheme: dark) {
-  .btn-add-examples {
-    background-color: #393e46;
-  }
-}
-.btn-add-examples:hover,
-.btn-add-examples:active,
-.btn-add-examples:focus {
-  background-color: inherit;
-  color: inherit;
-  transition: background-color .15s ease-in-out,box-shadow .15s ease-in-out, color .15s ease-in-out;
-}
 .dropdown-menu.show {
   right: 0px;
 }

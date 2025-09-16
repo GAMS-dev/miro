@@ -12,7 +12,6 @@ const supportedDataFileTypes = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip']
 const appPath = querystring.parse(global.location.search)['?appPath'];
 $(() => {
   const appsWrapper = $('#appsWrapper');
-  const noAppsNotice = $('#noAppsDiv');
   const btEditWrapper = $('#btEditWrapper');
   const btEdit = document.getElementById('btEdit');
   const loadingScreen = $('#loadingScreen');
@@ -123,9 +122,6 @@ $(() => {
       $('body').removeClass('edit-mode-active');
       resetAppConfig(HTMLIDToUnicode($('.cancel-btn:visible').data('id')));
       exitOverlayMode();
-      if (!appData.length) {
-        noAppsNotice.fadeIn(200);
-      }
       btEdit.textContent = lang.btEdit;
       $('.edit-info').fadeOut(200);
       $('.delete-app-button').fadeOut(200);
@@ -142,9 +138,6 @@ $(() => {
       isInEditMode = false;
     } else {
       $('body').addClass('edit-mode-active');
-      if (!appData.length) {
-        noAppsNotice.hide();
-      }
       btEdit.textContent = lang.btEditDone;
       newAppConfig = null;
       $('.edit-info').fadeIn(200);
@@ -189,7 +182,7 @@ $(() => {
 
                                      ${appData.length === 0 ? `
                                        <div class="empty small">or</div>
-                                       <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btAddExamplesInForm">Add Example Apps</button>
+                                       <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btAddExamplesInForm">${lang.btAddExamples}</button>
                                      ` : ''}
                                  </div>
                                </div>
@@ -583,7 +576,7 @@ $(() => {
     }
     if (langData != null && lang.btLaunch == null) {
       lang = langData;
-      ['title', 'btEdit', 'noApps', 'btAddExamples'].forEach((id) => {
+      ['title', 'btEdit'].forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
           el.innerText = lang[id];
@@ -672,7 +665,6 @@ $(() => {
       'arrow.png',
     ))}" width="45px" align="middle" alt="arrow">${lang.editAppInfoText}</p>
                       </div>`);
-      noAppsNotice.hide();
     } else {
       btEditWrapper.hide();
       if (startup) {
@@ -689,8 +681,6 @@ $(() => {
                               ${welcomeTextHTML}
                             </div>`;
       appsWrapper.html(emptyStateLayout);
-      // appsWrapper.html(welcomeTextHTML + addAppWrapperHTMLFull);
-      noAppsNotice.hide();
 
       if (startup && !isInEditMode) {
         toggleEditMode();
@@ -703,11 +693,8 @@ $(() => {
   $('#downloadR').click(() => {
     shell.openExternal('https://gams.com/miro/download.html');
   });
-  $('#btAddExamples').click(() => {
-    ipcRenderer.send('add-example-apps');
-  });
   appsWrapper.on('click', '#btAddExamplesInForm', (e) => {
-    e.stopPropagation(); // <-- ADD THIS LINE
+    e.stopPropagation();
     ipcRenderer.send('add-example-apps');
     toggleEditMode();
   });
