@@ -276,7 +276,7 @@ dependency_scanning_js:
   stage: test
   script:
     - echo -n '{"launcher":' > npm-audit-report.json
-    - npm i --package-lock-only --ignore-scripts
+    - npm i --package-lock-only --ignore-scripts --force
     - npm audit --omit=dev --json | tr -d '\n' >> npm-audit-report.json || true
     - echo -n ',"ui":' >> npm-audit-report.json
     - |
