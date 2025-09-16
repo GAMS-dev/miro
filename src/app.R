@@ -234,19 +234,17 @@ if (is.null(errMsg)) {
       )
     )
   }
-  if (!identical(miroLanguage, "") && !identical(miroLanguage, config$language) &&
+  if (!identical(miroLanguage, "") &&
     file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
     lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
       simplifyDataFrame = FALSE,
       simplifyMatrix = FALSE
     )
-    config$language <- miroLanguage
   } else {
     lang <<- fromJSON(file.path(".", "conf", "en.json"),
       simplifyDataFrame = FALSE,
       simplifyMatrix = FALSE
     )
-    config$language <- "en"
     flog.warn("No language file '%s.json' found. Using default (en).", miroLanguage)
   }
   if (debugMode) {
