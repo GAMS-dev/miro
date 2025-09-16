@@ -81,7 +81,7 @@ header <- dashboardHeader(
           href = "#", class = "action-button", id = "btShowSettingsDialog",
           tags$div(
             class = "menu-icon-align",
-            tags$i(class = "logo-engine")
+            tags$i(class = "fa fa-cog")
           ),
           lang$nav$header$help$settings
         ))
