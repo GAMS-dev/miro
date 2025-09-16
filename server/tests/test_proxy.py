@@ -111,7 +111,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             self.driver.find_element(
-                By.CSS_SELECTOR, "#navbar .navbar-right .navbar-text"
+                By.CSS_SELECTOR, "#navbar .navbar-user .user-name"
             ).text,
             ENGINE_USER,
         )
@@ -119,13 +119,17 @@ class UITests(unittest.TestCase):
     def logout(self):
         self.driver.switch_to.default_content()
         wait = WebDriverWait(self.driver, 3)
-        sign_out_element = wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, ".navbar-right a"))
+        user_dropdown_toggle = wait.until(
+            EC.element_to_be_clickable((By.ID, "userDropdown"))
         )
-
-        # Check if the element text matches "Sign Out" and if it is displayed
-        if sign_out_element.is_displayed() and sign_out_element.text == "Sign Out":
-            sign_out_element.click()
+        user_dropdown_toggle.click()
+        sign_out_button = wait.until(
+            EC.visibility_of_element_located((By.XPATH, "//a[text()='Sign Out']"))
+        )
+        sign_out_button.click()
+        wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#userDropdown"))
+        ).click()
 
     def remove_apps(self):
         self.driver.switch_to.default_content()
@@ -644,7 +648,9 @@ class UITests(unittest.TestCase):
             "More than one visible 'launch-app-box' found.",
         )
         self.assertTrue(
-            visible_buttons[0].get_attribute("data-launch-url").endswith("/app/test_app1"),
+            visible_buttons[0]
+            .get_attribute("data-launch-url")
+            .endswith("/app/test_app1"),
             "The data-launch-url of the launch-app-box div is not '/app/test_app1'.",
         )
         visible_buttons[0].click()
@@ -853,7 +859,9 @@ class UITests(unittest.TestCase):
             "More than one visible 'launch-app-box' found.",
         )
         self.assertTrue(
-            visible_buttons[0].get_attribute("data-launch-url").endswith("/app/test_app1"),
+            visible_buttons[0]
+            .get_attribute("data-launch-url")
+            .endswith("/app/test_app1"),
             "The data-launch-url of the launch-app-box is not '/app/test_app1'.",
         )
         visible_buttons[0].click()
