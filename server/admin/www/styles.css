@@ -114,6 +114,7 @@ a:hover {
     font-family: Arial;
     font-size: 15px;
     font-weight: bold;
+    transition: color 0.1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out;
 }
 .btn-default{
   border: 2px solid #ADADAD;
@@ -325,6 +326,10 @@ a:hover {
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     min-height: 450px;
 }
+.app-box:hover {
+  cursor: pointer;
+  box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.20);
+}
 @media (prefers-color-scheme: dark) {
   .app-box {
     background: #393e46;
@@ -336,16 +341,15 @@ a:hover {
 }
 .app-box-hover:hover {
     cursor: text;
-    background-color: #fffefc;
-    box-shadow: 0 2px 4px 0 #ff99005c, 0 2px 10px 0 #ff990040;
-    transition: box-shadow .15s ease-in-out, background-color .15s linear;
-}
-.nav-tabs .nav-link {
-  background-color: unset;
+    background-color: #fff;
+    box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
+                0 2px 10px 0 rgba(61, 66, 87, 0.25);
+    outline: none;
+    transition: box-shadow .1s ease-in-out, background-color .1s linear;
 }
 @media (prefers-color-scheme: dark) {
   .app-box-hover:hover {
-    background: #54565d;
+    background: #454853;
   }
   .nav-tabs .nav-link.active {
     color: #eeeeee;
@@ -357,11 +361,11 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
 }
 .modify-box {
     margin: 50px auto;
@@ -370,11 +374,11 @@ a:hover {
     padding: 45px 30px;
     background: #fff;
     position: relative;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-clip: padding-box;
     height: 100%;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25), 0 2px 10px 0 rgba(0,0,0,0.20);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);;
 }
 .drag-drop-area {
   background-color: #e9ecef;
@@ -385,20 +389,27 @@ a:hover {
 }
 @media (prefers-color-scheme: dark) {
   .drag-drop-area {
-    background-color: #8790a0;
-    border: 1px solid #000;
+    background: linear-gradient(to bottom, #292D33, #191B1F);
+    background-color: #292D33;
   }
 }
 .drag-drop-area-text {
   padding: 8px;
   margin:auto;
   cursor: pointer;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0,0,0,0.7);
   color: #fff;
 }
 .empty {
-  color: #494d55;
+  color: #2D3748;
   background-color: unset;
+  font-size: 15px;
+  font-weight: bold;
+}
+@media (prefers-color-scheme: dark) {
+  .empty {
+    color: #fff;
+  }
 }
 .not-empty {
   background-color: rgba(0,0,0,0.3);
@@ -511,9 +522,10 @@ a:hover {
   top:0;
   z-index:1000;
   text-align:center;
-  background: #494d55;
+  background: #2D3748;
+  background-image: linear-gradient(to right, #4A5568, #2D3748);
   color: rgba(255, 255, 255, 0.85);
-  border-bottom: 4px solid #f90;
+  border-bottom: 3px solid #f90;
   margin-left: auto;
   margin-right: auto;
 }
@@ -544,23 +556,23 @@ a:hover {
     border-color: #f90 !important;
     text-shadow: none;
     border: none;
-    color: #494d55;
+    color: #212529;
 }
 .confirm-btn:hover, .confirm-btn:active, .bootbox-accept:hover, .bootbox-accept:active, .bootbox-accept:focus {
     background: #e18d0f !important;
     border-color: #e18d0f !important;
     box-shadow: none;
-    color: #494d55;
+    color: #212529;
 }
 .cancel-btn, .open-config-btn {
     background: #fff;
-    color: #494d55 !important;
+    color: #212529 !important;
     border-color: #9a9fa8;
     cursor: pointer;
 }
 .cancel-btn:hover, .open-config-btn:hover {
-    background: #f6f5f5;
-    color: #494d55 !important;
+    background-color: #f6f5f5;
+    color: #212529 !important;
     border-color: #9a9fa8;
 }
 @media (prefers-color-scheme: dark) {
@@ -588,7 +600,7 @@ a:hover {
   border: 1px solid #fff;
   text-align:left;
   display: block;
-  color: #494d55;
+  color: #212529;
   background-clip: padding-box;
 }
 .editable {
@@ -602,7 +614,7 @@ a:hover {
   cursor: text;
   border: 1px solid #000;
   background-color: #fff;
-  outline-color:#494d55;
+  outline-color:#212529;
 }
 @media (prefers-color-scheme: dark) {
   .editable {
@@ -617,7 +629,7 @@ a:hover {
   .editable:focus {
     border: 1px solid #000;
     background-color: #292D33;
-    outline-color:#494d55;
+    outline-color:#212529;
   }
 }
 .editable .fileInput{
@@ -649,7 +661,7 @@ a:hover {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: #494d55;
+  background-color: #2D3748;
   color: white;
 }
 .column1 {
@@ -669,7 +681,7 @@ a:hover {
 }
 @media (prefers-color-scheme: dark) {
   .modal-content {
-      background-color: #494d55;
+      background-color: #2D3748;
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -790,15 +802,15 @@ a:hover {
 }
 .btn-add-app {
   position:absolute;
-  font-size: 100px;
+  font-size: 64px;
   font-weight: bold;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  color:#b4b6bd !important;
+  color:#f90  !important;
 }
 .add-app-box {
-    margin: 65px auto;
+    margin: 30px auto;
     padding: 45px 30px;
     position: relative;
     outline: #c7c9d0 dashed 2px;
@@ -812,12 +824,10 @@ a:hover {
     transition: background-color .15s linear, box-shadow .15s linear;
 }
 @media (prefers-color-scheme: dark) {
-  .btn-add-app {
-    color:#848991 !important;
-  }
-  .add-app-box:hover,
-  .add-app-box:focus {
-    background-color:#54565d;
+  .add-app-box:focus,
+  .index-dragover .add-app-box {
+    background-color:#454853;
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.1);
   }
 }
 .index-dragover {
@@ -825,29 +835,30 @@ a:hover {
   outline-offset: -20px;
   outline-color: #b1b3b9;
   background-color: #ced1da;
-  box-shadow: 0 2px 4px 0 #ff99005c, 0 2px 10px 0 #ff990040;
-  transition: outline-offset .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s linear;
+  box-shadow: 0 2px 4px 0 rgba(61, 66, 87, 0.36),
+              0 2px 10px 0 rgba(61, 66, 87, 0.25);
+  transition: outline-offset .15s ease-in-out, box-shadow .15s ease-in-out, background .15s linear;
 }
 @media (prefers-color-scheme: dark) {
   .index-dragover {
     outline-color: #b1b3b9;
-    background-color: #54565d;
+    background-color: #454853;
   }
 }
 .btn-add-app-dragover {
-  font-size: 120px;
+  font-size: 100px;
   transition: font-size .15s ease-in-out;
 }
 .add-app-box-logo {
     height:180px;
     display:block;
     margin:auto;
-    background-color:#d9dbe2;
+    background: linear-gradient(to bottom, #d9dbe2, #d1d4de);
 }
 .add-app-box-title {
     width:30%;
     height:25px;
-    background-color:#d9dbe2;
+    background-color:#d1d4de;
     margin-top: 15pt;
     margin-bottom: .5rem;
     font-weight: 500;
@@ -856,7 +867,7 @@ a:hover {
 .add-app-box-desc {
     width:80%;
     height:15px;
-    background-color:#d9dbe2;
+    background-color:#d1d4de;
     margin-top: 0;
     margin-bottom: 1rem;
 }

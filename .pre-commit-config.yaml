@@ -42,10 +42,10 @@ repos:
               scripts/.*|
           )$
         additional_dependencies:
-          - eslint@8.3.0
-          - eslint-plugin-import@2.25.3
+          - eslint@9
+          - eslint-plugin-import@2.32.0
           - eslint-config-airbnb-base@15.0.0
-          - eslint-config-prettier@9.1.0
+          - eslint-config-prettier@10.1.8
   - repo: https://github.com/lorenzwalthert/precommit
     rev: v0.4.3.9009
     hooks:

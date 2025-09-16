@@ -60,4 +60,4 @@ test_that("deleteRows method works", {
   )
 })
 
-db$finalize()
+db$destroy()

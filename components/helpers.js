@@ -25,12 +25,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-const randomInt = (min, max) => Math.round(Math.random() * ((max + 1) - min) + min);
+const randomInt = (min, max) =>
+  Math.round(Math.random() * (max + 1 - min) + min);
 const randomPort = async () => {
-  /* eslint-disable no-constant-condition, no-await-in-loop, no-continue */
+  /* eslint-disable no-await-in-loop, no-continue */
   // Those forbidden ports are in line with shiny
   // https://github.com/rstudio/shiny/blob/29b574bf94c56e69e621be8fd6d3b7eb0ae42a18/R/runapp.R#L308
-  const forbiddenPorts = [3659, 4045, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6697];
+  const forbiddenPorts = [
+    3659, 4045, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6697,
+  ];
   while (true) {
     let port = randomInt(3000, 5000);
     if (forbiddenPorts.includes(port)) continue;
@@ -40,23 +43,20 @@ const randomPort = async () => {
   }
 };
 
-const waitFor = (milliseconds) => new Promise((resolve) => {
-  setTimeout(resolve, milliseconds);
-});
-
-const kill = (pid, signal = 'SIGTERM') => new Promise((resolve, reject) => {
-  treeKill(pid, signal, (killErr) => {
-    if (killErr) {
-      reject(killErr);
-    } else {
-      resolve({ pid });
-    }
+const waitFor = (milliseconds) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
   });
-});
 
-export {
-  waitFor,
-  randomPort,
-  isNull,
-  kill,
-};
+const kill = (pid, signal = 'SIGTERM') =>
+  new Promise((resolve, reject) => {
+    treeKill(pid, signal, (killErr) => {
+      if (killErr) {
+        reject(killErr);
+      } else {
+        resolve({ pid });
+      }
+    });
+  });
+
+export { waitFor, randomPort, isNull, kill };

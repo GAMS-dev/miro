@@ -1658,7 +1658,7 @@ if (!is.null(errMsg)) {
             } else {
               newScen$save(c(dataOut, dataIn))
             }
-            newScen$finalize()
+            newScen$destroy()
             if (removeDataFile && !file.remove(file.path(miroDataDir, miroDataFiles[i]))) {
               flog.info("Could not remove file: '%s'.", miroDataFiles[i])
             }
@@ -1905,7 +1905,7 @@ if (!is.null(errMsg)) {
             }
           )
         }
-        activeScen$finalize()
+        activeScen$destroy()
         if (!interactive() && !isShinyProxy) {
           tryCatch(
             {

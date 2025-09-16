@@ -261,7 +261,7 @@ if (!identical(procEnv$MIRO_DB_TYPE, "postgres")) {
     name = dbPath
   )
 }
-db$finalize()
+db$destroy()
 createTestDb()
 db <- Db$new(
   uid = "te_de\\%d",
@@ -334,4 +334,4 @@ test_that("Remapping scenario names works", {
   expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
 })
 
-db$finalize()
+db$destroy()

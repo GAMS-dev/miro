@@ -499,4 +499,4 @@ test_that("download method works with modified exec perm of remote files", {
   )
 })
 
-db$finalize()
+db$destroy()

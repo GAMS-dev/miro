@@ -25,8 +25,12 @@ function miroscenGetModelName(scenFilePath, successCallback, errCallback) {
             if ('model_raw' in metadataJSON) {
               return successCallback(metadataJSON.model_raw);
             }
-            return errCallback(new Error('The selected file is not a valid \
-miroscen file as the metadata was incomplete.'));
+            return errCallback(
+              new Error(
+                'The selected file is not a valid \
+miroscen file as the metadata was incomplete.',
+              ),
+            );
           });
           return null;
         });
@@ -34,8 +38,14 @@ miroscen file as the metadata was incomplete.'));
         zipfile.readEntry();
       }
     });
-    zipfile.on('end', () => errCallback(new Error('The selected file is not a valid \
-miroscen file as no metadata was found.')));
+    zipfile.on('end', () =>
+      errCallback(
+        new Error(
+          'The selected file is not a valid \
+miroscen file as no metadata was found.',
+        ),
+      ),
+    );
     return null;
   });
 }
@@ -73,7 +83,9 @@ function addMiroscen(
         );
       } catch (err) {
         if (err.message !== 'suppress') {
-          log.warn(`Problems parsing miroscen file. Error message: ${err.message};`);
+          log.warn(
+            `Problems parsing miroscen file. Error message: ${err.message};`,
+          );
           dialog.showMessageBox(windowObj, {
             type: 'error',
             title: global.lang.main.ErrorNewScenHdr,

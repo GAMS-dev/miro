@@ -3,22 +3,32 @@ import log from 'electron-log/main.js';
 import { execa } from 'execa';
 import path from 'node:path';
 
-async function installRPackages(rpath, apppath, libpath, mainWindow, devMode = false) {
+async function installRPackages(
+  rpath,
+  apppath,
+  libpath,
+  mainWindow,
+  devMode = false,
+) {
   if (!rpath) {
     await dialog.showMessageBox(mainWindow, {
       type: 'error',
       title: 'R not found',
-      message: 'No R installation was found on your machine. Please install R or specify the location of your existing R installation in the Preferences window (F7).',
+      message:
+        'No R installation was found on your machine. Please install R or specify the location of your existing R installation in the Preferences window (F7).',
       buttons: ['OK'],
     });
     return false;
   }
-  const selection = (await dialog.showMessageBox(mainWindow, {
-    type: 'question',
-    title: 'Install R packages',
-    message: 'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries libcurl and libpng.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and libpng-dev, on Fedora use libcurl-devel and libpng-devel.',
-    buttons: ['Yes', 'No'],
-  })).response;
+  const selection = (
+    await dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      title: 'Install R packages',
+      message:
+        'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries libcurl and libpng.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and libpng-dev, on Fedora use libcurl-devel and libpng-devel.',
+      buttons: ['Yes', 'No'],
+    })
+  ).response;
   if (selection !== 0) {
     return false;
   }

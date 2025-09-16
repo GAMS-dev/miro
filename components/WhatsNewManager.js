@@ -17,9 +17,9 @@ export default class WhatsNewManager {
       // don't show what's new if installation is new
       return;
     }
-    const previousMiroVersion = WhatsNewManager.parseSemver(await this.configManager.get(
-      'previousMIROVersion',
-    ));
+    const previousMiroVersion = WhatsNewManager.parseSemver(
+      await this.configManager.get('previousMIROVersion'),
+    );
     let entries = [];
     try {
       entries = await fs.readdir(this.whatsNewDir, { withFileTypes: true });
@@ -77,9 +77,9 @@ export default class WhatsNewManager {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#39;');
     const section = (heading, items) => {
-    if (!items?.length) return "";
-    const lis = items.map((x) => `<li class="mb-2">${x}</li>`).join("");
-    return `
+      if (!items?.length) return '';
+      const lis = items.map((x) => `<li class="mb-2">${x}</li>`).join('');
+      return `
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">${escapeHTML(heading)}</h5>
@@ -88,7 +88,7 @@ export default class WhatsNewManager {
           </ul>
         </div>
       </div>`;
-  };
+    };
 
     return `<!doctype html>
 <html lang="en">
@@ -107,12 +107,14 @@ export default class WhatsNewManager {
   <div class="container my-4">
     <h1 class="h3">${escapeHTML(title)}</h1>
 
-    ${major.length || minor.length
-      ? `<div>
-           ${section("New features", major)}
-           ${section("Minor new features and improvements", minor)}
+    ${
+      major.length || minor.length
+        ? `<div>
+           ${section('New features', major)}
+           ${section('Minor new features and improvements', minor)}
          </div>`
-      : `<div class="alert alert-secondary">No new items.</div>`}
+        : `<div class="alert alert-secondary">No new items.</div>`
+    }
   </div>
 </body>
 

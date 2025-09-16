@@ -72,7 +72,9 @@ function unzipCb(zipname, destdir, callback) {
             }
             // report progress at 60Hz
             const progressInterval = setInterval(() => {
-              reportString(`${byteCount}/${totalBytes}  ${((byteCount / totalBytes) * 100) || 0}%`);
+              reportString(
+                `${byteCount}/${totalBytes}  ${(byteCount / totalBytes) * 100 || 0}%`,
+              );
             }, 1000 / 60);
             const filter = new Transform();
             // eslint-disable-next-line no-underscore-dangle
@@ -91,7 +93,9 @@ function unzipCb(zipname, destdir, callback) {
             };
 
             // pump file contents
-            const writeStream = fs.createWriteStream(path.join(destdir, entry.fileName));
+            const writeStream = fs.createWriteStream(
+              path.join(destdir, entry.fileName),
+            );
             incrementHandleCount();
             writeStream.on('close', decrementHandleCount);
             readStream.pipe(filter).pipe(writeStream);

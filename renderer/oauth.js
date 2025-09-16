@@ -36,20 +36,21 @@ const OAuthClient = class {
   }
 
   static #base64URLEncode(buffer) {
-    return window.btoa(buffer)
+    return window
+      .btoa(buffer)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
   }
 
   static #base64URLDecode(input) {
-    let output = input
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
+    let output = input.replace(/-/g, '+').replace(/_/g, '/');
     const pad = output.length % 4;
     if (pad) {
       if (pad === 1) {
-        throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+        throw new Error(
+          'InvalidLengthError: Input base64url string is the wrong length to determine padding',
+        );
       }
       output += new Array(5 - pad).join('=');
     }
@@ -57,13 +58,18 @@ const OAuthClient = class {
   }
 
   async getB64URLEncodedPublicKey() {
-    const publicKeyRaw = await window.crypto.subtle.exportKey('spki', this.#keyPair.publicKey);
+    const publicKeyRaw = await window.crypto.subtle.exportKey(
+      'spki',
+      this.#keyPair.publicKey,
+    );
     const publicKeyString = OAuthClient.#ab2str(publicKeyRaw);
     return OAuthClient.#base64URLEncode(publicKeyString);
   }
 
   async decryptData(b64URLEncodedData, aesKeyB64, aesIvB64) {
-    const binaryEncryptedAES = OAuthClient.#str2ab(OAuthClient.#base64URLDecode(aesKeyB64));
+    const binaryEncryptedAES = OAuthClient.#str2ab(
+      OAuthClient.#base64URLDecode(aesKeyB64),
+    );
     const binaryAES = await window.crypto.subtle.decrypt(
       {
         name: 'RSA-OAEP',
@@ -71,11 +77,16 @@ const OAuthClient = class {
       this.#keyPair.privateKey,
       binaryEncryptedAES,
     );
-    const aesKey = await window.crypto.subtle.importKey('raw', binaryAES, 'AES-GCM', true, [
-      'encrypt',
-      'decrypt',
-    ]);
-    const encryptedData = OAuthClient.#str2ab(OAuthClient.#base64URLDecode(b64URLEncodedData));
+    const aesKey = await window.crypto.subtle.importKey(
+      'raw',
+      binaryAES,
+      'AES-GCM',
+      true,
+      ['encrypt', 'decrypt'],
+    );
+    const encryptedData = OAuthClient.#str2ab(
+      OAuthClient.#base64URLDecode(b64URLEncodedData),
+    );
     const iv = OAuthClient.#str2ab(OAuthClient.#base64URLDecode(aesIvB64));
     const decryptedData = await window.crypto.subtle.decrypt(
       { name: 'AES-GCM', iv },

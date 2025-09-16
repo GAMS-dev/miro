@@ -1090,8 +1090,8 @@ body:not(.edit-mode-active) .launch-app-box:hover {
   text-align: center;
 }
 .about-wrapper {
-  margin:20px;
-  margin-top:40px;
+  padding:20px;
+  padding-top:40px;
 }
 .about-text {
   font-size:10pt;

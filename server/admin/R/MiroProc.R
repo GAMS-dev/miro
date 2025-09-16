@@ -205,22 +205,6 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     })
     private$parallelPidMap[[parallelSessionId]] <- NULL
     return(invisible(self))
-  },
-  finalize = function() {
-    flog.debug("MiroProc: destructor called.")
-    if (length(private$miroProc)) {
-      lapply(names(private$miroProc), function(pid) {
-        if (private$miroProc[[pid]]$is_alive()) {
-          flog.info("Miro process (pid: %s) forcefully terminated.", pid)
-          private$miroProc[[pid]]$kill()
-        }
-      })
-    }
-    if (length(private$procObs)) {
-      lapply(private$procObs, function(obs) {
-        obs$destroy()
-      })
-    }
   }
 ), private = list(
   session = NULL,
@@ -247,5 +231,21 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
       currentVal <- launchDbMigrationManager()
       launchDbMigrationManager(currentVal + 1L)
     })
+  },
+  finalize = function() {
+    flog.debug("MiroProc: destructor called.")
+    if (length(private$miroProc)) {
+      lapply(names(private$miroProc), function(pid) {
+        if (private$miroProc[[pid]]$is_alive()) {
+          flog.info("Miro process (pid: %s) forcefully terminated.", pid)
+          private$miroProc[[pid]]$kill()
+        }
+      })
+    }
+    if (length(private$procObs)) {
+      lapply(private$procObs, function(obs) {
+        obs$destroy()
+      })
+    }
   }
 ))

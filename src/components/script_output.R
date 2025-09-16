@@ -228,11 +228,6 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     })
     return(invisible(self))
   },
-  finalize = function() {
-    try(lapply(private$activeScripts, function(script) {
-      script$kill()
-    }), silent = TRUE)
-  },
   readOutput = function(id, scriptId, hcube = FALSE) {
     stopifnot(
       is.integer(id), id > 0,
@@ -305,5 +300,10 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       ))
     }
     return(FALSE)
+  },
+  finalize = function() {
+    try(lapply(private$activeScripts, function(script) {
+      script$kill()
+    }), silent = TRUE)
   }
 ))

@@ -1432,7 +1432,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
           ),
           "_hcScalars"
         )
-        hcJobConfig$finalize()
+        hcJobConfig$destroy()
         solveOptions <- NULL
         instanceInfo <- worker$getInstanceInfo()
         if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {

@@ -80,10 +80,6 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       dbQuoteIdentifier(private$conn, private$getDbAppId(appId)), " CASCADE;"
     ))
     return(invisible(self))
-  },
-  finalize = function() {
-    flog.debug("Db: Database connection ended as Db object was gced.")
-    dbDisconnect(private$conn)
   }
 ), private = list(
   conn = NULL,
@@ -220,5 +216,9 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       }
     )
     return(newRolePrefix)
+  },
+  finalize = function() {
+    dbDisconnect(private$conn)
+    flog.debug("Db: Database connection ended as Db object was gced.")
   }
 ))

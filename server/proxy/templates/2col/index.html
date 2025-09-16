@@ -22,23 +22,24 @@
 -->
 <!doctype html>
 <html
-  xmlns:th="//www.thymeleaf.org"
-  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  lang="en"
 >
-  <head lang="en">
+  <head>
     <title th:text="${title}"></title>
 
     <!-- Meta -->
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self';style-src 'self' 'unsafe-inline';"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
     <link rel="shortcut icon" th:href="@{${resourcePrefix} + '/favicon'}" />
+
     <link
       rel="stylesheet"
       media="screen"
@@ -63,59 +64,79 @@
   </head>
 
   <body>
-    <div class="site-wrapper">
+    <div class="site-wrapper d-flex flex-column min-vh-100">
       <!-- ******Header****** -->
       <div th:replace="~{fragments/navbar :: navbar}"></div>
-      <div class="container">
-        <div class="app-wrapper row">
+
+      <main
+        class="container flex-grow-1 mt-5"
+        th:with="visibleApps=${apps != null ? apps.?[id != 'admin'] : T(java.util.Collections).emptyList()}"
+      >
+        <div
+          class="app-wrapper row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xxl-4 g-4"
+          th:if="${!#lists.isEmpty(visibleApps)}"
+        >
           <div
-            th:each="app: ${apps}"
+            class="col"
+            th:each="app: ${visibleApps}"
             th:if="${app.id != 'admin'}"
-            class="col-xxl-3 col-lg-4 col-sm-6 col-12"
           >
             <div
               class="app-box launch-app-box app-box-fixed-height"
               th:data-launch-url="@{/app/}+${app.id}"
+              role="button"
+              tabindex="0"
             >
-              <div>
-                <div style="height: 200px">
+              <div class="d-flex flex-column">
+                <!-- Logo -->
+                <div class="app-logo-wrapper">
                   <div
-                    th:style="'background:url(\'' + @{${resourcePrefix} + '/assets/logos/' + ${app.logoURL}} + '\');background-size:cover;'"
                     class="app-logo"
+                    th:style="'background:url(\'' + @{${resourcePrefix} + '/assets/logos/' + ${app.logoURL}} + '\') no-repeat;background-size:cover'"
+                    aria-hidden="true"
                   ></div>
                 </div>
-                <div>
-                  <div style="height: 125px">
-                    <h3
-                      th:title="${app.displayName == null} ? ${app.id} : ${app.displayName}"
-                      class="app-title app-title-fixed app-item-title"
-                      style="margin-top: 15pt"
-                      th:text="${app.displayName == null} ? ${app.id} : ${app.displayName}"
-                    ></h3>
-                    <p
-                      th:if="${app.description != null}"
-                      th:text="${app.description}"
-                      class="app-desc app-desc-fixed app-item-desc"
-                    ></p>
-                  </div>
+
+                <!-- Text -->
+                <div style="height: 125px">
+                  <h3
+                    class="app-title app-title-fixed app-item-title"
+                    style="margin-top: 15pt"
+                    th:title="${app.displayName == null} ? ${app.id} : ${app.displayName}"
+                    th:text="${app.displayName == null} ? ${app.id} : ${app.displayName}"
+                  ></h3>
+                  <p
+                    class="app-desc app-desc-fixed app-item-desc"
+                    th:if="${app.description != null}"
+                    th:text="${app.description}"
+                  ></p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div id="noAppsInfo" class="no-apps-container">
+        <div
+          id="noAppsInfo"
+          class="no-apps-container"
+          th:if="${#lists.isEmpty(visibleApps)}"
+        >
           <h3>No apps</h3>
+          <p class="text-body-secondary mb-3">
+            When apps are added to your workspace, they'll show up here.
+          </p>
+          <a
+            th:if="${isAdmin}"
+            th:href="@{/app/}+'admin'"
+            class="btn btn-primary btn-sm"
+            >Open Admin Panel</a
+          >
         </div>
-      </div>
+      </main>
     </div>
     <script
       type="text/javascript"
       th:src="@{${resourcePrefix} + '/assets/js/main.js'}"
     ></script>
     <script th:src="@{${resourcePrefix} + ${bootstrapJs}}"></script>
-    <script
-      type="text/javascript"
-      th:src="@{${resourcePrefix} + '/assets/js/stickyfill.min.js'}"
-    ></script>
   </body>
 </html>

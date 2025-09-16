@@ -1134,12 +1134,8 @@ Db <- R6Class("Db",
       flog.trace("Running query: '%s'", query)
       return(dbExecute(private$conn, SQL(query)))
     },
-    finalize = function() {
-      if (!is.null(private$conn)) {
-        DBI::dbDisconnect(private$conn)
-        flog.debug("Db: Database connection ended as Db object was gced.")
-        private$conn <- NULL
-      }
+    destroy = function() {
+      private$finalize()
     }
   ),
   private = list(
@@ -1298,6 +1294,13 @@ Db <- R6Class("Db",
         ),
         value = as.character(value)
       ))
+    },
+    finalize = function() {
+      if (!is.null(private$conn)) {
+        DBI::dbDisconnect(private$conn)
+        flog.debug("Db: Database connection ended as Db object was gced.")
+        private$conn <- NULL
+      }
     }
   )
 )
