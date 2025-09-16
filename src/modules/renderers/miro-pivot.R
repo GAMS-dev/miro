@@ -3204,7 +3204,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
         defaultPairs <- colorPairs(customChartColors)
         allLabels <- miroPivotState$currentSeriesLabels
-        numSeries <- length(allLabels)
+
+        if (!pivotRenderer %in% c("pie", "doughnut")) {
+          numSeries <- length(allLabels)
+        } else {
+          numSeries <- nrow(dataTmp) + 1
+        }
 
         colorList <- vector("list", numSeries)
         numDefaultPairs <- length(defaultPairs)
