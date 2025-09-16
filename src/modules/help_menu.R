@@ -27,7 +27,7 @@ if (config$activateModules$remoteExecution) {
         showEl(session, "#selEngineDefaultInstanceSpinner")
         hideEl(session, "#selEngineDefaultInstanceWrapper")
         engineClient$updateDefaultInstance(input$selEngineDefaultInstance)
-        flog.debug("Engine default instance updated to: %s.", )
+        flog.debug("Engine default instance updated to: %s.", input$selEngineDefaultInstance)
       },
       error = function(err) {
         flog.error("Problems updating user's default instance. Error message: %s", conditionMessage(err))
