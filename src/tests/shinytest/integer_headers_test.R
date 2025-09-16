@@ -15,7 +15,7 @@ expect_error(app$wait_for_js("$('#outputTableView').is(':visible')", timeout = 4
 expect_chartjs(
   app,
   "tab_1_1-miroPivot-pivotChart",
-  list(-718.4888, 240.9712, -514.5075, 243.3373, 2850, 1800, 900),
+  list(-718.49, 240.97, -514.51, 243.34, 2850, 1800, 900),
   c("value")
 )
 app$stop()
