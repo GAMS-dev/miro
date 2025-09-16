@@ -740,7 +740,7 @@
         "tabBaselineComp": "Baseline Comparison",
         "cbHideEmptyCols": "Hide empty columns",
         "cbDecimals": "Number of decimals",
-        "cbDecimalsTooltip": "-1 = no rounding",
+        "cbDecimalsTooltip": "Enter -1 to disable rounding",
         "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
         "cbShowTableSummaryRow": "Show table summary (rows)",
         "cbShowTableSummaryCol": "Show table summary (columns)",

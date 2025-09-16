@@ -782,7 +782,7 @@
         "tabBaselineComp": "Baseline-Vergleich",
         "cbHideEmptyCols": "Leere Spalten ausblenden",
         "cbDecimals": "Anzahl der Dezimalstellen",
-        "cbDecimalsTooltip": "-1 = kein Runden",
+        "cbDecimalsTooltip": "Geben Sie -1 ein, um das Runden zu deaktivieren.",
         "singleDropdown": "Dimension(en), die auf einen Dropdown-Filter mit einfacher Auswahl beschränkt werden sollen",
         "cbShowTableSummaryRow": "Tabellenzusammenfassung anzeigen (Zeilen)",
         "cbShowTableSummaryCol": "Tabellenzusammenfassung anzeigen (Spalten)",

@@ -3119,6 +3119,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             noError <- FALSE
           }
           dataTmp <- dataTmp[stri_order(dataTmp[[1]], numeric = TRUE), ]
+        } else if (pivotRenderer %in% c("pie", "doughnut")) {
+          if (nrow(dataTmp) > 40L) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "40"))
+            dataTmp <- slice(dataTmp, 1:40L)
+            noError <- FALSE
+          }
         } else {
           if (nrow(dataTmp) > 500L) {
             showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
@@ -3180,10 +3186,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (!length(labels)) {
           labels <- "value"
         }
-        miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(
-          noSeries + rowHeaderLen,
-          40L + rowHeaderLen
-        ))]
+
+        if (pivotRenderer %in% c("pie", "doughnut")) {
+          miroPivotState$currentSeriesLabels <<- labels
+        } else {
+          miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(
+            noSeries + rowHeaderLen,
+            40L + rowHeaderLen
+          ))]
+        }
+
         if (miroPivotState$triggerEditViewDialog) {
           miroPivotState$triggerEditViewDialog <<- FALSE
           showAddViewDialog(pivotRenderer, viewOptions = currentView)
@@ -3204,7 +3216,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
         defaultPairs <- colorPairs(customChartColors)
         allLabels <- miroPivotState$currentSeriesLabels
-        numSeries <- length(allLabels)
+
+        if (!pivotRenderer %in% c("pie", "doughnut")) {
+          numSeries <- length(allLabels)
+        } else {
+          numSeries <- nrow(dataTmp) + 1
+        }
 
         colorList <- vector("list", numSeries)
         numDefaultPairs <- length(defaultPairs)

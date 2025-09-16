@@ -782,7 +782,7 @@
         "tabBaselineComp": "基准比较",
         "cbHideEmptyCols": "隐藏空列",
         "cbDecimals": "小数位数",
-        "cbDecimalsTooltip": "-1 = 不四舍五入",
+        "cbDecimalsTooltip": "输入 -1 以禁用舍入",
         "singleDropdown": "限制为单选下拉过滤器的维度",
         "cbShowTableSummaryRow": "显示表格摘要（行）",
         "cbShowTableSummaryCol": "显示表格摘要（列）",

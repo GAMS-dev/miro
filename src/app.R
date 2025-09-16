@@ -234,7 +234,8 @@ if (is.null(errMsg)) {
       )
     )
   }
-  if (!identical(miroLanguage, "") && file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
+  if (!identical(miroLanguage, "") &&
+    file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
     lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
       simplifyDataFrame = FALSE,
       simplifyMatrix = FALSE
@@ -384,7 +385,7 @@ if (is.null(errMsg)) {
   if (!is.null(config$customLanguage) && !identical(config$customLanguage, "")) {
     customLangFile <- file.path(
       currentModelDir,
-      paste0("conf_", modelName),
+      paste0("static_", modelName),
       paste0(config$customLanguage, ".json")
     )
 

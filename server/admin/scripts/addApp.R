@@ -113,7 +113,6 @@ tryCatch(
         }
       }
       extractAppData(appPath, paste0("~$", appId), modelId)
-      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
     } else {
       appDir <- getModelPath(appId)
       dataDir <- getDataPath(appId)
@@ -216,6 +215,7 @@ tryCatch(
     runMiroProcAPI(appId, procEnv, MIRO_APP_PATH, ADD_DATA_TIMEOUT, cleanupFn = cleanup)
 
     if (updateApp) {
+      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
       moveFilesFromTemp(appId)
       modelConfig$update(modelConfig$getAppIndex(appId), list(
         containerEnv = appConfig$containerEnv,

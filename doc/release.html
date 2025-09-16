@@ -126,7 +126,7 @@
                             >: Add options to configure default selections
                             (explicit or positional), toggle single- vs.
                             multi-select per dimension, and set the control
-                            label and placeholder. The Legacy
+                            label and placeholder. The legacy
                             <span class="code">userFilter</span> format (arrays
                             of dimension names) is deprecated but still works.
                           </li>
@@ -178,21 +178,12 @@
                         Add "What's New" dialog to Help menu in MIRO UI and to
                         MIRO Desktop.
                       </li>
+                      <li>
+                        MIRO Pivot: Limit the number of displayed series to 40
+                        in pie chart and doughnut chart.
+                      </li>
                     </ul>
-                  </div>
-                </section>
-                <section id="v212" class="doc-section">
-                  <h2 class="section-title" style="display: inline-block">
-                    GAMS MIRO 2.12
-                  </h2>
-                  <div style="display: inline-block; padding-left: 15px">
-                    (2025-06-13)
-                  </div>
-                  <div class="section-block">
-                    <h5 style="display: inline-block">GAMS MIRO 2.12.2</h5>
-                    <div style="display: inline-block; padding-left: 15px">
-                      (xxxx-xx-xx)
-                    </div>
+                    <h3>Bug fixes</h3>
                     <ul>
                       <li>
                         Dashboard: Fix issues with the baseline comparison
@@ -206,7 +197,34 @@
                         error message from the baseline comparison module
                         indicating that data was unreliable.
                       </li>
+                      <li>
+                        Dashboard compare: Fix issue that occurred when output
+                        data was missing.
+                      </li>
+                      <li>
+                        MIRO Pivot: Fix missing series colors in pie chart and
+                        doughnut chart.
+                      </li>
+                      <li>
+                        MIRO Server: Fix instance pools not available in job
+                        submission dialog.
+                      </li>
+                      <li>
+                        MIRO Server: Fix issue where updating an app that
+                        requires a database migration could leave the system in
+                        an inconsistent state.
+                      </li>
                     </ul>
+                  </div>
+                </section>
+                <section id="v212" class="doc-section">
+                  <h2 class="section-title" style="display: inline-block">
+                    GAMS MIRO 2.12
+                  </h2>
+                  <div style="display: inline-block; padding-left: 15px">
+                    (2025-06-13)
+                  </div>
+                  <div class="section-block">
                     <h5 style="display: inline-block">GAMS MIRO 2.12.1</h5>
                     <div style="display: inline-block; padding-left: 15px">
                       (2025-07-24)
