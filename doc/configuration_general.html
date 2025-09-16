@@ -374,9 +374,10 @@
                         <span class="code">&lt;customLanguage&gt;.json</span>
                         in the
                         <span class="code"
-                          >&lt;modeldirectory&gt;/conf_&lt;modelname&gt;</span
+                          >&lt;modeldirectory&gt;/static_&lt;modelname&gt;</span
                         >
-                        configuration directory.
+                        directory. If that folder does not exist, you need to
+                        create it manually.
                       </p>
                       <p>
                         Example: The default
@@ -410,7 +411,8 @@
 </code></pre>
                       <p>
                         If you only want to change these labels, your custom
-                        language file (e.g., <i>custom.json</i>) would look like this:
+                        language file (e.g., <i>custom.json</i>) would look
+                        like this:
                       </p>
                       <pre><code class="language-json">{
   "nav":{

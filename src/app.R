@@ -385,7 +385,7 @@ if (is.null(errMsg)) {
   if (!is.null(config$customLanguage) && !identical(config$customLanguage, "")) {
     customLangFile <- file.path(
       currentModelDir,
-      paste0("conf_", modelName),
+      paste0("static_", modelName),
       paste0(config$customLanguage, ".json")
     )
 
