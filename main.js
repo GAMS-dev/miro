@@ -1206,7 +1206,11 @@ if (!miroDevelopMode) {
 async function createWhatsNewWindow() {
   const whatsNewManager = new WhatsNewManager(
     configData,
-    path.join(__dirname, 'src', 'whats-new'),
+    path.join(
+      DEVELOPMENT_MODE ? app.getAppPath() : process.resourcesPath,
+      'src',
+      'whats-new',
+    ),
     miroVersion,
   );
   const whatsNewContent = await whatsNewManager.getContent();
