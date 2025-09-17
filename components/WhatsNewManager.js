@@ -78,7 +78,7 @@ export default class WhatsNewManager {
         .replaceAll("'", '&#39;');
     const section = (heading, items) => {
       if (!items?.length) return '';
-      const lis = items.map((x) => `<li class="mb-2">${escapeHTML(x)}</li>`).join('');
+      const lis = items.map((x) => `<li class="mb-2">${x}</li>`).join('');
       return `
       <div class="card mb-4">
         <div class="card-body">
