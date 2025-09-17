@@ -41,10 +41,13 @@ renderScenInCompMode <- function(scenId, refreshData = FALSE) {
   if (scenId %in% c(2, 3)) {
     buttonsUI <- tags$div(
       class = "header-action-buttons",
-      tags$button(
-        title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
-        type = "button", onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
-        tags$i(class = "fas fa-rotate", role = "presentation", `aria-label` = lang$nav$scen$tooltips$btRefresh)
+      tags$div(
+        id = paste0("refreshSandbox_", scenId),
+        tags$button(
+          title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
+          type = "button", onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
+          tags$i(class = "fas fa-rotate", role = "presentation", `aria-label` = lang$nav$scen$tooltips$btRefresh)
+        )
       ),
       HTML(paste0(
         '<button type="button" class="btn btn-default bt-icon" title="', lang$nav$scen$tooltips$btExport,

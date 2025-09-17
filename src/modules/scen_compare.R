@@ -47,10 +47,13 @@ output$active_tab_actions_ui <- renderUI({
     ),
     tags$div(
       class = "content-buttons-wrapper",
-      tags$button(
-        title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
-        type = "button", onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
-        icon("rotate")
+      tags$div(
+        id = paste0("refreshSandbox_", scenId),
+        tags$button(
+          title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
+          type = "button", onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
+          icon("rotate")
+        )
       ),
       HTML(paste0(
         '<button type="button" class="btn btn-default bt-icon" title="', lang$nav$scen$tooltips$btExport,
