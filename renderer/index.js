@@ -795,6 +795,7 @@ $(() => {
         if (startup && !isInEditMode) {
           toggleEditMode();
         }
+        btEditWrapper.hide();
       }
       if (deactivateEditMode === false) {
         toggleEditMode();
