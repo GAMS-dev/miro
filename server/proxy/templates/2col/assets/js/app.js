@@ -1,5 +1,5 @@
 $(function () {
-  $('#navHome').removeClass('active');
+  $('.nav-home').removeClass('active');
   const currLocation = window.location.pathname;
   if (
     !(

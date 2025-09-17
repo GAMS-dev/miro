@@ -37,7 +37,7 @@
     >
       <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <!-- Brand -->
-        <a id="navHome" class="navbar-brand navbar-nav active" th:href="@{/}">
+        <a class="navbar-brand navbar-nav navbar-home active" th:href="@{/}">
           My Apps
         </a>
 
@@ -60,7 +60,6 @@
           aria-labelledby="mainOffcanvasLabel"
         >
           <div class="offcanvas-header d-lg-none">
-            <h5 class="offcanvas-title" id="mainOffcanvasLabel">My Apps</h5>
             <button
               type="button"
               class="btn-close btn-close-white"
@@ -71,6 +70,11 @@
 
           <div class="offcanvas-body">
             <!-- Left side -->
+            <ul class="navbar-nav me-auto d-lg-none">
+              <li class="nav-item">
+                <a class="nav-link nav-home active" th:href="@{/}">My Apps</a>
+              </li>
+            </ul>
             <ul class="navbar-nav me-auto" th:if="${isAdmin}">
               <li class="nav-item">
                 <a

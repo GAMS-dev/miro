@@ -360,6 +360,21 @@ a {
 .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
   background: #080808;
 }
+@media (max-width: 991.98px) {
+  .navbar-user .dropdown-menu[data-bs-popper] {
+    margin-top: 0;
+  }
+  .navbar-user .dropdown-menu {
+    display: block;
+    position: static;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .navbar-user .dropdown-toggle::after {
+    display: none;
+  }
+}
 .btn,
 a.btn {
   -webkit-transition: all 0.4s ease-in-out;
