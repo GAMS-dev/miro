@@ -79,7 +79,7 @@ Sys.sleep(1)
 expect_error(app$set_inputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
 app$set_inputs(`tab_0_3-miroPivot-updateSettings` = "click")
 Sys.sleep(1)
-app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
+app$click(selector = "#scen-pivot-view .box-title >.header-title-group > .header-action-buttons > button:nth-child(1)")
 Sys.sleep(0.5)
 expect_options(
   app$get_values()$input$selLoadScen,
@@ -143,7 +143,7 @@ expect_chartjs(
     "default2.Seattle"
   )
 )
-app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
+app$click(selector = "#scen-pivot-view .box-title >.header-title-group > .header-action-buttons > button:nth-child(1)")
 Sys.sleep(0.5)
 expect_identical(app$get_text(selector = "#cmpScenTitle_2"), "default1")
 expect_identical(app$get_text(selector = "#cmpScenTitle_3"), "default4")
