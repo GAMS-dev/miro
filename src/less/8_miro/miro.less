@@ -2749,7 +2749,7 @@ li.drop-index-item[data-col-hidden="true"] {
 .scen-compare-tab-wrapper.grid-layout .tabbable {
   display: contents;
 }
-.scen-compare-tab-wrapper.grid-layout .nav-tabs {
+.scen-compare-tab-wrapper.grid-layout #scenTabset {
   overflow-x: auto !important;
   overflow-y: hidden;
   white-space: nowrap;
@@ -2758,27 +2758,27 @@ li.drop-index-item[data-col-hidden="true"] {
   border-bottom: none;
   -ms-overflow-style: none;
 }
-.scen-compare-tab-wrapper.grid-layout .nav-tabs::-webkit-scrollbar {
+.scen-compare-tab-wrapper.grid-layout #scenTabset::-webkit-scrollbar {
   height: 8px;
 }
-.scen-compare-tab-wrapper.grid-layout .nav-tabs > li {
+.scen-compare-tab-wrapper.grid-layout #scenTabset > li {
     display: inline-block;
     float: none;
 }
-.scen-compare-tab-wrapper.grid-layout .nav-tabs > li > a {
+.scen-compare-tab-wrapper.grid-layout #scenTabset > li > a {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 }
-.scen-compare-tab-wrapper.grid-layout .active-tab-actions {
+.scen-compare-tab-wrapper.grid-layout > .active-tab-actions {
   grid-row: 1;
   grid-column: 2;
-
   display: flex;
   align-items: center;
   gap: 15px;
   padding-right: 5px;
+  padding-left: 5px;
 }
 .content-buttons-wrapper {
   display: flex;
