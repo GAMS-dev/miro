@@ -404,7 +404,7 @@ body{
 }
 .page-wrapper{
   font-family: montserratregular,'Open Sans',sans-serif;
-  color: #494d55;
+  color: #2D3748;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -467,8 +467,8 @@ body{
 }
 .page-wrapper .btn-primary,
 .page-wrapper a.btn-primary {
-  background: #f90;
-  border: 1px solid #616670;
+  background: #2D3748;
+  border: 1px solid #f90;
   color: #fff !important;
 }
 .page-wrapper .btn-primary:hover,
@@ -481,14 +481,14 @@ body{
 .page-wrapper a.btn-primary:active,
 .page-wrapper a.btn-primary.active,
 .page-wrapper a.btn-primary.hover {
-  background: #616670;
+  background: #f90;
   color: #fff !important;
   border: 1px solid #f90;
 }
 .page-wrapper .btn-blue,
 .page-wrapper a.btn-blue {
-  background: #494d55;
-  border: 1px solid #494d55;
+  background: #2D3748;
+  border: 1px solid #2D3748;
   color: #fff !important;
 }
 .page-wrapper .btn-blue:hover,
@@ -569,11 +569,11 @@ body{
   -webkit-appearance: none;
 }
 .page-wrapper .sub-header {
-  background: #494d55;
+  background: #2D3748;
   color: rgba(255, 255, 255, 0.85);
   padding: 10px 0;
   max-width: 1400px;
-  border-bottom: 7px solid #f90;
+  border-bottom: 3px solid #f90;
   margin-top: 1rem!important;
   margin-left: auto;
   margin-right: auto;
@@ -586,7 +586,7 @@ body{
 }
 .index-no-video {
     padding: 20px;
-    background: rgb(73 77 85);
+    background: #2D3748
     color: #f1f1f1;
     width: inherit;
 }
@@ -721,7 +721,7 @@ body{
   font-size: 36px;
 }
 .body-blue .page-wrapper .doc-header .doc-title {
-  color: #494d55;
+  color: #2D3748;
 }
 .body-orange .page-wrapper .doc-header .doc-title {
   color: #f90;
@@ -787,7 +787,7 @@ body{
   color: #3aa7aa;
 }
 .body-blue .page-wrapper .question {
-  color: #494d55;
+  color: #2D3748;
 }
 .body-orange .page-wrapper .question {
   color: #f77e17;
@@ -884,7 +884,7 @@ body{
   border-bottom-color: #8bd6d8;
 }
 .body-blue .page-wrapper .table > thead > tr > th {
-  border-bottom-color: #494d55;
+  border-bottom-color: #2D3748;
 }
 .body-orange .page-wrapper .table > thead > tr > th {
   border-bottom-color: #fbc393;
@@ -1015,13 +1015,13 @@ body{
   color: #f90;
 }
 .body-blue .page-wrapper a:hover {
-  color: #494d55;
+  color: #2D3748;
 }
 .body-orange .page-wrapper a {
   color: #f90;
 }
 .body-orange .page-wrapper a:hover {
-  color: #494d55;
+  color: #2D3748;
 }
 .page-wrapper .doc-nav {
   position: absolute;
@@ -1049,7 +1049,7 @@ body{
 }
 .page-wrapper .doc-menu .nav-link:hover,
 .page-wrapper .doc-menu .nav-link:focus {
-  color: #494d55;
+  color: #2D3748;
   text-decoration: none;
   background: none;
 }
@@ -1093,7 +1093,7 @@ body{
   padding-top: 5px;
 }
 .page-wrapper .doc-sub-menu .nav-link:hover {
-  color: #494d55;
+  color: #2D3748;
   text-decoration: none;
   background: none;
 }
@@ -1105,7 +1105,7 @@ body{
   color: #40babd;
 }
 .body-blue .page-wrapper .doc-sub-menu .nav-link.active {
-  color: #494d55;
+  color: #2D3748;
 }
 .body-orange .page-wrapper .doc-sub-menu .nav-link.active {
   color: #f90;
@@ -1239,7 +1239,7 @@ body{
   display: table;
 }
 .page-wrapper .landing-page .sub-header {
-  background: #494d55;
+  background: #2D3748;
   color: rgba(255, 255, 255, 0.85);
   padding: 60px 0;
 }
@@ -1371,13 +1371,13 @@ body{
   color: #40babd;
 }
 .page-wrapper .cards-section .item-blue .item-inner {
-  border-top: 3px solid #494d55;
+  border-top: 3px solid #2D3748;
 }
 .page-wrapper .cards-section .item-blue .item-inner:hover .title {
   color: #f90;
 }
 .page-wrapper .cards-section .item-blue .icon {
-  color: #494d55;
+  color: #2D3748;
 }
 .page-wrapper .cards-section .item-orange .item-inner {
   border-top: 3px solid #f90;
@@ -1473,22 +1473,22 @@ body{
     background: #f90!important;
     text-shadow: none;
     border: none;
-    color: #494d55!important;
+    color: #2D3748!important;
 }
 .confirm-btn:hover {
     background: #e18d0f!important;
-    color: #494d55!important;
+    color: #2D3748!important;
 }
 .cancel-btn {
     background: #fff;
-    color: #494d55;
+    color: #2D3748;
     border-color: #9a9fa8;
     cursor: pointer;
     cursor: pointer;
 }
 .cancel-btn:hover {
     background: #f6f5f5;
-    color: #494d55;
+    color: #2D3748;
     border-color: #9a9fa8;
 }
 .vertical-outer {
@@ -1572,7 +1572,7 @@ body{
   font-size: 13px;
   margin-left: 5px;
   display: inline-block;
-  color: #494d55
+  color: #2D3748
 }
 .header-btn-left{
   text-align: right;
