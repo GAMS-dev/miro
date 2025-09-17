@@ -3792,10 +3792,7 @@ const pm=", if (!is.null(decimals)) paste0("DTWidget.formatRound(data,", as.char
 const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
 const secondaryMetric=", secondaryMetric, ";
 const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
-if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
-  window.alertPushed = '", tableSessionId, "';
-  Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
-}
+Miro.evaluateBaselineCompData(refData, data, ", toJSString(ns("pivotTable")), ",", toJSString(tableSessionId), ");
 return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "')+'</span>'+(secondaryMetric===''?'':' ('+secondaryMetric+'",
                   attr(dataTmp, "baselineComp")$metricSuffix[[2]], "'+')');}"
                 )

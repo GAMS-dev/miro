@@ -3,6 +3,8 @@
 import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
 
+import BaselineCompareErrorManager from './baseline_compare_error_manager';
+
 import {
   sleep,
   changeActiveButtons,
@@ -29,8 +31,11 @@ import {
   activateMiroPivotPresentationObservers,
 } from './miro_pivot';
 
+export { default as modal } from './modal';
+
 const loadingScreen = new LoadingScreen();
 const miroLogParser = new MiroLogParser();
+const baselineCompareErrorManager = new BaselineCompareErrorManager();
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
@@ -40,6 +45,10 @@ export function changeTab(object, idActive, idRefer) {
     .find(`.tab-content div:nth-child(${idActive})`)
     .removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
+}
+
+export function evaluateBaselineCompData(refData, data, tableId, sessionId) {
+  baselineCompareErrorManager.evaluateData(refData, data, tableId, sessionId);
 }
 
 export function slideToggleEl(data) {
@@ -187,60 +196,6 @@ export function filterMiroDropdown(that) {
         this.style.display = 'none';
       }
     });
-}
-
-export function modal(
-  msg,
-  okButton,
-  cancelButton,
-  value,
-  callback,
-  ...callbackArgs
-) {
-  Shiny.modal.show({
-    html: `<div id="shiny-modal" class="modal fade"
-    tabindex="-1" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body">
-         ${
-  value == null
-    ? `<div class="text-break"><strong>${msg}</strong></div>`
-    : `<div class="form-group shiny-input-container">
-            <label class="control-label" for="miroPromptInput">${msg}</label>
-            <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
-          </div>`
-}
-      </div>
-      <div class="modal-footer">
-        ${cancelButton == null ? '' : `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>`}
-        <button id="miroModalConfirmButton" type="button"
-        class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
-      </div>
-    </div>
-  </div>
-  <script>$('#shiny-modal').modal().focus();</script>
-</div>`,
-  });
-  $(document).off('click', '#miroModalConfirmButton');
-  if (value == null) {
-    $(document).on('click', '#miroModalConfirmButton', () => {
-      if (callback == null || callback(...callbackArgs) !== false) {
-        $('#shiny-modal').modal('hide');
-      }
-    });
-  } else {
-    $(document).on('click', '#miroModalConfirmButton', () => {
-      if (
-        callback(
-          document.getElementById('miroPromptInput').value,
-          ...callbackArgs,
-        ) !== false
-      ) {
-        $('#shiny-modal').modal('hide');
-      }
-    });
-  }
 }
 
 export function parseKatex(element) {
@@ -544,22 +499,18 @@ $(() => {
     this.href = data;
   });
   // miro dashboard value boxes click handler
-  $(document).on(
-    'click',
-    '.custom-info-box',
-    function () {
-      const parentDiv = $(this).parent();
-      let namespaceId = parentDiv[0].dataset.namespace;
-      if (namespaceId == null) {
-        // old dashboard renderers did not have namespace data attribute
-        namespaceId = parentDiv[0].id.split('-');
-        namespaceId = `${namespaceId[0]}-${namespaceId[1]}-`;
-      }
-      Shiny.setInputValue(`${namespaceId}showChart`, parentDiv.attr('id'), {
-        priority: 'event',
-      });
-    },
-  );
+  $(document).on('click', '.custom-info-box', function () {
+    const parentDiv = $(this).parent();
+    let namespaceId = parentDiv[0].dataset.namespace;
+    if (namespaceId == null) {
+      // old dashboard renderers did not have namespace data attribute
+      namespaceId = parentDiv[0].id.split('-');
+      namespaceId = `${namespaceId[0]}-${namespaceId[1]}-`;
+    }
+    Shiny.setInputValue(`${namespaceId}showChart`, parentDiv.attr('id'), {
+      priority: 'event',
+    });
+  });
 
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
@@ -578,7 +529,8 @@ $(() => {
   Shiny.addCustomMessageHandler('gms-showLoadingScreen', (delay) => {
     loadingScreen.show(delay);
   });
-  Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => {
     loadingScreen.hide();
   });
   Shiny.addCustomMessageHandler('gms-showEl', (data) => {
@@ -984,7 +936,8 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       Shiny.bindAll(dropdownContainer);
     });
   });
-  Shiny.addCustomMessageHandler('gms-parseLog', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-parseLog', (e) => {
     if (miroLogParser.isInitialized !== true) {
       return;
     }
