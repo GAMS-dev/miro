@@ -155,7 +155,7 @@ inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidge
 baseColors <- list(
   miro_primary_color           = "#295f98",
   miro_secondary_color         = "#f39619",
-  miro_sidebar_color           = "#1f2937",
+  miro_sidebar_color           = "#ffffff",
   miro_navbar_color            = "#ffffff",
   miro_body_bg_color           = "#ECF1F4",
   miro_alert_color             = "#d11a2a",
