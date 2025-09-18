@@ -527,6 +527,7 @@ build_windows_job:
 build_macos_job:
   tags:
     - macos
+    - corina
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
@@ -572,6 +573,7 @@ build_macos_job:
 build_macos_arm_job:
   tags:
     - macos-arm64
+    - kate
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
@@ -675,6 +677,7 @@ test_windows_job:
 test_macos_job:
   tags:
     - macos
+    - corina
   stage: test
   variables:
     LANG: en_US.UTF-8
@@ -731,6 +734,7 @@ test_macos_job:
 test_macos_arm_job:
   tags:
     - macos-arm64
+    - kate
   stage: test
   variables:
     LANG: en_US.UTF-8
