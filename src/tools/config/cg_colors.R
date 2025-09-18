@@ -403,7 +403,6 @@ derivePalette <- function(b = baseColors) {
   if_a8c57869 <- if (abs(luma("#030303") - luma(b$miro_text_color_dark)) < 15) contrast("#030303") else b$miro_text_color_dark
   v[["miro_if_a8c57869"]] <- if_a8c57869
 
-  v[["body_bg_gradient"]] <- "none"
   v[["miro_sidebar_color_gradient"]] <- "none"
 
   v
