@@ -127,9 +127,6 @@ class UITests(unittest.TestCase):
             EC.visibility_of_element_located((By.XPATH, "//a[text()='Sign Out']"))
         )
         sign_out_button.click()
-        wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "#userDropdown"))
-        ).click()
 
     def remove_apps(self):
         self.driver.switch_to.default_content()
@@ -283,7 +280,7 @@ class UITests(unittest.TestCase):
                 (By.ID, "newAppName"), "Transport test app"
             )
         )
-        self.driver.find_element(By.ID, "btAddApp").click()
+        wait.until(EC.element_to_be_clickable((By.ID, "btAddApp"))).click()
         if RUN_K8S_TESTS:
             wait.until(
                 EC.text_to_be_present_in_element(
@@ -434,7 +431,7 @@ class UITests(unittest.TestCase):
         all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -466,6 +463,7 @@ class UITests(unittest.TestCase):
                     10,
                     f"Couldn't switch to output data section after 10 tries: {exc}",
                 )
+        time.sleep(2)
         table_container = wait.until(
             EC.presence_of_element_located((By.ID, "table_tab_1_1-datatable"))
         )
@@ -499,8 +497,39 @@ class UITests(unittest.TestCase):
     def test_add_app(self):
         add_groups([f"{x}{TEST_ID}" for x in ["test", "test2"]])
         self.login()
+        wait = WebDriverWait(self.driver, 10)
+
+        self.assertTrue(
+            "active"
+            in self.driver.find_element(By.LINK_TEXT, "My Apps")
+            .get_attribute("class")
+            .split(),
+            "My Apps link did not have class 'active'",
+        )
+        self.assertFalse(
+            "active"
+            in self.driver.find_element(By.LINK_TEXT, "Admin Panel")
+            .get_attribute("class")
+            .split(),
+            "Admin Panel link should not have class 'active' on My Apps",
+        )
         # open admin panel
+
         self.driver.find_element(By.ID, "navAdminPanel").click()
+        self.assertTrue(
+            "active"
+            in self.driver.find_element(By.LINK_TEXT, "Admin Panel")
+            .get_attribute("class")
+            .split(),
+            "Admin Panel link did not have class 'active'",
+        )
+        self.assertFalse(
+            "active"
+            in self.driver.find_element(By.LINK_TEXT, "My Apps")
+            .get_attribute("class")
+            .split(),
+            "My Apps link should not have class 'active' on Admin Panel",
+        )
 
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
@@ -510,7 +539,6 @@ class UITests(unittest.TestCase):
             EC.visibility_of_element_located((By.ID, "addAppBox"))
         )
 
-        wait = WebDriverWait(self.driver, 10)
         retry_count = 0
         while True:
             try:
@@ -647,14 +675,8 @@ class UITests(unittest.TestCase):
             len(visible_buttons) == 1,
             "More than one visible 'launch-app-box' found.",
         )
-        self.assertTrue(
-            visible_buttons[0]
-            .get_attribute("data-launch-url")
-            .endswith("/app/test_app1"),
-            "The data-launch-url of the launch-app-box div is not '/app/test_app1'.",
-        )
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -664,8 +686,9 @@ class UITests(unittest.TestCase):
                 "A Transportation Problem with multiple version LP/MIP/MINLP",
             )
         )
-        self.assertTrue(
-            self.driver.find_element(By.ID, "btSolve").text.strip() == "Modell lösen",
+        self.assertEqual(
+            self.driver.find_element(By.ID, "btSolve").text.strip(),
+            "Modell lösen",
             "Solve button has correct text in German (MIRO_LANG applied correctly)",
         )
         retry_count = 0
@@ -858,14 +881,8 @@ class UITests(unittest.TestCase):
             len(visible_buttons) == 1,
             "More than one visible 'launch-app-box' found.",
         )
-        self.assertTrue(
-            visible_buttons[0]
-            .get_attribute("data-launch-url")
-            .endswith("/app/test_app1"),
-            "The data-launch-url of the launch-app-box is not '/app/test_app1'.",
-        )
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -975,7 +992,9 @@ class UITests(unittest.TestCase):
             "Should have two environment rows (one pre-filled, one empty).",
         )
         time.sleep(0.5)
-        self.driver.find_element(By.CSS_SELECTOR, ".modal-footer .confirm-btn").click()
+        wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".modal-footer .confirm-btn"))
+        ).click()
 
         wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
 
@@ -1020,7 +1039,7 @@ class UITests(unittest.TestCase):
         all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         self.assertEqual(
             get_image_hash(
                 self.driver,
