@@ -81,8 +81,13 @@ class UITests(unittest.TestCase):
                 self.driver = webdriver.Firefox()
         elif test_browser == "chrome":
             if IN_CI:
+                _options = webdriver.ChromeOptions()
+                _options.add_argument("--headless")
+                _options.add_argument("--no-sandbox")
+                _options.add_argument("--disable-dev-shm-usage")
+                _options.add_argument("--window-size=1920,1080")
                 self.driver = webdriver.Remote(
-                    options=webdriver.ChromeOptions(),
+                    options=_options,
                     command_executor="http://selenium__standalone-chrome:4444/wd/hub",
                 )
             else:
