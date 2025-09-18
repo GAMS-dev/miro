@@ -3,6 +3,12 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- $labelsDict := include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | fromYaml }}
+{{- $labelsList := list }}
+{{- range $k, $v := $labelsDict }}
+  {{- $labelsList = append $labelsList (dict "key" $k "value" $v) }}
+{{- end }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -19,7 +25,9 @@ data:
       theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
       logo-path: /assets/imgk8s/logo.png
+      {{- if .Values.proxy.config.favicon.enabled }}
       favicon-path: ./templates/2col/assets/imgk8s/favicon.ico
+      {{- end }}
       specs-path: ./mnt/specs.yaml
       model-dir: /home/miroproxy/mnt/models
       data-dir: /home/miroproxy/mnt/data
@@ -122,11 +130,12 @@ data:
             value:
               {{- include "common.tplvalues.render" (dict "value" .Values.miro.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
+          {{- if $labelsList }}
+          {{- include "gams-miro-server.v1.renderLabelsAsPatches" $labelsList | nindent 10 }}
+          {{- end }}
           - op: add
-            path: /metadata/labels
-            value:
-              {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-ui"
+            path: /metadata/labels/miro.gams.com~1app-name
+            value: "{{ include "common.names.fullname" . }}-ui"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -199,11 +208,12 @@ data:
             value:
               {{- include "common.tplvalues.render" (dict "value" .Values.admin.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
+          {{- if $labelsList }}
+          {{- include "gams-miro-server.v1.renderLabelsAsPatches" $labelsList | nindent 10 }}
+          {{- end }}
           - op: add
-            path: /metadata/labels
-            value:
-              {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-admin"
+            path: /metadata/labels/miro.gams.com~1app-name
+            value: "{{ include "common.names.fullname" . }}-admin"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
