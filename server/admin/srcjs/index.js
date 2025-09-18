@@ -572,7 +572,7 @@ function expandAddAppForm() {
 
   $('#addAppWrapper').css('z-index', 11);
   $overlay.data('current', $('#addAppWrapper')).fadeIn(300);
-  $('#addAppWrapper').html(`<div class="app-box" id="expandedAddAppWrapper">
+  $('#addAppWrapper').html(`<div class="app-box app-box-expanded" id="expandedAddAppWrapper">
                         <div id="addAppSpinner" class="app-spinner">
                           <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
                             <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -902,9 +902,14 @@ $appsWrapper.on('drop', '.app-box-draggable', function (e) {
 });
 
 $appsWrapper.on('click', '.app-box', function (e) {
+  const $this = $(this);
+  if ($this.hasClass('app-box-expanded')) {
+    return;
+  }
+  $this.addClass('app-box-expanded');
+
   e.preventDefault();
   e.stopPropagation();
-  const $this = $(this);
   $this.children('.app-data-file-input').hide();
   const $target = $(e.target);
   if (
