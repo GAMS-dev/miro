@@ -972,7 +972,7 @@ test_job_miro_server_k8s:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
     - when: on_success
-  needs: [build_linux_job]
+  needs: [test_job_miro_server]
 
 upload_cloudfront:
   tags:
