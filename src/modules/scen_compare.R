@@ -71,7 +71,7 @@ output$active_tab_actions_ui <- renderUI({
       class = "header-close-button-wrapper",
       tags$a(
         id = "btCmpTabCloseAll", href = "#",
-        class = "btn btn-default bt-icon action-button",
+        class = "btn btn-default bt-icon",
         title = lang$nav$scen$btCloseAll,
         onclick = paste0(
           "Miro.confirmModalShow('",
