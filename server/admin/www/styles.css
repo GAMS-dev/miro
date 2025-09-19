@@ -459,13 +459,21 @@ a:hover {
   overflow: hidden;
   white-space: nowrap;
 }
+.app-id-position {
+  left: 0;
+  position: absolute;
+  top: 0;
+  margin: 15px;
+  z-index: 2;
+  max-width: 60%;
+}
 .app-version-field {
   right: 0;
   position: absolute;
   top: 0;
   margin: 15px;
   z-index: 2;
-  max-width: 80%;
+  max-width: 30%;
 }
 .app-authors-field {
   right: 0;
@@ -483,7 +491,7 @@ a:hover {
   max-height: 35px;
 }
 .app-desc {
-  max-height: 65px;
+  max-height: 85px;
 }
 .app-desc.editable {
   overflow: auto;
@@ -512,7 +520,7 @@ a:hover {
 }
 .app-desc-fixed {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 .sub-header {

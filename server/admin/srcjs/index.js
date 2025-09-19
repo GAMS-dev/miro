@@ -530,7 +530,7 @@ function refreshConfigList() {
                 <div style="height:1rem"></div>
               </div>
               <button id="appEnv_${index}" data-id="${idEncoded}" class="btn btn-secondary open-config-btn" style="display:none;" type="button">Advanced Settings</button>
-              <div class="app-id-field" title="${appIdSafe}">
+              <div class="app-id-field app-id-position" title="${appIdSafe}">
                 <small>ID: <i>${appIdSafe}</i></small>
               </div>
               ${(configData.version != null && configData.version !== '') ? `<div class="app-id-field app-version-field" title="${escapeHtml(configData.version)}">

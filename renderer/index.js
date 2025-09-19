@@ -734,7 +734,7 @@ $(() => {
                              <label id="appDbPathLabel_${unicodeToHTMLID(app.id)}" class="custom-file-label dbpath" for="appDbPath_${unicodeToHTMLID(app.id)}">${app.dbpath ? escapeHtml(app.dbpath) : escapeHtml(lang.appDbPathPlaceholder)}</label>
                              <small data-id="${unicodeToHTMLID(app.id)}" class="form-text reset-db-path" style="${app.dbpath ? '' : 'display:none'}">${escapeHtml(lang.appDbPathReset)}</small>
                            </div>
-                           <div class="app-id-field" style="display:none;" title="${escapeHtml(app.id)}">
+                           <div class="app-id-field app-id-position" style="display:none;" title="${escapeHtml(app.id)}">
                             <small>ID: <i>${escapeHtml(app.id)}</i></small>
                            </div>
                            ${
