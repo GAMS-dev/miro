@@ -70,26 +70,45 @@ export function slideToggleEl(data) {
   $(data.id).slideToggle(duration);
 }
 
-export function confirmModalShow(
+export function confirmModalShow({
   title,
   desc,
   cancelTxt,
   confirmTxt = null,
-  confirmCall = null,
-) {
-  const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">\
-${cancelTxt}</button>`;
-  let btDataConfirm = '';
-
-  if (confirmCall !== null) {
-    btDataConfirm = `<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" \
-id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
-  }
-
+  confirmCallKey = null,
+  confirmCallVal = 1,
+  escapeDesc = true,
+}) {
   const cModal = $('#confirmModal');
-  cModal.find('.modal-title').html(title);
-  cModal.find('.modal-body').html(desc);
-  cModal.find('.modal-footer').html(btDataDismiss + btDataConfirm);
+  cModal.find('.modal-title').text(title);
+  if (escapeDesc === false) {
+    cModal.find('.modal-body').html(desc);
+  } else {
+    cModal.find('.modal-body').text(desc);
+  }
+  const $footer = cModal.find('.modal-footer');
+  $footer.empty();
+  const $cancelButton = $('<button></button>', {
+    type: 'button',
+    class: 'btn btn-default',
+    'data-dismiss': 'modal',
+    text: cancelTxt,
+  });
+  $footer.append($cancelButton);
+  if (confirmCallKey != null) {
+    const $confirmButton = $('<button></button>', {
+      type: 'button',
+      class: 'btn btn-default bt-highlight-1 bt-gms-confirm',
+      text: confirmTxt,
+      'data-dismiss': 'modal',
+    });
+    $confirmButton.on('click', () => {
+      Shiny.setInputValue(confirmCallKey, confirmCallVal, {
+        priority: 'event',
+      });
+    });
+    $footer.append($confirmButton);
+  }
   cModal.modal('show');
 }
 

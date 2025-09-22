@@ -88,9 +88,12 @@ header_admin <- dashboardHeader(
           hred = "#",
           class = "action-button",
           onclick = paste0(
-            "Miro.confirmModalShow('About GAMS MIRO','",
-            aboutDialogText,
-            "', 'Cancel');"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = "About GAMS MIRO",
+              desc = aboutDialogText,
+              cancelTxt = "Cancel",
+              escapeDesc = FALSE
+            ), auto_unbox = TRUE), ")"
           ),
           lang$nav$header$help$about
         )

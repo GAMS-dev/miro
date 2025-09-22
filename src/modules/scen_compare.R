@@ -74,12 +74,14 @@ output$active_tab_actions_ui <- renderUI({
         class = "btn btn-default bt-icon",
         title = lang$nav$scen$btCloseAll,
         onclick = paste0(
-          "Miro.confirmModalShow('",
-          lang$nav[["dialogCloseAllScen"]]$title, "', '",
-          lang$nav[["dialogCloseAllScen"]]$desc, "', '",
-          lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '",
-          lang$nav[["dialogCloseAllScen"]]$okButton,
-          "','Shiny.setInputValue(\\'btCmpTabCloseAll\\',1,{priority:\\'event\\'})')"
+          "Miro.confirmModalShow(", toJSON(list(
+            title = lang$nav[["dialogCloseAllScen"]]$title,
+            desc = lang$nav[["dialogCloseAllScen"]]$desc,
+            cancelTxt = lang$nav[["dialogCloseAllScen"]]$cancelButton,
+            confirmTxt = lang$nav[["dialogCloseAllScen"]]$okButton,
+            confirmCallKey = "btCmpTabCloseAll",
+            confirmCallVal = 1
+          ), auto_unbox = TRUE), ")"
         ),
         icon("square-xmark")
       )

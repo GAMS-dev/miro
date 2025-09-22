@@ -1649,13 +1649,14 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
               tags$button(
                 class = "btn btn-default",
                 onclick = paste0(
-                  "Miro.confirmModalShow('",
-                  lang$nav$importJobsDialog$discardConfirm$title, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$desc, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$cancelButton, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$confirmButton,
-                  "', 'Shiny.setInputValue(\\'discardJob\\',", jID,
-                  ",{priority:\\'event\\'})')"
+                  "Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$importJobsDialog$discardConfirm$title,
+                    desc = lang$nav$importJobsDialog$discardConfirm$desc,
+                    cancelTxt = lang$nav$importJobsDialog$discardConfirm$cancelButton,
+                    confirmTxt = lang$nav$importJobsDialog$discardConfirm$confirmButton,
+                    confirmCallKey = "discardJob",
+                    confirmCallVal = jID
+                  ), auto_unbox = TRUE), ")"
                 ),
                 lang$nav$importJobsDialog$buttons$discard
               )

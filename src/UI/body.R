@@ -605,16 +605,25 @@ if (buildUI) {
               ),
               tags$div(
                 class = "header-close-button-wrapper",
-                HTML(paste0(
-                  '<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1" title="Close Scenario"
-                 onclick="Miro.confirmModalShow(\'',
-                  lang$nav$dialogRemoveScen$title, "', '",
-                  lang$nav$dialogRemoveScen$desc, "', '",
-                  lang$nav$dialogRemoveScen$cancelButton, "', '",
-                  lang$nav$dialogRemoveScen$okButton,
-                  '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                   <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
-                ))
+                tags$button(
+                  class = "btn btn-default bt-icon btRemove",
+                  id = "btRemove1",
+                  type = "button",
+                  title = lang$nav$dialogRemoveScen$title,
+                  onclick = paste0("Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$dialogRemoveScen$title,
+                    desc = lang$nav$dialogRemoveScen$desc,
+                    cancelTxt = lang$nav$dialogRemoveScen$cancelButton,
+                    confirmTxt = lang$nav$dialogRemoveScen$okButton,
+                    confirmCallKey = "btRemoveConfirm",
+                    confirmCallVal = 1
+                  ), auto_unbox = TRUE), ")"),
+                  tags$i(
+                    class = "fa fa-xmark",
+                    role = "presentation",
+                    `aria-label` = lang$nav$dialogRemoveScen$title
+                  )
+                )
               )
             )
           ),
@@ -1083,14 +1092,16 @@ if (buildUI) {
                     class = "btn btn-default bt-icon",
                     id = "btSymbolLink",
                     title = lang$nav$scen$tooltips$btSymbolLink,
+                    type = "button",
                     onclick = paste0(
-                      "Miro.confirmModalShow('",
-                      lang$nav$dialogImport$title, "', '",
-                      lang$nav$dialogImport$descOverwriteInput, "', '",
-                      lang$nav$dialogImport$cancelButton, "', '",
-                      lang$nav$dialogImport$okButton,
-                      "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
-                      ",{priority:\\'event\\'})')"
+                      "Miro.confirmModalShow(", toJSON(list(
+                        title = lang$nav$dialogImport$title,
+                        desc = lang$nav$dialogImport$descOverwriteInput,
+                        cancelTxt = lang$nav$dialogImport$cancelButton,
+                        confirmTxt = lang$nav$dialogImport$okButton,
+                        confirmCallKey = "btSymbolLink",
+                        confirmCallVal = 1
+                      ), auto_unbox = TRUE), ")"
                     ),
                     tags$i(
                       class = "fa fa-share", role = "presentation",
@@ -1105,16 +1116,23 @@ if (buildUI) {
               ),
               tags$div(
                 class = "header-close-button-wrapper",
-                HTML(paste0(
-                  '<button type="button" class="btn btn-default bt-icon btRemove" title="Close Scenario"
-         onclick="Miro.confirmModalShow(\'',
-                  lang$nav$dialogRemoveScen$title, "', '",
-                  lang$nav$dialogRemoveScen$desc, "', '",
-                  lang$nav$dialogRemoveScen$cancelButton, "', '",
-                  lang$nav$dialogRemoveScen$okButton,
-                  '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-         <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
-                ))
+                tags$button(
+                  type = "button",
+                  class = "btn btn-default bt-icon btRemove",
+                  title = lang$nav$dialogRemoveScen$title,
+                  onclick = paste0("Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$dialogRemoveScen$title,
+                    desc = lang$nav$dialogRemoveScen$desc,
+                    cancelTxt = lang$nav$dialogRemoveScen$cancelButton,
+                    confirmTxt = lang$nav$dialogRemoveScen$okButton,
+                    confirmCallKey = "btRemoveConfirm",
+                    confirmCallVal = 1
+                  ), auto_unbox = TRUE), ")"),
+                  tags$i(
+                    class = "fa fa-xmark", role = "presentation",
+                    `aria-label` = lang$nav$dialogRemoveScen$title
+                  )
+                )
               )
             )
           ), status = "primary", solidHeader = TRUE, width = 12,

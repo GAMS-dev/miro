@@ -187,13 +187,14 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
           class = "btn btn-default bt-icon bt-cmp-close-scen", type = "button",
           title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
           onclick = paste0(
-            "Miro.confirmModalShow('",
-            scenButtonLang[["title"]], "', '",
-            scenButtonLang[["desc"]], "', '",
-            scenButtonLang[["cancelButton"]], "', '",
-            scenButtonLang[["okButton"]],
-            "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID,
-            ",{priority:\\'event\\'})')"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = scenButtonLang[["title"]],
+              desc = scenButtonLang[["desc"]],
+              cancelTxt = scenButtonLang[["cancelButton"]],
+              confirmTxt = scenButtonLang[["okButton"]],
+              confirmCallKey = "btScenClose",
+              confirmCallVal = scenID
+            ), auto_unbox = TRUE), ")"
           ),
           tags$i(
             class = "fa fa-xmark",

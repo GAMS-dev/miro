@@ -81,9 +81,12 @@ header <- dashboardHeader(
           href = "#",
           class = "action-button",
           onclick = paste0(
-            "Miro.confirmModalShow('About GAMS MIRO','",
-            aboutDialogText,
-            "', 'Cancel');"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = "About GAMS MIRO",
+              desc = aboutDialogText,
+              cancelTxt = "Cancel",
+              escapeDesc = FALSE
+            ), auto_unbox = TRUE), ")"
           ),
           tags$div(
             class = "menu-icon-align",
