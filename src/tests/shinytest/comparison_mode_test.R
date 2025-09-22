@@ -46,7 +46,7 @@ Sys.sleep(1)
 expect_error(app$wait_for_js("$('.tab-content div[data-value=\"contentScen_2_5\"]').is(':visible')", timeout = 50), NA)
 
 # test download of files
-app$run_js("$('#split1_actionButtonsPlaceholder button').get(1).click()")
+app$run_js("$('#split2HeaderActionButtonsWrapper button').get(1).click()")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "xlsx", cbSelectManuallyExp = "true")
 Sys.sleep(0.5)
@@ -54,13 +54,13 @@ app$set_inputs(selDataToExport = c("_scalars", "abserror"))
 expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "abserror (Output)", "_scalars (Input)", "_index"))
 Sys.sleep(1)
 
-app$run_js("$('#split1_actionButtonsPlaceholder button').get(1).click()")
+app$run_js("$('#split2HeaderActionButtonsWrapper button').get(1).click()")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "xlsx")
 expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "_scalars_out (Output)", "stock_weight (Output)", "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)", "_scalars (Input)", "price (Input)", "_index"))
 Sys.sleep(1)
 
-app$run_js("$('#split2_actionButtonsPlaceholder button').get(1).click()")
+app$run_js("$('#split3HeaderActionButtonsWrapper button').get(1).click()")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "gdx", cbSelectManuallyExp = "true")
 Sys.sleep(0.5)
@@ -71,7 +71,7 @@ expect_symbols_in_gdx(app, "scenExportHandler", c(
   "firstdaytraining", "lastdaytraining"
 ))
 Sys.sleep(1)
-app$run_js("$('#split1_actionButtonsPlaceholder button').get(1).click()")
+app$run_js("$('#split3HeaderActionButtonsWrapper button').get(1).click()")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "gdx")
 expect_symbols_in_gdx(app, "scenExportHandler", c(
@@ -81,7 +81,7 @@ expect_symbols_in_gdx(app, "scenExportHandler", c(
 ))
 Sys.sleep(1)
 
-app$run_js("$('#split1_actionButtonsPlaceholder button').get(1).click()")
+app$run_js("$('#split2HeaderActionButtonsWrapper button').get(1).click()")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "miroscen")
 expect_error(app$wait_for_js("$('#cbSelectManuallyExp').is(':hidden')", timeout = 50), NA)
