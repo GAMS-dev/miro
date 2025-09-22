@@ -573,7 +573,7 @@ build_macos_job:
 build_macos_arm_job:
   tags:
     - macos-arm64
-    - kate
+    - stan
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
@@ -734,7 +734,7 @@ test_macos_job:
 test_macos_arm_job:
   tags:
     - macos-arm64
-    - kate
+    - stan
   stage: test
   variables:
     LANG: en_US.UTF-8
