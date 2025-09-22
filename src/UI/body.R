@@ -1,24 +1,4 @@
 ## UI body
-genSplitCompButtons <- function(id) {
-  tags$div(
-    id = paste0("scenSplit", id, "_open"), class = "split-open",
-    tags$div(
-      title = lang$nav$scen$tooltips$load, class = "split-open-cell",
-      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
-        class = "scenSplit-button-load"
-      )
-    ),
-    tags$div(
-      title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
-      HTML(paste0(
-        '<button class="btn btn-default action-button scenSplit-button-load"
-type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1,
-        ', {priority: \'event\'})">',
-        lang$nav$scen$split$loadActive, "</button>"
-      ))
-    )
-  )
-}
 getJobsTableSkeleton <- function(id = NULL, content = NULL) {
   tags$div(
     style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
@@ -714,7 +694,7 @@ if (buildUI) {
         style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
         class = "scen-compare-tab-wrapper grid-layout",
         tabsetPanel(id = "scenTabset"),
-        uiOutput("active_tab_actions_ui", class = "active-tab-actions"),
+        tags$div(id = "tabHeaderActionButtonsWrapper", class = "active-tab-actions"),
         tags$div(
           id = "cmpTabNoScenWrapper", lang$nav$scen$noScen, class = "no-scen",
           tags$div(
@@ -731,55 +711,91 @@ if (buildUI) {
       fluidRow(
         class = "box-title-mobile",
         tags$div(
-          id = "scen-split-view", style = if (identical(config$defCompMode, "split")) "" else "display:none;",
+          id = "scen-split-view",
+          style = if (identical(config$defCompMode, "split")) "" else "display:none;",
           class = "scen-compare-tab-wrapper",
-          box(
-            class = "box-mobile",
-            width = 6, solidHeader = TRUE, status = "primary",
-            title = list(
-              tags$div(
-                class = "header-title-group",
-                tags$span(id = "cmpScenTitle_2"),
-                tags$span(id = "cmpScenDate_2", class = "header-timestamp")
-              ),
-              tags$div(
-                class = "header-button-group",
-                tags$div(id = "split1_actionButtonsPlaceholder"),
+          {
+            renderSplitCompBox <- function(splitId) {
+              scenId <- as.character(splitId + 1L)
+              splitId <- as.character(splitId)
+              return(box(
+                class = "box-mobile",
+                width = 6, solidHeader = TRUE, status = "primary",
+                title = list(
+                  tags$div(
+                    class = "header-title-group",
+                    tags$span(id = paste0("cmpScenTitle_", scenId)),
+                    tags$span(id = paste0("cmpScenDate_", scenId), class = "header-timestamp")
+                  ),
+                  tags$div(
+                    class = "header-button-group",
+                    tags$div(
+                      id = paste0("split", scenId, "HeaderActionButtonsWrapper"),
+                      class = "header-action-buttons",
+                      style = "display:none",
+                      tags$div(
+                        id = paste0("refreshSandbox_", scenId),
+                        tags$button(
+                          title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
+                          type = "button",
+                          onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
+                          tags$i(
+                            class = "fas fa-rotate",
+                            role = "presentation",
+                            `aria-label` = lang$nav$scen$tooltips$btRefresh
+                          )
+                        )
+                      ),
+                      tags$button(
+                        type = "button",
+                        class = "btn btn-default bt-icon",
+                        title = lang$nav$scen$tooltips$btExport,
+                        onclick = paste0("Shiny.setInputValue('btExportScen',", scenId, ",{priority:'event'})"),
+                        tags$i(
+                          class = "fas fa-download",
+                          role = "presentation", `aria-label` = lang$nav$scen$tooltips$btExport
+                        )
+                      ),
+                      tags$button(
+                        title = lang$nav$scen$tooltips$btTableView, class = "btn btn-default bt-icon",
+                        id = paste0("btScenTableView", scenId), type = "button",
+                        onclick = paste0("Shiny.setInputValue('btScenTableView',", scenId, ",{priority:'event'})"),
+                        tags$i(class = "fa fa-chart-bar", role = "presentation", `aria-label` = lang$nav$scen$tooltips$btTableView)
+                      )
+                    ),
+                    tags$div(
+                      class = "header-close-button-wrapper",
+                      actionButton(
+                        inputId = paste0("btScenSplit", splitId, "_close"), class = "bt-icon",
+                        icon = icon("xmark"), label = NULL, title = "Close"
+                      )
+                    )
+                  )
+                ),
+                tags$div(id = paste0("scenSplit", splitId, "_content"), style = "display:none;"),
                 tags$div(
-                  class = "header-close-button-wrapper",
-                  actionButton(
-                    inputId = "btScenSplit1_close", class = "bt-icon",
-                    icon = icon("xmark"), label = NULL, title = "Close"
+                  id = paste0("scenSplit", splitId, "_open"),
+                  class = "split-open",
+                  tags$div(
+                    title = lang$nav$scen$tooltips$load, class = "split-open-cell",
+                    actionButton(paste0("btScenSplit", splitId, "_open"), lang$nav$scen$split$load,
+                      class = "scenSplit-button-load"
+                    )
+                  ),
+                  tags$div(
+                    title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
+                    tags$button(
+                      class = "btn btn-default action-button scenSplit-button-load",
+                      type = "button",
+                      onclick = paste0("Shiny.setInputValue('loadActiveScenSplitComp',", scenId, ",{priority:'event'})"),
+                      lang$nav$scen$split$loadActive
+                    )
                   )
                 )
-              )
-            ),
-            tags$div(id = "scenSplit1_content", style = "display:none;"),
-            genSplitCompButtons(1)
-          ),
-          box(
-            width = 6, solidHeader = TRUE, status = "primary",
-            title = list(
-              tags$div(
-                class = "header-title-group",
-                tags$span(id = "cmpScenTitle_3"),
-                tags$span(id = "cmpScenDate_3", class = "header-timestamp")
-              ),
-              tags$div(
-                class = "header-button-group",
-                tags$div(id = "split2_actionButtonsPlaceholder"),
-                tags$div(
-                  class = "header-close-button-wrapper",
-                  actionButton(
-                    inputId = "btScenSplit2_close", class = "bt-icon",
-                    icon = icon("xmark"), label = NULL, title = "Close"
-                  )
-                )
-              )
-            ),
-            tags$div(id = "scenSplit2_content", style = "display:none;"),
-            genSplitCompButtons(2)
-          )
+              ))
+            }
+            tagList(renderSplitCompBox(1L), renderSplitCompBox(2L))
+          }
         )
       ),
       customComparisonTabContent

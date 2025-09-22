@@ -116,11 +116,7 @@ observeEvent(input$loadActiveScenSplitComp, {
   loadSandboxScen(id, refresh = FALSE)
 })
 closeScenSplitBox <- function(tabsetId) {
-  removeUI(
-    selector = paste0("#split", tabsetId - 1L, "_actionButtonsPlaceholder > div"),
-    immediate = TRUE
-  )
-
+  splitId <- as.character(tabsetId - 1L)
   tabsetIdChar <- as.character(tabsetId)
   if (!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]])) {
     dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]][["content"]][] <<- FALSE
@@ -132,8 +128,9 @@ closeScenSplitBox <- function(tabsetId) {
   resetCompTabset(tabsetIdChar)
   hideEl(session, paste0("#cmpScenTitle_", tabsetIdChar))
   hideEl(session, paste0("#cmpScenDate_", tabsetIdChar))
-  hideEl(session, paste0("#scenSplit", tabsetId - 1L, "_content"))
-  showEl(session, paste0("#scenSplit", tabsetId - 1L, "_open"))
+  hideEl(session, paste0("#split", tabsetIdChar, "HeaderActionButtonsWrapper"))
+  hideEl(session, paste0("#scenSplit", splitId, "_content"))
+  showEl(session, paste0("#scenSplit", splitId, "_open"))
 }
 observeEvent(input$btScenSplit1_close, {
   flog.debug("Close Scenario button clicked (left box in split view).")

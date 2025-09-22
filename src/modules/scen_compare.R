@@ -25,22 +25,25 @@ observeEvent(virtualActionButton(rv$btCompareScen), {
   }
 })
 
-activeScenTabId <- reactiveVal(NULL)
-
 observeEvent(input$scenTabset, {
-  req(input$scenTabset)
-  new_id <- as.integer(gsub("[^0-9]", "", input$scenTabset))
-  activeScenTabId(new_id)
-})
-
-output$active_tab_actions_ui <- renderUI({
-  scenId <- activeScenTabId()
-  req(scenId)
+  scenId <- suppressWarnings(as.integer(gsub("[^0-9]", "", input$scenTabset)))
+  if (length(scenId) != 1 || is.na(scenId)) {
+    flog.error(
+      "Invalid value received for input$scenTabset: %s. Possibly attempt to tamper with the app!",
+      input$scenTabset
+    )
+    setContent(session, "#tabHeaderActionButtonsWrapper", "")
+    return()
+  }
 
   metaTmp <- scenData$getById("meta", refId = tabIdToRef(scenId), drop = TRUE)
-  req(metaTmp)
+  if (!length(metaTmp) || nrow(metaTmp) != 1L) {
+    flog.warn("input$scenTabset tabset pointed to scenario that does not (longer) exist: %s", scenId)
+    setContent(session, "#tabHeaderActionButtonsWrapper", "")
+    return()
+  }
 
-  tagList(
+  setContent(session, "#tabHeaderActionButtonsWrapper", htmltools::doRenderTags(tagList(
     tags$div(
       class = "content-date-wrapper",
       tags$span(id = paste0("cmpScenDate_", scenId), format(as.POSIXct(metaTmp[["_stime"]][1]), "%Y-%m-%d %H:%M:%S"))
@@ -55,11 +58,13 @@ output$active_tab_actions_ui <- renderUI({
           icon("rotate")
         )
       ),
-      HTML(paste0(
-        '<button type="button" class="btn btn-default bt-icon" title="', lang$nav$scen$tooltips$btExport,
-        '" onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="',
-        lang$nav$scen$tooltips$btExport, '"></i></button>'
-      )),
+      tags$button(
+        type = "button",
+        class = "btn btn-default bt-icon",
+        title = lang$nav$scen$tooltips$btExport,
+        onclick = paste0("Shiny.setInputValue('btExportScen',", scenId, ",{priority:'event'})"),
+        tags$i(class = "fas fa-download", role = "presentation", `aria-label` = lang$nav$scen$tooltips$btExport)
+      ),
       tags$button(
         title = lang$nav$scen$tooltips$btTableView, class = "btn btn-default bt-icon",
         id = paste0("btScenTableView", scenId), type = "button",
@@ -86,5 +91,5 @@ output$active_tab_actions_ui <- renderUI({
         icon("square-xmark")
       )
     )
-  )
+  )))
 })
