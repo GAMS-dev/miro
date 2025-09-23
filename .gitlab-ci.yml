@@ -317,6 +317,8 @@ dependency_scanning_r:
   tags:
     - linux
   stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
   script:
     - Rscript scripts/checkVuln.R
   artifacts:
@@ -1054,7 +1056,7 @@ upload_helm_chart:
       aud: https://git.gams.com
   stage: deploy
   variables:
-    CHART_DIR: "server/kubernetes/gams-miro-server"
+    CHART_DIR: 'server/kubernetes/gams-miro-server'
   before_script:
     - aws configure set default.region us-east-1
     - *assume_role_s3_helm
@@ -1087,8 +1089,8 @@ upload_helm_chart:
     - ./ci/update-helm-index.sh
   artifacts:
     paths:
-      - "*.tgz"
-      - "*.tgz.prov"
+      - '*.tgz'
+      - '*.tgz.prov'
       - index.yaml
     expire_in: 1 week
   dependencies: []
