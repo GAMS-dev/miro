@@ -696,6 +696,7 @@ test_macos_job:
   stage: test
   variables:
     LANG: en_US.UTF-8
+    LC_ALL: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install --frozen-lockfile
@@ -753,6 +754,7 @@ test_macos_arm_job:
   stage: test
   variables:
     LANG: en_US.UTF-8
+    LC_ALL: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
     - yarn install --frozen-lockfile
