@@ -70,7 +70,7 @@ image:
     STS=($(aws sts assume-role-with-web-identity
     --role-arn ${AWS_S3_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
-    --web-identity-token $ID_TOKEN
+    --web-identity-token "$ID_TOKEN"
     --duration-seconds 3600
     --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
     --output text))
@@ -83,7 +83,7 @@ image:
     STS=($(aws sts assume-role-with-web-identity
     --role-arn ${AWS_S3_HELM_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
-    --web-identity-token $ID_TOKEN
+    --web-identity-token "$ID_TOKEN"
     --duration-seconds 3600
     --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
     --output text))
@@ -96,7 +96,7 @@ image:
     STS=($(aws sts assume-role-with-web-identity
     --role-arn ${ECR_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
-    --web-identity-token $ID_TOKEN
+    --web-identity-token "$ID_TOKEN"
     --duration-seconds 3600
     --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
     --output text))
@@ -1064,7 +1064,7 @@ upload_helm_chart:
     - gpg --batch --import /tmp/priv.asc
     - echo -e "5\ny\n" | gpg --command-fd 0 --expert --batch --edit-key "$HELM_GPG_KEY_FPR" trust quit
     - gpg --export > "${GNUPGHOME}/pubring.gpg"
-    - gpg --export-secret-keys --pinentry-mode loopback --passphrase $HELM_GPG_PASSPHRASE > "${GNUPGHOME}/secring.gpg"
+    - gpg --export-secret-keys --pinentry-mode loopback --passphrase "$HELM_GPG_PASSPHRASE" > "${GNUPGHOME}/secring.gpg"
     - gpg --list-secret-keys --keyid-format LONG
   script:
     - helm dependency update "$CHART_DIR" || true
