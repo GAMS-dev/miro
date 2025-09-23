@@ -3,12 +3,19 @@
     "Custom Language Support: Add support for <a href=\"https://gams.com/miro/configuration_general.html#custom-language\" target=\"_blank\" rel=\"noreferrer noopener\">custom language files</a>, allowing to override and personalize all or individual interface text and labels."
   ],
   "minor": [
-    "<a href=\"https://gams.com/miro/charts.html#dashboard\" target=\"_blank\" rel=\"noreferrer noopener\">Dashboard renderer</a> and <a href=\"https://gams.com/miro/configuration_json_only.html#dashboard-compare\" target=\"_blank\" rel=\"noreferrer noopener\">dashboard Compare</a>: <a href=\"https://gams.com/miro/charts.html#dashboard-dropdown-filter\" target=\"_blank\" rel=\"noreferrer noopener\">Filters</a>: Add options to configure default selections (explicit or positional), toggle single- vs. multi-select per dimension, and set the control label and placeholder. The Legacy <span class=\"code\">userFilter</span> format (arrays of dimension names) is deprecated but still works.",
+    "<a href=\"https://gams.com/miro/charts.html#dashboard\" target=\"_blank\" rel=\"noreferrer noopener\">Dashboard renderer</a> and <a href=\"https://gams.com/miro/configuration_json_only.html#dashboard-compare\" target=\"_blank\" rel=\"noreferrer noopener\">dashboard Compare</a>: <a href=\"https://gams.com/miro/charts.html#dashboard-dropdown-filter\" target=\"_blank\" rel=\"noreferrer noopener\">Filters</a>: Add options to configure default selections (explicit or positional), toggle single- vs. multi-select per dimension, and set the control label and placeholder. The legacy <span class=\"code\">userFilter</span> format (arrays of dimension names) is deprecated but still works.",
     "<a href=\"https://gams.com/miro/charts.html#dashboard\" target=\"_blank\" rel=\"noreferrer noopener\">Dashboard renderer</a> and <a href=\"https://gams.com/miro/configuration_json_only.html#dashboard-compare\" target=\"_blank\" rel=\"noreferrer noopener\">dashboard Compare</a>: Display customized <a href=\"https://gams.com/miro/configuration_symbols.html#naming\" target=\"_blank\" rel=\"noreferrer noopener\">column headers</a> in dashboard tables.",
     "MIRO Pivot: Add support for controlling the number of decimals to be displayed in the table/chart.",
     "Key controls, like the button for switching between table and chart, have been moved into the header bar to reduce clutter and maximize viewing space. This, plus other minor spacing and design improvements, creates a much cleaner workspace.",
+    "The default navigation bar color in light mode has been switched to white.",
+    "The default primary color in dark mode has been switched to blue.",
     "The buttons to load data and to solve the model are now also available in the output section.",
-    "<a href=\"https://gams.com/miro/deployment.html#sbs-install-app\" target=\"_blank\" rel=\"noreferrer noopener\">MIRO Library</a>: Redesign of the initial screen (no apps), as well as general design improvements.",
-    "<a href=\"https://gams.com/miro/deployment.html#sbs-install-app\" target=\"_blank\" rel=\"noreferrer noopener\">MIRO Library</a>: App no longer have a dedicated launch button. Instead, the entire app card is clickable now."
+    "<a href=\"https://gams.com/miro/deployment.html#sbs-install-app\" target=\"_blank\" rel=\"noreferrer noopener\">MIRO Desktop library</a>: Redesign of the initial screen (no apps), as well as general design improvements.",
+    "<a href=\"https://gams.com/miro/deployment.html#sbs-install-app\" target=\"_blank\" rel=\"noreferrer noopener\">MIRO Desktop library</a>: App no longer have a dedicated launch button. Instead, the entire app card is clickable now.",
+    "MIRO Server: Some minor design improvements.",
+    "Add \"What's New\" dialog to Help menu in MIRO UI and to MIRO Desktop library.",
+    "MIRO Pivot: Limit the number of displayed series to 40 in pie chart and doughnut chart.",
+    "Add \"What's New\" dialog to <i>Help</i> menu in MIRO UI and to MIRO Desktop.",
+    "New <i>Engine Settings</i> dialog available in the <i>Help</i> menu. It shows a user's remaining quota and allows changing the default instance when supported by the Engine backend."
   ]
 }
