@@ -90,7 +90,7 @@ showWhatsNewDialog <- function(whatsNewData) {
   showModal(modalDialog(
     title = lang$nav$dialogWhatsNew$title,
     tags$div(
-      class = "container-fluid",
+      class = "container-fluid whats-new-dialog",
       makeSection(lang$nav$dialogWhatsNew$newFeaturesHdr, whatsNewData$major),
       makeSection(lang$nav$dialogWhatsNew$minorImprovementsHdr, whatsNewData$minor)
     ),
