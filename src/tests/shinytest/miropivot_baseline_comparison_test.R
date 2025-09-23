@@ -16,7 +16,7 @@ Sys.sleep(1)
 app$click(selector = "#tab_1_1-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
 expect_error(app$get_js("$('#tab_1_1-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();", timeout = 50), NA)
-Sys.sleep(1)
+Sys.sleep(2)
 app$wait_for_js("$('#tab_1_1-miroPivot-pivotTable .dt-title').is(':visible')", timeout = 2000L)
 expect_identical(app$get_js("$('#tab_1_1-miroPivot-pivotTable .dt-title').text()"), "test123")
 
