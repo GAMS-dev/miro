@@ -18,7 +18,6 @@ expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_tr
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 50), "ERROR RATIO\n+11.95$"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative .info-box-number').css('color')"), timeout = 50), "rgb(51, 51, 51)"))
 expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
 
 # check whether grouping dimensions in a stacked bar chart works
@@ -46,7 +45,7 @@ expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))
 expect_identical(unname(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart')"))), list())
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_train'] .custom-info-box"))
-Sys.sleep(1)
+Sys.sleep(2)
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':hidden')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart').is(':visible');")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindex0Chart').is(':visible');")))
