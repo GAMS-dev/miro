@@ -371,7 +371,7 @@ derivePalette <- function(b = baseColors) {
   v[["miro_if_c1a0bfe3"]] <- if_c1a0bfe3
   if_f1a3b180 <- if (boolean_880ef169) hslHex(hue(b$miro_main_bg_dark), 0, 12) else hslHex(hue(b$miro_main_bg_dark), 10, 18)
   v[["miro_if_f1a3b180"]] <- if_f1a3b180
-  if_4a0e097b <- if (abs(luma(if_f1a3b180) - luma(b$miro_primary_color_dark)) < 8) "#A9A9A9" else if_f1a3b180
+  if_4a0e097b <- if_f1a3b180
   v[["miro_if_4a0e097b"]] <- if_4a0e097b
   fade_ece660c0 <- fade(if_f1a3b180, 56)
   v[["miro_fade_ece660c0"]] <- fade_ece660c0
