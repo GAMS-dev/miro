@@ -184,7 +184,7 @@ derivePalette <- function(b = baseColors) {
   v[["miro_if_7f94f006"]] <- if_7f94f006
   if_8215301a <- if (abs(luma(b$miro_main_bg_dark) - luma(darken(b$miro_primary_color_dark, 10))) < 8) lighten(b$miro_primary_color_dark, 50) else darken(b$miro_primary_color_dark, 10)
   v[["miro_if_8215301a"]] <- if_8215301a
-  if_d2f31bc0 <- if (abs(luma(b$miro_main_bg_dark) - luma(b$miro_primary_color_dark)) < 15) contrast(b$miro_main_bg_dark) else b$miro_primary_color_dark
+  if_d2f31bc0 <- if (abs(luma(b$miro_main_bg_dark) - luma(b$miro_primary_color_dark)) < 15) hslHex(hue(b$miro_primary_color_dark), 34, 60) else b$miro_primary_color_dark
   v[["miro_if_d2f31bc0"]] <- if_d2f31bc0
   if_ea8983c1 <- if (abs(luma(b$miro_primary_color_dark) - luma(b$miro_text_color_dark)) < 8) contrast(b$miro_primary_color_dark) else b$miro_text_color_dark
   v[["miro_if_ea8983c1"]] <- if_ea8983c1
