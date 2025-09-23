@@ -44,6 +44,25 @@
       },
       "required": ["networkPolicy"]
     },
+     "secrets": {
+      "type": "object",
+      "properties": {
+        "dbPassword": {
+          "type": "string",
+          "minLength": 8
+        },
+        "oidcClientSecret": {
+          "type": "string"
+        },
+        "engineAnonymousPassword": {
+          "type": "string"
+        },
+        "containerLogS3SecretAccessKey": {
+          "type": "string"
+        }
+      },
+      "required": ["dbPassword"]
+     },
     "db": {
       "type": "object",
       "properties": {
@@ -55,17 +74,13 @@
           "type": "string",
           "minLength": 1
         },
-        "password": {
-          "type": "string",
-          "minLength": 1
-        },
         "name": {
           "type": "string",
           "minLength": 1
         }
       },
-      "required": ["port", "user", "password", "name"]
+      "required": ["port", "user", "name"]
     }
   },
-  "required": ["global", "db"]
+  "required": ["global", "db", "secrets"]
 }
