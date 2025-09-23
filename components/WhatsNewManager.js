@@ -9,11 +9,11 @@ export default class WhatsNewManager {
     this.content = null;
   }
 
-  async initialize() {
+  async initialize({ force = false } = {}) {
     if (this.content != null) {
       return;
     }
-    if (this.configManager.isNewMiroInstallation) {
+    if (force !== true && this.configManager.isNewMiroInstallation) {
       // don't show what's new if installation is new
       return;
     }
@@ -34,15 +34,24 @@ export default class WhatsNewManager {
         name,
         ver: WhatsNewManager.parseWhatsNewFilename(name),
       }))
-      .filter((x) => x.ver);
+      .filter((x) => x.ver)
+      .sort((a, b) => {
+        if (a.ver.major !== b.ver.major) {
+          return b.ver.major - a.ver.major;
+        }
+        return b.ver.minor - a.ver.minor;
+      });
 
-    if (previousMiroVersion != null) {
+    if (force === true) {
+      // get latest what's new entry
+      candidates = candidates.slice(0, 1);
+    } else if (previousMiroVersion != null) {
       candidates = candidates.filter(
         (x) => WhatsNewManager.cmpMajorMinor(x.ver, previousMiroVersion) > 0,
       );
-      if (candidates.length === 0) {
-        return;
-      }
+    }
+    if (candidates.length === 0) {
+      return;
     }
     const majorAll = [];
     const minorAll = [];
@@ -62,8 +71,8 @@ export default class WhatsNewManager {
     });
   }
 
-  async getContent() {
-    await this.initialize();
+  async getContent({ force = false } = {}) {
+    await this.initialize({ force });
     this.configManager.set({ previousMIROVersion: this.miroVersion });
     return this.content;
   }
@@ -80,7 +89,7 @@ export default class WhatsNewManager {
       if (!items?.length) return '';
       const lis = items.map((x) => `<li class="mb-2">${x}</li>`).join('');
       return `
-      <div class="card mb-4">
+      <div class="card mb-4" style="overflow:auto;">
         <div class="card-body">
           <h5 class="card-title">${escapeHTML(heading)}</h5>
           <ul class="mb-0">

@@ -9,6 +9,7 @@ export default (
   showSettingsCallback,
   openCheckUpdateWindow,
   openAboutDialog,
+  openWhatsNewDialog,
 ) => {
   const lang = global.lang.menu;
   return Menu.buildFromTemplate([
@@ -160,6 +161,12 @@ export default (
           label: lang.doc,
           click: async () => {
             await shell.openExternal('https://gams.com/miro');
+          },
+        },
+        {
+          label: lang.whatsNew,
+          click: () => {
+            openWhatsNewDialog({ force: true });
           },
         },
         ...(isMac

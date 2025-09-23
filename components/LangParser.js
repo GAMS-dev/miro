@@ -849,6 +849,10 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        whatsNew: {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: [
         'pref',
@@ -878,6 +882,7 @@ const schema = {
         'help',
         'doc',
         'update',
+        'whatsNew',
       ],
     },
     settings: {
@@ -1553,6 +1558,7 @@ const en = {
     help: 'Help',
     doc: 'Documentation',
     update: 'Check for Update',
+    whatsNew: "What's New",
   },
   settings: {
     title: 'Preferences',
@@ -1841,7 +1847,8 @@ const de = {
       'Die App, die Sie hinzufügen möchten, enthält Code, der möglicherweise schädlich für Ihren Computer sein könnte!\n\nMöchten Sie die App trotzdem hinzufügen?',
     dialogCustomCodeBtnAbort: 'Nein, abbrechen',
     dialogCustomCodeBtnAdd: 'Ja, trotzdem hinzufügen',
-    dialogAddPublicKeyMsg: 'Die Anwendung, die Sie hinzufügen möchten, enthält Code, der möglicherweise schädlich für Ihren Computer ist!\n\nDer Entwickler dieser Anwendung konnte nicht verifiziert werden (SHA256 Fingerabdruck: %s).\n\nMöchten Sie dem Entwickler vertrauen und die Anwendung trotzdem hinzufügen?',
+    dialogAddPublicKeyMsg:
+      'Die Anwendung, die Sie hinzufügen möchten, enthält Code, der möglicherweise schädlich für Ihren Computer ist!\n\nDer Entwickler dieser Anwendung konnte nicht verifiziert werden (SHA256 Fingerabdruck: %s).\n\nMöchten Sie dem Entwickler vertrauen und die Anwendung trotzdem hinzufügen?',
     dialogWhatsNewTitle: 'Neuigkeiten',
     dialogAddPublicKeyBtnTrust: 'Ja, diesem Entwickler vertrauen',
   },
@@ -1878,6 +1885,7 @@ const de = {
     help: 'Hilfe',
     doc: 'Dokumentation',
     update: 'Auf Update prüfen',
+    whatsNew: 'Neuigkeiten',
   },
   settings: {
     title: 'Einstellungen',
@@ -2183,6 +2191,7 @@ const cn = {
     help: '帮助',
     doc: '文档',
     update: '检查更新',
+    whatsNew: '新内容',
   },
   settings: {
     title: '偏好设置',

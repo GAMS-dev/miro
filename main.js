@@ -1203,7 +1203,7 @@ if (!miroDevelopMode) {
   }
 }
 
-async function createWhatsNewWindow() {
+async function createWhatsNewWindow({ force = false } = {}) {
   const whatsNewManager = new WhatsNewManager(
     configData,
     path.join(
@@ -1213,13 +1213,13 @@ async function createWhatsNewWindow() {
     ),
     miroVersion,
   );
-  const whatsNewContent = await whatsNewManager.getContent();
+  const whatsNewContent = await whatsNewManager.getContent({ force });
   if (whatsNewContent == null) {
     return;
   }
   whatsNewWindow = new BrowserWindow({
     title: "What's New",
-    width: 760,
+    width: 769,
     height: 820,
     resizable: false,
     show: false,
@@ -2519,6 +2519,7 @@ app.on('ready', async () => {
     createSettingsWindow,
     openCheckUpdateWindow,
     openAboutDialog,
+    createWhatsNewWindow,
   );
   Menu.setApplicationMenu(applicationMenu);
 
