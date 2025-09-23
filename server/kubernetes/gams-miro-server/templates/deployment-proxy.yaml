@@ -99,7 +99,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "common.names.fullname" . }}-secdb
-              key: db_password
+              key: password
         {{- if eq .Values.proxy.config.authentication "none" }}
         - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
           valueFrom:
