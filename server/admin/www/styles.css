@@ -585,11 +585,22 @@ a:hover {
 }
 @media (prefers-color-scheme: dark) {
   .cancel-btn, .open-config-btn {
+      background: #292D33;
+  }
+  .cancel-btn, .open-config-btn {
     color: #fff !important;
   }
   .cancel-btn:hover, .open-config-btn:hover {
     color: #fff !important;
-}
+  }
+  #conf-environment .table,
+  #conf-permissions .table,
+  #confTab > .nav-item > .nav-link {
+    color: #fff;
+  }
+  #conf-permissions .selectize-input {
+    background: #292D33;
+  }
 }
 .open-config-btn {
   width: 100%;
