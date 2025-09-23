@@ -15,7 +15,6 @@
     "MIRO Server: Some minor design improvements.",
     "Add \"What's New\" dialog to Help menu in MIRO UI and to MIRO Desktop library.",
     "MIRO Pivot: Limit the number of displayed series to 40 in pie chart and doughnut chart.",
-    "Add \"What's New\" dialog to <i>Help</i> menu in MIRO UI and to MIRO Desktop.",
     "New <i>Engine Settings</i> dialog available in the <i>Help</i> menu. It shows a user's remaining quota and allows changing the default instance when supported by the Engine backend."
   ]
 }
