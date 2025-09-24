@@ -3517,28 +3517,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             seriesData <- dataTmp[[rowHeaderLen + i]]
           } else {
             seriesData <- round(dataTmp[[rowHeaderLen + i]], digits = decimals)
-            tooltip <- sprintf(
-              "function (ctx) {
-                 const ds = ctx.dataset?.label ? ctx.dataset.label + ': ' : '';
-                 const indexAxis = ctx.dataset?.indexAxis || ctx.chart?.options?.indexAxis || 'x';
-
-                 let v;
-                 if (ctx.parsed == null) {
-                   v = ctx.raw;
-                 } else if (typeof ctx.parsed === 'object') {
-                   v = (indexAxis === 'y') ? ctx.parsed.x : ctx.parsed.y;
-                 } else {
-                   v = ctx.parsed;
-                 }
-
-                 if (v == null || !Number.isFinite(Number(v))) {
-                   return ds + (ctx.formattedValue ?? '');
-                 }
-                 return ds + Number(v).toFixed(%d);
-               }",
-              decimals
-            )
-            chartJsObj$x$options$plugins$tooltip$callbacks$label <- JS(tooltip)
           }
 
           multiChartSeries <- FALSE
