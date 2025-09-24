@@ -1631,12 +1631,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               })
 
-              tagList(
-                lapply(seq(1, length(columns), by = 2), function(i) {
-                  rowColumns <- columns[i:min(i + 1, length(columns))]
-                  tags$div(class = "row", rowColumns)
-                })
-              )
+              if (length(columns) == 0) {
+                tagList()
+              } else {
+                tagList(
+                  lapply(seq(1L, length(columns), by = 2L), function(i) {
+                    rowColumns <- columns[i:min(i + 1L, length(columns))]
+                    tags$div(class = "row", rowColumns)
+                  })
+                )
+              }
             }
             customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               seriesLabel <- miroPivotState$currentSeriesLabels[labelId]
