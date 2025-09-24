@@ -49,32 +49,33 @@ Sys.sleep(1)
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
+app$wait_for_js("$('#modelStatus').is(':visible')", timeout = 20000L)
 timeout <- 20
 repeat{
-  isRunning <- app$get_js("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');")
-  if (isRunning) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && startsWith(modelStatus, "Model execution phase")) {
     break
   }
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later.. (1)")
+    stop(sprintf("Engine seems to be busy (%s). Try again later.. (1)", modelStatus))
   }
 }
 app$click(selector = "#btInterrupt")
 timeout <- 600L
 repeat{
-  isTerminated <- app$get_js("$('#modelStatus').text().startsWith('Run did not')")
-  if (isTerminated) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && startsWith(modelStatus, "Run did not")) {
     break
   }
   if (timeout < 560L) {
-    print("Engine busy.. Waiting..")
+    print(sprintf("Engine busy (%s).. Waiting..", modelStatus))
   }
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later.. (2)")
+    stop(sprintf("Engine seems to be busy: %s. Try again later.. (2)", modelStatus))
   }
 }
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
@@ -104,13 +105,14 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 30
 repeat{
-  if (identical(app$get_js("$('#modelStatus').text().startsWith('Model queued')||$('#modelStatus').text()==='Model execution phase'"), TRUE)) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && (startsWith(modelStatus, "Model queued") || identical(modelStatus, "Model execution phase"))) {
     break
   }
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0) {
-    stop("Engine seems to be busy. Try again later.. (4)")
+    stop(sprintf("Engine seems to be busy (%s). Try again later.. (4)", modelStatus))
   }
 }
 app$stop()
