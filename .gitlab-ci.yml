@@ -592,6 +592,7 @@ build_macos_job:
 build_macos_arm_job:
   tags:
     - macos-arm64
+    - stan
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
