@@ -259,6 +259,8 @@ build_linux_job:
       fi
   artifacts:
     paths:
+      - r/
+      - build/lib_devel
       - dist/*.AppImage
     expire_in: 1 week
   cache:
@@ -496,7 +498,6 @@ create_vulnerability_report:
 build_windows_job:
   tags:
     - windows
-    - sewer
   stage: build
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
@@ -510,6 +511,8 @@ build_windows_job:
     - yarn dist
   artifacts:
     paths:
+      - r/
+      - build/lib_devel
       - dist/*.exe
     expire_in: 1 week
   cache:
@@ -542,7 +545,6 @@ build_windows_job:
 build_macos_job:
   tags:
     - macos
-    - corina
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
@@ -555,6 +557,8 @@ build_macos_job:
     - yarn dist
   artifacts:
     paths:
+      - r/
+      - build/lib_devel
       - dist/*.dmg
     expire_in: 1 week
   cache:
@@ -588,7 +592,6 @@ build_macos_job:
 build_macos_arm_job:
   tags:
     - macos-arm64
-    - stan
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
@@ -602,6 +605,8 @@ build_macos_arm_job:
     - mkdir dist/arm && mv dist/*.dmg dist/arm
   artifacts:
     paths:
+      - r/
+      - build/lib_devel
       - dist/arm/*.dmg
     expire_in: 1 week
   cache:
@@ -635,9 +640,10 @@ build_macos_arm_job:
 test_windows_job:
   tags:
     - windows
-    - sewer
   stage: test
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  parallel: 4
+  retry: 1
   variables:
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
   before_script:
@@ -647,13 +653,16 @@ test_windows_job:
     - 'if ("$[[ inputs.skip-tests ]]" -ceq "true") { "Skipping tests"; Exit }'
     - 'if ("$env:CI_COMMIT_BRANCH" -eq "master" -and "$[[ inputs.run-tests-master ]]" -ceq "false") { "Skipping tests on master"; Exit }'
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
-    - cd dist
-    - $installer = Get-ChildItem *.exe | Select-Object -First 1
-    - 'echo "Using installer: $installer"'
-    - Start-Process -FilePath $installer -ArgumentList '/S' -Wait
-    - cd ..
-    - $env:MIRO_EXEC_PATH="C:\Users\ContainerAdministrator\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe"
-    - yarn playwright test
+    - |
+      if ($env:CI_NODE_INDEX -eq 1) {
+        cd dist
+        $installer = Get-ChildItem *.exe | Select-Object -First 1
+        echo "Using installer: $installer"
+        Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+        cd ..
+        $env:MIRO_EXEC_PATH="C:\Users\ContainerAdministrator\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe"
+        yarn playwright test
+      }
     - yarn test gams_sys_dir=$env:GAMS_SYS_DIR
   dependencies: [build_windows_job]
   cache:
@@ -692,8 +701,9 @@ test_windows_job:
 test_macos_job:
   tags:
     - macos
-    - corina
   stage: test
+  parallel: 4
+  retry: 1
   variables:
     LANG: en_US.UTF-8
     LC_ALL: en_US.UTF-8
@@ -705,10 +715,13 @@ test_macos_job:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
-    - mkdir -p tmp/mnt
-    - hdiutil attach dist/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
-    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
-    - yarn playwright test
+    - |
+      if [ "$CI_NODE_INDEX" -eq 1 ]; then
+        mkdir -p tmp/mnt
+        hdiutil attach dist/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+        export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
+        yarn playwright test
+      fi
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   after_script:
     - hdiutil detach -force tmp/mnt
@@ -750,8 +763,9 @@ test_macos_job:
 test_macos_arm_job:
   tags:
     - macos-arm64
-    - stan
   stage: test
+  parallel: 4
+  retry: 1
   variables:
     LANG: en_US.UTF-8
     LC_ALL: en_US.UTF-8
@@ -763,10 +777,13 @@ test_macos_arm_job:
     - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
-    - mkdir -p tmp/mnt
-    - hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
-    - export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
-    - yarn playwright test
+    - |
+      if [ "$CI_NODE_INDEX" -eq 1 ]; then
+        mkdir -p tmp/mnt
+        hdiutil attach dist/arm/*.dmg -mountpoint tmp/mnt -nobrowse -quiet
+        export MIRO_EXEC_PATH="${PWD}/tmp/mnt/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"
+        yarn playwright test
+      fi
     - rm -f "/Users/gitlab/Library/Application Support/Chromium/SingletonLock"
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
@@ -853,6 +870,8 @@ test_job:
   tags:
     - linux
   stage: test
+  parallel: 4
+  retry: 1
   services:
     - name: postgres:16.1-alpine
   variables:
@@ -915,6 +934,7 @@ test_job_miro_server:
     - linux
   stage: test
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
+  retry: 1
   services:
     - docker:27-dind
     - selenium/standalone-chrome
@@ -951,6 +971,7 @@ test_job_miro_server_k8s:
     - linux
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   stage: test
+  retry: 1
   services:
     - docker:27-dind
     - selenium/standalone-chrome

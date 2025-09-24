@@ -48,7 +48,33 @@ Sys.setenv(MIRO_TEST_LOAD_TIMEOUT = "30000")
 Sys.setenv(MIRO_TEST_TIMEOUT = "10000")
 Sys.setenv(NOT_CRAN = "true")
 Sys.setenv(CHROMOTE_HEADLESS = "new")
-if (Sys.info()[["sysname"]] == "Darwin") {
+totalNodes <- as.integer(Sys.getenv("CI_NODE_TOTAL", "1"))
+nodeIndex <- as.integer(Sys.getenv("CI_NODE_INDEX", "1"))
+platform <- Sys.info()[["sysname"]]
+testDir <- file.path(getwd(), "tests")
+testThatDir <- file.path(testDir, "testthat")
+allFiles <- sort(list.files(testThatDir, pattern = "^test-.*\\.R$", full.names = FALSE))
+nFiles <- length(allFiles)
+if (nFiles == 0) {
+  cat("No test files found. Exiting.\n")
+  quit(status = 0)
+}
+filesPerNode <- ceiling(nFiles / totalNodes)
+startIndex <- (nodeIndex - 1) * filesPerNode + 1
+endIndex <- min(nodeIndex * filesPerNode, nFiles)
+if (startIndex > nFiles) {
+  cat("No files for this node to test. Exiting successfully.\n")
+  quit(status = 0)
+}
+filesToRun <- allFiles[startIndex:endIndex]
+if (!"test-zzz-check-logs-unit.R" %in% filesToRun) {
+  # always check logs
+  filesToRun <- c(filesToRun, "test-zzz-check-logs-unit.R")
+}
+cat("This node will run the following test files:\n")
+print(filesToRun)
+regexFilter <- paste0("^", gsub("\\.", "\\\\.", gsub("\\.R$", "", gsub("^test-", "", filesToRun))), "$", collapse = "|")
+if (platform == "Darwin") {
   # need to set chromium path manually until https://github.com/rstudio/chromote/issues/91 is closed
   chromePath <- "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
   if (!file.exists(chromePath)) {
@@ -94,11 +120,15 @@ reporter <- MultiReporter$new(list(
 ))
 
 stopOnFailure <- identical(commandArgs(trailingOnly = TRUE), "--stop") || !identical(Sys.getenv("FORCE_RELEASE"), "yes")
-testDir <- file.path(getwd(), "tests")
 
 print(sprintf("Maximum test failures: %i, stop on failure: %s", maxTestFailures, stopOnFailure))
 
 # test_file("tests/testthat/test-hcube-module-ui.R", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
-test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure, stop_on_warning = stopOnFailure)
+test_dir("tests/testthat",
+  filter = regexFilter,
+  reporter = reporter,
+  stop_on_failure = stopOnFailure,
+  stop_on_warning = stopOnFailure
+)
 
 Sys.unsetenv(c("MIRO_LOG_PATH", "MIRO_TEST_TIMEOUT", "MIRO_TEST_LOAD_TIMEOUT"))

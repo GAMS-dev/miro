@@ -1,5 +1,6 @@
 context("Unit tests - Utility functions")
 
+lang <<- list()
 source("../../components/util.R")
 
 modelIn1 <- list(
