@@ -435,9 +435,17 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
         dims <- unique(vapply(uf, `[[`, character(1), "dimension"))
         debouncedUserFilters[[indicator]] <- debounce(reactive({
-          setNames(selectedUserFilters <- lapply(dims, function(dim) {
+          selectedUserFilters <- setNames(lapply(dims, function(dim) {
             input[[paste0(userFilterIndicator, "userFilter_", dim)]]
           }), dims)
+          if (!identical(rendererEnv$userFiltersInitialized[[indicator]], TRUE)) {
+            if (is.null(rendererEnv$userFiltersInitialized)) {
+              rendererEnv$userFiltersInitialized <- list()
+            }
+            rendererEnv$userFiltersInitialized[[indicator]] <- TRUE
+            return()
+          }
+          return(selectedUserFilters)
         }), 200)
       }
 
@@ -456,6 +464,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         selectedUserFilters <- NULL
         if (length(debouncedUserFilters[[indicator]])) {
           selectedUserFilters <- debouncedUserFilters[[indicator]]()
+          if (is.null(selectedUserFilters)) {
+            return()
+          }
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
@@ -682,6 +693,9 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         selectedUserFilters <- NULL
         if (length(debouncedUserFilters[[indicator]])) {
           selectedUserFilters <- debouncedUserFilters[[indicator]]()
+          if (is.null(selectedUserFilters)) {
+            return()
+          }
         }
 
         dataTmp <- dashboardGetData(indicator, dashboardChartData, dataViewsConfig, selectedUserFilters)
