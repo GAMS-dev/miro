@@ -1219,9 +1219,11 @@ async function createWhatsNewWindow({ force = false } = {}) {
   }
   whatsNewWindow = new BrowserWindow({
     title: "What's New",
-    width: 769,
+    width: 790,
     height: 820,
-    resizable: false,
+    minWidth: 600,
+    minHeight: 600,
+    resizable: true,
     show: false,
     icon:
       process.platform === 'linux'
