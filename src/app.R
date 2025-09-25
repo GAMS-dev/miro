@@ -972,10 +972,10 @@ if (is.null(errMsg)) {
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
   if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
-    if (isWindows()) {
-      plan(multisession)
-    } else {
+    if (identical(tolower(Sys.info()[["sysname"]]), "linux")) {
       plan(multicore)
+    } else {
+      plan(multisession)
     }
   }
   # try to create the DB connection (PostgreSQL)
