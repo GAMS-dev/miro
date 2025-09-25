@@ -63,13 +63,13 @@ repeat{
   }
 }
 app$click(selector = "#btInterrupt")
-timeout <- 600L
+timeout <- 200L
 repeat{
   modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
   if (length(modelStatus) && startsWith(modelStatus, "Run did not")) {
     break
   }
-  if (timeout < 560L) {
+  if (timeout < 160L) {
     print(sprintf("Engine busy (%s).. Waiting..", modelStatus))
   }
   Sys.sleep(2L)

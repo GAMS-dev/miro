@@ -6,8 +6,12 @@ EngineClient <- R6Class("EngineClient", public = list(
     private$authHeader <- authHeader
   },
   populateVolumeInfoCard = function(session, id) {
+    if (!is.null(private$observers$quota)) {
+      private$observers$quota$destroy()
+      private$observers$quota <- NULL
+    }
     private$fetchQuotaInfo()
-    obs <- observe({
+    private$observers$quota <- observe({
       tryCatch(
         {
           if (resolved(private$quotaInfoFuture)) {
@@ -45,7 +49,7 @@ EngineClient <- R6Class("EngineClient", public = list(
               showEl(session, paste0("#", id, "Wrapper"))
             }
             hideEl(session, paste0("#", id, "Spinner"))
-            obs$destroy()
+            private$observers$quota$destroy()
           }
           invalidateLater(500L, session)
         },
@@ -53,13 +57,17 @@ EngineClient <- R6Class("EngineClient", public = list(
           flog.error("Unexpected error fetching quota info. Error message: %s", conditionMessage(e))
           showEl(session, "#settingsDialogUnknownError")
           hideEl(session, paste0("#", id, "Spinner"))
-          obs$destroy()
+          private$observers$quota$destroy()
         }
       )
     })
     return(invisible(self))
   },
   populateInstanceSelector = function(session, selectizeId, dropdownCategories, forceRefresh = FALSE) {
+    if (!is.null(private$observers$instances)) {
+      private$observers$instances$destroy()
+      private$observers$instances <- NULL
+    }
     if (is.null(private$instanceInfo) || isTRUE(forceRefresh)) {
       private$fetchInstanceInfo()
     }
@@ -117,7 +125,7 @@ EngineClient <- R6Class("EngineClient", public = list(
       defaultInstance <- instanceInfo[["default"]][["label"]]
       return(list(valid = TRUE, instancesSupported = TRUE, choices = availableInstances, selected = defaultInstance))
     }
-    obs <- observe({
+    private$observers$instances <- observe({
       tryCatch(
         {
           if (is.null(private$instanceInfoFuture)) {
@@ -132,13 +140,13 @@ EngineClient <- R6Class("EngineClient", public = list(
           if (!instanceInfo[["valid"]]) {
             showEl(session, "#settingsDialogUnknownError")
             hideEl(session, paste0("#", selectizeId, "Spinner"))
-            obs$destroy()
+            private$observers$instances$destroy()
             return()
           }
           private$instanceInfo <- instanceInfo
           if (!identical(instanceInfo[["instancesSupported"]], TRUE)) {
             hideEl(session, paste0("#", selectizeId, "Spinner"))
-            obs$destroy()
+            private$observers$instances$destroy()
             return()
           }
           updateSelectizeInput(session, selectizeId,
@@ -201,13 +209,13 @@ EngineClient <- R6Class("EngineClient", public = list(
           )
           hideEl(session, paste0("#", selectizeId, "Spinner"))
           showEl(session, paste0("#", selectizeId, "Wrapper"))
-          obs$destroy()
+          private$observers$instances$destroy()
         },
         error = function(e) {
           flog.error("Unexpected error fetching instances. Error message: %s", conditionMessage(e))
           showEl(session, "#settingsDialogUnknownError")
           hideEl(session, paste0("#", selectizeId, "Spinner"))
-          obs$destroy()
+          private$observers$instances$destroy()
         }
       )
     })
@@ -252,6 +260,7 @@ EngineClient <- R6Class("EngineClient", public = list(
   instanceInfo = NULL,
   instanceInfoFuture = NULL,
   quotaInfoFuture = NULL,
+  observers = list(quota = NULL, instances = NULL),
   fetchQuotaInfo = function() {
     if (!is.null(private$quotaInfoFuture) && !resolved(private$quotaInfoFuture)) {
       cancel(private$quotaInfoFuture)
