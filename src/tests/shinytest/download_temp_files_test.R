@@ -29,5 +29,5 @@ expect_files_in_zip(app, "btDownloadTmpConfirm", c("pickstock_output_tables.gms"
 # Make sure doing funny stuff is not possible here..
 app$set_inputs(selectDownloadTmp = "asd.csv")
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
-expect_true(identical(content, paste0("Invalid  filename", if (.Platform$OS.type == "windows") "\r\n" else "\n")))
+expect_identical(content, paste0("Invalid  filename", if (.Platform$OS.type == "windows") "\r\n" else "\n"))
 app$stop()

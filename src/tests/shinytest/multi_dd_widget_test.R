@@ -8,7 +8,7 @@ Sys.sleep(2L)
 app$set_inputs(inputTabset = "inputTabset_7")
 
 
-expect_true(identical(app$get_value(input = "dropdown_7"), c("Seattle", "San-Diego")))
+expect_identical(app$get_value(input = "dropdown_7"), c("Seattle", "San-Diego"))
 
 app$set_inputs(dropdown_7 = c())
 app$set_inputs(btSolve = "click")

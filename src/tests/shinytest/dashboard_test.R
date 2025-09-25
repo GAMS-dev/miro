@@ -12,13 +12,13 @@ Sys.sleep(2)
 app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
 
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61357"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 50), "rgb(61, 153, 112)"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.1662$"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 50), "ERROR RATIO\n+11.95$"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61357")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 50), "rgb(61, 153, 112)")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.1662$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 50), "ERROR RATIO\n+11.95$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$")
 
 # check whether grouping dimensions in a stacked bar chart works
 configuration <- app$get_js(paste0("Chart.getChart('tab_1_3-", rendererName, "-dowVSindexStackChart').config._config"), timeout = 50)
@@ -36,9 +36,9 @@ configuration <- app$get_js(paste0(
   "})()"
 ), timeout = 50)
 
-expect_true(identical(configuration$type, "bar"))
-expect_true(identical(configuration$data$datasets[[1]]$stack, "stack1"))
-expect_true(identical(configuration$data$datasets[[2]]$stack, "stack2"))
+expect_identical(configuration$type, "bar")
+expect_identical(configuration$data$datasets[[1]]$stack, "stack1")
+expect_identical(configuration$data$datasets[[2]]$stack, "stack2")
 
 # switch data view
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
@@ -83,8 +83,8 @@ expect_equal(getData(paste0("tab_1_3-", rendererName, "-testaliasfilterChart")),
 
 app$click(selector = paste0("div[id='tab_1_3-", rendererName, "-error_ratio'] .custom-info-box"))
 Sys.sleep(1)
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_date')[0].multiple")), TRUE))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_uni-selectized')[0].multiple")), FALSE))
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_date')[0].multiple")), TRUE)
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemergeuserFilter_uni-selectized')[0].multiple")), FALSE)
 expect_identical(
   app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable td').map(function(index){return $(this).text()}).toArray()")),
   list("reference", "0.552 (0%)", "", "2016-01-04", "2.175 (294.231%)", "", "2016-01-06", "0.009 (-98.405%)", "", "2016-01-08", "0.487 (-11.733%)", "")
@@ -106,8 +106,8 @@ idUni <- sprintf("#tab_1_3-%s-pricemerge2userFilter_uni", rendererName)
 idDate <- sprintf("#tab_1_3-%s-pricemerge2userFilter_date", rendererName)
 idDatePlaceholder <- sprintf("#tab_1_3-%s-pricemerge3userFilter_date-selectized", rendererName)
 
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_date')[0].multiple")), TRUE))
-expect_true(identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_uni-selectized')[0].multiple")), FALSE))
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_date')[0].multiple")), TRUE)
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-pricemerge2userFilter_uni-selectized')[0].multiple")), FALSE)
 expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idUni)), "testlabel")
 expect_equal(app$get_js(sprintf("$('%s-label').text().trim()", idDate)), "testlabel2")
 expect_equal(app$get_js(sprintf("$('%s').attr('placeholder')", idDatePlaceholder)), "All items")
