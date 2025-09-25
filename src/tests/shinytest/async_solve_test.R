@@ -59,6 +59,7 @@ repeat{
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop(sprintf("Engine seems to be busy (%s). Try again later.. (1)", modelStatus))
   }
 }
@@ -75,6 +76,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop(sprintf("Engine seems to be busy: %s. Try again later.. (2)", modelStatus))
   }
 }
@@ -96,6 +98,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (3)")
   }
 }
@@ -112,6 +115,7 @@ repeat{
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0) {
+    print(app$get_logs())
     stop(sprintf("Engine seems to be busy (%s). Try again later.. (4)", modelStatus))
   }
 }
@@ -128,6 +132,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (5)")
   }
 }
@@ -223,6 +228,7 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (6)")
   }
 }
