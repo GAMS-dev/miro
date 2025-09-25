@@ -281,6 +281,14 @@ textarea.readme-preview-markdown:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+#outputDataTitle,
+#inputDataTitle {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 .box-header {
   padding: 3px 10px 3px;
 }
@@ -3230,6 +3238,9 @@ li.drop-index-item[data-col-hidden="true"] {
 .dashboard-css .scenario-dropdown .selectize-input {
   min-height: 22px;
   padding: 1px 5px;
+}
+.dashboard-css .charttype-and-btn-wrapper .custom-dropdown .form-group.shiny-input-container {
+  width: auto;
 }
 @media only screen and (min-width: 576px){
    .dashboard-css .custom-dropdown {
