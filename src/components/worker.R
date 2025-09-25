@@ -1247,7 +1247,14 @@ Worker <- R6Class("Worker", public = list(
     }
     if (length(private$gamsRet)) {
       if (resolved(private$fRemoteRes)) {
-        resVal <- value(private$fRemoteRes)
+        tryCatch(
+          {
+            resVal <- value(private$fRemoteRes)
+          },
+          error = function(err) {
+            flog.error("Problems resolving fRemoteRes promise. Error message: %s", conditionMessage(err))
+          }
+        )
         if (identical(resVal, 0L)) {
           private$status <- private$gamsRet
         } else if (identical(resVal, -100L)) {
