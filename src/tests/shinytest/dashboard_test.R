@@ -19,6 +19,7 @@ expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .
 expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 2000), "ERROR RATIO\n+11.95$")
 expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 2000), "TESTNEGATIVE\n-1,001$")
 expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 2000), "TESTPOSITIVE\n+1,001$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testlonglabel .info-box-text').css('textOverflow')"), timeout = 2000), "ellipsis")
 
 # check whether grouping dimensions in a stacked bar chart works
 configuration <- app$get_js(paste0("Chart.getChart('tab_1_3-", rendererName, "-dowVSindexStackChart').config._config"), timeout = 50)
