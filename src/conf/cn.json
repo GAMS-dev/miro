@@ -884,6 +884,9 @@
         "prompt2": "这两列？这不能被撤消！"
       }
     },
+    "dashboard":{
+      "noDataWarning": "无数据"
+    },
     "dashboardComparison":{
       "selectScen": "Select scenario"
     }

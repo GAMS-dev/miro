@@ -137,6 +137,14 @@ dashboardPrepareData <- function(config, viewData) {
     filterVal <- config[[optionId]][[filterIndex]]
 
     if (!any(filterVal %in% filterElements[[filterIndex]])) {
+      if (length(filterVal)) {
+        invalidFilters <- filterVal[!is.na(filterVal) & !(filterVal %in% filterElements[[filterIndex]])]
+        flog.info(paste0(
+          "Dashboard: Some filters could not be applied because the values are not present in the data: ",
+          paste(invalidFilters, collapse = ", ")
+        ))
+        return(list(data = dataTmp[0, ], noDataWarning = lang$renderers$dashboard$noDataWarning))
+      }
       if (filterIndex %in% c(aggFilterIndexList, colFilterIndexList)) {
         # nothing selected = no filter for aggregations/cols
         next
@@ -553,7 +561,7 @@ dashboardTransformLabels <- function(originalLabels, customLabels) {
   }
   return(transformedLabels)
 }
-dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFilterChoices, userFilterDefaults, ns) {
+dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFilterChoices, userFilterDefaults, ns, filterWarnings) {
   # Build and return the UI for a dashboard section/data-view
   # (views that are visible when clicking on a value box).
   # For a section/data-view the function:
@@ -561,6 +569,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
   #   - for each view the function adds a column with:
   #     title, chart-type selector, download buttons,
   #     user-filter dropdowns, a DT table output and a ChartJS chart output
+  # If the data is empty. a corresponding warning is shown
 
   chartChoices <- setNames(
     c(
@@ -642,58 +651,65 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
           },
           tags$div(
             style = "overflow:auto;",
-            tags$div(
-              class = "row table-chart-wide-widgets",
-              tags$div(
-                class = paste("charttype-and-btn-wrapper", inlineClass),
+            if (!(is.null(filterWarnings[[id]]) || !nchar(filterWarnings[[id]]))) {
+              uiOutput(ns(paste0(id, "Info")))
+            } else {
+              tagList(
                 tags$div(
-                  class = "custom-dropdown",
-                  selectizeInput(ns(paste0(id, "ChartType")),
-                    label = NULL,
-                    choices = chartChoices,
-                    selected = dataViewsConfig[[id]]$pivotRenderer
-                  )
+                  class = "row table-chart-wide-widgets",
+                  tags$div(
+                    class = paste("charttype-and-btn-wrapper", inlineClass),
+                    tags$div(
+                      class = "custom-dropdown",
+                      selectizeInput(ns(paste0(id, "ChartType")),
+                        label = NULL,
+                        choices = chartChoices,
+                        selected = dataViewsConfig[[id]]$pivotRenderer
+                      )
+                    ),
+                    tags$div(
+                      class = "dashboard-btn-wrapper",
+                      tags$a(
+                        id = ns(paste0(id, "DownloadCsv")),
+                        class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
+                        href = "",
+                        target = "_blank",
+                        download = NA,
+                        tags$div(
+                          tags$i(class = "fa fa-file-csv")
+                        ),
+                        title = lang$renderers$miroPivot$btDownloadCsv
+                      ),
+                      tags$a(
+                        id = ns(paste0(id, "DownloadPng")),
+                        class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
+                        style = if (dataViewsConfig[[id]]$pivotRenderer %in% c("table", "heatmap")) "display:none;",
+                        download = paste0(id, "Chart", ".png"),
+                        href = "#",
+                        `data-canvasid` = ns(paste0(id, "Chart")),
+                        tags$div(
+                          tags$i(class = "fa fa-file-image")
+                        ),
+                        title = lang$renderers$miroPivot$btDownloadPng
+                      )
+                    )
+                  ),
+                  do.call(tagList, filterInputs)
                 ),
                 tags$div(
-                  class = "dashboard-btn-wrapper",
-                  tags$a(
-                    id = ns(paste0(id, "DownloadCsv")),
-                    class = "btn btn-default btn-custom pivot-btn-custom shiny-download-link dashboard-btn dashboard-btn-csv",
-                    href = "",
-                    target = "_blank",
-                    download = NA,
-                    tags$div(
-                      tags$i(class = "fa fa-file-csv")
-                    ),
-                    title = lang$renderers$miroPivot$btDownloadCsv
-                  ),
-                  tags$a(
-                    id = ns(paste0(id, "DownloadPng")),
-                    class = "btn btn-default bt-export-canvas btn-custom pivot-btn-custom dashboard-btn dashboard-btn-png",
-                    style = if (dataViewsConfig[[id]]$pivotRenderer %in% c("table", "heatmap")) "display:none;",
-                    download = paste0(id, "Chart", ".png"),
-                    href = "#",
-                    `data-canvasid` = ns(paste0(id, "Chart")),
-                    tags$div(
-                      tags$i(class = "fa fa-file-image")
-                    ),
-                    title = lang$renderers$miroPivot$btDownloadPng
+                  class = "table-chart-wide-wrapper",
+                  style = paste0("min-height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
+                  DT::DTOutput(ns(paste0(id, "Table"))),
+                  tags$div(
+                    id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
+                    style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
+                    chartjs::chartjsOutput(ns(paste0(id, "Chart")),
+                      height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
+                    )
                   )
                 )
-              ),
-              do.call(tagList, filterInputs)
-            ),
-            tags$div(
-              class = "table-chart-wide-wrapper",
-              DT::DTOutput(ns(paste0(id, "Table"))),
-              tags$div(
-                id = ns(paste0(id, "ChartWrapper")), class = "dashboard-chart-wrapper",
-                style = paste0("height: ", if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"),
-                chartjs::chartjsOutput(ns(paste0(id, "Chart")),
-                  height = if (length(dataViewsConfig[[id]]$height)) dataViewsConfig[[id]]$height else "33vh"
-                )
               )
-            )
+            }
           )
         )
       } else {

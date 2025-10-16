@@ -322,6 +322,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   )
 
   rawData <- dashboardChartData
+  filterWarnings <- dashboardChartData
 
   renderedSections <- list()
 
@@ -381,7 +382,13 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
         rawData[[view]] <- viewData
         preparedData <- dashboardPrepareData(currentConfig, viewData)
-        dashboardChartData[[view]] <- preparedData
+        if (!is_tibble(preparedData) && length(preparedData$noDataWarning)) {
+          dashboardChartData[[view]] <- preparedData$data
+          filterWarnings[[view]] <- preparedData$noDataWarning
+        } else {
+          filterWarnings[[view]] <- ""
+          dashboardChartData[[view]] <- preparedData
+        }
 
         userFilter <- dataViewsConfig[[view]]$userFilter
         if (length(userFilter)) {
@@ -419,7 +426,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
 
     insertUI(
       selector = paste0("#", ns(paste0("sectionContent_", av))), where = "afterBegin",
-      ui = dashboardRenderDataView(dataViewsConfig, av, options$dataViews, allUserFilterChoices, userFilterDefaults, ns)
+      ui = dashboardRenderDataView(
+        dataViewsConfig, av, options$dataViews, allUserFilterChoices, userFilterDefaults, ns,
+        filterWarnings
+      )
     )
 
     lapply(names(unlist(options$dataViews[[av]])), function(indicator) {
@@ -486,7 +496,6 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         }
         dimHeaders <- dimHeaders[names(dimHeaders) %in% nonNumericCols]
         rowHeaders <- vapply(dimHeaders, "[[", character(1L), "alias", USE.NAMES = FALSE)
-
 
         # heatmap
         if (input[[paste0(indicator, "ChartType")]] == "heatmap") {
@@ -1142,6 +1151,21 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         )
 
         return(chartJsObj)
+      })
+
+      # invalid filter in view
+      output[[paste0(indicator, "Info")]] <- renderUI({
+        textToRender <- filterWarnings[[indicator]]
+        if (is.null(textToRender) || !nchar(textToRender)) {
+          tagList()
+        } else {
+          tagList(
+            tags$div(
+              class = "viewinfo",
+              textToRender
+            )
+          )
+        }
       })
 
       # download csv data
