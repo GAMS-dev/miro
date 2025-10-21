@@ -6,13 +6,13 @@ Your release is named {{ .Release.Name }}.
 {{- if .Values.ingress.enabled }}
 {{- if .Values.ingress.tls }}
 The UI will be available over HTTPS at:
-  https://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}
+  https://{{ .Values.ingress.hostname }}{{ .Values.rootPath | trimSuffix "/" }}
 The API will be available at:
-  https://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+  https://{{ .Values.ingress.hostname }}{{ .Values.rootPath | trimSuffix "/" }}/api
   {{- else }}The application will be available over HTTP at:
-  http://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}
+  http://{{ .Values.ingress.hostname }}{{ .Values.rootPath | trimSuffix "/" }}
 The API will be available at:
-  http://{{ .Values.ingress.hostname }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+  http://{{ .Values.ingress.hostname }}{{ .Values.rootPath | trimSuffix "/" }}/api
 {{- end }}
 
 NOTES
@@ -24,7 +24,7 @@ UI Service:
   - Service Type: `{{ .Values.proxy.service.type }}`.
   {{- if eq .Values.proxy.service.type "NodePort" }}
   - The UI will be accessible on:
-    http://<node-ip>:{{ .Values.proxy.service.nodePort }}{{ .Values.global.rootPath | trimSuffix "/" }}
+    http://<node-ip>:{{ .Values.proxy.service.nodePort }}{{ .Values.rootPath | trimSuffix "/" }}
   {{- else }}
   - The UI will be accessible on the cluster IP within the Kubernetes network.
   {{- end }}
@@ -32,7 +32,7 @@ API Service:
   - Service Type: `{{ .Values.auth.service.type }}`.
   {{- if eq .Values.auth.service.type "NodePort" }}
   - The API will be accessible on:
-    http://<node-ip>:{{ .Values.auth.service.nodePort }}{{ .Values.global.rootPath | trimSuffix "/" }}/api
+    http://<node-ip>:{{ .Values.auth.service.nodePort }}{{ .Values.rootPath | trimSuffix "/" }}/api
   {{- else }}
   - The API will be accessible on the cluster IP within the Kubernetes network.
   {{- end }}

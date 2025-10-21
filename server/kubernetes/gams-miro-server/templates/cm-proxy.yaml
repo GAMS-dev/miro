@@ -62,6 +62,7 @@ data:
         logout-url: {{ .Values.proxy.config.openid.logoutUrl | quote }}
         client-id: {{ .Values.proxy.config.openid.clientId | quote }}
         with-pkce: {{ .Values.proxy.config.openid.withPKCE }}
+        scopes: {{ .Values.proxy.config.openid.scopes | quote }}
       database:
         {{- if .Values.db.externalHost }}
         host: {{ .Values.db.externalHost | quote }}
@@ -77,8 +78,8 @@ data:
         anonymous-user: {{ .Values.proxy.config.engine.anonymousUser | quote }}
       docker:
         container-network: ""
-        miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
-        admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
+        admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
       kubernetes:
         internal-networking: true
         {{- if .Values.global.imagePullSecrets }}
@@ -253,7 +254,7 @@ data:
       forward-headers-strategy: native
       servlet:
         session.timeout: 21600
-        context-path: {{ .Values.global.rootPath | quote }}
+        context-path: {{ .Values.rootPath | quote }}
 
     {{- if .Values.proxy.config.metrics.enabled }}
     management:
@@ -262,7 +263,7 @@ data:
           export:
             enabled: true
     {{- end }}
-{{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled (eq .Values.proxy.config.colorTheme "custom") }}
+{{- if or .Values.proxy.config.logo .Values.proxy.config.favicon (eq .Values.proxy.config.colorTheme "custom") }}
 ---
 apiVersion: v1
 kind: Secret

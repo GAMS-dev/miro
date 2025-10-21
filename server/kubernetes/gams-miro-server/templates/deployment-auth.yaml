@@ -50,7 +50,7 @@ spec:
       priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       containers:
       - name: auth
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.auth.resources | indent 10 }}
         ports:
@@ -87,7 +87,7 @@ spec:
         - name: APP_CONFIG_FILE_PATH
           value: "/home/miro/admin/application.yml"
         - name: SCRIPT_NAME
-          value: "{{ .Values.global.rootPath | trimSuffix "/" }}"
+          value: "{{ .Values.rootPath | trimSuffix "/" }}"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:

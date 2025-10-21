@@ -1,12 +1,15 @@
 # Copyright GAMS Development Corp. All Rights Reserved.
 # SPDX-License-Identifier: GPL-3.0-only
 
+rootPath: '/'
+
 global:
-  rootPath: '/'
   # Global Docker image registry
   imageRegistry: ''
   # imagePullSecrets:
   #   - registryKeySecretName
+  # Global tag of the images. If not specified, AppVersion is used.
+  imageTag: ''
   imagePullSecrets: []
   # nodeSelector: Node labels for pod assignment
   nodeSelector: {}
@@ -27,9 +30,6 @@ global:
   commonLabels: {}
   # Annotations to add to all deployed resources
   commonAnnotations: {}
-image:
-  # Global tag of the images. If not specified, AppVersion is used.
-  tag: ''
 
 secrets:
   dbPassword: ''
@@ -81,21 +81,9 @@ proxy:
     forceSignedApps:
       enabled: false
       acceptedPublicKeysPEM: []
-    logo:
-      enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
-      path: '' # local path to logo file; it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded logo
-      # If both path and base64 are specified, base64 is used.
-    favicon:
-      enabled: false # whether to use custom favicon
-      path: '' # local path to favicon file (.ico); it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded favicon
-      # If both path and base64 are specified, base64 is used.
-    customCSS:
-      enabled: false # whether to use custom CSS
-      path: '' # local path to CSS file; it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded CSS
-      # If both path and base64 are specified, base64 is used.
+    logo: '' # base64-encoded logo
+    favicon: '' # base64-encoded favicon
+    customTheme: '' # base64-encoded custom CSS theme. "colorTheme" must be set to "custom"
     containerLogBackend:
       type: none # Container log backed. Currently supported none (disabled) or s3
       s3:
@@ -120,6 +108,7 @@ proxy:
       jwksUrl: ''
       logoutUrl: ''
       clientId: ''
+      scopes: '' # "openid,email" are always requested. Only add additional scopes (e.g. profile) here
       withPKCE: false
     engine:
       apiUrl: ''

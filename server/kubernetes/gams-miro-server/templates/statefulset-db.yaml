@@ -46,7 +46,7 @@ spec:
       priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       containers:
       - name: db
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.db.resources | indent 10 }}
         ports:
