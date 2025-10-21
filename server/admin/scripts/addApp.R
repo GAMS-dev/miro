@@ -151,7 +151,7 @@ tryCatch(
       )
       if (IN_KUBERNETES) {
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-          "/home/miro/mnt/model/", modelName
+          "/home/miro/model/", modelName
         )
         newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/data"
         newAppConfig$containerEnv$MIRO_CACHE_DIR <- "/home/miro/cache"
