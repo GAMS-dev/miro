@@ -23,7 +23,11 @@ from .util import (
     reset_app_config_file,
 )
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture()
@@ -73,7 +77,7 @@ def cleanup():
 
 
 class TestScenarios:
-    def test_post_scenario(self, cleanup):
+    def test_post_scenario(self, client, cleanup):
         response = client.post(
             "/api/scenarios/idontexist/",
             files={"scenario_data": open("tests/data/transport.miroscen", "rb")},
@@ -298,7 +302,7 @@ class TestScenarios:
 
         assert scen_found == True
 
-    def test_get_scenario_list(self, cleanup):
+    def test_get_scenario_list(self, client, cleanup):
         register_transport(client, ["mygroup"])
         invite_user("mirotests_auth_1", 1, group="mygroup")
         response = client.post(
@@ -388,7 +392,7 @@ class TestScenarios:
         assert scen_metadata[0]["tags"] == ["tag1", "tag2"]
         assert scen_metadata[0]["owner"] == "mirotests_auth_1"
 
-    def test_download_scenario(self, cleanup):
+    def test_download_scenario(self, client, cleanup):
         register_transport(client, ["mygroup"])
         response = client.get(
             "/api/scenarios/transport/download?name=idontexist",
@@ -497,7 +501,7 @@ class TestScenarios:
 
         assert metadata_tmp["uid"] == "mirotests_auth_1"
 
-    def test_delete_scenario(self, cleanup):
+    def test_delete_scenario(self, client, cleanup):
         register_transport(client)
         invite_user("mirotests_auth_1", 1, group="mygroup")
         response = client.post(

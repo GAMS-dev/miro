@@ -14,7 +14,11 @@ from .util import (
 )
 from ..utils.app_utils import get_apps_raw
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture()
@@ -60,31 +64,37 @@ def cleanup():
 
 
 class TestApps:
-    def test_get_apps_raw(self, cleanup):
+    @pytest.mark.asyncio
+    async def test_get_apps_raw(self, cleanup):
         with open(settings["SPECS_FILE_PATH"], "w") as f:
             f.write(
                 "specs:\n- accessGroups:\n  - admins\n  containerEnv:\n    MIRO_API_VERSION: '1'\n  containerVolumes:\n  - :/home/miro/admin/models\n  - :/home/miro/admin/data\n  description: MIRO Server Admin Panel\n  displayName: Admin\n  id: admin\n  logoURL: ~\n- id: transport\n  displayName: transport\n  description: ''\n  logoURL: default_logo.png\n  containerVolumes:\n  - /transport:/home/miro/app/model/transport:ro\n  - /data_transport:/home/miro/app/data\n  containerEnv:\n    MIRO_MODEL_PATH: /home/miro/app/model/transport/transport.gms\n    MIRO_DATA_DIR: /home/miro/app/data\n  accessGroups:\n  - group 1\n  - group 2\n- id: pickstock\n  displayName: pickstock\n  description: ''\n  logoURL: default_logo.png\n  containerVolumes:\n  - /pickstock:/home/miro/app/model/pickstock:ro\n  - /data_transport:/home/miro/app/data\n  containerEnv:\n    MIRO_MODEL_PATH: /home/miro/app/model/pickstock/pickstock.gms\n    MIRO_DATA_DIR: /home/miro/app/data\n  accessGroups:\n  - group 1\n- id: sudoku\n  displayName: sudoku\n  description: ''\n  logoURL: default_logo.png\n  containerVolumes:\n  - /sudoku:/home/miro/app/model/sudoku:ro\n  - /data_transport:/home/miro/app/data\n  containerEnv:\n    MIRO_MODEL_PATH: /home/miro/app/model/sudoku/sudoku.gms\n    MIRO_DATA_DIR: /home/miro/app/data\n  accessGroups:\n  - group 2\n- id: tsp\n  displayName: tsp\n  description: ''\n  logoURL: default_logo.png\n  containerVolumes:\n  - /tsp:/home/miro/app/model/tsp:ro\n  - /data_transport:/home/miro/app/data\n  containerEnv:\n    MIRO_MODEL_PATH: /home/miro/app/model/tsp/tsp.gms\n    MIRO_DATA_DIR: /home/miro/app/data\n"
             )
-        assert [app["id"] for app in get_apps_raw(["group 1", "GROUP 2"])] == [
+        apps_raw = await get_apps_raw(["group 1", "GROUP 2"])
+        assert [app["id"] for app in apps_raw] == [
             "transport",
             "pickstock",
             "sudoku",
             "tsp",
         ]
-        assert [app["id"] for app in get_apps_raw(["group 1"])] == [
+        apps_raw = await get_apps_raw(["group 1"])
+        assert [app["id"] for app in apps_raw] == [
             "transport",
             "pickstock",
             "tsp",
         ]
-        assert [app["id"] for app in get_apps_raw(["group 2"])] == [
+        apps_raw = await get_apps_raw(["group 2"])
+        assert [app["id"] for app in apps_raw] == [
             "transport",
             "sudoku",
             "tsp",
         ]
-        assert [app["id"] for app in get_apps_raw(["users"])] == ["tsp"]
-        assert [app["id"] for app in get_apps_raw([])] == ["tsp"]
+        apps_raw = await get_apps_raw(["users"])
+        assert [app["id"] for app in apps_raw] == ["tsp"]
+        apps_raw = await get_apps_raw([])
+        assert [app["id"] for app in apps_raw] == ["tsp"]
 
-    def test_post_app(self, cleanup):
+    def test_post_app(self, client, cleanup):
         response = client.get("/api/apps/", auth=settings["VALID_AUTH_TUPLE"])
         assert response.json() == []
         assert response.headers["x-total"] == "0"
@@ -379,7 +389,7 @@ class TestApps:
         ]
         assert len(get_scen_metadata("transport")) == 1
 
-    def test_delete_app(self, cleanup):
+    def test_delete_app(self, client, cleanup):
         response = client.get("/api/apps/", auth=settings["VALID_AUTH_TUPLE"])
         assert response.json() == []
         response = client.post(
@@ -428,7 +438,7 @@ class TestApps:
         assert response.status_code == 200
         assert len(get_scen_metadata("transport")) == 0
 
-    def test_update_app(self, cleanup):
+    def test_update_app(self, client, cleanup):
         response = client.post(
             "/api/apps/",
             files={"app_data": open("tests/data/transport.miroapp", "rb")},

@@ -39,12 +39,14 @@ async def login(auth_request: AuthRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="GAMS MIRO Server is configured to use OpenID Connect. Use `/login/oidc` endpoint instead.",
         )
-    bearer_token = get_bearer_token(
+    bearer_token = await get_bearer_token(
         auth_request.username,
         auth_request.password,
         expires_in=settings.session_timeout,
     )
-    authenticated_user = get_authenticated_user(bearer_token, auth_request.username)
+    authenticated_user = await get_authenticated_user(
+        bearer_token, auth_request.username
+    )
     logger.info(
         "User: %s successfully logged in (is_admin: %s).",
         auth_request.username,
@@ -78,10 +80,10 @@ async def login_oidc(auth_request: OidcAuthRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="GAMS MIRO Server is not configured to use OpenID Connect. Use `/login` endpoint instead.",
         )
-    user_info = login_user_oidc(
+    user_info = await login_user_oidc(
         auth_request.id_token, expires_in=settings.session_timeout
     )
-    authenticated_user = get_authenticated_user(
+    authenticated_user = await get_authenticated_user(
         user_info.bearer_token, user_info.username
     )
     logger.info(

@@ -16,7 +16,11 @@ from .util import (
     reset_app_config_file,
 )
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture()
@@ -65,7 +69,7 @@ def cleanup():
 
 
 class TestEngine:
-    def test_login_invalid(self, cleanup):
+    def test_login_invalid(self, client, cleanup):
         response = client.post("/login/oidc", json={"id_token": "invalid"})
         print(response.json())
         assert response.status_code == 400
@@ -84,7 +88,7 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 422
 
-    def test_login_no_perm(self, cleanup):
+    def test_login_no_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 0)
         response = client.post(
             "/login",
@@ -115,7 +119,7 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 200
 
-    def test_login_with_perm(self, cleanup):
+    def test_login_with_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 1)
         response = client.post(
             "/login",
@@ -133,7 +137,7 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 200
 
-    def test_user_groups(self, cleanup):
+    def test_user_groups(self, client, cleanup):
         # groups with uppercase letters in labels should not be accepted by MIRO Server
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(

@@ -3,5 +3,5 @@ pydantic
 pydantic_settings
 fastapi[standard]
 PyYAML
-requests
+aiohttp
 python-multipart

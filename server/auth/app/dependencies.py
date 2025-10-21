@@ -1,43 +1,45 @@
+import asyncio
 import math
 
 from typing import Annotated, TypeVar
 from urllib.parse import urlencode, urlparse, parse_qs
 
-import requests
+import aiohttp
 from fastapi import Depends, HTTPException, Query, Request, Response, status, Path
 from fastapi.security import HTTPBearer, HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 
 from app.config import logger, settings
 from app.utils.app_utils import app_is_invisible
+from app.utils.utils import SingletonAiohttp
 from app.utils.models import User, OidcLoginData
 
 bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)
 
 
-def _send_token_request(
+async def _send_token_request(
     username: str,
     password: str,
     expires_in: int = 3600,
     scopes: list[str] | None = None,
-) -> requests.Response:
+) -> aiohttp.ClientResponse:
     data = {"expires_in": expires_in, "username": username, "password": password}
     if scopes:
         data["scope"] = " ".join(scopes)
     try:
-        return requests.post(
-            f"{settings.engine_url}/auth/login",
-            data=data,
-            timeout=settings.request_timeout,
-        )
-    except requests.exceptions.ConnectionError as exc:
-        logger.info("ConnectionError when requesting bearer token from GAMS Engine.")
+        async with SingletonAiohttp.get_aiohttp_client().post(
+            f"{settings.engine_url}/auth/login", data=data
+        ) as response:
+            await response.read()
+            return response
+    except aiohttp.ClientError as exc:
+        logger.info("ClientError when requesting bearer token from GAMS Engine.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting bearer token from GAMS Engine.",
             str(settings.request_timeout),
@@ -48,27 +50,25 @@ def _send_token_request(
         ) from exc
 
 
-def _send_id_token_request(
+async def _send_id_token_request(
     id_token: str, expires_in: int = 3600, scopes: list[str] | None = None
-) -> requests.Response:
+) -> aiohttp.ClientResponse:
     data = {"expires_in": expires_in, "id_token": id_token}
     if scopes:
         data["scope"] = " ".join(scopes)
     try:
-        return requests.post(
-            f"{settings.engine_url}/auth/oidc-providers/login",
-            data=data,
-            timeout=settings.request_timeout,
-        )
-    except requests.exceptions.ConnectionError as exc:
-        logger.info(
-            "ConnectionError when requesting bearer token from GAMS Engine (OIDC)."
-        )
+        async with SingletonAiohttp.get_aiohttp_client().post(
+            f"{settings.engine_url}/auth/oidc-providers/login", data=data
+        ) as response:
+            await response.read()
+            return response
+    except aiohttp.ClientError as exc:
+        logger.info("ClientError when requesting bearer token from GAMS Engine (OIDC).")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting bearer token from GAMS Engine (OIDC).",
             str(settings.request_timeout),
@@ -79,66 +79,75 @@ def _send_id_token_request(
         ) from exc
 
 
-def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> str:
-    response = _send_token_request(
+async def get_bearer_token(username: str, password: str, expires_in: int = 3600) -> str:
+    response = await _send_token_request(
         username,
         password,
         expires_in,
         scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE", "USERS"],
     )
-    if response.status_code == 400:
+    if response.status == 400:
         logger.info(
             "Received bad request when trying to request bearer token. Most likely old Engine version that does not have 'scope' parameter. Trying without scopes."
         )
-        response = _send_token_request(username, password, expires_in)
-    if response.status_code != 200:
+        response = await _send_token_request(username, password, expires_in)
+    if response.status != 200:
         logger.info(
             "Invalid return code (%s) when requesting token from GAMS Engine",
-            str(response.status_code),
+            str(response.status),
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return response.json()["token"]
+    json_response = await response.json()
+    return json_response["token"]
 
 
-def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
-    response = _send_id_token_request(
+async def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
+    response = await _send_id_token_request(
         id_token,
         expires_in,
         scopes=["JOBS", "HYPERCUBE", "NAMESPACES", "USAGE", "USERS"],
     )
-    if response.status_code != 200:
+    if response.status != 200:
         logger.info(
             "Invalid return code (%s) when requesting token from GAMS Engine (OIDC)",
-            str(response.status_code),
+            str(response.status),
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Basic"},
         )
-
-    bearer_token = response.json()["token"]
+    json_response = await response.json()
+    bearer_token = json_response["token"]
     auth_header = "Bearer " + bearer_token
+    user_info = None
 
     try:
-        response = requests.get(
+        async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/users/?everyone=false",
             headers={"Authorization": auth_header, "X-Fields": "username,roles"},
-            timeout=settings.request_timeout,
-        )
-    except requests.exceptions.ConnectionError as exc:
-        logger.info(
-            "ConnectionError when requesting user details from GAMS Engine (OIDC)."
-        )
+        ) as user_response:
+            if user_response.status != 200:
+                logger.info(
+                    "Invalid return code (%s) when requesting user details from GAMS Engine (OIDC)",
+                    str(user_response.status),
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error",
+                )
+            user_info = await user_response.json()
+    except aiohttp.ClientError as exc:
+        logger.info("ClientError when requesting user details from GAMS Engine (OIDC).")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting user details from GAMS Engine (OIDC).",
             str(settings.request_timeout),
@@ -147,17 +156,8 @@ def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    if response.status_code != 200:
-        logger.info(
-            "Invalid return code (%s) when requesting user details from GAMS Engine (OIDC)",
-            str(response.status_code),
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        )
-    user_info = response.json()
-    if len(user_info) != 1:
+
+    if len(user_info) != 1 or user_info[0]["deleted"]:
         logger.info(
             "GAMS Engine did not return exactly one user when requesting user details (OIDC)."
         )
@@ -168,23 +168,34 @@ def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginData:
     return OidcLoginData(username=user_info[0]["username"], bearer_token=bearer_token)
 
 
-def get_username_bearer(bearer_token: str) -> str:
+async def get_username_bearer(bearer_token: str) -> str:
     try:
         auth_header = "Bearer " + bearer_token
-        response = requests.get(
+        user_info = None
+        async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/users/?everyone=false",
             headers={"Authorization": auth_header},
-            timeout=settings.request_timeout,
-        )
-    except requests.exceptions.ConnectionError as exc:
+        ) as user_response:
+            if user_response.status != 200:
+                logger.info(
+                    "Invalid return code (%s) when requesting user data from GAMS Engine",
+                    str(user_response.status),
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Could not validate credentials",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            user_info = await user_response.json()
+    except aiohttp.ClientError as exc:
         logger.info(
-            "ConnectionError when requesting username of bearer token from GAMS Engine."
+            "ClientError when requesting username of bearer token from GAMS Engine."
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting username of bearer token from GAMS Engine.",
             str(settings.request_timeout),
@@ -193,17 +204,7 @@ def get_username_bearer(bearer_token: str) -> str:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    if response.status_code != 200:
-        logger.info(
-            "Invalid return code (%s) when requesting user data from GAMS Engine",
-            str(response.status_code),
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    if len(response.json()) != 1 or response.json()[0]["deleted"]:
+    if len(user_info) != 1 or user_info[0]["deleted"]:
         logger.info(
             "Could not get user info when requesting user data from GAMS Engine"
         )
@@ -212,26 +213,27 @@ def get_username_bearer(bearer_token: str) -> str:
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return response.json()[0]["username"]
+    return user_info[0]["username"]
 
 
-def get_user_groups(auth_header: str, is_admin: bool) -> list[str]:
+async def get_user_groups(auth_header: str, is_admin: bool) -> list[str]:
     try:
-        response = requests.get(
+        async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/user-groups",
             headers={"Authorization": auth_header},
             timeout=settings.request_timeout,
-        )
-        if response.status_code != 200:
-            logger.info(
-                "Invalid return code (%s) when requesting user groups for namespace: %s",
-                str(response.status_code),
-                settings.engine_ns,
-            )
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=response.json()["message"],
-            )
+        ) as group_response:
+            group_response_data = await group_response.json()
+            if group_response.status != 200:
+                logger.info(
+                    "Invalid return code (%s) when requesting user groups for namespace: %s",
+                    str(group_response.status),
+                    settings.engine_ns,
+                )
+                raise HTTPException(
+                    status_code=group_response.status,
+                    detail=group_response_data["message"],
+                )
 
         # MIRO Server doesn't support group labels with uppercase letters
         # because Shinyproxy converts group labels to uppercase before
@@ -240,7 +242,7 @@ def get_user_groups(auth_header: str, is_admin: bool) -> list[str]:
         # Shinyproxy.
         user_groups = [
             x["label"]
-            for x in response.json()
+            for x in group_response_data
             if x["label"].lower() == x["label"]
             and x["label"] not in ["admins", "users"]
         ]
@@ -249,16 +251,17 @@ def get_user_groups(auth_header: str, is_admin: bool) -> list[str]:
 
         if is_admin:
             user_groups.append("admins")
-    except requests.exceptions.ConnectionError as exc:
+        return user_groups
+    except aiohttp.ClientError as exc:
         logger.info(
-            "ConnectionError when requesting user groups for namespace: %s.",
+            "ClientError when requesting user groups for namespace: %s.",
             settings.engine_ns,
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting user groups for namespace: %s.",
             str(settings.request_timeout),
@@ -279,21 +282,20 @@ def get_user_groups(auth_header: str, is_admin: bool) -> list[str]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    return user_groups
 
 
-def get_authenticated_user(bearer_token: str, username: str) -> User:
+async def get_authenticated_user(bearer_token: str, username: str) -> User:
     try:
         auth_header = "Bearer " + bearer_token
         namespace_permissions = 0
-        response = requests.get(
+        async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
             params={"username": username},
             headers={"Authorization": auth_header},
-            timeout=settings.request_timeout,
-        )
-        if response.status_code == 200:
-            namespace_permissions = response.json()["permission"]
+        ) as permission_response:
+            if permission_response.status == 200:
+                permission_response_data = await permission_response.json()
+                namespace_permissions = permission_response_data["permission"]
 
         if namespace_permissions == 0:
             logger.info(
@@ -302,23 +304,23 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
                 settings.engine_ns,
             )
             # if user can see models in namespace, she is still authenticated
-            response = requests.get(
+            async with SingletonAiohttp.get_aiohttp_client().get(
                 f"{settings.engine_url}/namespaces/{settings.engine_ns}",
                 headers={"X-Fields": "name", "Authorization": auth_header},
                 timeout=settings.request_timeout,
-            )
-            if response.status_code != 200:
-                logger.info(
-                    "Invalid return code (%s) when requesting models in namespace: %s",
-                    str(response.status_code),
-                    settings.engine_ns,
-                )
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Could not validate credentials",
-                    headers={"WWW-Authenticate": "Basic"},
-                )
-            models = response.json()
+            ) as model_response:
+                if model_response.status != 200:
+                    logger.info(
+                        "Invalid return code (%s) when requesting models in namespace: %s",
+                        str(model_response.status),
+                        settings.engine_ns,
+                    )
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Could not validate credentials",
+                        headers={"WWW-Authenticate": "Basic"},
+                    )
+                models = await model_response.json()
             if not models:
                 logger.info(
                     "User '%s' can not see any models in namespace: %s. Unauthorized!",
@@ -341,20 +343,20 @@ def get_authenticated_user(bearer_token: str, username: str) -> User:
             auth_header=auth_header,
             permissions=namespace_permissions,
             is_admin=is_admin,
-            groups=get_user_groups(auth_header, is_admin=is_admin),
+            groups=await get_user_groups(auth_header, is_admin=is_admin),
         )
     except HTTPException as exc:
         raise exc
-    except requests.exceptions.ConnectionError as exc:
+    except aiohttp.ClientError as exc:
         logger.info(
-            "ConnectionError when requesting permissions for namespace: %s.",
+            "ClientError when requesting permissions for namespace: %s.",
             settings.engine_ns,
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting permissions for namespace: %s.",
             str(settings.request_timeout),
@@ -391,15 +393,17 @@ async def get_current_user(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='No unique authentication method: Make sure you provide only a single "Authorization" header.',
             )
-        bearer_token = get_bearer_token(
+        bearer_token = await get_bearer_token(
             credentials_basic.username, credentials_basic.password
         )
         username = credentials_basic.username
     else:
         bearer_token = credentials_bearer.credentials
-        username = get_username_bearer(bearer_token)
+        username = await get_username_bearer(bearer_token)
 
-    return get_authenticated_user(bearer_token, username)
+    authenticated_user = await get_authenticated_user(bearer_token, username)
+
+    return authenticated_user
 
 
 async def get_current_app_user(
@@ -411,7 +415,8 @@ async def get_current_app_user(
     ),
 ) -> User:
     current_user = await get_current_user(credentials_basic, credentials_bearer)
-    if app_is_invisible(current_user.groups, app_id):
+    app_invisible = await app_is_invisible(current_user.groups, app_id)
+    if app_invisible:
         logger.info("%s is not visible", app_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -439,21 +444,22 @@ async def get_current_admin_user(
                     detail='No unique authentication method: Make sure you provide only a single "Authorization" header.',
                 )
             username = credentials_basic.username
-            auth_header = "Bearer " + get_bearer_token(
+            bearer_token = await get_bearer_token(
                 credentials_basic.username, credentials_basic.password
             )
+            auth_header = "Bearer " + bearer_token
         else:
             auth_header = "Bearer " + credentials_bearer.credentials
-            username = get_username_bearer(credentials_bearer.credentials)
+            username = await get_username_bearer(credentials_bearer.credentials)
 
-        response = requests.get(
+        async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
             params={"username": username},
             headers={"Authorization": auth_header},
-            timeout=settings.request_timeout,
-        )
-        if response.status_code == 200:
-            namespace_permissions = response.json()["permission"]
+        ) as permissions_response:
+            if permissions_response.status == 200:
+                permissions_response_data = await permissions_response.json()
+                namespace_permissions = permissions_response_data["permission"]
 
         is_admin = namespace_permissions == 7
         if not is_admin:
@@ -466,13 +472,13 @@ async def get_current_admin_user(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Unauthorized access",
             )
-    except requests.exceptions.ConnectionError as exc:
-        logger.info("ConnectionError when requesting user info from GAMS Engine.")
+    except aiohttp.ClientError as exc:
+        logger.info("ClientError when requesting user info from GAMS Engine.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from exc
-    except requests.exceptions.Timeout as exc:
+    except asyncio.TimeoutError as exc:
         logger.info(
             "Timeout (%s) when requesting user info from GAMS Engine.",
             str(settings.request_timeout),
@@ -494,7 +500,7 @@ async def get_current_admin_user(
         auth_header=auth_header,
         permissions=namespace_permissions,
         is_admin=is_admin,
-        groups=get_user_groups(auth_header, is_admin),
+        groups=await get_user_groups(auth_header, is_admin),
     )
 
 

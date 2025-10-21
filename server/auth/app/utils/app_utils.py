@@ -9,12 +9,12 @@ from pydantic import TypeAdapter, ValidationError
 from starlette import status
 
 from app.config import logger, settings
-from app.utils.miro_proc import run_miro_proc
+from app.utils.miro_proc import run_miro_proc_async
 from app.utils.models import AppConfigInput, AppConfigOutput, AppEnvironment, User
 
 
-def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
-    stderr = run_miro_proc(user_info, "listApps.R")
+async def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
+    stderr = await run_miro_proc_async(user_info, "listApps.R")
     json_start_pos = stderr.find("merr:::200:::")
     if json_start_pos == -1:
         logger.warning("Invalid stderr received from R process: %s", stderr[:3000])
@@ -37,10 +37,11 @@ def get_apps_internal(user_info: User) -> list[AppConfigOutput]:
         ) from exc
 
 
-def get_apps_raw(user_groups: list[str] = None) -> list[AppConfigOutput]:
+async def get_apps_raw(user_groups: list[str] = None) -> list[AppConfigOutput]:
     apps = []
-    with open(settings.specs_yaml_path, "r", encoding="utf-8") as f_apps:
-        apps = yaml.load(f_apps, Loader=yaml.CSafeLoader)["specs"]
+    async with aiofiles.open(settings.specs_yaml_path, "r", encoding="utf-8") as f_apps:
+        content = await f_apps.read()
+        apps = yaml.load(content, Loader=yaml.CSafeLoader)["specs"]
 
     user_groups_lowercase = [user_group.lower() for user_group in user_groups]
     visible_apps = []
@@ -70,8 +71,9 @@ def get_apps_raw(user_groups: list[str] = None) -> list[AppConfigOutput]:
     return visible_apps
 
 
-def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
-    return app_id not in [app["id"] for app in get_apps_raw(user_groups=user_groups)]
+async def app_is_invisible(user_groups: list[str], app_id: str) -> bool:
+    apps_raw = await get_apps_raw(user_groups=user_groups)
+    return app_id not in [app["id"] for app in apps_raw]
 
 
 async def add_or_update_app(
@@ -109,11 +111,11 @@ async def add_or_update_app(
                 "update": update,
             }
         ).encode()
-        run_miro_proc(user_info, "addApp.R", proc_input=proc_input)
+        await run_miro_proc_async(user_info, "addApp.R", proc_input=proc_input)
 
 
 async def delete_app_internal(
     user_info: User, app_id: str, delete_data: bool = False
 ) -> None:
     proc_input = json.dumps({"id": app_id, "deleteData": delete_data}).encode()
-    run_miro_proc(user_info, "deleteApp.R", proc_input=proc_input)
+    await run_miro_proc_async(user_info, "deleteApp.R", proc_input=proc_input)

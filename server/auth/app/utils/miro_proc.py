@@ -1,3 +1,4 @@
+import asyncio
 import os
 import subprocess
 from typing import Dict
@@ -30,34 +31,39 @@ def get_miro_proc_env(user_info: User) -> Dict[str, str]:
     return proc_env
 
 
-def run_miro_proc(
+async def run_miro_proc_async(
     user_info: User,
     script_name: str,
     proc_input: bytes = b"",
     cwd: str = settings.admin_app_dir,
 ) -> str:
     proc_env = get_miro_proc_env(user_info)
-    proc_out = subprocess.run(
-        [
-            "R",
-            "--no-echo",
-            "--no-save",
-            "--no-restore",
-            "--no-site-file",
-            "--no-init-file",
-            "-f",
-            os.path.join(settings.admin_app_dir, "scripts", script_name),
-        ],
-        capture_output=True,
-        input=proc_input,
+    command = [
+        "R",
+        "--no-echo",
+        "--no-save",
+        "--no-restore",
+        "--no-site-file",
+        "--no-init-file",
+        "-f",
+        os.path.join(settings.admin_app_dir, "scripts", script_name),
+    ]
+    proc = await asyncio.create_subprocess_exec(
+        *command,
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
         cwd=cwd,
         env=proc_env,
-        check=False,
     )
-    logger.info(
-        "Stdout of %s subprocess: %s", script_name, proc_out.stdout.decode()[:3000]
-    )
-    for line in proc_out.stderr.decode().split("\n"):
+    stdout_bytes, stderr_bytes = await proc.communicate(input=proc_input)
+    stdout_decoded = stdout_bytes.decode()
+    stderr_decoded = stderr_bytes.decode()
+
+    logger.info("Stdout of %s subprocess: %s", script_name, stdout_decoded[:3000])
+    for line in stderr_decoded.split("\n"):
+        if not line:
+            continue
         err = line.split(":::")
         if err[0] == "merr":
             err_details = "Internal error"
@@ -65,22 +71,14 @@ def run_miro_proc(
             try:
                 err_details = str(err[2])
                 err_code = int(err[1])
-            except ValueError:
-                logger.warning(
-                    "Invalid error message received from %s subprocess: %s",
-                    script_name,
-                    line,
-                )
-            except IndexError:
+            except (ValueError, IndexError):
                 logger.warning(
                     "Invalid error message received from %s subprocess: %s",
                     script_name,
                     line,
                 )
             if err_code == 500:
-                logger.info(
-                    "Stderr of %s subprocess: %s", script_name, proc_out.stderr.decode()
-                )
+                logger.info("Stderr of %s subprocess: %s", script_name, stderr_decoded)
             if err_code >= 500:
                 logger.info(
                     "Internal error when running MIRO subprocess. Details: %s",
@@ -92,15 +90,15 @@ def run_miro_proc(
                 )
             if err_code >= 300:
                 raise HTTPException(status_code=err_code, detail=err_details)
-    if proc_out.returncode != 0:
+    if proc.returncode != 0:
         logger.warning(
             "Problems running %s subprocess. Stderr: %s",
             script_name,
-            proc_out.stderr.decode()[:3000],
+            stderr_decoded[:3000],
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error",
         )
 
-    return proc_out.stderr.decode()
+    return stderr_decoded

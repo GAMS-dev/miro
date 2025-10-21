@@ -2,9 +2,11 @@ FROM --platform=linux/amd64 miro-auth
 
 RUN python -m pip install --no-cache-dir \
     pytest \
+    requests \
     httpx \
     psycopg2-binary \
-    pytest-cov
+    pytest-cov \
+    pytest-asyncio
 
 USER miro
 

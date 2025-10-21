@@ -1,10 +1,20 @@
+import contextlib
+
 from fastapi import FastAPI
 
 from app.config import logger, settings, settings_yml
 from app.routers import login, apps, scenarios, configuration, health
-from app.utils.utils import use_route_names_as_operation_ids
+from app.utils.utils import SingletonAiohttp, use_route_names_as_operation_ids
 
-app = FastAPI()
+
+@contextlib.asynccontextmanager
+async def lifespan(app):
+    SingletonAiohttp.get_aiohttp_client()
+    yield
+    await SingletonAiohttp.close_aiohttp_client()
+
+
+app = FastAPI(lifespan=lifespan)
 
 public_api = FastAPI(
     title="MIRO Server API",

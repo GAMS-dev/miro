@@ -17,7 +17,11 @@ from .util import (
     reset_app_config_file,
 )
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture()
@@ -78,7 +82,7 @@ def create_mock_login(username, password):
 
 class TestOidc:
     @patch("requests.post")
-    def test_login_invalid(self, mock_login, cleanup):
+    def test_login_invalid(self, mock_login, client, cleanup):
         mock_response = MagicMock()
         mock_response.json.token = "Unauthorized"
         mock_response.status_code = 401
@@ -107,7 +111,7 @@ class TestOidc:
         print(response.json())
         assert response.status_code == 422
 
-    def test_login_no_perm(self, cleanup):
+    def test_login_no_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 0)
 
         with patch(
@@ -142,7 +146,7 @@ class TestOidc:
         print(response.json())
         assert response.status_code == 200
 
-    def test_login_with_perm(self, cleanup):
+    def test_login_with_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 1)
 
         with patch(
@@ -162,7 +166,7 @@ class TestOidc:
         print(response.json())
         assert response.status_code == 200
 
-    def test_user_groups(self, cleanup):
+    def test_user_groups(self, client, cleanup):
         # groups with uppercase letters in labels should not be accepted by MIRO Server
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(
