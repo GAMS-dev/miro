@@ -114,6 +114,7 @@ proxy:
       apiUrl: ''
       namespace: ''
       anonymousUser: '' # only relevant if authentication is none
+      anonymousAdminUser: '' # only relevant if authentication is none
       # NOTE: secrets.engineAnonymousPassword must be provided if anonymousUser is set!
     metrics:
       enabled: false

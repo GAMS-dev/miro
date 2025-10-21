@@ -76,6 +76,7 @@ data:
         host: {{ .Values.proxy.config.engine.apiUrl | quote }}
         ns: {{ .Values.proxy.config.engine.namespace | quote }}
         anonymous-user: {{ .Values.proxy.config.engine.anonymousUser | quote }}
+        anonymous-admin-user: {{ .Values.proxy.config.engine.anonymousAdminUser | quote }}
       docker:
         container-network: ""
         miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}

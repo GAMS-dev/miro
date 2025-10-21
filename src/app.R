@@ -135,8 +135,9 @@ if (is.null(errMsg)) {
     if (identical(length(ugroups), 0L)) {
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
-    if (!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") &&
-      any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))) {
+    if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) {
+      ugroups <<- defaultGroup
+    } else if (any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))) {
       errMsg <- paste(errMsg,
         "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- may contain only a-z A-Z 0-9 _",
         sep = "\n"
@@ -1285,7 +1286,7 @@ if (!is.null(errMsg)) {
 
   shinyApp(ui = ui_initError, server = server_initError)
 } else {
-  uidAdmin <<- if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
+  uidAdmin <<- if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) Sys.getenv("SHINYPROXY_NOAUTH_ADMIN_NAME", "admin") else uid
   if (isShinyProxy && miroStoreDataOnly) {
     if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
       source("./tools/api/util.R")
