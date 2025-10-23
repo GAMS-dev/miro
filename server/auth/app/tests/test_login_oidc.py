@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import pytest
@@ -15,6 +16,7 @@ from .util import (
     invite_user,
     delete_user,
     reset_app_config_file,
+    MockResponse,
 )
 
 
@@ -70,24 +72,16 @@ def cleanup():
 
 
 def create_mock_login(username, password):
-    mock_response = MagicMock()
     r = requests.post(
         f"{settings['ENGINE_URL']}/auth/login",
         data={"expires_in": 100, "username": username, "password": password},
     )
-    mock_response.json = lambda: {"token": r.json()["token"]}
-    mock_response.status_code = 200
+    mock_response = MockResponse(json.dumps({"token": r.json()["token"]}), 200)
     return mock_response
 
 
 class TestOidc:
-    @patch("requests.post")
-    def test_login_invalid(self, mock_login, client, cleanup):
-        mock_response = MagicMock()
-        mock_response.json.token = "Unauthorized"
-        mock_response.status_code = 401
-        mock_login.return_value = mock_response
-
+    def test_login_invalid(self, client, cleanup):
         response = client.post(
             "/login",
             json={
@@ -115,7 +109,7 @@ class TestOidc:
         invite_user("mirotests_auth_1", 0)
 
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login("mirotests_auth_1", "mirotests_auth_11234"),
         ):
             response = client.post("/login/oidc", json={"id_token": "valid"})
@@ -130,7 +124,7 @@ class TestOidc:
         assert response.status_code == 201
         # user without permissions but member of group should get access only if models exist
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login("mirotests_auth_1", "mirotests_auth_11234"),
         ):
             response = client.post("/login/oidc", json={"id_token": "valid"})
@@ -139,7 +133,7 @@ class TestOidc:
 
         register_transport(client, ["mygroup"])
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login("mirotests_auth_1", "mirotests_auth_11234"),
         ):
             response = client.post("/login/oidc", json={"id_token": "valid"})
@@ -150,14 +144,14 @@ class TestOidc:
         invite_user("mirotests_auth_1", 1)
 
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login("mirotests_auth_1", "mirotests_auth_11234"),
         ):
             response = client.post("/login/oidc", json={"id_token": "valid"})
         print(response.json())
         assert response.status_code == 200
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login(
                 settings["ENGINE_USER"], settings["ENGINE_PASSWORD"]
             ),
@@ -177,7 +171,7 @@ class TestOidc:
         assert response.status_code == 201
 
         with patch(
-            "requests.post",
+            "aiohttp.ClientSession.post",
             return_value=create_mock_login("mirotests_auth_1", "mirotests_auth_11234"),
         ):
             response = client.post("/login/oidc", json={"id_token": "valid"})

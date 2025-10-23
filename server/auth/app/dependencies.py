@@ -129,7 +129,10 @@ async def login_user_oidc(id_token: str, expires_in: int = 3600) -> OidcLoginDat
     try:
         async with SingletonAiohttp.get_aiohttp_client().get(
             f"{settings.engine_url}/users/?everyone=false",
-            headers={"Authorization": auth_header, "X-Fields": "username,roles"},
+            headers={
+                "Authorization": auth_header,
+                "X-Fields": "username,roles,deleted",
+            },
         ) as user_response:
             if user_response.status != 200:
                 logger.info(
