@@ -158,7 +158,7 @@ async def update_app(
     except ValidationError as exc:
         logger.warning("Invalid AppEnvironment: %s", str(exc))
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=exc.errors(),
         ) from exc
 
@@ -261,7 +261,7 @@ async def add_app(
     except ValidationError as exc:
         logger.warning("Invalid AppEnvironment: %s", str(exc))
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=exc.errors(),
         ) from exc
 
