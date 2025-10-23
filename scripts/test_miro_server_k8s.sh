@@ -92,9 +92,8 @@ EOF
           pushd miro_server > /dev/null
             pushd gams-miro-server > /dev/null
                 helm dep up
-                mkdir custom
-              cp "${PWD}/../../tests/data/gams_logo.png" custom
             popd > /dev/null
+            logo_b64=$(base64 -i "${PWD}/../tests/data/gams_logo.png")
             helm install test gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
@@ -110,8 +109,7 @@ EOF
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
                 --set proxy.config.engine.namespace=${ENGINE_NS} \
                 --set proxy.config.forceSignedApps.enabled=true \
-                --set proxy.config.logo.enabled=true \
-                --set proxy.config.logo.path="custom/gams_logo.png" \
+                --set proxy.config.logo="$logo_b64" \
                 --set proxy.config.security.secureCookies=false \
                 --set-file 'proxy.config.forceSignedApps.acceptedPublicKeysPEM[0]'="${PWD}/../tests/data/signing_key_pub.pem"
           popd > /dev/null
