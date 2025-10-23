@@ -15,13 +15,8 @@ const plugins = [
   new ESLintPlugin({
     fix: true
   })]
-module.exports = (env, argv) => ({
-    entry: argv.mode === 'development' ? {
-      default_browser: './less/skins/default/browser.js',
-      miro: ['./srcjs/miro.js'],
-      '../../server/proxy/templates/2col/assets/css/styles': '../server/proxy/less/themes/default/styles.js',
-      miro_admin: ['./srcjs/miro_admin.js']
-    } : {
+module.exports = () => ({
+    entry: {
       default_browser: './less/skins/default/browser.js',
       default_light: './less/skins/default/light.js',
       default_dark: './less/skins/default/dark.js',

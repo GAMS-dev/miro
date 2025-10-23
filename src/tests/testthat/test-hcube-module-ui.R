@@ -32,7 +32,7 @@ test_that(
       volumeQuota = 68L
     )
 
-    modelToTest <- "pickstock_configuration"
+    modelToTest <- "pickstock_hcube"
     testModelDir <- file.path(testDir, "model", modelToTest)
     modelDataPath <- file.path(testModelDir, paste0("data_", modelToTest))
     configJSONFileName <- file.path(

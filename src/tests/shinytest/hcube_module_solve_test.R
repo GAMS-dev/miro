@@ -249,7 +249,7 @@ expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().startsWi
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)
 
-conn <- connectDb(modelName = "pickstock_configuration")
+conn <- connectDb(modelName = "pickstock_hcube")
 tryCatch(
   {
     # discarding job should also clean up scen data

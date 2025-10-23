@@ -153,7 +153,7 @@ Sys.sleep(2L)
 app$set_inputs(btSave = "click")
 Sys.sleep(2L)
 
-conn <- connectDb(modelName = "pickstock_configuration")
+conn <- connectDb(modelName = "pickstock_hcube")
 tryCatch(
   {
     # check that HC job data of second job was removed as all scenarios of that job were saved

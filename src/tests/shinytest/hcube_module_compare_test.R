@@ -52,17 +52,14 @@ app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$run_js("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(3L)
-expect_true(app$get_js(paste0(
-  "$('#cmpScenTitle_5').text().startsWith('HC (",
-  substr(scenHashTmp, 1, 8), "...)');"
-), timeout = 50L))
+expect_equal(app$get_js("$('#cmpScenTitle_5').text()"), paste0("HC (", substr(scenHashTmp, 1, 8), "...)"))
 graphData <- jsonlite::fromJSON(app$get_values()$output[["tab_5_3-graph"]], simplifyDataFrame = FALSE)$x$data
 expect_identical(length(graphData), 756L)
 expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899", "101.703327363261"))
-app$set_inputs(contentScen_5 = "contentScen_5_11")
+app$set_inputs(contentScen_5 = "contentScen_5_9")
 Sys.sleep(0.5)
-expect_true(app$get_js("$('.small-box:visible')[0].textContent.trim().startsWith('6');", timeout = 1000L))
-expect_true(app$get_js("$('.small-box:visible')[1].textContent.trim().startsWith('99');", timeout = 1000L))
+expect_true(startsWith(app$get_js("$('.small-box:visible')[0].textContent.trim()"), "6"))
+expect_true(startsWith(app$get_js("$('.small-box:visible')[1].textContent.trim()"), "99"))
 
 # Download HC and normal scenario while remapping scenario names
 app$click(selector = "#sidebarItemExpanded a[data-value='loadResults']")
@@ -73,7 +70,7 @@ Sys.sleep(2L)
 app$set_inputs(batchCompareNameCols = c("_gmsopt_lsttitleleftaligned", "maxstock"))
 multiDimSym <- c(
   "stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule",
-  "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft",
+  "mapnogroup", "pressurethickness", "hovercraft",
   "price", "maptest"
 )
 scalarSym <- c(
@@ -90,10 +87,10 @@ Sys.sleep(0.5)
 app$set_inputs(batchLoadResults_rows_selected = scenToCompare, allow_no_input_binding_ = TRUE)
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
-expect_true(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')===false"))
+expect_false(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')"))
 app$set_inputs(batchCompareNameCols = c("maxstock", "_gmsopt_lsttitleleftaligned"))
 Sys.sleep(0.5)
-expect_true(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')===true"))
+expect_true(app$get_js("$('#prefixBatchCompareNameCols').is(':visible')"))
 app$set_inputs(prefixBatchCompareNameCols = "blabla123_")
 app$run_js("$('#btBatchDownloadGDX+.dropdown-toggle').click()", timeout = 50L)
 Sys.sleep(0.5)
@@ -115,7 +112,7 @@ app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 multiDimSym <- c(
   "stock_weight", "dowvsindex", "abserror", "pricemerge", "schedule",
-  "mapnogroup", "gantt", "repc", "pressurethickness", "hovercraft",
+  "mapnogroup", "pressurethickness", "hovercraft",
   "price", "maptest"
 )
 scalarSym <- c(
@@ -168,13 +165,10 @@ Sys.sleep(2L)
 app$click(selector = "#sidebarItemExpanded a[data-value='scenarios']")
 app$run_js("$('#refreshSandbox_5 button').click()", timeout = 50L)
 Sys.sleep(2L)
-expect_true(app$get_js(paste0(
-  "$('#cmpScenTitle_5').text()==='",
-  scenHashTmp, "';"
-), timeout = 2000L))
-expect_true(app$get_js("$('.small-box:visible')[0].textContent.trim().startsWith('12');", timeout = 50L))
-expect_true(app$get_js("$('.small-box:visible')[1].textContent.trim().startsWith('99');", timeout = 50))
+expect_equal(app$get_js("$('#cmpScenTitle_5').text()"), scenHashTmp)
+expect_true(startsWith(app$get_js("$('.small-box:visible')[0].textContent.trim()"), "12"))
+expect_true(startsWith(app$get_js("$('.small-box:visible')[1].textContent.trim()"), "99"))
 app$set_inputs(contentScen_5 = "contentScen_5_1")
-expect_true(app$get_js("$('#tab_5_3-noData').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#tab_5_3-noData').is(':visible');"))
 
 app$stop()
