@@ -298,7 +298,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 currentConfig[setdiff(names(currentConfig), c("pivotRenderer", "decimals"))],
                 dataViewsConfig[[view]][setdiff(names(dataViewsConfig[[view]]), c("pivotRenderer", "decimals"))]
               )) {
-              dashboardChartData[[view]] <- preparedData
+              dashboardChartData[[view]] <- preparedData$data
+              filterWarnings[[view]] <- preparedData$warnings
               next
             }
 
@@ -330,13 +331,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             rawData[[view]] <- viewData
             preparedData <- dashboardPrepareData(currentConfig, viewData)
-            if (!is_tibble(preparedData) && length(preparedData$noDataWarning)) {
-              dashboardChartData[[view]] <- preparedData$data
-              filterWarnings[[view]] <- preparedData$noDataWarning
-            } else {
-              filterWarnings[[view]] <- ""
-              dashboardChartData[[view]] <- preparedData
-            }
+            dashboardChartData[[view]] <- preparedData$data
+            filterWarnings[[view]] <- preparedData$warnings
 
             userFilter <- dataViewsConfig[[view]]$userFilter
             if (length(userFilter)) {
@@ -1099,21 +1095,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
 
             return(chartJsObj)
-          })
-
-          # invalid filter in view
-          output[[paste0(indicator, "Info")]] <- renderUI({
-            textToRender <- filterWarnings[[indicator]]
-            if (is.null(textToRender) || !nchar(textToRender)) {
-              tagList()
-            } else {
-              tagList(
-                tags$div(
-                  class = "viewinfo",
-                  textToRender
-                )
-              )
-            }
           })
 
           # download csv data

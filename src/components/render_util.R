@@ -139,11 +139,11 @@ dashboardPrepareData <- function(config, viewData) {
     if (!any(filterVal %in% filterElements[[filterIndex]])) {
       if (length(filterVal)) {
         invalidFilters <- filterVal[!is.na(filterVal) & !(filterVal %in% filterElements[[filterIndex]])]
-        flog.info(paste0(
+        flog.debug(paste0(
           "Dashboard: Some filters could not be applied because the values are not present in the data: ",
           paste(invalidFilters, collapse = ", ")
         ))
-        return(list(data = dataTmp[0, ], noDataWarning = lang$renderers$dashboard$noDataWarning))
+        return(list(data = dataTmp[0, ], warnings = lang$renderers$dashboard$noDataWarning))
       }
       if (filterIndex %in% c(aggFilterIndexList, colFilterIndexList)) {
         # nothing selected = no filter for aggregations/cols
@@ -428,7 +428,7 @@ dashboardPrepareData <- function(config, viewData) {
   for (filterName in names(userFilterData)) {
     attr(dataTmp, paste0("userFilterData_", filterName)) <- userFilterData[[filterName]]
   }
-  return(dataTmp)
+  return(list(data = dataTmp, warnings = NULL))
 }
 dashboardHeatmapColors <- function(symbolData, noRowHeaders, heatmaptype = 1L) {
   if (heatmaptype == 1L) {
@@ -609,6 +609,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
 
       if (is.list(dataViewsConfig[[id]])) {
         uf <- dataViewsConfig[[id]]$userFilter
+        filterWarning <- filterWarnings[[id]]
         filterInputs <- list()
         inlineClass <- "one-inline"
         if (length(uf)) {
@@ -651,8 +652,11 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
           },
           tags$div(
             style = "overflow:auto;",
-            if (!(is.null(filterWarnings[[id]]) || !nchar(filterWarnings[[id]]))) {
-              uiOutput(ns(paste0(id, "Info")))
+            if (!(is.null(filterWarning) || !nchar(filterWarning))) {
+              tags$div(
+                class = "out-no-data",
+                filterWarning
+              )
             } else {
               tagList(
                 tags$div(
