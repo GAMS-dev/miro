@@ -42,7 +42,7 @@ expect_identical(configuration$data$datasets[[1]]$stack, "stack1")
 expect_identical(configuration$data$datasets[[2]]$stack, "stack2")
 
 # switch data view
-expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-invalidFilterInfo').is(':visible')")))
+expect_true(app$get_js(paste0("$(\"#tab_1_3-", rendererName, "-invalidFilter_wrapper .out-no-data:visible:contains('No data')\").length > 0")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-dowVSindexChart').is(':visible')")))
 expect_true(app$get_js(paste0("$('#tab_1_3-", rendererName, "-abserrorTable').is(':visible')")))
 expect_identical(unname(app$get_js(paste0("$('#tab_1_3-", rendererName, "-stockWeightChart')"))), list())

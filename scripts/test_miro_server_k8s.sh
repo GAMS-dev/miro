@@ -93,7 +93,7 @@ EOF
             pushd gams-miro-server > /dev/null
                 helm dep up
             popd > /dev/null
-            logo_b64=$(base64 -i "${PWD}/../tests/data/gams_logo.png")
+            logo_b64=$(base64 -i -w 0 "${PWD}/../tests/data/gams_logo.png")
             helm install test gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
