@@ -3291,6 +3291,17 @@
           },
           "minProperties": 3
         },
+        "dashboard": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "noDataWarning": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
+        },
         "dashboardComparison": {
           "type": "object",
           "additionalProperties": false,
@@ -3303,7 +3314,7 @@
           "minProperties": 1
         }
       },
-      "minProperties": 5
+      "minProperties": 6
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

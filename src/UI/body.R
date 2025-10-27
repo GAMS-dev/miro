@@ -531,9 +531,9 @@ if (buildUI) {
             tags$div(
               style = "margin: 10px;",
               tags$button(
-                class = "btn btn-default action-button btn-switch-sidebar",
+                class = "btn btn-default action-button",
                 type = "button",
-                "data-target" = "loadResults",
+                onclick = "Shiny.setInputValue('btLoadScen',1,{priority: 'event'})",
                 lang$nav$scen$btLoad
               )
             )

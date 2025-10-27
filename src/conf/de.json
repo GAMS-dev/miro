@@ -884,6 +884,9 @@
         "prompt2": "entfernen möchten? Dies kann nicht rückgängig gemacht werden!"
       }
     },
+    "dashboard":{
+      "noDataWarning":"Keine Daten"
+    },
     "dashboardComparison":{
       "selectScen": "Wähle Szenario"
     }

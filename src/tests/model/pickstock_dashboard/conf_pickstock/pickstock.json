@@ -256,11 +256,13 @@
             "error_train",
             "error_ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            "testlonglabel"
           ],
           "color": [
             "#848991",
             "#ffb327",
+            "#29B675",
             "#29B675",
             "#29B675",
             "#29B675"
@@ -270,6 +272,7 @@
             "plug-circle-bolt",
             "truck",
             "truck",
+            "truck",
             "truck"
           ],
           "title": [
@@ -277,17 +280,20 @@
             "error train",
             "error ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            "testlooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong label"
           ],
           "prefix": [
             "",
             "$",
             "+",
             "+",
+            "+",
             "+"
           ],
           "postfix": [
             "",
+            "$",
             "$",
             "$",
             "$",
@@ -298,6 +304,7 @@
             true,
             false,
             false,
+            false,
             false
           ],
           "noColor": [
@@ -305,6 +312,7 @@
             false,
             false,
             true,
+            false,
             false
           ],
           "valueScalar": [
@@ -312,11 +320,13 @@
             "error_test",
             "error_ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            null
           ],
           "decimals": [
             -1,
             null,
+            2,
             2,
             2,
             2
@@ -332,6 +342,9 @@
             },
             {
               "dowVSindexStack": "Stacked bar chart; group stacks by Hdr dimension"
+            },
+            {
+              "invalidFilter": "Invalid view"
             }
           ],
           "error_train": [
@@ -465,6 +478,43 @@
             "data": "dowvsindex",
             "decimals": 2
           },
+          "invalidFilter": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "rows": "date",
+            "cols": {
+              "Hdr": "asd"
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value",
+              "customLabels": {
+                "dj": "Dow Jones",
+                "index fund": "Index Fund"
+              },
+              "customLineDashPatterns": {
+                "Dow Jones": [
+                  10,
+                  5
+                ],
+                "Index Fund": [
+                  1,
+                  1
+                ]
+              }
+            },
+            "data": "dowvsindex",
+            "decimals": 2
+          },
           "dowVSindexStack": {
               "aggregationFunction": "sum",
               "pivotRenderer": "stackedbar",
@@ -568,7 +618,7 @@
           },
           "pricemerge": {
             "aggregationFunction": "sum",
-            "pivotRenderer": "timeseries",
+            "pivotRenderer": "bar",
             "domainFilter": {
               "default": null
             },

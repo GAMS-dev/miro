@@ -248,6 +248,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
       )
 
       rawData <- dashboardChartData
+      filterWarnings <- dashboardChartData
 
       renderedSections <- list()
 
@@ -297,7 +298,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
                 currentConfig[setdiff(names(currentConfig), c("pivotRenderer", "decimals"))],
                 dataViewsConfig[[view]][setdiff(names(dataViewsConfig[[view]]), c("pivotRenderer", "decimals"))]
               )) {
-              dashboardChartData[[view]] <- preparedData
+              dashboardChartData[[view]] <- preparedData$data
+              filterWarnings[[view]] <- preparedData$warnings
               next
             }
 
@@ -329,7 +331,8 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
             rawData[[view]] <- viewData
             preparedData <- dashboardPrepareData(currentConfig, viewData)
-            dashboardChartData[[view]] <- preparedData
+            dashboardChartData[[view]] <- preparedData$data
+            filterWarnings[[view]] <- preparedData$warnings
 
             userFilter <- dataViewsConfig[[view]]$userFilter
             if (length(userFilter)) {
@@ -367,7 +370,10 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
 
         insertUI(
           selector = paste0("#", ns(paste0("sectionContent_", av))), where = "afterBegin",
-          ui = dashboardRenderDataView(dataViewsConfig, av, options$dataViews, allUserFilterChoices, userFilterDefaults, ns)
+          ui = dashboardRenderDataView(
+            dataViewsConfig, av, options$dataViews, allUserFilterChoices, userFilterDefaults, ns,
+            filterWarnings
+          )
         )
 
         lapply(names(unlist(options$dataViews[[av]])), function(indicator) {
@@ -434,7 +440,6 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
             dimHeaders <- dimHeaders[names(dimHeaders) %in% nonNumericCols]
             rowHeaders <- vapply(dimHeaders, "[[", character(1L), "alias", USE.NAMES = FALSE)
-
 
             # heatmap
             if (input[[paste0(indicator, "ChartType")]] == "heatmap") {

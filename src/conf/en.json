@@ -842,6 +842,9 @@
         "prompt2": "? This cannot be undone!"
       }
     },
+    "dashboard":{
+      "noDataWarning":"No data"
+    },
     "dashboardComparison":{
       "selectScen": "Select scenario"
     }
