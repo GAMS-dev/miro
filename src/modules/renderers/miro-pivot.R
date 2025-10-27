@@ -3788,7 +3788,7 @@ const pm=", if (!is.null(decimals)) paste0("DTWidget.formatRound(data,", as.char
                 }
                 paste0(
                   "
-const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+const offset=(meta.settings.json.DT_rows_current[meta.row]-1)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
 const secondaryMetric=", secondaryMetric, ";
 const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
 Miro.evaluateBaselineCompData(refData, data, ", toJSString(ns("pivotTable")), ",", toJSString(tableSessionId), ");
