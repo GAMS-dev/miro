@@ -99,7 +99,7 @@ EOF
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
                 --set global.networkPolicy.enabled="$ENABLE_NP" \
                 --set global.networkPolicy.apiServerIp="$API_SERVER_IP" \
-                --set image.tag=$IMAGE_TAG \
+                --set global.imageTag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
                 --set proxy.service.nodePort=30080 \
                 --set auth.service.type=NodePort \
