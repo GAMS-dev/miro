@@ -2947,13 +2947,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
+          zeroTolerance <- 1e-6
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(
               c(rowIndexList, colIndexList, valueColName),
               baselineCompConfig$domain
             ))) %>%
-            rename(.baseline = value)
+            rename(.baseline = value) %>%
+            mutate(.baseline = if_else(abs(.baseline) < zeroTolerance, 0, .baseline))
           if (length(baselineCompConfig$filterIndex)) {
             dataTmp <- dataTmp %>%
               filter(.data[[baselineCompConfig$filterIndex]] %in% baselineCompConfig$filterVal)
