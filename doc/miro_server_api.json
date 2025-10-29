@@ -85,7 +85,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/AppConfigOutput"
+                                        "$ref": "#/components/schemas/AppConfigOutput-Output"
                                     },
                                     "title": "Response Get Apps Apps  Get"
                                 }
@@ -828,7 +828,87 @@
     },
     "components": {
         "schemas": {
-            "AppConfigOutput": {
+            "AppConfigOutput-Input": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "alias": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Alias"
+                    },
+                    "desc": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Desc"
+                    },
+                    "groups": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Groups"
+                    },
+                    "appEnv": {
+                        "patternProperties": {
+                            "^[A-Z_][A-Z0-9_]*$": {
+                                "$ref": "#/components/schemas/AppEnvironmentItem"
+                            }
+                        },
+                        "type": "object",
+                        "title": "Appenv",
+                        "default": {}
+                    },
+                    "version": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Version"
+                    },
+                    "authors": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Authors"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "alias",
+                    "desc",
+                    "groups"
+                ],
+                "title": "AppConfigOutput"
+            },
+            "AppConfigOutput-Output": {
                 "properties": {
                     "id": {
                         "type": "string",
