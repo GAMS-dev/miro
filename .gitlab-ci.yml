@@ -1122,10 +1122,19 @@ upload_helm_chart:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
 
-update_custom_saas_images:
+update_saas:
   stage: deploy
   trigger:
     project: miro/miro-saas
+  needs: [upload_dockerhub]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+update_gallery:
+  stage: deploy
+  trigger:
+    project: miro/miro-gallery
   needs: [upload_dockerhub]
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
