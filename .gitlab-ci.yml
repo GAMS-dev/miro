@@ -262,7 +262,7 @@ build_linux_job:
       - r/
       - build/lib_devel
       - dist/*.AppImage
-    expire_in: 1 week
+    expire_in: 1 day
   cache:
     - key: build-cache
       paths:
@@ -284,6 +284,27 @@ build_linux_job:
       when: never
     - when: on_success
   needs: [prepare_all]
+
+package_linux_job:
+  tags:
+    - linux
+  stage: build
+  needs: [build_linux_job]
+  dependencies: [build_linux_job]
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
+    - mv dist/*.AppImage miro_linux_x86.AppImage
+  artifacts:
+    paths:
+      - miro_linux_x86.AppImage
+    expose_as: 'Linux -x86_64- AppImage'
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
 
 dependency_scanning_js:
   tags:
@@ -514,7 +535,7 @@ build_windows_job:
       - r/
       - build/lib_devel
       - dist/*.exe
-    expire_in: 1 week
+    expire_in: 1 day
   cache:
     - key:
         files:
@@ -542,6 +563,30 @@ build_windows_job:
     - when: on_success
   needs: [prepare_all]
 
+package_windows_job:
+  tags:
+    - windows
+  stage: build
+  image: $CI_REGISTRY_IMAGE/builder-windows:latest
+  needs: [build_windows_job]
+  dependencies: [build_windows_job]
+  script:
+    - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
+    - |
+      $src = Get-ChildItem -Path 'dist' -Filter '*.exe' -File | Select-Object -First 1
+      Move-Item -LiteralPath $src.FullName -Destination 'miro_windows_x86.exe' -Force
+  artifacts:
+    paths:
+      - miro_windows_x86.exe
+    expire_in: 1 week
+    expose_as: 'Windows -x86_64- Installer'
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
 build_macos_job:
   tags:
     - macos
@@ -560,7 +605,7 @@ build_macos_job:
       - r/
       - build/lib_devel
       - dist/*.dmg
-    expire_in: 1 week
+    expire_in: 1 day
   cache:
     - key:
         files:
@@ -588,6 +633,27 @@ build_macos_job:
       when: never
     - when: on_success
   needs: [prepare_all]
+
+package_macos_job:
+  tags:
+    - macos
+  stage: build
+  needs: [build_macos_job]
+  dependencies: [build_macos_job]
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-amd64 ]]" = false ] && echo "Skipping macOS build" && exit 0'
+    - mv dist/*.dmg miro_macos_x86.dmg
+  artifacts:
+    paths:
+      - miro_macos_x86.dmg
+    expose_as: 'macOS -x86_64- DMG'
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
 
 build_macos_arm_job:
   tags:
@@ -609,7 +675,7 @@ build_macos_arm_job:
       - r/
       - build/lib_devel
       - dist/arm/*.dmg
-    expire_in: 1 week
+    expire_in: 1 day
   cache:
     - key:
         files:
@@ -637,6 +703,28 @@ build_macos_arm_job:
       when: never
     - when: on_success
   needs: [prepare_all]
+
+package_macos_arm_job:
+  tags:
+    - macos-arm64
+    - stan
+  stage: build
+  needs: [build_macos_arm_job]
+  dependencies: [build_macos_arm_job]
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-macos-arm ]]" = false ] && echo "Skipping macOS ARM build" && exit 0'
+    - mv dist/arm/*.dmg miro_macos_arm.dmg
+  artifacts:
+    paths:
+      - miro_macos_arm.dmg
+    expose_as: 'macOS -arm64- DMG'
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
 
 test_windows_job:
   tags:

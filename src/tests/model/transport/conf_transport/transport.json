@@ -111,7 +111,7 @@
       }
     }
   },
-  "theme": "browser",
+  "theme": "light",
   "defCompMode": "split",
   "roundingDecimals": 2,
   "activateModules": {
