@@ -257,7 +257,7 @@ removeAppLogo <- function(appId, logoFilename, faviconFilename = NULL) {
 
 removeAppData <- function(appId, logoFilename = NULL, faviconFilename = NULL) {
   if (IN_KUBERNETES) {
-    dirsToRemove <- getModelPath(appId)
+    dirsToRemove <- dirname(getModelPath(appId))
   } else {
     dirsToRemove <- c(getModelPath(appId), getDataPath(appId))
   }
