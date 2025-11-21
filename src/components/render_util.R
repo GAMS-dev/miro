@@ -629,7 +629,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                 selected <- userFilterDefaults[[id]][[dim]]
               }
               tags$div(
-                class = paste("custom-dropdown-wide user-filter", inlineClass),
+                class = paste("user-filter-dropdown user-filter", inlineClass),
                 selectizeInput(
                   ns(paste0(id, "userFilter_", dim)),
                   label = if (!is.null(f$label)) f$label else NULL,
@@ -668,7 +668,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                   tags$div(
                     class = paste("charttype-and-btn-wrapper", inlineClass),
                     tags$div(
-                      class = "custom-dropdown",
+                      class = "chart-type-dropdown",
                       selectizeInput(ns(paste0(id, "ChartType")),
                         label = NULL,
                         choices = chartChoices,

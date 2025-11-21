@@ -3224,21 +3224,21 @@ li.drop-index-item[data-col-hidden="true"] {
   filter: brightness(100%);
   cursor: default;
 }
-.dashboard-css .custom-dropdown .selectize-input {
+.dashboard-css .chart-type-dropdown .selectize-input {
   min-height: 21px;
   padding: 1px 5px;
 }
-.dashboard-css .custom-dropdown .selectize-control.single .selectize-input:after,
-.dashboard-css .custom-dropdown-wide .selectize-control.single .selectize-input:after{
+.dashboard-css .chart-type-dropdown .selectize-control.single .selectize-input:after,
+.dashboard-css .user-filter-dropdown .selectize-control.single .selectize-input:after{
         right: 5px;
 }
-.dashboard-css .custom-dropdown .form-group,
-.dashboard-css .custom-dropdown .selectize-control,
-.dashboard-css .custom-dropdown-wide .form-group,
-.dashboard-css .custom-dropdown-wide .selectize-control {
+.dashboard-css .chart-type-dropdown .form-group,
+.dashboard-css .chart-type-dropdown .selectize-control,
+.dashboard-css .user-filter-dropdown .form-group,
+.dashboard-css .user-filter-dropdown .selectize-control {
   margin-bottom:0;
 }
-.dashboard-css .custom-dropdown-wide .selectize-input,
+.dashboard-css .user-filter-dropdown .selectize-input,
 .dashboard-css .scenario-dropdown .selectize-input {
   min-height: 22px;
   padding: 1px 5px;
@@ -3268,7 +3268,7 @@ li.drop-index-item[data-col-hidden="true"] {
   flex: 0 0 50%;
   max-width: 50%;
 }
-.charttype-and-btn-wrapper .custom-dropdown {
+.charttype-and-btn-wrapper .chart-type-dropdown {
   flex: 1 1 200px;
   min-width: 0;
   max-width: 300px;
@@ -3282,15 +3282,15 @@ li.drop-index-item[data-col-hidden="true"] {
       flex: 0 0 100%;
       max-width: 100%;
     }
-    .charttype-and-btn-wrapper .custom-dropdown {
+    .charttype-and-btn-wrapper .chart-type-dropdown {
         max-width: 100%;
     }
 }
 @media only screen and (min-width: 576px){
-   .dashboard-css .custom-dropdown-wide {
+   .dashboard-css .user-filter-dropdown {
        float:right;
    }
-   .dashboard-css .custom-dropdown-wide.user-filter.one-inline {
+   .dashboard-css .user-filter-dropdown.user-filter.one-inline {
        max-width:300px;
    }
    .dashboard-css .charttype-and-btn-wrapper .dashboard-btn-csv,
@@ -3298,23 +3298,23 @@ li.drop-index-item[data-col-hidden="true"] {
        margin-right: 5px;
    }
 }
-.dashboard-css .custom-dropdown-wide.user-filter.one-inline,
+.dashboard-css .user-filter-dropdown.user-filter.one-inline,
 .dashboard-css .charttype-and-btn-wrapper.one-inline {
    min-width:250px;
 }
-.dashboard-css .custom-dropdown-wide.user-filter .selectize-control.multi .selectize-input.has-items {
+.dashboard-css .user-filter-dropdown.user-filter .selectize-control.multi .selectize-input.has-items {
     padding: 2px 5px 2px;
 }
-.dashboard-css .custom-dropdown-wide.user-filter .selectize-control.multi .selectize-input.has-items > .item {
+.dashboard-css .user-filter-dropdown.user-filter .selectize-control.multi .selectize-input.has-items > .item {
     font-size: 12px;
     font-weight: bold;
     line-height: 9px;
 }
-.dashboard-css .custom-dropdown-wide.user-filter .selectize-control.multi .selectize-input>div {
+.dashboard-css .user-filter-dropdown.user-filter .selectize-control.multi .selectize-input>div {
     margin: 0px 3px 1px 0;
     padding: 2px 3px;
 }
-.dashboard-css .custom-dropdown-wide.user-filter .selectize-dropdown, .selectize-input, .selectize-input input {
+.dashboard-css .user-filter-dropdown.user-filter .selectize-dropdown, .selectize-input, .selectize-input input {
     line-height: 16px;
 }
 .dashboard-css .charttype-and-btn-wrapper .dashboard-btn-csv,
@@ -3322,14 +3322,14 @@ li.drop-index-item[data-col-hidden="true"] {
     height: 21px;
 }
 @media only screen and (max-width: 575px){
-   .dashboard-css .custom-dropdown,
-   .dashboard-css .custom-dropdown.medium-width,
-   .dashboard-css .custom-dropdown-wide {
+   .dashboard-css .chart-type-dropdown,
+   .dashboard-css .chart-type-dropdown.medium-width,
+   .dashboard-css .user-filter-dropdown {
        width: 100%;
    }
 }
-.dashboard-css .custom-dropdown,
-.dashboard-css .custom-dropdown-wide {
+.dashboard-css .chart-type-dropdown,
+.dashboard-css .user-filter-dropdown {
     padding: 0 5px;
     min-height: 25px;
 }
