@@ -662,6 +662,10 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                 tags$div(
                   class = "row table-chart-wide-widgets",
                   tags$div(
+                    class = paste("user-filters", inlineClass),
+                    do.call(tagList, filterInputs)
+                  ),
+                  tags$div(
                     class = paste("charttype-and-btn-wrapper", inlineClass),
                     tags$div(
                       class = "custom-dropdown",
@@ -697,8 +701,7 @@ dashboardRenderDataView <- function(dataViewsConfig, dataView, dataViews, userFi
                         title = lang$renderers$miroPivot$btDownloadPng
                       )
                     )
-                  ),
-                  do.call(tagList, filterInputs)
+                  )
                 ),
                 tags$div(
                   class = "table-chart-wide-wrapper",
