@@ -262,6 +262,7 @@ build_linux_job:
       - r/
       - build/lib_devel
       - dist/*.AppImage
+      - dist/*.deb
     expire_in: 1 day
   cache:
     - key: build-cache
@@ -294,10 +295,12 @@ package_linux_job:
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
     - mv dist/*.AppImage miro_linux_x86.AppImage
+    - mv dist/*.deb miro_linux_x86.deb
   artifacts:
     paths:
       - miro_linux_x86.AppImage
-    expose_as: 'Linux -x86_64- AppImage'
+      - miro_linux_x86.deb
+    expose_as: 'Linux -x86_64-'
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -1115,6 +1118,7 @@ upload_cloudfront:
     - echo "MIRO_SHA_HASH_MAC_ARM=`sha256sum dist/arm/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_MAC_X86=`sha256sum dist/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_LINUX=`sha256sum dist/*.AppImage |cut -d ' ' -f1`" >> .hashes.txt
+    - echo "MIRO_SHA_HASH_DEB_LINUX=`sha256sum dist/*.deb |cut -d ' ' -f1`" >> .hashes.txt
     - ./ci/s3_upload_artifacts.sh
   artifacts:
     paths:

@@ -35,5 +35,6 @@ sed -e 's/__VERSION__/'${MIRO_VERSION_SHORT}'/g' \
     -e 's/__SHA_HASH_WIN__/'${MIRO_SHA_HASH_WIN}'/g' \
     -e 's/__SHA_HASH_MAC_ARM__/'${MIRO_SHA_HASH_MAC_ARM}'/g' \
     -e 's/__SHA_HASH_MAC_X86__/'${MIRO_SHA_HASH_MAC_X86}'/g' \
+    -e 's/__SHA_HASH_DEB_LINUX__/'${MIRO_SHA_HASH_DEB_LINUX}'/g' \
     -e 's/__SHA_HASH_LINUX__/'${MIRO_SHA_HASH_LINUX}'/g' ./doc/download_template.html >./doc/download.html
 sed -i -e "s/(xxxx-xx-xx)/($MIRO_RELEASE_DATE)/" ./doc/release.html

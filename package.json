@@ -103,6 +103,9 @@
       "createStartMenuShortcut": true,
       "include": "build/uninstaller.nsh"
     },
+    "deb": {
+      "maintainer": "GAMS Development Corp <support@gams.com>"
+    },
     "linux": {
       "extraFiles": [
         "r/**",
@@ -110,7 +113,7 @@
         "scripts/install_source.R"
       ],
       "artifactName": "GAMS-MIRO-${version}.${ext}",
-      "target": "AppImage",
+      "target": ["AppImage", "deb"],
       "category": "Science"
     }
   },
