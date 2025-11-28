@@ -104,7 +104,8 @@
       "include": "build/uninstaller.nsh"
     },
     "deb": {
-      "maintainer": "GAMS Development Corp <support@gams.com>"
+      "maintainer": "GAMS Development Corp <support@gams.com>",
+      "depends": ["libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6", "xdg-utils", "libatspi2.0-0", "libuuid1", "libsecret-1-0", "r-base-dev", "libcurl-dev", "libpng-dev"]
     },
     "linux": {
       "extraFiles": [
@@ -114,7 +115,8 @@
       ],
       "artifactName": "GAMS-MIRO-${version}.${ext}",
       "target": ["AppImage", "deb"],
-      "category": "Science"
+      "category": "Science",
+      "icon": "build/icons"
     }
   },
   "repository": {
