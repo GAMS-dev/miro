@@ -570,7 +570,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     return()
   }
   isInMultiCompMode <- currentCompMode %in% c("pivot", names(config[["customCompareModules"]]))
-  if (!isInSolveMode && isInMultiCompMode) {
+  if (!isInSolveMode && isInMultiCompMode && !"sb" %in% sidsToLoad) {
     sidsToLoad <<- c("sb", sidsToLoad)
   }
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
