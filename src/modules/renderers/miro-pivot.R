@@ -1162,6 +1162,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (!isFALSE(options$enablePersistentViews)) {
         updateViewList <- function() {
           removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE)
+          removeUI(paste0("#", ns("savedViewsDD"), " .search-field-wrapper"), multiple = TRUE)
 
           localViewIds <- views$getIds(session, "local")
 
