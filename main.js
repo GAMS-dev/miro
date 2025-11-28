@@ -1744,7 +1744,11 @@ async function searchLibPath(devMode = false) {
       }
     } else {
       libsInstalled = false;
+      const isInAppImage = typeof process.env.APPIMAGE !== 'undefined';
       try {
+        if (!isInAppImage) {
+          throw Error('Local installation');
+        }
         await fs.promises.mkdir(libPath, { recursive: true });
         await fs.copy(path.join(appRootDir, 'r', 'library'), libPath);
       } catch (e) {
@@ -1783,17 +1787,18 @@ async function searchLibPath(devMode = false) {
           libsInstalled = false;
         }
         if (!libsInstalled) {
-          const installType = (
-            await dialog.showMessageBox(mainWindow, {
-              type: 'info',
-              title: lang.main.ErrorInstallPermHdr,
-              message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
-              buttons: [
-                lang.main.ErrorInstallPermBtnYes,
-                lang.main.ErrorInstallPermBtnNo,
-              ],
-            })
-          ).response;
+          const installType = isInAppImage
+            ? (
+                await dialog.showMessageBox(mainWindow, {
+                  type: 'info',
+                  title: lang.main.ErrorInstallPermHdr,
+                  message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
+                  buttons: [
+                    lang.main.ErrorInstallPermBtnYes,
+                    lang.main.ErrorInstallPermBtnNo,
+                  ],
+                })
+              ).response : 0;
           if (installType === 1) {
             app.exit(0);
             return;

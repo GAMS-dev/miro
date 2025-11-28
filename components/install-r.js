@@ -24,8 +24,11 @@ async function installRPackages(
     await dialog.showMessageBox(mainWindow, {
       type: 'question',
       title: 'Install R packages',
-      message:
-        'Would you like to install the required R packages now?\n\nNote that before doing so, you have to install the system libraries libcurl and libpng.\nOn Debian / Ubuntu you need libcurl4-gnutls-dev and libpng-dev, on Fedora use libcurl-devel and libpng-devel.',
+      message: `Would you like to install the required R packages now?${
+        typeof process.env.APPIMAGE !== 'undefined'
+          ? '\n\nNote that before doing so, you have to install the system libraries libcurl and libpng.\nOn Debian / Ubuntu you need libcurl-dev and libpng-dev, on Fedora use libcurl-devel and libpng-devel.'
+          : ''
+      }`,
       buttons: ['Yes', 'No'],
     })
   ).response;

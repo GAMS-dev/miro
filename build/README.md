@@ -31,7 +31,7 @@ To build the gdxrrwMIRO package, you need either an intel compiler (https://soft
 Additionally, the following system libraries are required:
 
 * libcurl
-    - deb: libcurl4-openssl-dev (Debian, Ubuntu, etc)
+    - deb: libcurl-dev (Debian, Ubuntu, etc)
     - rpm: libcurl-devel (Fedora, CentOS, RHEL)
     - csw: libcurl_dev (Solaris)
 * libpng

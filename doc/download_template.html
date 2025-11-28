@@ -361,116 +361,185 @@
                       role="tabpanel"
                       aria-labelledby="linux-tab"
                     >
-                      <div class="section-block">
-                        <a
-                          class="btn btn-primary btn-cta"
-                          style="margin-top: 10pt; -webkit-transition: unset"
-                          href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/linux/GAMS-MIRO-__VERSION_FULL__.deb"
-                          download
-                          >Download for Linux (deb)</a
-                        >
-                        <div class="download-sha-hash">
-                          <span
-                            title="To verify: sha256sum GAMS-MIRO-__VERSION_FULL__.deb"
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                          <a
+                            class="nav-link active"
+                            id="install-linux-deb-tab"
+                            data-toggle="tab"
+                            href="#install-linux-deb"
+                            role="tab"
+                            aria-controls="install-linux-deb"
+                            aria-selected="true"
+                            >Ubuntu/Debian</a
                           >
-                            <b>SHA-256 hash:</b> __SHA_HASH_DEB_LINUX__
-                          </span>
-                        </div>
-                        <a
-                          class="btn btn-primary btn-cta"
-                          style="margin-top: 10pt; -webkit-transition: unset"
-                          href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/linux/GAMS-MIRO-__VERSION_FULL__.AppImage"
-                          download
-                          >Download for Linux (AppImage)</a
-                        >
-                        <div class="download-sha-hash">
-                          <span
-                            title="To verify: sha256sum GAMS-MIRO-__VERSION_FULL__.AppImage"
+                        </li>
+                        <li class="nav-item">
+                          <a
+                            class="nav-link"
+                            id="install-linux-appimage-tab"
+                            data-toggle="tab"
+                            href="#install-linux-appimage"
+                            role="tab"
+                            aria-controls="install-linux-appimage"
+                            aria-selected="false"
+                            >Other</a
                           >
-                            <b>SHA-256 hash:</b> __SHA_HASH_LINUX__
-                          </span>
-                        </div>
-                      </div>
-                      <div class="section-block">
-                        <p>
-                          By downloading this software, you agree to the
-                          <a href="./license.html">License Agreement</a>.
-                        </p>
-                      </div>
-                      <div class="section-block">
-                        <h3 class="block-title">Installation</h3>
-                        <ol>
-                          <li>
-                            In case a current R version (4.0 or later) is not
-                            yet installed on your system, you need to do this
-                            first. You can download R
+                        </li>
+                      </ul>
+                      <div class="tab-content">
+                        <div
+                          class="tab-pane fade show active"
+                          id="install-linux-deb"
+                          role="tabpanel"
+                          aria-labelledby="install-linux-deb-tab"
+                        >
+                          <div class="section-block">
                             <a
-                              href="https://cloud.r-project.org/"
-                              target="_blank"
-                              >here</a
-                            >.
-                          </li>
-                          <li>
-                            For MIRO to work, compilers as well as the system
-                            libraries libpng and libcurl need to be installed.
-                            On Debian / Ubuntu you need
-                            <i>libcurl4-gnutls-dev</i> and <i>libpng-dev</i>,
-                            on Fedora use <i>libcurl-devel</i> and
-                            <i>libpng-devel</i>. For example, to install both
-                            libraries on Ubuntu, run:
-                            <div class="console-box">
-                              <span class="console-content"
-                                >&gt; sudo apt install libcurl4-gnutls-dev
-                                libpng-dev</span
+                              class="btn btn-primary btn-cta"
+                              style="
+                                margin-top: 10pt;
+                                -webkit-transition: unset;
+                              "
+                              href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/linux/GAMS-MIRO-__VERSION_FULL__.deb"
+                              download
+                              >Download for Debian/Ubuntu (deb)</a
+                            >
+                            <div class="download-sha-hash">
+                              <span
+                                title="To verify: sha256sum GAMS-MIRO-__VERSION_FULL__.deb"
                               >
+                                <b>SHA-256 hash:</b> __SHA_HASH_DEB_LINUX__
+                              </span>
                             </div>
-                            If there are no compilers installed on your system
-                            yet, we recommend installing build tools via:
-                            <kbd>&gt; sudo apt install build-essential</kbd> on
-                            Ubuntu or:
-                            <kbd
-                              >&gt; sudo dnf groupinstall "Development
-                              Tools"</kbd
-                            >
-                            on Fedora.
-                          </li>
-                          <li>
-                            The first time you launch the GAMS MIRO AppImage,
-                            some R packages need to be installed. They are
-                            installed either at the R installation path:
-                            <span class="code">rPath/miro-library</span> or in
-                            the user's home directory (<span class="code"
-                              >$XDG_CONFIG_HOME/miro-library</span
-                            >
-                            or
-                            <span class="code">~/.config/miro-library</span>)
-                            depending on whether MIRO was installed for all
-                            users or only for the current user. You will be
-                            guided through this installation process.
-                          </li>
-                        </ol>
-                        <div class="callout-block callout-warning">
-                          <div class="icon-holder">
-                            <i class="fas fa-info-circle"></i>
                           </div>
-                          <!--//icon-holder-->
-                          <div class="content">
-                            <b class="callout-title">Note:</b>
+                          <div class="section-block">
                             <p>
-                              For a complete system integration of the MIRO
-                              AppImage (e.g. file associations and custom URL
-                              schemes), please install the AppImage via the
-                              <a
-                                href="https://github.com/TheAssassin/AppImageLauncher"
-                                target="_blank"
-                                >AppImageLauncher</a
-                              >.
+                              By downloading this software, you agree to the
+                              <a href="./license.html">License Agreement</a>.
                             </p>
                           </div>
-                          <!--//content-->
+                          <div class="section-block">
+                            <h3 class="block-title">Installation</h3>
+                            <ol>
+                              <li>
+                                The first time you launch GAMS MIRO, some R
+                                packages need to be installed. They are
+                                installed in your home directory (<span
+                                  class="code"
+                                  >$XDG_CONFIG_HOME/miro-library</span
+                                >
+                                or
+                                <span class="code">~/.config/miro-library</span
+                                >). You will be guided through this
+                                installation process.
+                              </li>
+                            </ol>
+                          </div>
+                        </div>
+                        <div
+                          class="tab-pane fade"
+                          id="install-linux-appimage"
+                          role="tabpanel"
+                          aria-labelledby="install-linux-appimage-tab"
+                        >
+                          <div class="section-block">
+                            <a
+                              class="btn btn-primary btn-cta"
+                              style="
+                                margin-top: 10pt;
+                                -webkit-transition: unset;
+                              "
+                              href="https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/linux/GAMS-MIRO-__VERSION_FULL__.AppImage"
+                              download
+                              >Download for Linux (AppImage)</a
+                            >
+                            <div class="download-sha-hash">
+                              <span
+                                title="To verify: sha256sum GAMS-MIRO-__VERSION_FULL__.AppImage"
+                              >
+                                <b>SHA-256 hash:</b> __SHA_HASH_LINUX__
+                              </span>
+                            </div>
+                          </div>
+                          <div class="section-block">
+                            <p>
+                              By downloading this software, you agree to the
+                              <a href="./license.html">License Agreement</a>.
+                            </p>
+                          </div>
+                          <div class="section-block">
+                            <h3 class="block-title">Installation</h3>
+                            <ol>
+                              <li>
+                                In case a current R version (4.0 or later) is
+                                not yet installed on your system, you need to
+                                do this first. You can download R
+                                <a
+                                  href="https://cloud.r-project.org/"
+                                  target="_blank"
+                                  >here</a
+                                >.
+                              </li>
+                              <li>
+                                For MIRO to work, compilers as well as the
+                                system libraries libpng and libcurl need to be
+                                installed. For example, on Fedora:
+                                <div class="console-box">
+                                  <span class="console-content"
+                                    >&gt; sudo dnf install libcurl-devel
+                                    libpng-devel</span
+                                  >
+                                </div>
+                                If there are no compilers installed on your
+                                system yet, we recommend installing build
+                                tools:
+                                <kbd
+                                  >&gt; sudo dnf groupinstall "Development
+                                  Tools"</kbd
+                                >
+                                (Fedora).
+                              </li>
+                              <li>
+                                The first time you launch GAMS MIRO, some R
+                                packages need to be installed. They are
+                                installed either at the R installation path:
+                                <span class="code">rPath/miro-library</span> or
+                                in the user's home directory (<span
+                                  class="code"
+                                  >$XDG_CONFIG_HOME/miro-library</span
+                                >
+                                or
+                                <span class="code">~/.config/miro-library</span
+                                >) depending on whether MIRO was installed for
+                                all users or only for the current user. You
+                                will be guided through this installation
+                                process.
+                              </li>
+                            </ol>
+                          </div>
+                          <div class="callout-block callout-warning">
+                            <div class="icon-holder">
+                              <i class="fas fa-info-circle"></i>
+                            </div>
+                            <!--//icon-holder-->
+                            <div class="content">
+                              <b class="callout-title">Note:</b>
+                              <p>
+                                For a complete system integration of the MIRO
+                                AppImage (e.g. file associations and custom URL
+                                schemes), please install the AppImage via the
+                                <a
+                                  href="https://github.com/TheAssassin/AppImageLauncher"
+                                  target="_blank"
+                                  >AppImageLauncher</a
+                                >.
+                              </p>
+                            </div>
+                            <!--//content-->
+                          </div>
                         </div>
                       </div>
-                      <!--//section-block-->
                     </div>
                     <div class="section-block">
                       <h3 class="block-title" id="miro-workspace">
