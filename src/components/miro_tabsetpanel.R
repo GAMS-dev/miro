@@ -96,12 +96,17 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
         tags$ul(
           class = "dropdown-menu maxTabsDropdown",
           c(
-            list(tags$input(
-              type = "text",
-              placeholder = lang$renderers$dropdownFilter$placeholder,
-              class = "form-control miro-dropdown-filter",
-              onkeyup = "Miro.filterMiroDropdown(this)"
-            )),
+            list(
+              tags$div(
+                class = "search-field-wrapper",
+                tags$input(
+                  type = "text",
+                  placeholder = lang$renderers$dropdownFilter$placeholder,
+                  class = "form-control miro-dropdown-filter",
+                  onkeyup = "Miro.filterMiroDropdown(this)"
+                )
+              )
+            ),
             ddLiTagList
           )
         )

@@ -1186,11 +1186,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           insertUI(paste0("#", ns("savedViewsDD")),
             c(
               list(
-                tags$input(
-                  type = "text",
-                  placeholder = lang$renderers$dropdownFilter$placeholder,
-                  class = "form-control miro-dropdown-filter dropdown-item-wrapper",
-                  onkeyup = "Miro.filterMiroDropdown(this)"
+                tags$div(
+                  class = "search-field-wrapper",
+                  tags$input(
+                    type = "text",
+                    placeholder = lang$renderers$dropdownFilter$placeholder,
+                    class = "form-control miro-dropdown-filter dropdown-item-wrapper",
+                    onkeyup = "Miro.filterMiroDropdown(this)"
+                  )
                 ),
                 createBootstrapDropdownChoices(
                   list(
