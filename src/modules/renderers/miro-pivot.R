@@ -1085,7 +1085,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             viewOptions$name,
             keepChildNodes = TRUE
           )
+          removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
+          addClassEl(session, paste0("#", ns("savedViews_"), htmlIdEnc(currentView$name)), "active")
         } else {
+          removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           setTextContent(session, paste0("#", ns("toggleViewButton")),
             lang$renderers$miroPivot$btLoadView,
             keepChildNodes = TRUE
@@ -1160,9 +1163,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       )
 
       if (!isFALSE(options$enablePersistentViews)) {
-        updateViewList <- function() {
-          removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE)
-          removeUI(paste0("#", ns("savedViewsDD"), " .search-field-wrapper"), multiple = TRUE)
+        updateViewList <- function(immediate = FALSE) {
+          removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE, immediate = immediate)
+          removeUI(paste0("#", ns("savedViewsDD"), " .search-field-wrapper"), multiple = TRUE, immediate = immediate)
 
           localViewIds <- views$getIds(session, "local")
 
@@ -1206,7 +1209,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               ),
               viewChoices
             ),
-            where = "beforeEnd"
+            where = "beforeEnd",
+            immediate = immediate
           )
         }
         readonlyViews <- views$isReadonly(session)
@@ -1867,9 +1871,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showAddViewDialog(isolate(input$pivotRenderer))
         })
-        deleteView <- function(viewId) {
+        deleteView <- function(viewId, immediate = FALSE) {
           views$remove(session, viewId)
-          updateViewList()
+          updateViewList(immediate)
         }
         addNewView <- function(viewName, overwrite = FALSE) {
           isolate({
@@ -2091,15 +2095,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (miroPivotState$editView &&
               !identical(viewName, currentView$name)) {
               # view was renamed
-              deleteView(currentView$name)
+              deleteView(currentView$name, immediate = TRUE)
             } else {
-              updateViewList()
+              updateViewList(immediate = TRUE)
             }
             if (length(viewName)) {
               setTextContent(session, paste0("#", ns("toggleViewButton")),
                 viewName,
                 keepChildNodes = TRUE
               )
+              removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
+              addClassEl(session, paste0("#", ns("savedViews_"), htmlIdEnc(viewName)), "active")
             }
             if (refreshRequired) {
               currentView <<- newViewConfig
@@ -3640,6 +3646,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               keepChildNodes = TRUE
             )
             currentView[["_didRender_"]] <<- 2L
+            removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           }
         } else {
           currentView[["_didRender_"]] <<- 1L
@@ -3934,6 +3941,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
               keepChildNodes = TRUE
             )
             currentView[["_didRender_"]] <<- 2L
+            removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           }
         } else {
           currentView[["_didRender_"]] <<- 1L
