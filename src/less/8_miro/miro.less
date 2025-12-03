@@ -2579,6 +2579,32 @@ li.drop-index-item[data-col-hidden="true"] {
 .view-menu {
   word-break: normal;
 }
+.view-dropdown-wrapper,
+.maxTabsDropdown {
+  padding-top: 0;
+}
+.search-field-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 5px 8px 2px;
+}
+.view-dropdown-wrapper .search-field-wrapper {
+  .responsiveDark({
+     background-color: #fff;
+  },
+  {
+     background-color: @widget-bg-dark;
+  });
+}
+.maxTabsDropdown .search-field-wrapper {
+  .responsiveDark({
+     background-color: #fff;
+  },
+  {
+     background-color: @main-bg-dark;
+  });
+}
 .dropdown-item-wrapper {
   display: flex;
   position: relative;
