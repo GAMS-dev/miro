@@ -108,7 +108,7 @@
                   <p
                     class="app-desc app-desc-fixed app-item-desc"
                     th:if="${app.description != null}"
-                    th:text="${app.description}"
+                    th:text="${@thymeleaf.cleanHtml(app.description)}"
                   ></p>
                 </div>
               </div>
