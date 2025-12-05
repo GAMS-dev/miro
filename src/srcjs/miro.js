@@ -194,19 +194,10 @@ export function selectNoRow(tableId) {
   $(`#${tableId} tbody tr`).removeClass('selected');
 }
 
-export function resetDropdownFilter(that) {
-  const dropdown = $(that).parent().children('ul');
-  const filter = dropdown.children('input')[0];
-  if (filter.value === '') {
-    return;
-  }
-  filter.value = '';
-  $(dropdown).children('li').show();
-}
-
 export function filterMiroDropdown(that) {
   const filterTxt = that.value.toLowerCase();
   $(that)
+    .parent()
     .siblings('li')
     .each(function () {
       if (this.children[0].textContent.toLowerCase().indexOf(filterTxt) > -1) {
@@ -215,6 +206,18 @@ export function filterMiroDropdown(that) {
         this.style.display = 'none';
       }
     });
+}
+
+export function resetDropdownFilter(that) {
+  const dropdown = $(that).parent().children('ul');
+  const filter = dropdown.find('input')[0];
+  if (filter.value !== '') {
+    filter.value = '';
+    filterMiroDropdown(filter);
+  }
+  setTimeout(() => {
+    filter.focus();
+  });
 }
 
 export function parseKatex(element) {
