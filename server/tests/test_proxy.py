@@ -838,6 +838,7 @@ class UITests(unittest.TestCase):
         add_add_check_readme_text("transport.miroapp", "VERSION 2", text_included=False)
         self.remove_apps()
         self.logout()
+        time.sleep(1)
         add_add_check_readme_text(
             "transport_v2.miroapp", "VERSION 2", text_included=True
         )
