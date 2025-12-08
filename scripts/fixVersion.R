@@ -50,9 +50,43 @@ dockerImageAuth <- gsub(
   paste0('com.gamsmiroauth.version="', MIROVersion, '"'), dockerImageAuth
 )
 writeLines(dockerImageAuth, "./server/auth/Dockerfile")
-helmChartYaml <- readLines("./server/kubernetes/gams-miro-server/Chart.yaml", warn = FALSE)
-helmChartYaml <- gsub(
-  "appVersion:[[:space:]]*'[^']+'",
-  paste0("appVersion: '", MIROVersion, "'"), helmChartYaml
-)
-writeLines(helmChartYaml, "./server/kubernetes/gams-miro-server/Chart.yaml")
+helmChartFilePath <- "./server/kubernetes/gams-miro-server/Chart.yaml"
+helmChartYaml <- readLines(helmChartFilePath, warn = FALSE)
+appVerIndex <- grep("^appVersion:", helmChartYaml)
+
+if (length(appVerIndex) > 0) {
+  currentLine <- helmChartYaml[appVerIndex]
+  currentAppVer <- sub(".*'([^']+)'.*", "\\1", currentLine)
+
+  if (currentAppVer != MIROVersion) {
+    message(paste("Updating appVersion from", currentAppVer, "to", MIROVersion))
+
+    helmChartYaml[appVerIndex] <- paste0("appVersion: '", MIROVersion, "'")
+
+    vIndex <- grep("^version:[[:space:]]*", helmChartYaml)
+    if (length(vIndex) > 0) {
+      verLine <- helmChartYaml[vIndex]
+      cleanVer <- sub("^version:[[:space:]]*", "", verLine)
+      cleanVer <- gsub("['\"]", "", cleanVer)
+      parts <- as.numeric(strsplit(cleanVer, ".", fixed = TRUE)[[1]])
+      if (length(parts) >= 2) {
+        parts[2] <- parts[2] + 1
+        if (length(parts) >= 3) {
+          parts[3] <- 0
+        }
+        newVer <- paste(parts, collapse = ".")
+        helmChartYaml[vIndex] <- paste0("version: ", newVer)
+        message(paste("Chart version bumped to:", newVer))
+      } else {
+        warning("Invalid semantic chart version in Chart.yaml")
+      }
+    } else {
+      warning("Could not find 'version' line in Chart.yaml")
+    }
+    writeLines(helmChartYaml, helmChartFilePath)
+  } else {
+    message("MIROVersion matches current appVersion. No changes made.")
+  }
+} else {
+  warning("Could not find 'appVersion' line in Chart.yaml")
+}
