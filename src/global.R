@@ -117,7 +117,7 @@ exclTraceCols <- c(
 )
 
 attachAllowExec <- TRUE
-attachMaxFileSize <- 5e7
+attachMaxFileSize <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_SIZE_MB", "50")) * 1e6
 attachMaxNo <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_NO", "20"))
 
 JOBSTATUSMAP <- c(

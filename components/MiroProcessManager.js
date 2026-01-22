@@ -191,6 +191,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
     const procEnv = Object.assign(miroEnv, {
       WITHIN_ELECTRON: '1',
+      MIRO_ATTACHMENTS_MAX_SIZE_MB: '500',
       R_HOME_DIR: await rpath,
       RE_SHINY_PORT: shinyPort,
       RE_SHINY_PATH: this.miroResourcePath,
