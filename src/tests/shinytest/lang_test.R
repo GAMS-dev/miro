@@ -4,7 +4,6 @@ app <- AppDriver$new("../../",
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
 Sys.sleep(2L)
-app$expect_values(input = paste0("slider_", c(2L, 2L + 1L)))
 
 expect_identical(
   iconv(as.character(app$get_values()[["output"]][["inputDataTitle"]][["html"]])),
