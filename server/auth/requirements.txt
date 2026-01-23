@@ -8,7 +8,7 @@ aiofiles==25.1.0
     # via -r requirements.in
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.2
+aiohttp==3.13.3
     # via -r requirements.in
 aiosignal==1.4.0
     # via aiohttp
@@ -16,14 +16,14 @@ annotated-doc==0.0.4
     # via fastapi
 annotated-types==0.7.0
     # via pydantic
-anyio==4.12.0
+anyio==4.12.1
     # via
     #   httpx
     #   starlette
     #   watchfiles
 attrs==25.4.0
     # via aiohttp
-certifi==2025.11.12
+certifi==2026.1.4
     # via
     #   httpcore
     #   httpx
@@ -39,11 +39,11 @@ email-validator==2.3.0
     # via
     #   fastapi
     #   pydantic
-fastapi[standard]==0.124.0
+fastapi[standard]==0.128.0
     # via -r requirements.in
-fastapi-cli[standard]==0.0.16
+fastapi-cli[standard]==0.0.20
     # via fastapi
-fastapi-cloud-cli==0.6.0
+fastapi-cloud-cli==0.11.0
     # via fastapi-cli
 fastar==0.8.0
     # via fastapi-cloud-cli
@@ -90,18 +90,23 @@ pydantic[email]==2.12.5
     #   -r requirements.in
     #   fastapi
     #   fastapi-cloud-cli
+    #   pydantic-extra-types
     #   pydantic-settings
 pydantic-core==2.41.5
     # via pydantic
+pydantic-extra-types==2.11.0
+    # via fastapi
 pydantic-settings==2.12.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   fastapi
 pygments==2.19.2
     # via rich
 python-dotenv==1.2.1
     # via
     #   pydantic-settings
     #   uvicorn
-python-multipart==0.0.20
+python-multipart==0.0.21
     # via
     #   -r requirements.in
     #   fastapi
@@ -113,19 +118,19 @@ rich==14.2.0
     # via
     #   rich-toolkit
     #   typer
-rich-toolkit==0.17.0
+rich-toolkit==0.17.1
     # via
     #   fastapi-cli
     #   fastapi-cloud-cli
 rignore==0.7.6
     # via fastapi-cloud-cli
-sentry-sdk==2.47.0
+sentry-sdk==2.50.0
     # via fastapi-cloud-cli
 shellingham==1.5.4
     # via typer
 starlette==0.50.0
     # via fastapi
-typer==0.20.0
+typer==0.21.1
     # via
     #   fastapi-cli
     #   fastapi-cloud-cli
@@ -136,6 +141,7 @@ typing-extensions==4.15.0
     #   fastapi
     #   pydantic
     #   pydantic-core
+    #   pydantic-extra-types
     #   rich-toolkit
     #   starlette
     #   typer
@@ -144,9 +150,9 @@ typing-inspection==0.4.2
     # via
     #   pydantic
     #   pydantic-settings
-urllib3==2.6.0
+urllib3==2.6.3
     # via sentry-sdk
-uvicorn[standard]==0.38.0
+uvicorn[standard]==0.40.0
     # via
     #   fastapi
     #   fastapi-cli
@@ -155,7 +161,7 @@ uvloop==0.22.1
     # via uvicorn
 watchfiles==1.1.1
     # via uvicorn
-websockets==15.0.1
+websockets==16.0
     # via uvicorn
 yarl==1.22.0
     # via aiohttp
