@@ -105,7 +105,20 @@
     },
     "deb": {
       "maintainer": "GAMS Development Corp <support@gams.com>",
-      "depends": ["libgtk-3-0", "libnotify4", "libnss3", "libxss1", "libxtst6", "xdg-utils", "libatspi2.0-0", "libuuid1", "libsecret-1-0", "r-base-dev", "libcurl-dev", "libpng-dev"]
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0",
+        "r-base-dev",
+        "libcurl-dev",
+        "libpng-dev"
+      ]
     },
     "linux": {
       "extraFiles": [
@@ -114,7 +127,10 @@
         "scripts/install_source.R"
       ],
       "artifactName": "GAMS-MIRO-${version}.${ext}",
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Science",
       "icon": "build/icons"
     }
@@ -133,7 +149,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.35.0",
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.58.0",
     "cheerio": "^1.1.2",
     "electron": "^38.0.0",
     "electron-builder": "26.0.12",
@@ -144,7 +160,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "fast-xml-parser": "^5.2.5",
     "globals": "^16.3.0",
-    "playwright": "^1.55.0",
+    "playwright": "^1.58.0",
     "prettier": "3.6.2"
   },
   "dependencies": {
