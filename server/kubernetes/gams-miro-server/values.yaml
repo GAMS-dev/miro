@@ -36,6 +36,7 @@ secrets:
   oidcClientSecret: ''
   engineAnonymousPassword: ''
   containerLogS3SecretAccessKey: ''
+  redisPassword: ''
 
 proxy:
   image:
@@ -125,7 +126,12 @@ proxy:
       # (only relevant when serviceMonitorEnabled is true)
       realm: default
       port: 9090
-
+    persistentSessionStore:
+      # secrets.redisPassword must be provided if persistentSessionStore is set.
+      host: ''
+      port: ''
+      user: ''
+      sslEnabled: true # if AWSelastiCache is used ssl should be enabled.
 auth:
   image:
     registry: docker.io/gams
