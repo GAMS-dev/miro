@@ -70,6 +70,8 @@ RUN Invoke-WebRequest $('https://d37drm4t2jghv5.cloudfront.net/distributions/{0}
     Start-Sleep -Seconds 60 ; \
     Remove-Item gmsinstall.exe
 
+RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri "https://download.microsoft.com/download/70ad2c3b-761f-4aa9-a9de-e7405aa2b4c1/ArtifactSigningClientTools.msi" -OutFile .\ArtifactSigningClientTools.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I ArtifactSigningClientTools.msi /quiet'; Remove-Item .\ArtifactSigningClientTools.msi
+
 ENV GAMS_SYS_DIR=C:/gams
 
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
