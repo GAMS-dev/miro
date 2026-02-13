@@ -1,7 +1,10 @@
 const { ipcRenderer, shell } = require('electron');
+const log = require('electron-log/renderer');
 const querystring = require('querystring');
 const https = require('https');
 const $ = require('jquery');
+
+log.errorHandler.startCatching();
 
 const installedVersion = querystring
   .parse(global.location.search)

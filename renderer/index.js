@@ -1,4 +1,5 @@
 const { ipcRenderer, shell, webUtils } = require('electron');
+const log = require('electron-log/renderer');
 const path = require('path');
 const { pathToFileURL } = require('url');
 const util = require('util');
@@ -6,6 +7,8 @@ const querystring = require('querystring');
 window.Bootstrap = require('bootstrap');
 const jQuery = require('jquery');
 const $ = require('jquery');
+
+log.errorHandler.startCatching();
 
 let lang = {};
 const supportedDataFileTypes = [
