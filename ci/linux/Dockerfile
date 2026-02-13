@@ -1,4 +1,4 @@
-FROM node:20-bookworm
+FROM node:22-bookworm
 
 ARG R_BASE_VERSION=4.4.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
