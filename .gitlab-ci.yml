@@ -529,7 +529,6 @@ build_windows_job:
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - yarn install --frozen-lockfile
-    - '[IO.File]::WriteAllBytes([io.path]::Combine((Get-Location).path, $env:CSC_LINK), [Convert]::FromBase64String($env:WIN_CERT_FILE_B64))'
   script:
     - 'if ("$env:CI_COMMIT_BRANCH" -ne "master" -and "$[[ inputs.build-windows ]]" -ceq "false") { "Skipping Windows build"; Exit }'
     - yarn dist
