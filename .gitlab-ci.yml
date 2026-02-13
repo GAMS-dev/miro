@@ -137,9 +137,9 @@ prepare_all:
 build_build_image_linux:
   tags:
     - linux
-  image: docker:20.10
+  image: docker:29-cli
   services:
-    - docker:20.10-dind
+    - docker:29-dind
   stage: prepare
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
@@ -212,7 +212,7 @@ build_linux_job:
     - linux
   stage: build
   services:
-    - docker:20.10-dind
+    - docker:29-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   variables:
     DOCKER_DRIVER: overlay2
@@ -918,9 +918,9 @@ test_job_api:
   tags:
     - linux
   stage: test
-  image: docker:20.10
+  image: docker:29-cli
   services:
-    - name: docker:20.10-dind
+    - name: docker:29-dind
     - name: postgres:16.1-alpine
       alias: postgres
   variables:
@@ -1027,7 +1027,7 @@ test_job_miro_server:
   image: $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
   retry: 1
   services:
-    - docker:27-dind
+    - docker:29-dind
     - selenium/standalone-chrome
   variables:
     MIRO_PROXY_URL: http://docker:8080
@@ -1065,7 +1065,7 @@ test_job_miro_server_k8s:
   stage: test
   retry: 1
   services:
-    - docker:27-dind
+    - docker:29-dind
     - selenium/standalone-chrome
   variables:
     MIRO_PROXY_URL: http://docker:30080
@@ -1133,7 +1133,7 @@ upload_dockerhub:
     - linux
   stage: deploy
   services:
-    - docker:20.10-dind
+    - docker:29-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   id_tokens:
     ID_TOKEN:
@@ -1237,7 +1237,7 @@ update_doc_job_release:
     - linux
   stage: deploy
   services:
-    - docker:20.10-dind
+    - docker:29-dind
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
   variables:
     DOCKER_DRIVER: overlay2
