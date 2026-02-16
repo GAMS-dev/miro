@@ -2,10 +2,10 @@ FROM mcr.microsoft.com/windows/server:ltsc2022
 
 SHELL ["powershell", "-executionpolicy", "bypass", "-command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue'; Set-PSDebug -Trace 0;"]
 
-ARG NODE_VERSION=22.14.0
+ARG NODE_VERSION=22.22.0
 ENV NODE_VERSION=${NODE_VERSION}
 
-ARG GPG_VERSION=4.4.0
+ARG GPG_VERSION=5.0.1
 ENV GPG_VERSION=${GPG_VERSION}
 
 ARG YARN_VERSION=1.22.22
@@ -23,27 +23,10 @@ ENV GAMS_VERSION=${GAMS_VERSION}
 RUN Invoke-WebRequest $('https://files.gpg4win.org/gpg4win-{0}.exe' -f $env:GPG_VERSION) -OutFile 'gpg4win.exe' -UseBasicParsing ; \
     Start-Process .\gpg4win.exe -ArgumentList '/S' -NoNewWindow -Wait ;
 
-RUN @( \
-    '94AE36675C464D64BAFA68DD7434390BDBE9B9C5', \
-    'FD3A5288F042B6850C66B31F09FE44734EB7990E', \
-    '71DCFD284A79C3B38668286BC97EC7A07EDE3FC1', \
-    'DD8F2338BAE7501E3DD5AC78C273792F7D83545D', \
-    'C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8', \
-    'B9AE9905FFD7803F25714661B63B535A4C206CA9', \
-    '56730D5401028683275BD23C23EFEFE93C4CFFFE', \
-    '77984A986EBC2AA786BC0F66B01FBB92821C587A', \
-    '8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600' \
-    ) | foreach { \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $_ ; \
-    } ; \
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ; \
-    Invoke-WebRequest $('https://nodejs.org/dist/v{0}/SHASUMS256.txt.asc' -f $env:NODE_VERSION) -OutFile 'SHASUMS256.txt.asc' -UseBasicParsing ; \
-    gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc ; \
-    Invoke-WebRequest $('https://nodejs.org/dist/v{0}/node-v{0}-win-x64.zip' -f $env:NODE_VERSION) -OutFile 'node.zip' -UseBasicParsing ; \
-    $sum = $(cat SHASUMS256.txt.asc | sls $('  node-v{0}-win-x64.zip' -f $env:NODE_VERSION)) -Split ' ' ; \
-    if ((Get-FileHash node.zip -Algorithm sha256).Hash -ne $sum[0]) { Write-Error 'SHA256 mismatch' } ; \
-    Expand-Archive node.zip -DestinationPath C:\ ; \
-    Rename-Item -Path $('C:\node-v{0}-win-x64' -f $env:NODE_VERSION) -NewName 'C:\nodejs'
+RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
+    choco install -y git python
+
+RUN choco install -y nodejs --version="$env:NODE_VERSION"
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ; \
     Invoke-WebRequest $('https://classic.yarnpkg.com/downloads/{0}/yarn-{0}.msi' -f $env:YARN_VERSION) -OutFile yarn.msi -UseBasicParsing ; \
@@ -70,12 +53,16 @@ RUN Invoke-WebRequest $('https://d37drm4t2jghv5.cloudfront.net/distributions/{0}
     Start-Sleep -Seconds 60 ; \
     Remove-Item gmsinstall.exe
 
-RUN $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri "https://download.microsoft.com/download/70ad2c3b-761f-4aa9-a9de-e7405aa2b4c1/ArtifactSigningClientTools.msi" -OutFile .\ArtifactSigningClientTools.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I ArtifactSigningClientTools.msi /quiet'; Remove-Item .\ArtifactSigningClientTools.msi
+RUN powershell -Command \
+    Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1'; \
+    ./dotnet-install.ps1 -Channel 8.0 -InstallDir 'C:\Program Files\dotnet'; \
+    Remove-Item 'dotnet-install.ps1'
+
+RUN Invoke-WebRequest -Uri "https://download.microsoft.com/download/70ad2c3b-761f-4aa9-a9de-e7405aa2b4c1/ArtifactSigningClientTools.msi" -OutFile .\ArtifactSigningClientTools.msi; \
+    Start-Process msiexec.exe -Wait -ArgumentList '/I ArtifactSigningClientTools.msi /quiet'; \
+    Remove-Item .\ArtifactSigningClientTools.msi
 
 ENV GAMS_SYS_DIR=C:/gams
-
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; \
-    choco install -y git python
 
 RUN choco install -y --ignore-checksums googlechrome
 
