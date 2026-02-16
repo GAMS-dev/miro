@@ -1003,15 +1003,19 @@ function createSettingsWindow() {
 
   settingsWindow.once('ready-to-show', async () => {
     log.debug('Settings window ready to show.');
-    settingsWindow.webContents.send(
-      'settings-loaded',
-      await configData.getAll(),
-      await configData.getAll(true),
-      lang.settings,
-      fs.existsSync(path.join(miroWorkspaceDir, 'colors_custom.css')),
-    );
-    log.debug('Settings window settings loaded.');
-    settingsWindow.show();
+    try {
+      settingsWindow.webContents.send(
+        'settings-loaded',
+        await configData.getAll(),
+        await configData.getAll(true),
+        lang.settings,
+        fs.existsSync(path.join(miroWorkspaceDir, 'colors_custom.css')),
+      );
+      log.debug('Settings window settings loaded.');
+      settingsWindow.show();
+    } catch (err) {
+      log.error(`Unexpected error occurred trying to load settings. Error message: ${err}`)
+    }
   });
   if (DEVELOPMENT_MODE) {
     settingsWindow.webContents.openDevTools();
@@ -1789,16 +1793,16 @@ async function searchLibPath(devMode = false) {
         if (!libsInstalled) {
           const installType = isInAppImage
             ? (
-                await dialog.showMessageBox(mainWindow, {
-                  type: 'info',
-                  title: lang.main.ErrorInstallPermHdr,
-                  message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
-                  buttons: [
-                    lang.main.ErrorInstallPermBtnYes,
-                    lang.main.ErrorInstallPermBtnNo,
-                  ],
-                })
-              ).response : 0;
+              await dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: lang.main.ErrorInstallPermHdr,
+                message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
+                buttons: [
+                  lang.main.ErrorInstallPermBtnYes,
+                  lang.main.ErrorInstallPermBtnNo,
+                ],
+              })
+            ).response : 0;
           if (installType === 1) {
             app.exit(0);
             return;
@@ -1994,11 +1998,10 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
           dialog.showMessageBoxSync(settingsWindow, {
             type: 'error',
             title: `${idUpper} ${lang.main.ErrorInvalidPathHdr}`,
-            message: `${idUpper}${
-              configId === 'r' && process.platform === 'darwin'
-                ? lang.main.ErrorInvalidPathMsgMac
-                : lang.main.ErrorInvalidPathMsg
-            } ${ConfigManager.getMinimumVersion(configId)}`,
+            message: `${idUpper}${configId === 'r' && process.platform === 'darwin'
+              ? lang.main.ErrorInvalidPathMsgMac
+              : lang.main.ErrorInvalidPathMsg
+              } ${ConfigManager.getMinimumVersion(configId)}`,
             buttons: [lang.main.BtnOk],
           });
         }
@@ -2323,11 +2326,15 @@ ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
           app.quit();
         }
       } else {
-        settingsWindow.webContents.send(
-          'settings-loaded',
-          await configData.getAll(),
-          await configData.getAll(true),
-        );
+        try {
+          settingsWindow.webContents.send(
+            'settings-loaded',
+            await configData.getAll(),
+            await configData.getAll(true),
+          );
+        } catch (err) {
+          log.error(`Unexpected error occurred trying to load settings. Error message: ${err}`)
+        }
       }
     }
   } catch (err) {
