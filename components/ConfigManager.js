@@ -773,6 +773,10 @@ ${latestGamsInstalled}`);
     try {
       let pythonpathTmp;
       if (path.basename(pythonpath).toLowerCase().startsWith('python')) {
+        if (process.platform === 'win32' && !pythonpath.toLowerCase().endsWith('.exe')) {
+          log.info('Python path to validate is not a real executable');
+          return false;
+        }
         pythonpathTmp = pythonpath;
       } else {
         if (!fs.lstatSync(pythonpath).isDirectory()) {
