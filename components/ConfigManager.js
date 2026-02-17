@@ -475,7 +475,7 @@ class ConfigManager extends Store {
       '-e',
       'print(R.home())\nprint(paste0(R.Version()$major, \
 ".", R.Version()$minor))',
-    ]);
+    ], { timeout: 5000 });
     if (!stdout) {
       log.info('Stdout of Rscript is empty');
       return false;
@@ -720,7 +720,7 @@ ${latestGamsInstalled}`);
       let { stdout } = await execa(
         gamsExecDir,
         ['/??', 'lo=3', `curdir=${tmpdir}`],
-        process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' } } : {},
+        process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' }, timeout: 5000 } : { timeout: 5000 },
       );
       stdout = stdout.split('\n');
       if (stdout.length < 2) {
@@ -836,7 +836,7 @@ ${latestGamsInstalled}`);
           return false;
         }
       }
-      let { stdout } = await execa(pythonpathTmp, ['-V']);
+      let { stdout } = await execa(pythonpathTmp, ['-V'], { timeout: 5000 });
       if (!stdout) {
         log.info('Stdout of python is empty');
         return false;
