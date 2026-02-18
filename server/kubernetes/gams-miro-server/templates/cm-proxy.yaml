@@ -21,7 +21,7 @@ metadata:
 data:
   application.yml: |-
     proxy:
-      {{- if .Values.config.persistentSessionStore.host }}
+      {{- if .Values.proxy.config.persistentSessionStore.host }}
       stop-proxies-on-shutdown: false
       store-mode: Redis
       {{- end }}
@@ -252,16 +252,16 @@ data:
 
     spring:
       application.name: {{ .Values.proxy.config.title | quote }}
-      {{- if .Values.config.persistentSessionStore.host }}
+      {{- if .Values.proxy.config.persistentSessionStore.host }}
       session:
         store-type: redis
         redis:
           configure-action: none
       data:
         redis:
-          host: {{ .Values.config.persistentSessionStore.host }}
-          port: {{ .Values.config.persistentSessionStore.port }}
-          username: {{ .Values.config.persistentSessionStore.port }}
+          host: {{ .Values.proxy.config.persistentSessionStore.host }}
+          port: {{ .Values.proxy.config.persistentSessionStore.port }}
+          username: {{ .Values.proxy.config.persistentSessionStore.port }}
           ssl:
             enabled: {{ .Values.config.persistentSessionStore.sslEnabled }}
       {{- end }}
