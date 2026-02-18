@@ -263,7 +263,7 @@ data:
           port: {{ .Values.proxy.config.persistentSessionStore.port }}
           username: {{ .Values.proxy.config.persistentSessionStore.port }}
           ssl:
-            enabled: {{ .Values.config.persistentSessionStore.sslEnabled }}
+            enabled: {{ .Values.proxy.config.persistentSessionStore.sslEnabled }}
       {{- end }}
 
     server:
