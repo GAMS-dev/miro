@@ -100,6 +100,8 @@ spec:
             secretKeyRef:
               name: {{ include "common.names.fullname" . }}-secdb
               key: password
+        - name: SPRING_DATA_REDIS_PASSWORD
+          value: {{ .Values.secrets.redisPassword }}
         {{- if eq .Values.proxy.config.authentication "none" }}
         - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
           valueFrom:
