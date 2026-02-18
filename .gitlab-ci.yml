@@ -525,7 +525,6 @@ build_windows_job:
   stage: build
   image: $CI_REGISTRY_IMAGE/builder-windows:latest
   variables:
-    CSC_LINK: cert.p12
     GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - yarn install --frozen-lockfile
