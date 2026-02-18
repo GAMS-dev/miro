@@ -59,6 +59,9 @@
         },
         "containerLogS3SecretAccessKey": {
           "type": "string"
+        },
+        "redisPassword": {
+          "type": "string"
         }
       },
       "required": ["dbPassword"]
