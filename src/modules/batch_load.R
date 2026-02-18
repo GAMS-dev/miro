@@ -488,22 +488,12 @@ output$batchLoadResults <- renderDT(
       return()
     }
     data <- batchLoadData[, -1]
-    maxStrLen <- if (length(data) <= 7L) 100L else 20L
     dtObj <- datatable(
       data,
       filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
       editable = list(target = "cell", disable = list(columns = seq_along(data)[-c(2L, 4L)] - 1L)),
       options = list(
-        scrollX = TRUE, columnDefs = list(list(
-          targets = "_all",
-          render = JS(paste0(
-            "function(data, type, row, meta) {",
-            "return type === 'display' && data != null && data.length > ", maxStrLen, " ?",
-            "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, ",
-            maxStrLen, ") + '...</span>' : data;",
-            "}"
-          ))
-        )),
+        scrollX = TRUE,
         pagingType = JS("$(window).width() < 768 ? 'full' : 'simple_numbers'")
       )
     ) %>%
