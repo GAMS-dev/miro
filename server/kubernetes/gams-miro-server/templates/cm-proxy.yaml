@@ -261,7 +261,7 @@ data:
         redis:
           host: {{ .Values.proxy.config.persistentSessionStore.host }}
           port: {{ .Values.proxy.config.persistentSessionStore.port }}
-          username: {{ .Values.proxy.config.persistentSessionStore.port }}
+          username: {{ .Values.proxy.config.persistentSessionStore.user }}
           ssl:
             enabled: {{ .Values.proxy.config.persistentSessionStore.sslEnabled }}
       {{- end }}
