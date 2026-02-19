@@ -255,8 +255,10 @@ data:
       {{- if .Values.proxy.config.persistentSessionStore.host }}
       session:
         store-type: redis
+      {{- if and .Values.proxy.config.persistentSessionStore.host .Values.proxy.config.persistentSessionStore.disableConfigureAction }}
         redis:
           configure-action: none
+      {{- end }}
       data:
         redis:
           host: {{ .Values.proxy.config.persistentSessionStore.host }}
