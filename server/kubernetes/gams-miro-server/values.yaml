@@ -132,6 +132,8 @@ proxy:
       port: ''
       user: ''
       sslEnabled: true # if AWSelastiCache is used ssl should be enabled.
+      disableConfigureAction: true # if AWSelastiCache is used it should be true.
+      
 auth:
   image:
     registry: docker.io/gams
