@@ -24,6 +24,7 @@ data:
       {{- if .Values.proxy.config.persistentSessionStore.host }}
       stop-proxies-on-shutdown: false
       store-mode: Redis
+      realm-id: {{ .Release.Namespace | quote }}
       {{- end }}
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
@@ -266,6 +267,7 @@ data:
           username: {{ .Values.proxy.config.persistentSessionStore.user }}
           ssl:
             enabled: {{ .Values.proxy.config.persistentSessionStore.sslEnabled }}
+          namespace: {{ .Release.Namespace | quote }}
       {{- end }}
 
     server:
