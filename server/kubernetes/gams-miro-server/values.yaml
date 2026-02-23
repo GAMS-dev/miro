@@ -133,6 +133,11 @@ proxy:
       user: ''
       sslEnabled: true # if AWSelastiCache is used ssl should be enabled.
       disableConfigureAction: true # if AWSelastiCache is used it should be true.
+      # Used as a prefix for all keys stored in Redis to allow multiple MIRO Server instances
+      # to share one instance.
+      # Maximum length is 63 characters, only alphanumeric characters and - allowed, but may not start or end with -.
+      # Defaults to the namespace where the Helm release is installed ({{ .Release.Namespace }}).
+      namespace: ''
 
 auth:
   image:

@@ -24,7 +24,7 @@ data:
       {{- if .Values.proxy.config.persistentSessionStore.host }}
       stop-proxies-on-shutdown: false
       store-mode: Redis
-      realm-id: {{ .Release.Namespace | quote }}
+      realm-id: {{ .Values.proxy.config.persistentSessionStore.namespace | default .Release.Namespace | quote }}
       {{- end }}
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
@@ -263,11 +263,11 @@ data:
       data:
         redis:
           host: {{ .Values.proxy.config.persistentSessionStore.host }}
-          port: {{ .Values.proxy.config.persistentSessionStore.port }}
-          username: {{ .Values.proxy.config.persistentSessionStore.user }}
+          port: {{ required "A valid Redis port is required" .Values.proxy.config.persistentSessionStore.port }}
+          username: {{ required "A valid Redis username is required" .Values.proxy.config.persistentSessionStore.user }}
           ssl:
             enabled: {{ .Values.proxy.config.persistentSessionStore.sslEnabled }}
-          namespace: {{ .Release.Namespace | quote }}
+          namespace: {{ .Values.proxy.config.persistentSessionStore.namespace | default .Release.Namespace | quote }}
       {{- end }}
 
     server:
