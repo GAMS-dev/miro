@@ -3,7 +3,7 @@ FROM miro-ui:latest AS miro-pkg-builder
 USER root
 
 ARG R_BASE_VERSION=4.2.1
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=22
 
 RUN apt-get update && apt-get install -y \
     sudo \
@@ -31,7 +31,7 @@ ARG GAMS_MAJOR=33
 ARG GAMS_MINOR=1
 ARG GAMS_MAINT=0
 
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=22
 
 USER root
 

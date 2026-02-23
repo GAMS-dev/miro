@@ -45,7 +45,6 @@
       "!scripts/**",
       "!r/**",
       "!r-src/**",
-      "!electron-builder.env",
       "!src/**",
       "!server/**"
     ],
