@@ -80,6 +80,9 @@ spec:
           port: 2049
     {{- end }}
     {{- end }}
+    {{- if .Values.proxy.networkPolicy.extraEgress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.proxy.networkPolicy.extraEgress "context" $ ) | nindent 4 }}
+    {{- end }}
   ingress:
     - ports:
         - port: 8080
