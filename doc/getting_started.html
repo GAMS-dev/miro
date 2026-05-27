@@ -749,56 +749,53 @@
                             <pre
                               style="max-height: 300px"
                             ><code class="language-gams">Set
-         i 'canning plants' / seattle,  san-diego /
-         j 'markets'        / new-york, chicago, topeka /;
+   i 'canning plants' / seattle,  san-diego /
+   j 'markets'        / new-york, chicago, topeka /
+;
 
-      $onExternalInput
-      Parameter
-         a(i) 'capacity of plant i in cases'
-              / seattle    350
-                san-diego  600 /
+$onExternalInput
+Parameter
+   a(i) 'capacity of plant i in cases'
+        / seattle    350
+          san-diego  600 /
+   b(j) 'demand at market j in cases'
+        / new-york   325
+          chicago    300
+          topeka     275 /;
+Table d(i,j) 'distance in thousands of miles'
+              new-york  chicago  topeka
+   seattle         2.5      1.7     1.8
+   san-diego       2.5      1.8     1.4
+;
 
-         b(j) 'demand at market j in cases'
-              / new-york   325
-                chicago    300
-                topeka     275 /;
+Scalar f 'freight in dollars per case per thousand miles' / 90 /;
+$offExternalInput
 
-      Table d(i,j) 'distance in thousands of miles'
-                    new-york  chicago  topeka
-         seattle         2.5      1.7     1.8
-         san-diego       2.5      1.8     1.4;
+Parameter c(i,j) 'transport cost in thousands of dollars per case';
+c(i,j) = f*d(i,j)/1000;
 
-      Scalar f 'freight in dollars per case per thousand miles' / 90 /;
-      $offExternalInput
+$onExternalOutput
+Variable
+   x(i,j) 'shipment quantities in cases'
+   z      'total transportation costs in thousands of dollars'
+;
+$offExternalOutput
 
-      Parameter c(i,j) 'transport cost in thousands of dollars per case';
-      c(i,j) = f*d(i,j)/1000;
+Positive Variable x;
 
-      $onExternalOutput
-      Variable
-         x(i,j) 'shipment quantities in cases'
-         z      'total transportation costs in thousands of dollars';
-      $offExternalOutput
+Equation
+   cost      'define objective function'
+   supply(i) 'observe supply limit at plant i'
+   demand(j) 'satisfy demand at market j';
 
-      Positive Variable x;
+cost..      z =e= sum((i,j), c(i,j)*x(i,j));
+supply(i).. sum(j, x(i,j)) =l= a(i);
+demand(j).. sum(i, x(i,j)) =g= b(j);
 
-      Equation
-         cost      'define objective function'
-         supply(i) 'observe supply limit at plant i'
-         demand(j) 'satisfy demand at market j';
-
-      cost..      z =e= sum((i,j), c(i,j)*x(i,j));
-
-      supply(i).. sum(j, x(i,j)) =l= a(i);
-
-      demand(j).. sum(i, x(i,j)) =g= b(j);
-
-      Model transport / all /;
-
-      solve transport using lp minimizing z;
-
-      display x.l, x.m;
-      </code></pre>
+Model transport / all /;
+solve transport using lp minimizing z;
+display x.l, x.m;
+</code></pre>
                           </div>
                         </div>
                         <div
