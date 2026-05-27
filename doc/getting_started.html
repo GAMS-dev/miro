@@ -1,0 +1,1914 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+  <!--<![endif]-->
+  <head>
+    <title>GAMS MIRO - Getting started</title>
+    <!-- Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="GAMS MIRO documentation" />
+    <meta name="author" content="GAMS Development Corp." />
+    <!-- FontAwesome JS -->
+    <script
+      defer
+      type="text/javascript"
+      src="assets/js/fontawesome.js"
+    ></script>
+    <!-- Global CSS -->
+    <link
+      rel="stylesheet"
+      href="assets/plugins/bootstrap/css/bootstrap.min.css"
+    />
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css" />
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css" />
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css" />
+    <!--#include virtual="/wheader.html" -->
+  </head>
+
+  <body class="body-orange">
+    <!--#include virtual="/navbar_full.html" -->
+    <div class="page-wrapper">
+      <!--#include virtual="/mirover.html" -->
+
+      <!-- ******Header****** -->
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="branding">
+            <h1 class="logo">
+              <a href="index.html">
+                <img
+                  class="img-fluid"
+                  style="height: 75px"
+                  src="assets/images/logo.svg"
+                  onerror="this.onerror=null; this.src='assets/images/logo.png'"
+                  alt="GAMS MIRO"
+                />
+              </a>
+            </h1>
+          </div>
+          <!--//branding-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active">GAMS MIRO Quick Start Guide</li>
+          </ol>
+        </div>
+        <!--//container-->
+      </header>
+      <!--//header-->
+      <div class="doc-wrapper">
+        <div class="container">
+          <div class="row justify-content-end search-box-wrapper">
+            <div class="float-right">
+              <input
+                class="form-control search-box"
+                id="miroSearch"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <ul id="miroSearchResults" class="list-group"></ul>
+            </div>
+          </div>
+          <div id="doc-header" class="doc-header text-center">
+            <h1 class="doc-title">
+              <i class="icon fa fa-paper-plane"></i> GAMS MIRO Quick Start
+              Guide
+            </h1>
+          </div>
+          <!--//doc-header-->
+          <div class="doc-body row">
+            <div class="doc-content col-md-9 col-12 order-1">
+              <div class="content-inner">
+                <section id="introduction" class="doc-section">
+                  <h2 class="section-title">Introduction</h2>
+                  <div class="section-block">
+                    <p>
+                      Welcome to the GAMS MIRO Quick Start Guide. This guide is
+                      designed to provide a fast, reliable onboarding path to
+                      help you transform your existing GAMS or GAMSPy
+                      optimization models into fully functional, interactive
+                      web applications.
+                    </p>
+                    <p>
+                      In the following sections, we will walk you through the
+                      essential stages of building your first MIRO app. You
+                      will learn how to establish a data contract to seamlessly
+                      link your model's inputs and outputs to the MIRO
+                      interface, launch your application to immediately
+                      interact with your data, and customize the user
+                      experience using widgets and charts. Finally, we will
+                      cover how to package and deploy your application so it
+                      can be easily shared with end users.
+                    </p>
+                    <p>
+                      This quick start guide covers the most important aspects
+                      of MIRO application development. The individual aspects
+                      are explained in more detail in corresponding linked
+                      chapters.
+                    </p>
+                  </div>
+                  <div class="callout-block callout-success">
+                    <div
+                      class="custom-icon-holder icon-holder"
+                      style="top: 15px"
+                    >
+                      <i class="fas fa-thumbs-up"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="custom-icon-content content">
+                      <p>
+                        For a more detailed tutorial you can find a complete
+                        walkthrough from the implementation of a GAMSPy model
+                        to a simple MIRO app and sophisticated custom
+                        visualizations
+                        <a href="./step_by_step_tutorial.html">here</a>.
+                      </p>
+                    </div>
+                    <!--//content-->
+                  </div>
+                  <!--//callout-block-->
+                </section>
+
+                <section id="miro-components" class="doc-section">
+                  <h2 class="section-title">Core Components of GAMS MIRO</h2>
+
+                  <div class="section-block">
+                    <p>
+                      GAMS MIRO consists of several components that work
+                      together to turn GAMS and GAMSPy models into interactive
+                      applications. Understanding these components helps
+                      clarify how models, user interfaces, and deployment
+                      workflows interact during development and operation.
+                    </p>
+
+                    <p>
+                      In the simplest setup, all MIRO components run locally on
+                      the same machine as GAMS or GAMSPy. This setup is
+                      referred to as
+                      <i>GAMS MIRO Desktop</i>.
+                    </p>
+
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <div class="content">
+                        <b class="callout-title">Supported Platforms:</b>
+                        <p>
+                          GAMS MIRO Desktop is available for Windows, macOS,
+                          and Linux.
+                        </p>
+                      </div>
+                    </div>
+
+                    <h3 class="block-title" id="miro-ui">
+                      MIRO User Interface
+                    </h3>
+
+                    <p>
+                      The most visible component is the MIRO user interface
+                      (MIRO UI). It provides the interactive application shown
+                      in the browser, where users can:
+                    </p>
+
+                    <ul class="list">
+                      <li>Modify model input data</li>
+                      <li>Run optimization jobs</li>
+                      <li>Analyze model results</li>
+                      <li>Create and compare scenarios</li>
+                    </ul>
+
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto; text-align: center"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 320pt"
+                        src="assets/images/compare_dashboard.png"
+                        alt="GAMS MIRO UI"
+                      />
+                    </div>
+
+                    <h3 class="block-title" id="miro-connector">
+                      GAMS/MIRO Connector
+                    </h3>
+
+                    <p>
+                      The GAMS/MIRO connector is responsible for the
+                      communication between the optimization model and the MIRO
+                      interface. It manages the MIRO data contract and
+                      transfers model input and output data between GAMS or
+                      GAMSPy and the MIRO application.
+                    </p>
+
+                    <h3 class="block-title" id="miro-library">
+                      MIRO Desktop Library
+                    </h3>
+
+                    <p>
+                      Locally deployed MIRO applications are managed through
+                      the MIRO Desktop Library. It acts as a central launcher
+                      for installed applications and also provides access to
+                      global settings such as language preferences, paths, and
+                      browser configuration.
+                    </p>
+
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto; text-align: center"
+                    >
+                      <img
+                        class="img-fluid"
+                        style="max-height: 300pt"
+                        src="assets/images/deployment/gallery.png"
+                        alt="GAMS MIRO Desktop Library"
+                      />
+                    </div>
+
+                    <h3 class="block-title" id="cloud-setups">
+                      Cloud and Enterprise Setups
+                    </h3>
+
+                    <p>
+                      Besides local desktop usage, MIRO applications can also
+                      be deployed in centralized cloud and enterprise
+                      environments using
+                      <a href="./server.html">GAMS MIRO Server</a>. In this
+                      setup, applications are hosted on a server and accessed
+                      directly through the browser, eliminating the need for
+                      local deployment on end-user machines. Optimization jobs
+                      are executed by
+                      <a
+                        href="https://www.gams.com/products/gams-engine/"
+                        target="_blank"
+                        >GAMS Engine</a
+                      >, which acts as the scalable backend infrastructure for
+                      MIRO Server and provides enterprise-grade job scheduling,
+                      execution, and user management capabilities.
+                    </p>
+                  </div>
+                </section>
+
+                <section id="prerequisites" class="doc-section">
+                  <h2 class="section-title">Prerequisites</h2>
+                  <div class="section-block">
+                    <ul class="list">
+                      <li>
+                        <b>GAMS or GAMSPy</b>: A working installation of the
+                        GAMS system (including GAMS Studio) or a Python
+                        environment with GAMSPy installed.
+                      </li>
+                      <li>
+                        <b>File Encoding</b>: Ensure your model files are
+                        encoded in <b>UTF-8</b>. Other encodings are not
+                        supported and will cause errors. In GAMS Studio you can
+                        change the encoding of your file via <i>Edit</i> &rarr;
+                        <i>Encoding</i> &rarr; <i>convert to</i> ... &rarr;
+                        <i>UTF-8</i>.
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+                <section id="installation-setup" class="doc-section">
+                  <h2 class="section-title">Installation and Setup</h2>
+
+                  <div class="section-block" id="install-paths">
+                    <h3 class="block-title">
+                      Download and Path Configuration
+                    </h3>
+                    <p>
+                      <a
+                        href="https://www.gams.com/miro/download.html"
+                        target="_blank"
+                        >Download</a
+                      >
+                      and install GAMS MIRO Desktop. After installation, make
+                      sure that MIRO and your modeling environment know about
+                      each other.
+                    </p>
+
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="install-path-gams-tab"
+                          data-toggle="tab"
+                          href="#install-path-gams"
+                          role="tab"
+                          aria-controls="install-path-gams"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="install-path-gamspy-tab"
+                          data-toggle="tab"
+                          href="#install-path-gamspy"
+                          role="tab"
+                          aria-controls="install-path-gamspy"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+
+                    <div class="tab-content tab-console-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="install-path-gams"
+                        role="tabpanel"
+                        aria-labelledby="install-path-gams-tab"
+                      >
+                        <p>
+                          If you work with GAMS Studio, go to
+                          <i>File</i> &rarr; <i>Settings</i> &rarr;
+                          <i>Remote</i>
+                          and check whether the MIRO installation location is
+                          correct.
+                        </p>
+                        <div
+                          class="section-block"
+                          style="display: block; margin: auto"
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 330pt"
+                            src="assets/images/studio/miro_path.png"
+                            alt="MIRO installation location"
+                          />
+                        </div>
+                        <p>
+                          On the MIRO side, open MIRO Desktop and go to
+                          <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that
+                          the location of the correct GAMS version is
+                          specified. Restart MIRO if you change the path.
+                        </p>
+                        <div
+                          class="section-block"
+                          style="display: block; margin: auto"
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 370pt"
+                            src="assets/images/gams_path.png"
+                            alt="GAMS installation location"
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        class="tab-pane fade"
+                        id="install-path-gamspy"
+                        role="tabpanel"
+                        aria-labelledby="install-path-gamspy-tab"
+                      >
+                        <p>
+                          If MIRO is installed in one of the standard locations
+                          on Windows or macOS, GAMSPy usually detects it
+                          automatically. On Linux or when using a custom
+                          installation location, set the
+                          <kbd>MIRO_PATH</kbd> environment variable to the path
+                          of your MIRO executable. Alternatively, pass the path
+                          each time you call the GAMSPy CLI using the
+                          <kbd>--path</kbd> argument.
+                        </p>
+                        <p>
+                          Typical executable paths are
+                          <kbd>C:\Program Files\GAMS MIRO\GAMS MIRO.exe</kbd>
+                          on Windows, <kbd>/Applications/GAMS MIRO.app</kbd> on
+                          macOS, <kbd>/usr/bin/com.gams.miro</kbd> on
+                          Debian/Ubuntu if installed via a
+                          <kbd>.deb</kbd> file, or an AppImage path such as
+                          <kbd>~/GAMS-MIRO-2.9.0.AppImage</kbd> on other Linux
+                          distributions.
+                        </p>
+                        <p>
+                          On the MIRO side, open MIRO Desktop and go to
+                          <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that
+                          the location of the correct Python version, i.e. the
+                          environment in which GAMSPy is installed, is
+                          specified.
+                        </p>
+                        <div
+                          class="section-block"
+                          style="display: block; margin: auto"
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 370pt"
+                            src="assets/images/python_path.png"
+                            alt="Python installation location"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="section-block" id="licensing">
+                    <h3 class="block-title">Licensing Setup</h3>
+                    <p>
+                      Ensure that your license includes the GAMS MIRO
+                      connector. You can check this using the
+                      <a
+                        href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_GAMS_LICENSING"
+                        target="_blank"
+                        >Licensing dialog</a
+                      >
+                      in GAMS Studio. To install a license, use one of the
+                      following methods:
+                    </p>
+
+                    <ul>
+                      <li>
+                        Using
+                        <a
+                          href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_GAMS_LICENSING"
+                          target="_blank"
+                          >GAMS Studio</a
+                        >
+                        (network connection required).
+                      </li>
+                      <li>
+                        Offline or behind a HTTP Proxy: If your machine is not
+                        connected to the internet or a HTTP proxy is blocking
+                        the connection to the GAMS license server, you need to
+                        activate the license on a different machine. You can
+                        find all necessary steps
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_License.html#UG_License_install_activation_without_network_communication"
+                          target="_blank"
+                          >here</a
+                        >.
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="section-block" id="getting-apps">
+                    <h3 class="block-title">
+                      Choose How to Get Started with MIRO
+                    </h3>
+                    <p>
+                      Once your environment is set up, there are several ways
+                      to start working with GAMS MIRO:
+                    </p>
+                    <ul class="list">
+                      <li>
+                        <b>Explore Demo Applications:</b>
+                        You can try out pre-deployed MIRO demo apps to
+                        instantly see the capabilities of the interface. To add
+                        these apps to your MIRO Library, open MIRO Desktop and
+                        click
+                        <b>Edit &rarr; Add example apps</b>. Launch any app by
+                        clicking on one of the app tiles. You can find an
+                        overview of how to work with a GAMS MIRO app
+                        <a href="start.html">here</a>.
+                      </li>
+
+                      <li>
+                        <b>Add an Existing MIRO App:</b>
+                        If you already have a fully deployed MIRO application
+                        (a
+                        <span class="code">.miroapp</span> file), you can add
+                        it directly to your MIRO Library. Simply double-click
+                        the
+                        <span class="code">.miroapp</span>
+                        file or use <b>Edit apps</b> in MIRO Desktop to import
+                        it. See
+                        <a href="#install-run-app" class="scrollto"
+                          >Installing and Running a developed MIRO App</a
+                        >
+                        for details.
+                      </li>
+
+                      <li>
+                        <b>Develop Your First App:</b>
+                        If you want to turn your own GAMS or GAMSPy model into
+                        a MIRO application, continue with the development
+                        workflow starting at
+                        <a class="scrollto" href="#step-1"
+                          >Step 1: Prepare Your Model</a
+                        >
+                        Pre-configured demo applications are also available as
+                        reference implementations and starting points for your
+                        own projects. You can download them
+                        <a
+                          href="https://www.gams.com/miro/download.html#demo-section"
+                          target="_blank"
+                          >here</a
+                        >.
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="section-block" id="install-run-app">
+                    <h3 class="block-title">
+                      Installing and Running a developed MIRO App
+                    </h3>
+
+                    <b>To install a MIRO app:</b>
+                    <ul class="list">
+                      <li>
+                        Simply double-click on the
+                        <span class="code">&lt;app_name&gt;.miroapp</span>
+                        file.
+                      </li>
+                    </ul>
+                    <p><i>Alternatively:</i></p>
+                    <ul class="list">
+                      <li>
+                        Open GAMS MIRO Desktop and click on <b>Edit apps</b> in
+                        the top right-hand corner.
+                      </li>
+                      <li>
+                        Click the plus (<i class="fas fa-plus"></i>) symbol in
+                        the box that appears.
+                      </li>
+                      <li>
+                        Browse for and select the
+                        <span class="code">&lt;app_name&gt;.miroapp</span> file
+                        and click <b>Add app</b>.
+                      </li>
+                    </ul>
+
+                    <b>Once the app is installed:</b>
+                    <ul class="list">
+                      <li>
+                        Click on the
+                        <span class="code">&lt;app_name&gt;</span> tile in MIRO
+                        Desktop to start the interface.
+                      </li>
+                      <li>
+                        If no default scenario is loaded, click on
+                        <b>Load data</b> in the left hand menu panel and select
+                        one.
+                      </li>
+                      <li>Click on <b>Solve model</b> generate results.</li>
+                    </ul>
+                  </div>
+
+                  <div id="demo-applications" class="section-block">
+                    <h4 class="block-title">
+                      Using Demo Applications as Starting Points
+                    </h4>
+                    <p>
+                      Demo applications are a useful way to explore MIRO before
+                      building an app from scratch. They are also helpful
+                      reference projects because they show how the data
+                      contract, app configuration, and model execution fit
+                      together.
+                    </p>
+
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="demo-apps-gams-tab"
+                          data-toggle="tab"
+                          href="#demo-apps-gams"
+                          role="tab"
+                          aria-controls="demo-apps-gams"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="demo-apps-gamspy-tab"
+                          data-toggle="tab"
+                          href="#demo-apps-gamspy"
+                          role="tab"
+                          aria-controls="demo-apps-gamspy"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+
+                    <div class="tab-content tab-console-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="demo-apps-gams"
+                        role="tabpanel"
+                        aria-labelledby="demo-apps-gams-tab"
+                      >
+                        <p>
+                          To work with the GAMS demo applications outside the
+                          MIRO Library, download the demo applications
+                          <a href="./download.html#demo-section">here</a>,
+                          unzip the archive, and place the extracted
+                          <i>miro_lib</i>
+                          folder in your user model library directory. In GAMS
+                          Studio, you can find this directory under
+                          <i>File</i> &rarr; <i>Settings</i> &rarr;
+                          <i>Misc.</i> &rarr; <i>user model library</i>.
+                        </p>
+                        <div
+                          class="section-block"
+                          style="
+                            display: block;
+                            margin: auto;
+                            text-align: center;
+                          "
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 150pt"
+                            src="assets/images/miro_lib.png"
+                            alt="MIRO model library"
+                          />
+                        </div>
+                        <p>
+                          Then open <i>GAMS</i> &rarr;
+                          <i>Model Library Explorer</i> in GAMS Studio and
+                          select <i>GAMS MIRO model collection</i>. From the
+                          command line, you can access an app with:
+                        </p>
+                        <div class="console-box">
+                          <span class="console-content">
+                            &gt; gamslib -lib
+                            /location/to/the/miro_lib/mirolib.glb
+                            &lt;modelname&gt;
+                          </span>
+                        </div>
+                      </div>
+
+                      <div
+                        class="tab-pane fade"
+                        id="demo-apps-gamspy"
+                        role="tabpanel"
+                        aria-labelledby="demo-apps-gamspy-tab"
+                      >
+                        <p>
+                          To work with the GAMSPy demo applications, download
+                          the demo applications
+                          <a href="./download.html#demo-section">here</a> and
+                          unzip the archive. The apps are located in the
+                          <i>miro_lib_gamspy</i> directory and can be launched
+                          directly with the GAMSPy CLI.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section id="step-1" class="doc-section">
+                  <h2 class="section-title">Step 1: Prepare Your Model</h2>
+                  <div class="section-block">
+                    <p>
+                      Before you can launch a model as a MIRO application, the
+                      model must define which symbols (sets, parameters,
+                      variables, or equations) should be available as inputs
+                      and outputs in the MIRO interface. This connection
+                      between the model and MIRO is called the "Data Contract".
+                      Symbols that are not part of the data contract are not
+                      shown in the app.
+                    </p>
+
+                    <div class="section-block">
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                          <a
+                            class="nav-link active"
+                            id="gams-tab-1"
+                            data-toggle="tab"
+                            href="#gams-1"
+                            role="tab"
+                            aria-controls="gams-1"
+                            aria-selected="true"
+                            >GAMS</a
+                          >
+                        </li>
+                        <li class="nav-item">
+                          <a
+                            class="nav-link"
+                            id="gamspy-tab-1"
+                            data-toggle="tab"
+                            href="#gamspy-1"
+                            role="tab"
+                            aria-controls="gamspy-1"
+                            aria-selected="false"
+                            >GAMSPy</a
+                          >
+                        </li>
+                      </ul>
+                      <div class="tab-content tab-console-content tab-section">
+                        <div
+                          class="tab-pane fade show active"
+                          id="gams-1"
+                          role="tabpanel"
+                          aria-labelledby="gams-tab-1"
+                        >
+                          <div class="section-block">
+                            <p>
+                              Ideally, you start off with a fully developed
+                              GAMS model or a model in which no major changes
+                              are made to the symbols that will later be
+                              visible in MIRO (of course, you can also start
+                              from scratch and adjust your symbols as you go).
+                              In our example we use the classic
+                              <a
+                                href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html"
+                                target="_blank"
+                                >Trnsport model</a
+                              >
+                              from the GAMS model library. The only thing we
+                              have to do in the model is to tell MIRO which
+                              symbols we want to see in the application. We do
+                              this by wrapping the corresponding
+                              <i>symbol declarations</i> with the tags
+                              <code class="language-gams"
+                                >$onExternalInput
+                              </code>
+                              /
+                              <code class="language-gams"
+                                >$offExternalInput
+                              </code>
+                              for input data and
+                              <code class="language-gams"
+                                >$onExternalOutput
+                              </code>
+                              /
+                              <code class="language-gams"
+                                >$offExternalOutput
+                              </code>
+                              for output data. These tags can be used multiple
+                              times within a model. Symbols which are not
+                              tagged won’t be visible in MIRO.
+                            </p>
+
+                            <pre
+                              style="max-height: 300px"
+                            ><code class="language-gams">Set
+         i 'canning plants' / seattle,  san-diego /
+         j 'markets'        / new-york, chicago, topeka /;
+
+      $onExternalInput
+      Parameter
+         a(i) 'capacity of plant i in cases'
+              / seattle    350
+                san-diego  600 /
+
+         b(j) 'demand at market j in cases'
+              / new-york   325
+                chicago    300
+                topeka     275 /;
+
+      Table d(i,j) 'distance in thousands of miles'
+                    new-york  chicago  topeka
+         seattle         2.5      1.7     1.8
+         san-diego       2.5      1.8     1.4;
+
+      Scalar f 'freight in dollars per case per thousand miles' / 90 /;
+      $offExternalInput
+
+      Parameter c(i,j) 'transport cost in thousands of dollars per case';
+      c(i,j) = f*d(i,j)/1000;
+
+      $onExternalOutput
+      Variable
+         x(i,j) 'shipment quantities in cases'
+         z      'total transportation costs in thousands of dollars';
+      $offExternalOutput
+
+      Positive Variable x;
+
+      Equation
+         cost      'define objective function'
+         supply(i) 'observe supply limit at plant i'
+         demand(j) 'satisfy demand at market j';
+
+      cost..      z =e= sum((i,j), c(i,j)*x(i,j));
+
+      supply(i).. sum(j, x(i,j)) =l= a(i);
+
+      demand(j).. sum(i, x(i,j)) =g= b(j);
+
+      Model transport / all /;
+
+      solve transport using lp minimizing z;
+
+      display x.l, x.m;
+      </code></pre>
+                          </div>
+                        </div>
+                        <div
+                          class="tab-pane fade active show"
+                          id="gamspy-1"
+                          role="tabpanel"
+                          aria-labelledby="gamspy-tab-1"
+                        >
+                          <div class="section-block">
+                            <p>
+                              Ideally, you start off with a fully developed
+                              GAMSPy model or a model in which no major changes
+                              are made to the symbols that will later be
+                              visible in MIRO (of course, you can also start
+                              from scratch and adjust your symbols as you go).
+                              In our example we use the classic
+                              <a
+                                href="https://gamspy.readthedocs.io/en/latest/user/notebooks/trnsport.html"
+                                target="_blank"
+                                >Transportation problem</a
+                              >. All you need to do to use your GAMSPy models
+                              in GAMS MIRO is to annotate your MIRO input and
+                              output symbols. For example, the following code
+                              snippet declares symbol <kbd>d</kbd> as a MIRO
+                              input and symbol <kbd>x</kbd> as a MIRO output:
+                            </p>
+                            <pre
+                              style="max-height: 300px"
+                            ><code class="language-python">...
+...
+data preparation
+...
+...
+
+a = Parameter(m, name="a", domain=[i], records=capacities)
+b = Parameter(m, name="b", domain=[j], records=demands)
+d = Parameter(m, name="d", domain=[i, j], records=distances, is_miro_input=True)
+
+x = Variable(m, name="x", domain=[i, j], type="Positive", is_miro_output=True)
+...
+...
+model.solve()
+    </code></pre>
+                          </div>
+
+                          <p>
+                            Symbols which are not annotated won't be visible in
+                            MIRO.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p>
+                      Once your model is prepared for MIRO, continue with the
+                      next step and launch it in Base Mode to verify that the
+                      app starts correctly.
+                    </p>
+                    <p>
+                      After launching MIRO for the first time, all selected
+                      symbols are automatically available in tabular form. Even
+                      without additional configuration, you can already:
+                    </p>
+
+                    <ul class="list">
+                      <li>Load and modify input data</li>
+                      <li>Run or stop optimization jobs</li>
+                      <li>Inspect logs and generated files</li>
+                      <li>Analyze model results</li>
+                      <li>Store and compare scenarios</li>
+                    </ul>
+
+                    <p>
+                      The complete workflow for preparing a model for MIRO,
+                      including detailed examples for GAMS and GAMSPy, is
+                      described
+                      <a href="./model.html">here</a>.
+                    </p>
+                  </div>
+                </section>
+
+                <section id="step-2" class="doc-section">
+                  <h2 class="section-title">
+                    Step 2: Launch Your First App (Base Mode)
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      Run the model in MIRO Base Mode to verify that your data
+                      contract works and generates a default interface.
+                    </p>
+
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="run-miro-gams-tab"
+                          data-toggle="tab"
+                          href="#run-miro-gams"
+                          role="tab"
+                          aria-controls="run-miro-gams"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="run-miro-gamspy-tab"
+                          data-toggle="tab"
+                          href="#run-miro-gamspy"
+                          role="tab"
+                          aria-controls="run-miro-gamspy"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+
+                    <div class="tab-content tab-console-content">
+                      <div
+                        class="tab-pane fade show active"
+                        id="run-miro-gams"
+                        role="tabpanel"
+                        aria-labelledby="run-miro-gams-tab"
+                      >
+                        <p>
+                          In GAMS Studio, open the model and choose
+                          <i>Run Base Mode</i> from the MIRO menu.
+                        </p>
+                        <div
+                          class="section-block"
+                          style="
+                            display: block;
+                            margin: auto;
+                            text-align: center;
+                          "
+                        >
+                          <img
+                            class="img-fluid"
+                            style="max-height: 175pt"
+                            src="assets/images/studio/launch-miro-btn.png"
+                            alt="Launch MIRO button"
+                          />
+                        </div>
+
+                        <div class="callout-block callout-warning">
+                          <div class="icon-holder">
+                            <i class="fas fa-info-circle"></i>
+                          </div>
+                          <div class="content">
+                            <b class="callout-title">Note:</b>
+                            <p>
+                              If you start MIRO via GAMS Studio, make sure that
+                              the model file you want to run is marked as the
+                              main file in the corresponding project group. If
+                              needed, right-click the file in the project
+                              explorer and select <i>set as main file</i>.
+                            </p>
+                            <div
+                              class="section-block"
+                              style="
+                                display: block;
+                                margin: auto;
+                                text-align: center;
+                              "
+                            >
+                              <img
+                                class="img-fluid"
+                                style="max-height: 200pt"
+                                src="assets/images/studio/studio_main_file.png"
+                                alt="Set as main file in Studio"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        class="tab-pane fade"
+                        id="run-miro-gamspy"
+                        role="tabpanel"
+                        aria-labelledby="run-miro-gamspy-tab"
+                      >
+                        <p>
+                          After you mark your miro symbols with
+                          <kbd>is_miro_input</kbd> and
+                          <kbd>is_miro_output</kbd>, you can run MIRO. Navigate
+                          to your model directory and launch MIRO from the
+                          command line:
+                        </p>
+                        <div class="console-box" style="margin-bottom: 1rem">
+                          <span class="console-content">
+                            &gt; gamspy run miro --model
+                            &lt;path_to_your_model&gt; [--path
+                            &lt;path_to_your_MIRO_installation&gt;]<br />
+                          </span>
+                        </div>
+                        <p>
+                          You can omit <kbd>--path</kbd> if MIRO is installed
+                          in one of the standard locations on Windows or macOS,
+                          or if you configured the
+                          <kbd>MIRO_PATH</kbd> environment variable.
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      This initializes the default values for your GAMS MIRO
+                      app and creates the necessary data contract. Then, it
+                      spawns the GAMS MIRO app.
+                    </div>
+
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 15px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <div class="content">
+                        <b class="callout-title">Expected Output:</b>
+                        <p>
+                          MIRO Base Mode will open. You will see an interactive
+                          interface where you can load input data, click "Solve
+                          model," and examine the outputs.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div id="skip-model-execution" class="section-block">
+                      <h3 class="block-title">Skip Model Execution</h3>
+                      <p>
+                        GAMS Studio and the GAMSPy CLI can start MIRO without
+                        executing the model first. This can be helpful for
+                        large models, but it should be used with caution: if
+                        model execution is skipped, the GAMS/MIRO data contract
+                        is not created or refreshed. Changes to MIRO input or
+                        output symbols are therefore not communicated to MIRO.
+                      </p>
+
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                          <a
+                            class="nav-link active"
+                            id="skip-model-execution-gams-tab"
+                            data-toggle="tab"
+                            href="#skip-model-execution-gams"
+                            role="tab"
+                            aria-controls="skip-model-execution-gams"
+                            aria-selected="true"
+                            >GAMS</a
+                          >
+                        </li>
+                        <li class="nav-item">
+                          <a
+                            class="nav-link"
+                            id="skip-model-execution-gamspy-tab"
+                            data-toggle="tab"
+                            href="#skip-model-execution-gamspy"
+                            role="tab"
+                            aria-controls="skip-model-execution-gamspy"
+                            aria-selected="false"
+                            >GAMSPy</a
+                          >
+                        </li>
+                      </ul>
+
+                      <div class="tab-content tab-console-content">
+                        <div
+                          class="tab-pane fade show active"
+                          id="skip-model-execution-gams"
+                          role="tabpanel"
+                          aria-labelledby="skip-model-execution-gams-tab"
+                        >
+                          <div
+                            class="section-block"
+                            style="
+                              display: block;
+                              margin: auto;
+                              text-align: center;
+                            "
+                          >
+                            <img
+                              class="img-fluid"
+                              style="max-height: 150pt"
+                              src="assets/images/studio/skip_model_execution.png"
+                              alt="Skip model execution"
+                            />
+                          </div>
+                          <p>
+                            For long-running GAMS models, consider compiling
+                            the model instead of skipping execution completely.
+                            You can use the GAMS option
+                            <a
+                              href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction"
+                              target="_blank"
+                              ><i>a=c</i></a
+                            >
+                            to update the data contract without solving the
+                            model. In this case, a new default scenario is
+                            created with input data only.
+                          </p>
+                          <div class="expandable-box-outline">
+                            <h3
+                              id="start-via-command-line"
+                              class="block-title"
+                              onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );"
+                              style="cursor: pointer"
+                            >
+                              <i class="fas fa-plus slide-toggle"></i>
+                              Advanced: Start MIRO using the command line
+                            </h3>
+                            <div class="section-block" style="display: none">
+                              <p>
+                                In case you want to launch MIRO from the
+                                command line, the data contract between GAMS
+                                and MIRO must be created first (<i
+                                  ><a href="./faqs.html#file-io"
+                                    >&lt;modelname&gt;_io.json</a
+                                  ></i
+                                >). This happens when the model is called in
+                                GAMS with the option
+                                <span class="code"
+                                  >IDCGenerateJSON=path/to/conf_&lt;modelname&gt;/&lt;modelname&gt;_io.json</span
+                                >.
+                              </p>
+                              <p>
+                                For the <i>transport</i> model this would
+                                result in the following call:
+                              </p>
+                              <div
+                                class="console-box"
+                                style="margin-bottom: 1rem"
+                              >
+                                <span class="console-content">
+                                  &gt; gams transport.gms
+                                  IDCGenerateJSON=conf_transport/transport_io.json
+                                </span>
+                              </div>
+                              <p>
+                                While GAMS Studio automatically creates the
+                                required folder <i>conf_modelname</i> when
+                                launching MIRO, this does not happen when GAMS
+                                is called from the command line, so you have to
+                                create it manually. Once the model has been run
+                                with <span class="code">IDCGenerateJSON</span>,
+                                the file
+                                <i
+                                  >conf_&lt;modelname&gt;/&lt;modelname&gt;_io</i
+                                >.json should have been created. <br /><b
+                                  >Note</b
+                                >: Whenever changes are made to the model that
+                                are relevant for MIRO (i.e. symbols tagged with
+                                <code class="language-gams"
+                                  >$onExternalInput
+                                </code>
+                                /
+                                <code class="language-gams"
+                                  >$offExternalInput
+                                </code>
+                                or
+                                <code class="language-gams"
+                                  >$onExternalOutput
+                                </code>
+                                /
+                                <code class="language-gams"
+                                  >$offExternalOutput
+                                </code>
+                                have been changed), the data contract must be
+                                updated!
+                              </p>
+                              <div class="callout-block callout-success">
+                                <div class="icon-holder">
+                                  <i class="fas fa-thumbs-up"></i>
+                                </div>
+                                <!--//icon-holder-->
+                                <div class="content">
+                                  <b class="callout-title">Tip:</b>
+                                  <p>
+                                    When launching MIRO via GAMS Studio, you
+                                    will find a scenario named
+                                    <i>default</i> in the database after the
+                                    startup. When starting MIRO via the command
+                                    line you can create this default scenario
+                                    with the GAMS option
+                                    <span class="code"
+                                      >IDCGenerateGDX=data_&lt;modelname&gt;/default.gdx</span
+                                    >.
+                                  </p>
+                                </div>
+                                <!--//content-->
+                              </div>
+                              <!--//callout-block-->
+                              <p>
+                                Before you can start MIRO, a few environment
+                                variables need to be set. On Windows the
+                                default installation location is
+                                <span class="code"
+                                  >C:\Program Files\GAMS MIRO\GAMS
+                                  MIRO.exe</span
+                                >
+                                or
+                                <span class="code"
+                                  >C:\Users\&lt;user&gt;\AppData\Local\Programs\GAMS
+                                  MIRO\GAMS MIRO.exe</span
+                                >
+                                depending on whether MIRO was installed for all
+                                users or not.
+                              </p>
+
+                              <ul
+                                class="nav nav-tabs"
+                                id="startMIRO"
+                                role="tablist"
+                              >
+                                <li class="nav-item">
+                                  <a
+                                    class="nav-link active"
+                                    id="win-start"
+                                    data-toggle="tab"
+                                    href="#windows"
+                                    role="tab"
+                                    aria-controls="windows"
+                                    aria-selected="true"
+                                    >Windows</a
+                                  >
+                                </li>
+                                <li class="nav-item">
+                                  <a
+                                    class="nav-link"
+                                    id="macos-start"
+                                    data-toggle="tab"
+                                    href="#macos"
+                                    role="tab"
+                                    aria-controls="macos"
+                                    aria-selected="false"
+                                    >macOS</a
+                                  >
+                                </li>
+                                <li class="nav-item">
+                                  <a
+                                    class="nav-link"
+                                    id="linux-start"
+                                    data-toggle="tab"
+                                    href="#linux"
+                                    role="tab"
+                                    aria-controls="linux"
+                                    aria-selected="false"
+                                    >Linux</a
+                                  >
+                                </li>
+                              </ul>
+                              <div class="tab-content tab-console-content">
+                                <div
+                                  class="tab-pane fade show active"
+                                  id="windows"
+                                  role="tabpanel"
+                                  aria-labelledby="win-start"
+                                >
+                                  <div class="console-box">
+                                    <span class="console-content">
+                                      &gt; set MIRO_DEV_MODE=true<br />
+                                      &gt; set
+                                      MIRO_MODEL_PATH=C:\Users\&lt;user&gt;\Documents\GAMSStudio\workspace\transport.gms<br />
+                                      &gt; set MIRO_MODE=base<br />
+                                      &gt; "C:\Program Files\GAMS MIRO\GAMS
+                                      MIRO.exe"<br />
+                                    </span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="tab-pane fade"
+                                  id="macos"
+                                  role="tabpanel"
+                                  aria-labelledby="macos-start"
+                                >
+                                  <div class="console-box">
+                                    <span class="console-content">
+                                      &gt; export MIRO_DEV_MODE=true<br />
+                                      &gt; export
+                                      MIRO_MODEL_PATH="/Users/&lt;user&gt;/Documents/model/transport/transport.gms"<br />
+                                      &gt; export MIRO_MODE=base<br />
+                                      &gt; "/Applications/GAMS
+                                      MIRO.app/Contents/MacOS/GAMS MIRO"<br />
+                                    </span>
+                                  </div>
+                                </div>
+                                <div
+                                  class="tab-pane fade"
+                                  id="linux"
+                                  role="tabpanel"
+                                  aria-labelledby="linux-start"
+                                >
+                                  <div class="console-box">
+                                    <span class="console-content">
+                                      &gt; export MIRO_DEV_MODE=true<br />
+                                      &gt; export
+                                      MIRO_MODEL_PATH=/home/&lt;user&gt;/model/transport/transport.gms<br />
+                                      &gt; export MIRO_MODE=base<br />
+                                      &gt; /GAMS-MIRO-1.0.AppImage<br />
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="callout-block callout-warning">
+                                <div class="icon-holder">
+                                  <i class="fas fa-info-circle"></i>
+                                </div>
+                                <!--//icon-holder-->
+                                <div class="content">
+                                  <b class="callout-title">Note:</b>
+                                  <p>
+                                    By default MIRO uses the GAMS version,
+                                    which is in the PATH of your operating
+                                    system. By setting another environment
+                                    variable
+                                    <i>GAMS_SYS_DIR</i>, you can tell MIRO
+                                    where to look for GAMS instead. Note that
+                                    at least GAMS version 30.2 is required to
+                                    use MIRO.
+                                  </p>
+                                </div>
+                                <!--//content-->
+                              </div>
+                              <!--//callout-block-->
+                            </div>
+                            <!--//section-block-->
+                          </div>
+                        </div>
+
+                        <div
+                          class="tab-pane fade"
+                          id="skip-model-execution-gamspy"
+                          role="tabpanel"
+                          aria-labelledby="skip-model-execution-gamspy-tab"
+                        >
+                          <div class="console-box">
+                            <span class="console-content">
+                              &gt; gamspy run miro --mode="base" --model
+                              &lt;path_to_your_model.py&gt; --skip-execution
+                              [--path &lt;path_to_your_MIRO_installation&gt;]
+                            </span>
+                          </div>
+                          <p>
+                            Use this option only if the current data contract
+                            is already up to date.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section id="miro-structure" class="doc-section">
+                  <h2 class="section-title">Structure of GAMS MIRO</h2>
+                  <div class="section-block">
+                    <p>
+                      After launching an app, the MIRO interface is divided
+                      into a navigation bar and a main window. The navigation
+                      bar lets you switch between the main app areas and
+                      trigger common actions such as loading data or solving
+                      the model.
+                    </p>
+                    <div
+                      class="section-block"
+                      style="display: block; margin: auto; text-align: center"
+                    >
+                      <img
+                        class="img-fluid"
+                        src="assets/images/initial-screen-configured.png"
+                        alt="initial GAMS MIRO screen"
+                      />
+                    </div>
+
+                    <h3 class="block-title">Navigation Bar</h3>
+                    <p>
+                      The navigation bar provides access to the main views of a
+                      MIRO application:
+                    </p>
+                    <ol class="fa-ul">
+                      <li>
+                        <span class="fa-li"
+                          ><i class="fas fa-sliders-h"></i
+                        ></span>
+                        <b>Input:</b><br />
+                        Visualization and configuration of input data for the
+                        next model run.
+                      </li>
+                      <li>
+                        <span class="fa-li"
+                          ><i class="fa fa-chart-pie"></i
+                        ></span>
+                        <b>Output:</b><br />
+                        Visualization of output data.
+                      </li>
+                      <li>
+                        <span class="fa-li"><i class="fas fa-cog"></i></span>
+                        <b>GAMS interaction:</b><br />
+                        Status information, logs, and listing files while the
+                        model is being solved. Listing files are not displayed
+                        when using GAMSPy.
+                      </li>
+                      <li>
+                        <span class="fa-li"
+                          ><i class="fa fa-database"></i
+                        ></span>
+                        <b>Load scenarios:</b><br />
+                        Load scenarios from the database or from local files.
+                      </li>
+                      <li>
+                        <span class="fa-li"
+                          ><i class="fas fa-columns"></i
+                        ></span>
+                        <b>Compare scenarios:</b><br />
+                        Compare results and scenarios in split-view or
+                        multi-scenario comparison modes.
+                      </li>
+                    </ol>
+
+                    <p>
+                      The navigation bar also contains the main action buttons:
+                    </p>
+                    <ol class="fa-ul">
+                      <li>
+                        <span class="fa-li"
+                          ><i class="fas fa-square"></i
+                        ></span>
+                        <b>Load data:</b><br />
+                        Load input data for a model run. This can be a local
+                        file or an existing scenario from the database.
+                      </li>
+                      <li>
+                        <span style="color: #f39619" class="fa-li"
+                          ><i class="fas fa-square"></i
+                        ></span>
+                        <b>Solve model:</b><br />
+                        Solve the model with the current input data and collect
+                        the results after the run has finished.
+                      </li>
+                    </ol>
+
+                    <h3 class="block-title">Main Window and Header</h3>
+                    <p>
+                      The main window displays the content of the selected
+                      view. Depending on the app configuration, this can
+                      include input widgets, output charts, scenario
+                      comparisons, logs, or a README section shown to users.
+                    </p>
+                    <p>
+                      Additional functions are available in the header bar:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>Scenario:</b><br />
+                        Scenario management, including loading, saving,
+                        editing, deleting, and exporting scenario data.
+                      </li>
+                      <li>
+                        <b>Help:</b><br />
+                        Links to this documentation, the GAMS Forum, the
+                        command palette with keyboard shortcuts, and license
+                        information.
+                      </li>
+                    </ul>
+
+                    <div class="callout-block callout-success">
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <div class="content">
+                        <b class="callout-title">Tip:</b>
+                        <p>
+                          Take a look at
+                          <a href="./start.html">Working with GAMS MIRO</a> or
+                          our
+                          <a href="./index.html#cheatsheets">fact sheets</a> to
+                          get to know the MIRO interface and its components
+                          better.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <section id="step-3" class="doc-section">
+                  <h2 class="section-title">
+                    Step 3: Customize the App (Configuration Mode)
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      The default interface is fully functional, but you can
+                      enhance it by assigning widgets (sliders, drop-downs),
+                      defining charts, and setting global options. Read about
+                      the app configuration in detail
+                      <a href="./customize.html">here</a>.
+                    </p>
+                    <ul class="list">
+                      <li>
+                        <b>In GAMS Studio</b>: Launch the app using
+                        <b>Configuration Mode</b> instead of <b>Base Mode</b>.
+                      </li>
+                      <li>
+                        <b>Using GAMSPy CLI</b>: Run the following command:
+                      </li>
+                      <div class="console-box">
+                        <span class="console-content">
+                          &gt; gamspy run miro --mode="config" --model
+                          &lt;path_to_your_model.py&gt;
+                        </span>
+                      </div>
+                    </ul>
+                    <p>
+                      You will enter a configuration screen. Any change you
+                      save (e.g., turning a scalar input into a slider, or
+                      configuring a default Pivot chart) is automatically
+                      written to a
+                      <span class="code">&lt;modelname&gt;.json</span> file in
+                      your model's <i>conf_&lt;modelname&gt;</i> directory.
+                    </p>
+                    <ul>
+                      <li>
+                        General settings:<br />
+                        Appearance and general behavior of the app.
+                      </li>
+                      <li>
+                        Symbols:<br />
+                        Symbol naming, ordering, grouping, etc.
+                      </li>
+                      <li>
+                        Tables:<br />
+                        Global table and individual output table settings.
+                      </li>
+                      <li>
+                        Input Widgets:<br />
+                        Input widgets can be used to communicate input data
+                        with GAMS/GAMSPy. Examples of such widgets include:
+                        tables, sliders, dropdown menus, date selectors or
+                        checkboxes.
+                      </li>
+                      <li>
+                        Graphs:<br />
+                        GAMS/GAMSPy symbols can be visualized as graphs. A lot
+                        of plotting types are available and only need to be
+                        configured, i.e. adapted to your model-specific data.
+                        To create graphics that are perfectly tailored to your
+                        data and not available in MIRO yet, you can also write
+                        your own custom renderer.
+                      </li>
+                      <li>
+                        Colors:<br />
+                        Configure custom themes.
+                      </li>
+                      <li>
+                        Database management:<br />
+                        Backup, restore or remove the database.
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+
+                <section id="step-4" class="doc-section">
+                  <h2 class="section-title">Step 4: Deploy and Distribute</h2>
+                  <div class="section-block">
+                    <p>
+                      When the MIRO app is completely configured, i.e. all
+                      graphics have been created, options have been set and
+                      adjustments have been made, the app can be packaged into
+                      a <span class="code">.miroapp</span> file so that it can
+                      be easily shared and used in the daily business of your
+                      end users. No further changes to the model or the
+                      configuration can be made once it is deployed.
+                    </p>
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link active"
+                          id="gams-tab-2"
+                          data-toggle="tab"
+                          href="#gams-2"
+                          role="tab"
+                          aria-controls="gams-2"
+                          aria-selected="true"
+                          >GAMS</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          id="gamspy-tab-2"
+                          data-toggle="tab"
+                          href="#gamspy-2"
+                          role="tab"
+                          aria-controls="gamspy-2"
+                          aria-selected="false"
+                          >GAMSPy</a
+                        >
+                      </li>
+                    </ul>
+                    <div class="tab-content tab-console-content tab-section">
+                      <div
+                        class="tab-pane fade show active"
+                        id="gams-2"
+                        role="tabpanel"
+                        aria-labelledby="gams-tab-2"
+                      >
+                        <div class="section-block">
+                          <p>
+                            Deploying MIRO applications can be done directly
+                            <a href="./studio.html#studio-deploy"
+                              >from within GAMS Studio</a
+                            >. In the MIRO menu, select
+                            <i>Assembly and Deploy</i>. In the dialog that
+                            opens, you first need to specify which files belong
+                            to your model. These are the main model file and
+                            all other files that are used by the model during a
+                            model run. Select all relevant files in the file
+                            selection window and click 'Create'. The
+                            information is then stored in the
+                            <i>model assembly file</i>. Optionally, you can
+                            Choose your execution environment (e.g.,
+                            <i>Single-user</i> or <i>Multi-user</i>) and then
+                            click <i>Deploy</i>. See
+                            <a href="./deployment.html">Deployment</a> for more
+                            information.
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="tab-pane fade"
+                        id="gamspy-2"
+                        role="tabpanel"
+                        aria-labelledby="gamspy-tab-2"
+                      >
+                        <div class="section-block">
+                          <p>
+                            To deploy a GAMSPy MIRO app, you first need to
+                            specify which files belong to your model. These are
+                            the main model file and all other files that are
+                            used by the model during a model run. Read more
+                            about this
+                            <a href="./deployment.html#model-assembly-file"
+                              >here</a
+                            >. Once the <i>model assembly file</i> has been
+                            created, you can package all model files together
+                            with the app configuration into an app bundle. For
+                            this, run the GAMSPy command-line utility with
+                            <kbd style="white-space: nowrap">--mode=deploy</kbd
+                            >:
+                          </p>
+                          <div class="console-box" style="margin-bottom: 1rem">
+                            <span class="console-content">
+                              &gt; gamspy run miro --mode="deploy" --model
+                              &lt;path_to_your_model&gt; [--path
+                              &lt;path_to_your_MIRO_installation&gt;]<br />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p>
+                      The result is a single <i>.miroapp</i> file which can be
+                      sent to the end user(s) of the application.
+                    </p>
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 15px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <div class="content">
+                        <b class="callout-title">Expected Output:</b>
+                        <p>
+                          A
+                          <span class="code">&lt;modelname&gt;.miroapp</span>
+                          file is created. Users can install it simply by
+                          double-clicking the file or by dragging and dropping
+                          it into their MIRO Desktop library.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        src="assets/images/deployment/gallery.png"
+                        alt="MIRO gallery example"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                <section id="further-reading" class="doc-section">
+                  <h2 class="section-title">Further Reading</h2>
+
+                  <div class="section-block">
+                    <p>
+                      This quick start guide covers the essential workflow for
+                      building and deploying a MIRO application. The following
+                      resources provide more detailed information about
+                      specific topics:
+                    </p>
+
+                    <ul class="list">
+                      <li>
+                        <a href="./model.html">Preparing Models for MIRO</a
+                        ><br />
+                        Learn how to define the MIRO data contract and prepare
+                        GAMS and GAMSPy models for MIRO.
+                      </li>
+
+                      <li>
+                        <a href="./start.html">Working with GAMS MIRO</a><br />
+                        Learn how to use MIRO applications, manage scenarios,
+                        compare results, and work with input and output data.
+                      </li>
+
+                      <li>
+                        <a href="./customize.html"
+                          >Customizing MIRO Applications</a
+                        ><br />
+                        Configure widgets, charts, layouts, themes, custom
+                        renderers, and advanced app behavior.
+                      </li>
+
+                      <li>
+                        <a href="./deployment.html">Deployment</a><br />
+                        Learn how to package, distribute, and deploy MIRO
+                        applications locally or via MIRO Server.
+                      </li>
+
+                      <li>
+                        <a href="./index.html#cheatsheets"
+                          >GAMS MIRO Cheat Sheets</a
+                        ><br />
+                        Quick references for the MIRO interface, configuration
+                        workflow, and common tasks.
+                      </li>
+
+                      <li>
+                        <a href="./faqs.html">FAQs</a><br />
+                        Frequently asked questions, troubleshooting tips, and
+                        solutions to common problems.
+                      </li>
+                    </ul>
+                  </div>
+                </section>
+              </div>
+              <!--//content-inner-->
+            </div>
+            <!--//doc-content-->
+            <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+              <div id="doc-nav" class="doc-nav">
+                <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                  <a class="nav-link scrollto" href="#introduction"
+                    >Introduction</a
+                  >
+
+                  <a class="nav-link scrollto" href="#miro-components"
+                    >Core Components of GAMS MIRO</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a class="nav-link scrollto save-space" href="#miro-ui">
+                      MIRO User Interface
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#miro-connector"
+                    >
+                      GAMS/MIRO Connector
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#miro-library"
+                    >
+                      MIRO Desktop Library
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#cloud-setups"
+                    >
+                      Cloud and Enterprise Setups
+                    </a>
+                  </nav>
+
+                  <a class="nav-link scrollto" href="#prerequisites"
+                    >Prerequisites</a
+                  >
+
+                  <a class="nav-link scrollto" href="#installation-setup">
+                    Installation and Setup
+                  </a>
+
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#install-paths"
+                    >
+                      Download and Path Configuration
+                    </a>
+
+                    <a class="nav-link scrollto save-space" href="#licensing">
+                      Licensing Setup
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#getting-apps"
+                    >
+                      Choose How to Get Started
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#install-run-app"
+                    >
+                      Installing and Running Apps
+                    </a>
+
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#demo-applications"
+                    >
+                      Demo Applications
+                    </a>
+                  </nav>
+
+                  <a class="nav-link scrollto" href="#step-1">
+                    Step 1: Prepare Your Model
+                  </a>
+
+                  <a class="nav-link scrollto" href="#step-2">
+                    Step 2: Launch Your First App
+                  </a>
+
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#skip-model-execution"
+                    >
+                      Skip Model Execution
+                    </a>
+                  </nav>
+
+                  <a class="nav-link scrollto" href="#miro-structure">
+                    Structure of GAMS MIRO
+                  </a>
+
+                  <a class="nav-link scrollto" href="#step-3">
+                    Step 3: Customize the App
+                  </a>
+
+                  <a class="nav-link scrollto" href="#step-4">
+                    Step 4: Deploy and Distribute
+                  </a>
+
+                  <a class="nav-link scrollto" href="#further-reading">
+                    Further Reading
+                  </a>
+                </nav>
+                <!--//doc-menu-->
+              </div>
+            </div>
+            <!--//doc-sidebar-->
+          </div>
+          <!--//doc-body-->
+        </div>
+        <!--//container-->
+      </div>
+      <!--//doc-wrapper-->
+    </div>
+    <!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery.min.js"></script>
+    <!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/stickyfill/dist/stickyfill.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/prism/min/prism-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/plugins/markjs/jquery.mark.min.js"
+    ></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+      $('.gifplayer').gifplayer();
+    </script>
+    <script type="application/javascript">
+      if (navigator.appVersion.indexOf('Mac') !== -1) {
+        $('#startMIRO a[href="#macos"]').tab('show');
+      }
+      if (navigator.appVersion.indexOf('Linux') !== -1) {
+        $('#startMIRO a[href="#linux"]').tab('show');
+      }
+    </script>
+  </body>
+</html>

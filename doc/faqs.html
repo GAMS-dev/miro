@@ -459,7 +459,7 @@
                         time a MIRO app ist started via GAMS Studio and should
                         not be changed. If you use the command line, please
                         follow
-                        <a href="./start.html#start-via-command-line"
+                        <a href="./getting_started.html#start-via-command-line"
                           >these steps</a
                         >.
                       </p>
@@ -676,7 +676,183 @@
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
+                <section id="troubleshooting" class="doc-section">
+                  <h2 class="section-title">Troubleshooting</h2>
 
+                  <div class="section-block">
+                    <h3 class="question">
+                      <i class="fas fa-question-circle"></i>
+                      Why do I get "Domain Violation" errors when editing sets
+                      or parameters?
+                    </h3>
+
+                    <div class="answer">
+                      <p>
+                        Modifying a parameter index in MIRO can throw a domain
+                        violation error because the underlying set was not
+                        imported into MIRO.
+                      </p>
+
+                      <p><b>Fix (GAMS):</b></p>
+
+                      <p>
+                        Use
+                        <a
+                          href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition"
+                          target="_blank"
+                          ><i>Implicit Set Definition</i></a
+                        >. Attach a "<span class="code">&lt;</span>" to the
+                        domain in the parameter declaration:
+                      </p>
+
+                      <pre><code class="language-gams">Parameter d(i&lt;,j&lt;);</code></pre>
+
+                      <p>
+                        This dynamically populates the set from the parameter
+                        values.
+                      </p>
+
+                      <p><b>Fix (GAMSPy):</b></p>
+
+                      <p>
+                        Use
+                        <a
+                          href="https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding"
+                          target="_blank"
+                        >
+                          domain forwarding</a
+                        >:
+                      </p>
+
+                      <pre><code class="language-python">domain_forwarding=True</code></pre>
+                    </div>
+                  </div>
+
+                  <div class="section-block">
+                    <h3 class="question">
+                      <i class="fas fa-question-circle"></i>
+                      Why can't MIRO find GAMS or Python?
+                    </h3>
+
+                    <div class="answer">
+                      <p>
+                        MIRO may fail to execute the model because it cannot
+                        locate the GAMS installation or the Python environment.
+                      </p>
+
+                      <p>Open MIRO Desktop and go to:</p>
+
+                      <ul>
+                        <li>
+                          <b>Windows/Linux:</b>
+                          <kbd>File → Preferences → Paths</kbd>
+                        </li>
+
+                        <li>
+                          <b>macOS:</b>
+                          <kbd>GAMS MIRO → Preferences → Paths</kbd>
+                        </li>
+                      </ul>
+
+                      <p>
+                        Explicitly specify the correct GAMS path and Python
+                        path.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="section-block">
+                    <h3 class="question">
+                      <i class="fas fa-question-circle"></i>
+                      Why do I get "Encoding Not Supported" errors?
+                    </h3>
+
+                    <div class="answer">
+                      <p>
+                        All GAMS and GAMSPy source files used with MIRO must be
+                        UTF-8 encoded.
+                      </p>
+
+                      <p>
+                        In GAMS Studio, you can convert file encodings via:
+                      </p>
+
+                      <p>
+                        <kbd>Edit → Encoding → convert to... → UTF-8</kbd>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="section-block">
+                    <h3 class="question">
+                      <i class="fas fa-question-circle"></i>
+                      Why do deployed apps fail with "File Not Found" errors?
+                    </h3>
+
+                    <div class="answer">
+                      <p>
+                        The app may run correctly during development but fail
+                        after deployment because required external files were
+                        not included in the assembly process.
+                      </p>
+
+                      <p>
+                        Ensure that all auxiliary files (Excel files, CSVs,
+                        scripts, etc.) are included in the
+                        <a href="./deployment.html#model-assembly-file">
+                          model assembly file </a
+                        >.
+                      </p>
+
+                      <p>
+                        When using the deployment option
+                        <i>Local multi-user (uses idir)</i>, the model executes
+                        in a temporary directory. Relative paths in
+                        <code class="language-gams">$call</code>
+                        or
+                        <code class="language-gams">execute</code>
+                        statements can therefore break.
+                      </p>
+
+                      <p>Use:</p>
+
+                      <pre><code class="language-gams">%gams.idir1%</code></pre>
+
+                      <p>
+                        as a prefix for deployed file references, for example:
+                      </p>
+
+                      <pre><code class="language-gams">$call gdxxrw i=%gams.idir1%test.xlsx</code></pre>
+                    </div>
+                  </div>
+
+                  <div class="section-block">
+                    <h3 class="question">
+                      <i class="fas fa-question-circle"></i>
+                      Why are charts empty or aggregated into a single line?
+                    </h3>
+
+                    <div class="answer">
+                      <p>
+                        By default, MIRO only recognizes the configured value
+                        column. If no grouping dimension is selected, all data
+                        may be aggregated into a single series.
+                      </p>
+
+                      <p>Open the chart configuration and go to:</p>
+
+                      <p>
+                        <i>Filters &amp; Domains</i>
+                      </p>
+
+                      <p>
+                        Then select the appropriate grouping dimension (for
+                        example a stock symbol, region, or scenario) so MIRO
+                        can separate the data correctly.
+                      </p>
+                    </div>
+                  </div>
+                </section>
                 <section id="support" class="doc-section">
                   <h2 class="section-title">Support</h2>
                   <div class="section-block">
