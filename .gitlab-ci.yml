@@ -142,11 +142,11 @@ build_build_image_linux:
     - docker:29-dind
   stage: prepare
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - apk update && apk add jq
   script:
     - cd ci/linux
     - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` --build-arg GAMS_VERSION_FULL=`jq -r ".gamsVersion" ../../build-config.json` .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
     - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
@@ -162,13 +162,13 @@ build_build_image_windows:
     - windows-shell
   stage: prepare
   before_script:
-    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
   script:
     - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
     - $rVersion=$buildConfig.rVersion
     - $gamsVersion=$buildConfig.gamsVersion
     - cd ci/windows
     - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
+    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   after_script:
     - docker logout $env:CI_REGISTRY
@@ -223,7 +223,6 @@ build_linux_job:
     GIT_SUBMODULE_STRATEGY: normal
     NODE_OPTIONS: --openssl-legacy-provider
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
@@ -232,16 +231,19 @@ build_linux_job:
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag latest --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif $[[ inputs.build-server-images ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif $[[ inputs.build-ci ]]; then
@@ -252,6 +254,7 @@ build_linux_job:
     - >
       if $[[ inputs.build-ci ]]; then
         yarn docker-build-ci
+        echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker tag gamsmiro-server-ci $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
@@ -1158,6 +1161,7 @@ upload_dockerhub:
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
     - >
       pushd server
+        echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         python3 miro_server.py push
         python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
       popd
