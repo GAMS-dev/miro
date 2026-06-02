@@ -2,10 +2,10 @@ FROM mcr.microsoft.com/windows/server:ltsc2022
 
 SHELL ["powershell", "-executionpolicy", "bypass", "-command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; $verbosePreference='Continue'; Set-PSDebug -Trace 0;"]
 
-ARG NODE_VERSION=22.22.0
+ARG NODE_VERSION=24.16.0
 ENV NODE_VERSION=${NODE_VERSION}
 
-ARG GPG_VERSION=5.0.1
+ARG GPG_VERSION=5.0.2
 ENV GPG_VERSION=${GPG_VERSION}
 
 ARG YARN_VERSION=1.22.22
