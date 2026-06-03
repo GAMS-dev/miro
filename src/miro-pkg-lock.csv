@@ -1,32 +1,32 @@
-data.table, 1.17.8
-cpp11, 0.5.2
+data.table, 1.18.4
+cpp11, 0.5.5
 xfun, 0.53
 fastmap, 1.2.0
-backports, 1.5.0
+backports, 1.5.1
 assertthat, 0.2.1
 crayon, 1.5.3
-glue, 1.8.0
-fansi, 1.0.6
-cli, 3.6.5
+glue, 1.8.1
+fansi, 1.0.7
+cli, 3.6.6
 utf8, 1.2.6
-Rcpp, 1.1.0
+Rcpp, 1.1.1-1.1
 R6, 2.6.1
-BH, 1.87.0-1
-magrittr, 2.0.4
-rlang, 1.1.6
-ellipsis, 0.3.2
-later, 1.4.4
+BH, 1.90.0-1
+magrittr, 2.0.5
+rlang, 1.2.0
+ellipsis, 0.3.3
+later, 1.4.8
 promises, 1.3.3
-httpuv, 1.6.16
+httpuv, 1.6.17
 mime, 0.13
 jsonlite
-digest, 0.6.37
-sourcetools, 0.1.7-1
-xtable, 1.8-4
+digest, 0.6.39
+sourcetools, 0.1.7-2
+xtable, 1.8-8
 curl, 7.0.0
-V8, 7.0.0
-base64enc, 0.1-3
-htmltools, 0.5.8.1
+V8, 8.2.0
+base64enc, 0.1-6
+htmltools, 0.5.9
 jquerylib, 0.1.4
 withr, 3.0.0
 leaflet.providers, 2.0.0
@@ -34,29 +34,29 @@ commonmark, 2.0.0
 cachem, 1.1.0
 memoise, 2.0.1
 fontawesome, 0.5.3
-lifecycle, 1.0.4
-vctrs, 0.6.5
+lifecycle, 1.0.5
+vctrs, 0.7.3
 fs, 1.6.6
-rappdirs, 0.3.3
+rappdirs, 0.3.4
 sass, 0.4.10
 bslib, 0.9.0
 shiny
 shinyAce, 0.4.4
-colorspace, 2.1-1
-purrr, 1.1.0
-yaml, 2.3.10
+colorspace, 2.1-2
+purrr, 1.2.2
+yaml, 2.3.12
 labeling, 0.4.3
 munsell, 0.5.1
-lazyeval, 0.2.2
+lazyeval, 0.2.3
 pkgconfig, 2.0.3
 tidyselect, 1.2.1
 plogr, 0.2.0
 htmlwidgets, 1.5.4
-png, 0.1-8
+png, 0.1-9
 RColorBrewer, 1.1-3
-lattice, 0.22-7
-sp, 2.2-0
-viridisLite, 0.4.2
+lattice, 0.22-9
+sp, 2.2-1
+viridisLite, 0.4.3
 raster, 3.4-13
 farver, 2.1.2
 scales, 1.4.0
@@ -65,54 +65,54 @@ crosstalk, 1.2.2
 DT
 gdxrrwMIRO
 leaflet
-pillar, 1.11.0
-tibble, 3.3.0
+pillar, 1.11.1
+tibble, 3.3.1
 generics, 0.1.4
-timechange, 0.3.0
+timechange, 0.4.0
 lubridate, 1.9.4
-dplyr, 1.1.4
+dplyr, 1.2.1
 sys, 3.4.3
 askpass, 1.2.1
 openssl
 prettyunits, 1.2.0
 stringi, 1.8.7
-DBI, 1.2.3
+DBI, 1.3.0
 blob, 1.2.4
-hms, 1.1.3
+hms, 1.1.4
 stringr, 1.5.2
-tidyr, 1.3.1
-httr, 1.4.7
+tidyr, 1.3.2
+httr, 1.4.8
 plotly
 shinydashboard
 timevis
 rematch, 2.0.0
 formatR, 1.14
-ps, 1.9.1
-clipr, 0.8.0
+ps, 1.9.3
+clipr, 0.8.1
 cellranger, 1.1.0
 progress, 1.2.3
 lambda.r, 1.2.4
 futile.options, 1.0.1
-zoo, 1.8-14
+zoo, 1.8-15
 globals, 0.18.0
 listenv, 0.9.1
-processx, 3.8.6
-readxl, 1.4.5
+processx, 3.9.0
+readxl, 1.5.0
 writexl, 1.5.4
 futile.logger, 1.4.3
 zip, 2.3.3
 leaflet.minicharts, 0.6.2
-xts, 0.14.1
+xts, 0.14.2
 dygraphs, 1.1.1.6
 parallelly, 1.45.1
 future, 1.67.0
 bit, 4.6.0
 bit64, 4.6.0-1
 tzdb, 0.5.0
-vroom, 1.6.5
-readr, 2.1.5
+vroom, 1.7.1
+readr, 2.1.6
 miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 2.4.3
+RSQLite, 3.53.1
