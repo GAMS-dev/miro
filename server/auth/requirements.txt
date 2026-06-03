@@ -8,7 +8,7 @@ aiofiles==25.1.0
     # via -r requirements.in
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.3
+aiohttp==3.14.0
     # via -r requirements.in
 aiosignal==1.4.0
     # via aiohttp
@@ -138,6 +138,7 @@ typer==0.24.0
     #   fastapi-cloud-cli
 typing-extensions==4.15.0
     # via
+    #   aiohttp
     #   aiosignal
     #   anyio
     #   fastapi
