@@ -123,7 +123,7 @@ installedPackagesTmp <- packageVersionMap[vapply(packageVersionMap, function(pac
   packageId <- match(packageVersion[1], installedPackagesTmp[, "Package"])
   !is.na(packageId) &&
     identical(packageVersion[2], installedPackagesTmp[packageId, "Version"]) &&
-    identical(Rversion, installedPackagesTmp[packageId, "Built"])
+    identical(Rversion, sub(".*R ([0-9.]+);.*", "\\1", installedPackagesTmp[packageId, "Built"]))
 }, logical(1), USE.NAMES = FALSE)]
 installedPackagesTmp <- vapply(installedPackagesTmp, "[[",
   character(1), 1,
