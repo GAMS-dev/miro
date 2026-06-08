@@ -196,6 +196,7 @@ lint_job:
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     R_CACHE_ROOTPATH: ${PRE_COMMIT_HOME}/R.cache
+    RENV_CONFIG_REPOS_OVERRIDE: "https://cloud.r-project.org"
   cache:
     - key:
         files:
