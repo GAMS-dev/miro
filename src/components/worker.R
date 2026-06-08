@@ -315,7 +315,6 @@ Worker <- R6Class("Worker", public = list(
     }
 
 
-
     if (!length(jobList) || !nrow(jobList)) {
       private$jobList <- jobList
       private$jobListInit <- TRUE

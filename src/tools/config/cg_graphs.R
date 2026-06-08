@@ -1118,9 +1118,6 @@ observeEvent(input$timedata_subgrouporder,
 )
 
 
-
-
-
 observeEvent(input$timevis_showZoom, {
   rv$graphConfig$graph$showZoom <<- input$timevis_showZoom
 })
