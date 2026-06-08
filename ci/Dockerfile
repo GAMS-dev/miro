@@ -36,7 +36,7 @@ ARG NODE_MAJOR=24
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libxml2-dev wget curl gpg-agent time
+    libxml2-dev wget curl gpg-agent time libuv1-dev libcurl4-openssl-dev
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
     chmod a+x linux_x64_64_sfx.exe && \
