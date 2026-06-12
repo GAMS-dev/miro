@@ -751,10 +751,105 @@ class UITests(unittest.TestCase):
 
         self.driver.switch_to.default_content()
 
+    def test_update_app(self):
+        # test that updating app works
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (
+                StaleElementReferenceException,
+                ElementClickInterceptedException,
+            ) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count,
+                    10,
+                    f"Couldn't click addApp box after 10 tries: {exc}",
+                )
+        file_input = wait.until(EC.presence_of_element_located((By.ID, "miroAppFile")))
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']")
+            )
+        )
+
+        file_input.send_keys(
+            os.path.join(os.getcwd(), "tests", "data", "transport.miroapp")
+        )
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app"
+            )
+        )
+        self.driver.find_element(By.ID, "btAddApp").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
+        )
+        file_input = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
+        )
+        version_fields = self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+        visible_version_fields = [
+            field for field in version_fields if field.is_displayed()
+        ]
+        assert len(visible_version_fields) == 0
+        file_input = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
+        )
+        drop_file(
+            self.driver,
+            file_input,
+            os.path.join(os.getcwd(), "tests", "data", "transport_v2.miroapp"),
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "bootbox-body"), "overwrite"
+            )
+        )
+        bootbox_input = wait.until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "bootbox-input-text"))
+        )
+        bootbox_input.send_keys("test_app1")
+        accept_buttons = self.driver.find_elements(By.CLASS_NAME, "bootbox-accept")
+        visible_accept_button = next(
+            btn for btn in accept_buttons if btn.is_displayed()
+        )
+        visible_accept_button.click()
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "app-spinner")))
+        time.sleep(2)
+        version_fields = self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+        visible_version_fields = [
+            field for field in version_fields if field.is_displayed()
+        ]
+        assert (
+            len(visible_version_fields) == 1
+            and visible_version_fields[0].text.strip() == "2.0.0"
+        )
+
     def test_remove_add_app(self):
         # test that removing and adding app with same id works
         def add_add_check_readme_text(
-            app_file_name, readme_text_to_search, text_included=True
+            app_file_name,
+            readme_text_to_search,
+            text_included=True,
+            app_version_text=None,
         ):
             self.login()
             # open admin panel
@@ -809,6 +904,20 @@ class UITests(unittest.TestCase):
             file_input = wait.until(
                 EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
             )
+            if app_version_text is not None:
+                version_fields = self.driver.find_elements(
+                    By.CLASS_NAME, "app-version-field"
+                )
+                visible_version_fields = [
+                    field for field in version_fields if field.is_displayed()
+                ]
+                if app_version_text == "":
+                    assert len(visible_version_fields) == 0
+                else:
+                    assert (
+                        len(visible_version_fields) == 1
+                        and visible_version_fields[0].text.strip() == app_version_text
+                    )
             self.driver.switch_to.default_content()
             wait.until(
                 EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))
@@ -835,12 +944,17 @@ class UITests(unittest.TestCase):
             else:
                 assert readme_text_to_search not in readme_wrapper.text
 
-        add_add_check_readme_text("transport.miroapp", "VERSION 2", text_included=False)
+        add_add_check_readme_text(
+            "transport.miroapp", "VERSION 2", text_included=False, app_version_text=""
+        )
         self.remove_apps()
         self.logout()
         time.sleep(1)
         add_add_check_readme_text(
-            "transport_v2.miroapp", "VERSION 2", text_included=True
+            "transport_v2.miroapp",
+            "VERSION 2",
+            text_included=True,
+            app_version_text="2.0.0",
         )
 
     def test_update_app_meta(self):
