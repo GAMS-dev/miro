@@ -738,6 +738,8 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
     appConf.miroversion = newApp.miroversion;
     appConf.usetmpdir = newApp.usetmpdir;
     appConf.gmsName = newApp.gmsName;
+    appConf.authors = newApp.authors;
+    appConf.version = newApp.version;
     await addModelData(
       miroProcessManager,
       {
