@@ -37,8 +37,6 @@ import {
 } from './components/globals.js';
 
 const { TouchBarButton, TouchBarSpacer } = TouchBar;
-app.commandLine.appendSwitch('password-store', 'basic');
-app.commandLine.appendSwitch('use-mock-keychain');
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
