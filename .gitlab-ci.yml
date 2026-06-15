@@ -1320,6 +1320,7 @@ niteni-code-review:
         echo "Cache miss! Fetching and building the fork..."
         git clone https://github.com/denyherianto/gitlab-ai-code-review.git /tmp/niteni
         cd /tmp/niteni
+        git checkout beab6669a0436deaa9af79c0bd8a83bcdd311bc8
 
         # Install all dependencies and compile the TypeScript/Build step
         npm ci
