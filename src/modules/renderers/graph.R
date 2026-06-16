@@ -514,8 +514,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               )
             } else {
               xtsIdx <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
-              if (length(xtsIdx)) {
-              } else {
+              if (length(xtsIdx)) {} else {
                 xts_idx <- as.POSIXct(xts_data[[xtsIdx]])
                 xts_data <- xts_data[, -c(xtsIdx)]
                 xts_data <- xts(xts_data, order.by = xts_idx)

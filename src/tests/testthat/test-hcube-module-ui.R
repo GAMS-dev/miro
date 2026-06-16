@@ -92,9 +92,7 @@ test_that(
     source(file.path(testDir, "shinytest", "hcube_module_solve_test.R"), local = TRUE)
 
 
-
     source(file.path(testDir, "shinytest", "hcube_module_load_test.R"), local = TRUE)
-
 
 
     source(file.path(testDir, "shinytest", "hcube_module_compare_test.R"), local = TRUE)

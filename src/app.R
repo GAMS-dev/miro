@@ -988,7 +988,7 @@ if (is.null(errMsg)) {
   }
   errMsgTmp <- installAndRequirePackages(
     requiredPackages, installedPackages,
-    RLibPath, CRANMirror, miroWorkspace
+    RLibPath, CRANMirror, miroWorkspace, TRUE
   )
   if (length(errMsgTmp)) {
     errMsg <- paste(errMsg, errMsgTmp, sep = "\n")

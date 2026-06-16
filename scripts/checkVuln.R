@@ -116,7 +116,6 @@ check_cran_vulnerabilities <- function(packages_df) {
 }
 
 
-
 packageVersionMap <- read.csv("./src/miro-pkg-lock.csv", header = FALSE, stringsAsFactors = FALSE)
 vulnerabilities <- check_cran_vulnerabilities(packageVersionMap)
 write_json(list(vuln_data = vulnerabilities),

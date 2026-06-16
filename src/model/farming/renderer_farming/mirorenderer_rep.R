@@ -339,7 +339,6 @@ renderMirorenderer_rep <- function(input, output, session, data, options = NULL,
   hasChart <- c(TRUE, TRUE, TRUE, FALSE)
 
 
-
   lapply(1:length(valBoxNames), function(i) {
     output[[valBoxNames[i]]] <- renderValueBox({
       valueTmp <- kpiData %>%

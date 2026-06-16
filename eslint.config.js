@@ -23,6 +23,7 @@ export default defineConfig([
     'r-src/**',
     'doc/**',
     'build/lib_devel/**',
+    '.venv/**',
   ]),
   // ---------- Shared base (applies to all JS) ----------
   {
@@ -103,7 +104,7 @@ export default defineConfig([
 
   // ---------- Electron RENDERER (Browser context) ----------
   {
-    files: ['renderer/**/*.js'],
+    files: ['renderer/**/*.{js,cjs}'],
     languageOptions: {
       sourceType: 'module',
       globals: { ...globals.browser, ...globals.es2024, $: 'readonly' },

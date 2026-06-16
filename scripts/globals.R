@@ -97,7 +97,7 @@ if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   isLinux <- TRUE
   packageVersionMap <- c(packageVersionMap[!vapply(packageVersionMap, function(package) {
     identical(package[1], "RSQLite")
-  }, logical(1L), USE.NAMES = FALSE)], list(c("RPostgres", "1.4.8")))
+  }, logical(1L), USE.NAMES = FALSE)], list(c("RPostgres", "1.4.10")))
 } else {
   if (identical(RLibPath, "")) {
     stop("Library path not specified. Use environment variable LIB_PATH to specify where libraries should be installed.",
@@ -123,7 +123,7 @@ installedPackagesTmp <- packageVersionMap[vapply(packageVersionMap, function(pac
   packageId <- match(packageVersion[1], installedPackagesTmp[, "Package"])
   !is.na(packageId) &&
     identical(packageVersion[2], installedPackagesTmp[packageId, "Version"]) &&
-    identical(Rversion, installedPackagesTmp[packageId, "Built"])
+    identical(Rversion, sub(".*R ([0-9.]+);.*", "\\1", installedPackagesTmp[packageId, "Built"]))
 }, logical(1), USE.NAMES = FALSE)]
 installedPackagesTmp <- vapply(installedPackagesTmp, "[[",
   character(1), 1,

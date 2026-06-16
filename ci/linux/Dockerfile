@@ -1,4 +1,4 @@
-FROM node:22-bookworm
+FROM node:24-trixie
 
 ARG R_BASE_VERSION=4.4.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
@@ -30,11 +30,11 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
         && locale-gen en_US.utf8 \
         && /usr/sbin/update-locale LANG=en_US.UTF-8
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 ## Use Debian unstable via pinning -- new style via APT::Default-Release
-RUN echo "deb http://cloud.r-project.org/bin/linux/debian bookworm-cran40/" >> /etc/apt/sources.list
+RUN echo "deb http://cloud.r-project.org/bin/linux/debian trixie-cran46/" >> /etc/apt/sources.list
 
 ## During the freeze, new (source) packages are in experimental and we place the binaries in our PPA
 #RUN echo "deb http://deb.debian.org/debian experimental main" > /etc/apt/sources.list.d/experimental.list \
