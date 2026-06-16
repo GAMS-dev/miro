@@ -42,7 +42,19 @@ test('App launches in MIRO Desktop', async () => {
 
   await app.evaluate(async ({ dialog }) => {
     dialog.showMessageBoxSync = (...args: any[]): number => {
-      // Click button with index 1 ("Yes, overwrite") in overwrite data dialog
+      const firstArg = args[0];
+      const options = (firstArg && typeof firstArg === 'object' && !firstArg.constructor.name.includes('Window'))
+        ? firstArg
+        : args[1] || {};
+      const message = options.message || "";
+      if (message.includes("overwrite")) {
+        // Click button with index 1 ("Yes, overwrite") in overwrite data dialog
+        return 1;
+      }
+      if (message.includes("fingerprint")) {
+        // Approve fingerprint
+        return 0;
+      }
       return 1;
     };
   });
