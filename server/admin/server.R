@@ -389,7 +389,7 @@ server <- function(input, output, session) {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
-    flog.info("Request to update MIRO app received.")
+    flog.info("Request to update app metadata received.")
     tryCatch(
       {
         appIndex <- suppressWarnings(as.integer(input$updateAppMeta$index))
@@ -622,7 +622,8 @@ server <- function(input, output, session) {
                   "onSuccess",
                   list(
                     requestType = "updateApp", progressSelector = progressSelector,
-                    spinnerSelector = spinnerSelector
+                    spinnerSelector = spinnerSelector, configList = modelConfig$getConfigList(),
+                    groupList = modelConfig$getAccessGroupUnion()
                   )
                 )
               },

@@ -57,6 +57,7 @@ stages:
   - prepare
   - build
   - test
+  - review
   - deploy
 
 include:
@@ -819,6 +820,7 @@ test_macos_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   after_script:
     - hdiutil detach -force tmp/mnt
+    - mv $HOME/.miro/logs launcher-logs
     - rm -rf $HOME/.miro
   dependencies: [build_macos_job]
   cache:
@@ -845,6 +847,7 @@ test_macos_job:
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
+      - launcher-logs
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -882,6 +885,7 @@ test_macos_arm_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
     - hdiutil detach -force tmp/mnt
+    - mv $HOME/.miro/logs launcher-logs
     - rm -rf $HOME/.miro
   dependencies: [build_macos_arm_job]
   cache:
@@ -908,6 +912,7 @@ test_macos_arm_job:
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
+      - launcher-logs
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -1301,3 +1306,45 @@ update_doc_job:
     - when: manual
     - allow_failure: true
   needs: []
+
+
+niteni-code-review:
+  stage: review
+  tags:
+    - linux
+  variables:
+    GEMINI_MODEL: gemini-3.5-flash
+  cache:
+    key: niteni-fork-cache
+    paths:
+      - .niteni-local/
+  script:
+    - |
+      if [ ! -d ".niteni-local/node_modules" ]; then
+        echo "Cache miss! Fetching and building the fork..."
+        git clone https://github.com/denyherianto/gitlab-ai-code-review.git /tmp/niteni
+        cd /tmp/niteni
+        git checkout beab6669a0436deaa9af79c0bd8a83bcdd311bc8
+
+        # Install all dependencies and compile the TypeScript/Build step
+        npm ci
+        npm run build --if-present
+
+        # Move everything into the project directory so GitLab can cache it for next time
+        mkdir -p $CI_PROJECT_DIR/.niteni-local
+        cp -r node_modules package.json $CI_PROJECT_DIR/.niteni-local/
+
+        # Copy over compiled build files or source files depending on what they use
+        [ -d "dist" ] && cp -r dist $CI_PROJECT_DIR/.niteni-local/
+        [ -d "bin" ] && cp -r bin $CI_PROJECT_DIR/.niteni-local/
+        [ -d "src" ] && cp -r src $CI_PROJECT_DIR/.niteni-local/
+        cd $CI_PROJECT_DIR
+      else
+        echo "Cache hit! Using cached build."
+      fi
+    - node .niteni-local/dist/cli.js --mode mr
+  allow_failure: true
+  needs: []
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
