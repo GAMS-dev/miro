@@ -1,11 +1,11 @@
 # Brief description of the changes
 
-*Description here*
+*Release Notes here*
 
 # Developer checklist
 - [ ] Code
-- [ ] Documentation
-- [ ] Release notes
+- [ ] New features documented
+- [ ] Release notes complete
 - [ ] Tests
 - [ ] Information security (if applicable)
     - [ ] User input is sanitized before being processed (have size limits/data type checks etc.)
@@ -18,8 +18,8 @@
 
 # Reviewer checklist
 - [ ] Code
-- [ ] Documentation
-- [ ] Release notes
+- [ ] New features documented
+- [ ] Release notes complete
 - [ ] Tests
 - [ ] Information security (if applicable)
     - [ ] User input is sanitized before being processed (have size limits/data type checks etc.)
@@ -35,11 +35,11 @@
 
 ## MIRO Desktop
 
-[ ] Preferences can be opened, changed, saved, and restored after restart
-[ ] Engine login via Google account and via token/API key works
-[ ] "What's new" dialog is displayed correctly and contains expected release information
+- [ ] Preferences can be opened, changed, saved, and restored after restart
+- [ ] Engine login via Google account and via token/API key works
+- [ ] "What's new" dialog is displayed correctly and contains expected release information
 
 ## MIRO Server
 
-[ ] Default scenario permissions work as expected
-[ ] Access groups work as expected
+- [ ] Default scenario permissions work as expected
+- [ ] Access groups work as expected
