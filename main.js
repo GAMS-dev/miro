@@ -47,6 +47,16 @@ const DEVELOPMENT_MODE = !app.isPackaged;
 const miroWorkspaceDir = path.join(app.getPath('home'), '.miro');
 const miroBuildMode = process.env.MIRO_BUILD === 'true';
 const miroDevelopMode = process.env.MIRO_DEV_MODE === 'true' || miroBuildMode;
+
+if (!miroDevelopMode) {
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    // app.exit(0) kills the process immediately, preventing any further
+    // top-level code or file operations from executing in this instance.
+    app.exit(0);
+  }
+}
+
 if (!DEVELOPMENT_MODE) {
   log.transports.console.level = false;
 }
@@ -72,7 +82,7 @@ if (!errMsg) {
     }
     log.transports.file.resolvePathFn = () =>
       path.join(logPath, 'launcher.log');
-    log.info(`MIRO launcher (version ${miroVersion} is being started (execPath: ${appRootDir}, \
+    log.info(`MIRO launcher (version ${miroVersion}) is being started (execPath: ${appRootDir}, \
 pid: ${process.pid}, Log path: ${logPath}, \
 platform: ${process.platform}, arch: ${process.arch}, \
 version: ${process.getSystemVersion()})...`);
@@ -1163,50 +1173,45 @@ if (!miroDevelopMode) {
   } else {
     app.setAsDefaultProtocolClient('com.gams.miro');
   }
-  const gotTheLock = app.requestSingleInstanceLock();
 
-  if (!gotTheLock) {
-    app.quit();
-  } else {
-    app.on('second-instance', async (_, argv) => {
-      log.debug('Second MIRO instance launched.');
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
-        if (
-          process.platform !== 'darwin' &&
-          argv.length >= 2 &&
-          !DEVELOPMENT_MODE &&
-          !miroDevelopMode
-        ) {
-          const associatedFile = argv[argv.length - 1];
-          if (associatedFile.startsWith('--')) {
-            return;
-          }
-          if (associatedFile.toLowerCase().endsWith('.miroscen')) {
-            log.debug(
-              `MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`,
-            );
-            await addMiroscenFile(associatedFile);
-            return;
-          }
-          if (associatedFile.toLowerCase().endsWith('.miroapp')) {
-            log.debug(
-              `MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`,
-            );
-            await addOrUpdateMIROApp(associatedFile);
-          }
-          try {
-            handleDeepLink(associatedFile);
-          } catch (err) {
-            log.warn(
-              `MIRO launcher opened with invalid argument: ${associatedFile}: ${err}`,
-            );
-          }
+  app.on('second-instance', async (_, argv) => {
+    log.debug('Second MIRO instance launched.');
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+      if (
+        process.platform !== 'darwin' &&
+        argv.length >= 2 &&
+        !DEVELOPMENT_MODE &&
+        !miroDevelopMode
+      ) {
+        const associatedFile = argv[argv.length - 1];
+        if (associatedFile.startsWith('--')) {
+          return;
+        }
+        if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+          log.debug(
+            `MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`,
+          );
+          await addMiroscenFile(associatedFile);
+          return;
+        }
+        if (associatedFile.toLowerCase().endsWith('.miroapp')) {
+          log.debug(
+            `MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`,
+          );
+          await addOrUpdateMIROApp(associatedFile);
+        }
+        try {
+          handleDeepLink(associatedFile);
+        } catch (err) {
+          log.warn(
+            `MIRO launcher opened with invalid argument: ${associatedFile}: ${err}`,
+          );
         }
       }
-    });
-  }
+    }
+  });
 }
 
 async function createWhatsNewWindow({ force = false } = {}) {
