@@ -1108,7 +1108,6 @@ $(() => {
       $(data.spinnerSelector).hide();
       $('#overlayScreen').hide();
       $(data.progressSelector).css('width', '0%').attr('aria-valuenow', '0');
-      return;
     } else if (data.requestType === 'migrateDb') {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress')

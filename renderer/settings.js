@@ -2,7 +2,7 @@ const { ipcRenderer, shell } = require('electron');
 const log = require('electron-log/renderer');
 window.Bootstrap = require('bootstrap');
 const $ = require('jquery');
-const { OAuthClient } = require('./oauth');
+const { OAuthClient } = require('./oauth.cjs');
 const {
   EngineConfig,
   getEngineAuthProviders,

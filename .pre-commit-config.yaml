@@ -47,7 +47,7 @@ repos:
           - eslint-config-airbnb-base@15.0.0
           - eslint-config-prettier@10.1.8
   - repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9009
+    rev: v0.4.3.9025
     hooks:
       - id: style-files
         exclude: |

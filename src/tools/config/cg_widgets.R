@@ -156,7 +156,6 @@ validateWidgetConfig <- function(widgetJSON) {
   }
 
 
-
   switch(widgetJSON$widgetType,
     slider = ,
     sliderrange = {
@@ -215,9 +214,7 @@ validateWidgetConfig <- function(widgetJSON) {
         return(lang$adminMode$widgets$validate$val55)
       }
     },
-    textinput = {
-
-    },
+    textinput = {},
     checkbox = {
       if (isTRUE(widgetJSON$value)) {
         rv$widgetConfig$value <<- 1L
@@ -597,8 +594,7 @@ observeEvent(
         )
         disableEl(session, "#saveWidget")
         disableEl(session, "#deleteWidget")
-        output$widget_preview <- renderUI({
-        })
+        output$widget_preview <- renderUI({})
       }
     }
 

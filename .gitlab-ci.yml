@@ -57,6 +57,7 @@ stages:
   - prepare
   - build
   - test
+  - review
   - deploy
 
 include:
@@ -142,11 +143,11 @@ build_build_image_linux:
     - docker:29-dind
   stage: prepare
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - apk update && apk add jq
   script:
     - cd ci/linux
     - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` --build-arg GAMS_VERSION_FULL=`jq -r ".gamsVersion" ../../build-config.json` .
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
     - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
@@ -162,13 +163,13 @@ build_build_image_windows:
     - windows-shell
   stage: prepare
   before_script:
-    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
   script:
     - $buildConfig=Get-Content build-config.json | ConvertFrom-Json
     - $rVersion=$buildConfig.rVersion
     - $gamsVersion=$buildConfig.gamsVersion
     - cd ci/windows
     - docker build -t $env:CI_REGISTRY_IMAGE/builder-windows:latest --build-arg R_VERSION=$rVersion --build-arg GAMS_VERSION=$gamsVersion .
+    - $env:CI_REGISTRY_PASSWORD | docker login $env:CI_REGISTRY -u $env:CI_REGISTRY_USER --password-stdin
     - docker push $env:CI_REGISTRY_IMAGE/builder-windows:latest
   after_script:
     - docker logout $env:CI_REGISTRY
@@ -196,6 +197,7 @@ lint_job:
   variables:
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
     R_CACHE_ROOTPATH: ${PRE_COMMIT_HOME}/R.cache
+    RENV_CONFIG_REPOS_OVERRIDE: "https://cloud.r-project.org"
   cache:
     - key:
         files:
@@ -223,7 +225,6 @@ build_linux_job:
     GIT_SUBMODULE_STRATEGY: normal
     NODE_OPTIONS: --openssl-legacy-provider
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
@@ -232,16 +233,19 @@ build_linux_job:
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag latest --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]] || [[ "$CI_COMMIT_BRANCH" == "rc" ]] || [[ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" == "rc" ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag unstable --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif $[[ inputs.build-server-images ]]; then
         pushd server
             python3 miro_server.py build
+            echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
             python3 miro_server.py push --unstable --custom-tag feature --registry "${CI_REGISTRY_IMAGE}"
         popd
       elif $[[ inputs.build-ci ]]; then
@@ -252,6 +256,7 @@ build_linux_job:
     - >
       if $[[ inputs.build-ci ]]; then
         yarn docker-build-ci
+        echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         docker tag gamsmiro-ci $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker push $CI_REGISTRY_IMAGE/gamsmiro-ci:latest
         docker tag gamsmiro-server-ci $CI_REGISTRY_IMAGE/gamsmiro-server-ci:latest
@@ -815,6 +820,7 @@ test_macos_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   after_script:
     - hdiutil detach -force tmp/mnt
+    - mv $HOME/.miro/logs launcher-logs
     - rm -rf $HOME/.miro
   dependencies: [build_macos_job]
   cache:
@@ -841,6 +847,7 @@ test_macos_job:
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
+      - launcher-logs
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -878,6 +885,7 @@ test_macos_arm_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
     - hdiutil detach -force tmp/mnt
+    - mv $HOME/.miro/logs launcher-logs
     - rm -rf $HOME/.miro
   dependencies: [build_macos_arm_job]
   cache:
@@ -904,6 +912,7 @@ test_macos_arm_job:
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
+      - launcher-logs
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -1158,6 +1167,7 @@ upload_dockerhub:
     - echo -e "\e[0Ksection_end:`date +%s`:download_image_section\r\e[0K"
     - >
       pushd server
+        echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         python3 miro_server.py push
         python3 miro_server.py push --registry "${ECR_REGISTRY_URL_US_EAST}"
       popd
@@ -1296,3 +1306,45 @@ update_doc_job:
     - when: manual
     - allow_failure: true
   needs: []
+
+
+niteni-code-review:
+  stage: review
+  tags:
+    - linux
+  variables:
+    GEMINI_MODEL: gemini-3.5-flash
+  cache:
+    key: niteni-fork-cache
+    paths:
+      - .niteni-local/
+  script:
+    - |
+      if [ ! -d ".niteni-local/node_modules" ]; then
+        echo "Cache miss! Fetching and building the fork..."
+        git clone https://github.com/denyherianto/gitlab-ai-code-review.git /tmp/niteni
+        cd /tmp/niteni
+        git checkout beab6669a0436deaa9af79c0bd8a83bcdd311bc8
+
+        # Install all dependencies and compile the TypeScript/Build step
+        npm ci
+        npm run build --if-present
+
+        # Move everything into the project directory so GitLab can cache it for next time
+        mkdir -p $CI_PROJECT_DIR/.niteni-local
+        cp -r node_modules package.json $CI_PROJECT_DIR/.niteni-local/
+
+        # Copy over compiled build files or source files depending on what they use
+        [ -d "dist" ] && cp -r dist $CI_PROJECT_DIR/.niteni-local/
+        [ -d "bin" ] && cp -r bin $CI_PROJECT_DIR/.niteni-local/
+        [ -d "src" ] && cp -r src $CI_PROJECT_DIR/.niteni-local/
+        cd $CI_PROJECT_DIR
+      else
+        echo "Cache hit! Using cached build."
+      fi
+    - node .niteni-local/dist/cli.js --mode mr
+  allow_failure: true
+  needs: []
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
