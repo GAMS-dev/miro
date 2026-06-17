@@ -179,9 +179,11 @@ const fetchEngineLoginMethods = async (url, options) => {
       })
       .map((idp) => idp.name);
   } catch (err) {
-    __electronLog.info(
-      `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
-    );
+    if (err?.name !== "CanceledError") {
+      __electronLog.info(
+        `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
+      );
+    }
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
@@ -712,8 +714,8 @@ ipcRenderer.on(
         $(`#${key}`).val(
           Object.keys(optionAliasMap).includes(key)
             ? Object.keys(optionAliasMap[key]).find(
-                (keyp) => optionAliasMap[key][keyp] === newValue,
-              )
+              (keyp) => optionAliasMap[key][keyp] === newValue,
+            )
             : newValue,
         );
         if (isImportant) {
