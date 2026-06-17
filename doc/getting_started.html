@@ -418,17 +418,36 @@
                   <div class="section-block" id="licensing">
                     <h3 class="block-title">Licensing Setup</h3>
                     <p>
-                      Ensure that your license includes the GAMS MIRO
-                      connector. You can check this using the
+                      For GAMS-based MIRO applications, ensure that your
+                      license includes the GAMS MIRO connector. You can check
+                      this using the
                       <a
                         href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_GAMS_LICENSING"
                         target="_blank"
                         >Licensing dialog</a
                       >
-                      in GAMS Studio. To install a license, use one of the
-                      following methods:
+                      in GAMS Studio.
                     </p>
-
+                    <div
+                      class="callout-block callout-success"
+                      style="margin-top: 15px"
+                    >
+                      <div class="icon-holder">
+                        <i class="fas fa-thumbs-up"></i>
+                      </div>
+                      <div class="content">
+                        <b class="callout-title">GAMSPy users:</b>
+                        <p>
+                          No separate MIRO connector license is required when
+                          using GAMSPy. MIRO support is built into GAMSPy and
+                          is available with a valid GAMSPy license.
+                        </p>
+                      </div>
+                    </div>
+                    <p>
+                      To install a GAMS license, use one of the following
+                      methods:
+                    </p>
                     <ul>
                       <li>
                         Using
@@ -440,8 +459,8 @@
                         (network connection required).
                       </li>
                       <li>
-                        Offline or behind a HTTP Proxy: If your machine is not
-                        connected to the internet or a HTTP proxy is blocking
+                        Offline or behind an HTTP Proxy: If your machine is not
+                        connected to the internet or an HTTP proxy is blocking
                         the connection to the GAMS license server, you need to
                         activate the license on a different machine. You can
                         find all necessary steps
@@ -551,7 +570,7 @@
                         <b>Load data</b> in the left hand menu panel and select
                         one.
                       </li>
-                      <li>Click on <b>Solve model</b> generate results.</li>
+                      <li>Click on <b>Solve model</b> to generate results.</li>
                     </ul>
                   </div>
 
@@ -710,16 +729,11 @@
                         >
                           <div class="section-block">
                             <p>
-                              Ideally, you start off with a fully developed
-                              GAMS model or a model in which no major changes
-                              are made to the symbols that will later be
-                              visible in MIRO (of course, you can also start
-                              from scratch and adjust your symbols as you go).
                               In our example we use the classic
                               <a
                                 href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html"
                                 target="_blank"
-                                >Trnsport model</a
+                                >transportation problem</a
                               >
                               from the GAMS model library. The only thing we
                               have to do in the model is to tell MIRO which
@@ -806,16 +820,11 @@ display x.l, x.m;
                         >
                           <div class="section-block">
                             <p>
-                              Ideally, you start off with a fully developed
-                              GAMSPy model or a model in which no major changes
-                              are made to the symbols that will later be
-                              visible in MIRO (of course, you can also start
-                              from scratch and adjust your symbols as you go).
                               In our example we use the classic
                               <a
                                 href="https://gamspy.readthedocs.io/en/latest/user/notebooks/trnsport.html"
                                 target="_blank"
-                                >Transportation problem</a
+                                >transportation problem</a
                               >. All you need to do to use your GAMSPy models
                               in GAMS MIRO is to annotate your MIRO input and
                               output symbols. For example, the following code
@@ -1294,7 +1303,7 @@ model.solve()
                                       &gt; export
                                       MIRO_MODEL_PATH=/home/&lt;user&gt;/model/transport/transport.gms<br />
                                       &gt; export MIRO_MODE=base<br />
-                                      &gt; /GAMS-MIRO-1.0.AppImage<br />
+                                      &gt; ./GAMS-MIRO-1.0.AppImage<br />
                                     </span>
                                   </div>
                                 </div>
@@ -1307,7 +1316,7 @@ model.solve()
                                 <div class="content">
                                   <b class="callout-title">Note:</b>
                                   <p>
-                                    By default MIRO uses the GAMS version,
+                                    By default, MIRO uses the GAMS version,
                                     which is in the PATH of your operating
                                     system. By setting another environment
                                     variable
@@ -1354,7 +1363,7 @@ model.solve()
                     <p>
                       After launching an app, the MIRO interface is divided
                       into a navigation bar and a main window. The navigation
-                      bar lets you switch between the main app areas and
+                      bar lets you switch between the main app views and
                       trigger common actions such as loading data or solving
                       the model.
                     </p>
@@ -1402,7 +1411,8 @@ model.solve()
                           ><i class="fa fa-database"></i
                         ></span>
                         <b>Load scenarios:</b><br />
-                        Load scenarios from the database or from local files.
+                        Explore and manage scenarios stored in the MIRO
+                        database.
                       </li>
                       <li>
                         <span class="fa-li"
