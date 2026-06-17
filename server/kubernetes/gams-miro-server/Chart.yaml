@@ -4,8 +4,8 @@
 apiVersion: v2
 name: gams-miro-server
 description: A Helm chart for GAMS MIRO Server
-version: 0.6.0
-appVersion: '2.13.4'
+version: 0.7.0
+appVersion: '2.13.5'
 icon: https://gams.com/miro/assets/images/logo.svg
 annotations:
   licenses: GPL-3.0-only
