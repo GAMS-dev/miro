@@ -1795,6 +1795,8 @@ const de = {
   },
   general: {
     title: 'MIRO Bibliothek',
+    welcomeTitle: 'Willkommen bei Ihrem',
+    welcomeText: 'Hier werden Ihre GAMS MIRO-Anwendungen angezeigt, sobald sie hinzugefügt wurden. Klicken Sie links auf die Schaltfläche „+“, um loszulegen. Sie können unsere Sammlung von Beispiel-Apps durchsuchen oder Ihre eigene bestehende MIRO-App hinzufügen.',
     btEdit: 'Bearbeiten',
     btEditDone: 'Fertig',
     btAddExamples: 'Beispiel-Apps hinzufügen',
@@ -2107,6 +2109,8 @@ const cn = {
   },
   general: {
     title: 'MIRO库',
+    welcomeTitle: '欢迎来到您的',
+    welcomeText: '一旦添加了 GAMS MIRO 应用程序，它们就会显示在这里。要开始使用，请点击左侧的 “+” 按钮。您可以浏览我们的示例应用程序集，或者添加您自己现有的 MIRO 应用程序。',
     btEdit: '编辑',
     btEditDone: '完成',
     btAddExamples: '添加示例应用程序',
@@ -2296,7 +2300,7 @@ class LangParser {
       this.lang = en;
     }
     if (!ajv.validate(schema, this.lang)) {
-      throw new Error(ajv.errors);
+      throw new Error(JSON.stringify(ajv.errors));
     }
   }
 
