@@ -540,6 +540,7 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
 ipcRenderer.on(
   'settings-loaded',
   (e, data, defaults, langData, customColorsFileExists) => {
+    __electronLog.info('Settings window config loaded');
     if (langData != null && lang.title == null) {
       lang = langData;
       [

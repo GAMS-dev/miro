@@ -1013,8 +1013,8 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile(path.join(__dirname, 'renderer', 'settings.html'));
 
-  settingsWindow.once('ready-to-show', async () => {
-    log.debug('Settings window ready to show.');
+  settingsWindow.webContents.once('did-finish-load', async () => {
+    log.debug('Settings window finished loading.');
     try {
       settingsWindow.webContents.send(
         'settings-loaded',
