@@ -179,7 +179,7 @@ const fetchEngineLoginMethods = async (url, options) => {
       })
       .map((idp) => idp.name);
   } catch (err) {
-    if (err?.name !== "CanceledError") {
+    if (err?.name !== 'CanceledError') {
       __electronLog.info(
         `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
       );
