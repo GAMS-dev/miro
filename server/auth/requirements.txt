@@ -25,7 +25,7 @@ anyio==4.14.0
     #   watchfiles
 attrs==26.1.0
     # via aiohttp
-certifi==2026.5.20
+certifi==2026.6.17
     # via
     #   httpcore
     #   httpx
@@ -42,9 +42,9 @@ email-validator==2.3.0
     # via
     #   fastapi
     #   pydantic
-fastapi[standard]==0.137.1
+fastapi[standard]==0.138.0
     # via -r requirements.in
-fastapi-cli[standard]==0.0.24
+fastapi-cli[standard]==0.0.27
     # via fastapi
 fastapi-cloud-cli==0.20.0
     # via fastapi-cli
@@ -101,7 +101,7 @@ pydantic-core==2.46.4
     # via pydantic
 pydantic-extra-types==2.11.1
     # via fastapi
-pydantic-settings==2.14.1
+pydantic-settings==2.14.2
     # via
     #   -r requirements.in
     #   fastapi
