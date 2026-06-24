@@ -44,7 +44,7 @@ log.initialize({ preload: true });
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
-const miroWorkspaceDir = path.join(app.getPath('home'), '.miro');
+const miroWorkspaceDir = path.join(process.env.MIRO_WORKSPACE_DIR ?? app.getPath('home'), '.miro');
 const miroBuildMode = process.env.MIRO_BUILD === 'true';
 const miroDevelopMode = process.env.MIRO_DEV_MODE === 'true' || miroBuildMode;
 

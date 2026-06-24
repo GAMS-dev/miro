@@ -784,6 +784,7 @@ test_windows_job:
     paths:
       - src/tests/testthat/_snaps
       - src/tests/logs-tests
+      - launcher-logs
     expire_in: 1 week
   rules:
     - if: $CI_COMMIT_TAG
@@ -820,8 +821,6 @@ test_macos_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS}
   after_script:
     - hdiutil detach -force tmp/mnt
-    - mv $HOME/.miro/logs launcher-logs
-    - rm -rf $HOME/.miro
   dependencies: [build_macos_job]
   cache:
     - key:
@@ -885,8 +884,6 @@ test_macos_arm_job:
     - yarn test gams_sys_dir=${GAMS_PATH_MACOS_ARM}
   after_script:
     - hdiutil detach -force tmp/mnt
-    - mv $HOME/.miro/logs launcher-logs
-    - rm -rf $HOME/.miro
   dependencies: [build_macos_arm_job]
   cache:
     - key:
