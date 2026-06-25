@@ -13,10 +13,10 @@ const isCI = !!process.env.CI;
 export const test = base.extend({
   electronApp: async ({}, use, testInfo) => {
     const safeName = testInfo.title.replace(/[^a-z0-9-_]/gi, "_");
-    const testDir = path.join(
+    const testDir = path.resolve(path.join(
       "launcher-logs",
       `${safeName}-${testInfo.workerIndex}-${Date.now()}`
-    );
+    ));
 
     await fs.mkdir(testDir, { recursive: true });
 
@@ -112,6 +112,10 @@ test('App launches in MIRO Desktop', async ({ electronApp }) => {
 });
 
 test('App launched with GAMS Engine backend', async ({ electronApp }) => {
+  expect(process.env.ENGINE_URL, 'ENGINE_URL environment variable must be set').toBeTruthy();
+  expect(process.env.ENGINE_NS, 'ENGINE_NS environment variable must be set').toBeTruthy();
+  expect(process.env.ENGINE_USER, 'ENGINE_URL environment variable must be set').toBeTruthy();
+  expect(process.env.ENGINE_PASSWORD, 'ENGINE_URL environment variable must be set').toBeTruthy();
   test.setTimeout(120_000);
   const main = await getMainWindow(electronApp);
 
