@@ -362,6 +362,13 @@ class ConfigManager extends Store {
     return this.configpathDefault;
   }
 
+  getAppDbPath(appDbPath) {
+    if (appDbPath === '' || appDbPath == null) {
+      return path.join(this.getConfigPath(), 'app_data')
+    }
+    return appDbPath
+  }
+
   getSync(key) {
     return super.get(key, '');
   }

@@ -28,7 +28,6 @@ import ConfigManager from './components/ConfigManager.js';
 import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
-import { getAppDbPath } from './components/util.js';
 import {
   apiVersion,
   miroVersion,
@@ -92,7 +91,7 @@ const appDataPath = errMsg
   ? null
   : path.join(configData.getConfigPath(), 'miro_apps');
 const appsData = errMsg ? null : new AppDataStore(configData.getConfigPath());
-const langParser = new LangParser(configData.getSync('language'));
+const langParser = new LangParser(errMsg ? null : configData.getSync('language'));
 
 // Set global variables
 const lang = langParser.get();
@@ -2092,7 +2091,7 @@ ipcMain.on('add-app', async (e, newApp) => {
 
     let overwriteData = true;
     const dbPath = path.join(
-      getAppDbPath(appConf.dbpath),
+      configData.getAppDbPath(appConf.dbpath),
       `${appConf.id}.sqlite3`,
     );
     if (fs.existsSync(dbPath)) {
