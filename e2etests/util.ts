@@ -1,4 +1,4 @@
-import {readFileSync} from 'node:fs'
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ElectronApplication, Page } from 'playwright/test';
 
@@ -7,7 +7,7 @@ export const dragAndDropFile = async (
   selector: string,
   filePath: string,
   fileName: string,
-  fileType: string
+  fileType: string,
 ) => {
   // 1. Get the absolute path and read the file as base64
   const absolutePath = path.resolve(filePath);
@@ -18,13 +18,15 @@ export const dragAndDropFile = async (
     async ({ bufferData, localFileName, localFileType, fullPath }) => {
       const dt = new DataTransfer();
       const blobData = await fetch(bufferData).then((res) => res.blob());
-      const file = new File([blobData], localFileName, { type: localFileType });
+      const file = new File([blobData], localFileName, {
+        type: localFileType,
+      });
 
       // Explicitly define the non-standard 'path' property expected in Electron
       Object.defineProperty(file, 'path', {
         value: fullPath,
         writable: false,
-        configurable: true
+        configurable: true,
       });
 
       // Intercept webUtils.getPathForFile if Electron's require context is accessible
@@ -37,7 +39,9 @@ export const dragAndDropFile = async (
             webUtils._patched = true;
           }
         } catch (e) {
-          console.warn("Context isolation restricted webUtils patching. Falling back to property injection.");
+          console.warn(
+            'Context isolation restricted webUtils patching. Falling back to property injection.',
+          );
         }
       }
 
@@ -49,7 +53,7 @@ export const dragAndDropFile = async (
       localFileName: fileName,
       localFileType: fileType,
       fullPath: absolutePath, // Pass the absolute path into the browser context
-    }
+    },
   );
 
   // 3. Dispatch the complete lifecycle of events to satisfy Chromium's listener expectations
@@ -72,6 +76,6 @@ export async function getMainWindow(electronApp: ElectronApplication) {
     predicate: async (win) => {
       const title = await win.title();
       return !title.includes('Developer Tools');
-    }
+    },
   });
 }

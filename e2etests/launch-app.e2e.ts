@@ -1,6 +1,6 @@
 import { test as base, expect, _electron as electron } from '@playwright/test';
 import * as path from 'path';
-import fs from "fs/promises";
+import fs from 'fs/promises';
 import { dragAndDropFile, getMainWindow } from './util';
 
 const execPath =
@@ -12,11 +12,13 @@ const isCI = !!process.env.CI;
 
 export const test = base.extend({
   electronApp: async ({}, use, testInfo) => {
-    const safeName = testInfo.title.replace(/[^a-z0-9-_]/gi, "_");
-    const testDir = path.resolve(path.join(
-      "launcher-logs",
-      `${safeName}-${testInfo.workerIndex}-${Date.now()}`
-    ));
+    const safeName = testInfo.title.replace(/[^a-z0-9-_]/gi, '_');
+    const testDir = path.resolve(
+      path.join(
+        'launcher-logs',
+        `${safeName}-${testInfo.workerIndex}-${Date.now()}`,
+      ),
+    );
 
     await fs.mkdir(testDir, { recursive: true });
 
@@ -62,15 +64,18 @@ test('App launches in MIRO Desktop', async ({ electronApp }) => {
   await electronApp.evaluate(async ({ dialog }) => {
     dialog.showMessageBoxSync = (...args: any[]): number => {
       const firstArg = args[0];
-      const options = (firstArg && typeof firstArg === 'object' && !firstArg.constructor.name.includes('Window'))
-        ? firstArg
-        : args[1] || {};
-      const message = options.message || "";
-      if (message.includes("overwrite")) {
+      const options =
+        firstArg &&
+        typeof firstArg === 'object' &&
+        !firstArg.constructor.name.includes('Window')
+          ? firstArg
+          : args[1] || {};
+      const message = options.message || '';
+      if (message.includes('overwrite')) {
         // Click button with index 1 ("Yes, overwrite") in overwrite data dialog
         return 1;
       }
-      if (message.includes("fingerprint")) {
+      if (message.includes('fingerprint')) {
         // Approve fingerprint
         return 0;
       }
@@ -112,10 +117,22 @@ test('App launches in MIRO Desktop', async ({ electronApp }) => {
 });
 
 test('App launched with GAMS Engine backend', async ({ electronApp }) => {
-  expect(process.env.ENGINE_URL, 'ENGINE_URL environment variable must be set').toBeTruthy();
-  expect(process.env.ENGINE_NS, 'ENGINE_NS environment variable must be set').toBeTruthy();
-  expect(process.env.ENGINE_USER, 'ENGINE_URL environment variable must be set').toBeTruthy();
-  expect(process.env.ENGINE_PASSWORD, 'ENGINE_URL environment variable must be set').toBeTruthy();
+  expect(
+    process.env.ENGINE_URL,
+    'ENGINE_URL environment variable must be set',
+  ).toBeTruthy();
+  expect(
+    process.env.ENGINE_NS,
+    'ENGINE_NS environment variable must be set',
+  ).toBeTruthy();
+  expect(
+    process.env.ENGINE_USER,
+    'ENGINE_USER environment variable must be set',
+  ).toBeTruthy();
+  expect(
+    process.env.ENGINE_PASSWORD,
+    'ENGINE_PASSWORD environment variable must be set',
+  ).toBeTruthy();
   test.setTimeout(120_000);
   const main = await getMainWindow(electronApp);
 
@@ -127,10 +144,7 @@ test('App launched with GAMS Engine backend', async ({ electronApp }) => {
 
     function findMenuItem(items) {
       for (const item of items) {
-        if (
-          item.accelerator === 'Cmd+,' ||
-          item.accelerator === 'F7'
-        ) {
+        if (item.accelerator === 'Cmd+,' || item.accelerator === 'F7') {
           item.click();
           return true;
         }
@@ -169,8 +183,12 @@ test('App launched with GAMS Engine backend', async ({ electronApp }) => {
   await loginViaDropdown.selectOption({ label: 'Username/Password' });
 
   // 6. Enter credentials
-  await prefsWindow.locator('#engineUsername').fill(process.env.ENGINE_USER ?? '');
-  await prefsWindow.locator('#enginePassword').fill(process.env.ENGINE_PASSWORD ?? '');
+  await prefsWindow
+    .locator('#engineUsername')
+    .fill(process.env.ENGINE_USER ?? '');
+  await prefsWindow
+    .locator('#enginePassword')
+    .fill(process.env.ENGINE_PASSWORD ?? '');
 
   // 7. Click on the "Apply" button
   await prefsWindow.getByRole('button', { name: 'Apply' }).click();
@@ -186,7 +204,9 @@ test('App launched with GAMS Engine backend', async ({ electronApp }) => {
   try {
     await prefsWindow.getByRole('button', { name: 'Close' }).click();
   } catch (e) {
-    if (!String(e).includes('Target page, context or browser has been closed')) {
+    if (
+      !String(e).includes('Target page, context or browser has been closed')
+    ) {
       throw e;
     }
   }
