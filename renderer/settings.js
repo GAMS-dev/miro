@@ -691,7 +691,7 @@ ipcRenderer.on(
           cbRemoteExecution.attr('disabled', true);
         }
       } else if (key === 'remoteConfig') {
-        if (newValue.url != null) {
+        if (newValue?.url != null) {
           engineConfig.init();
           $('#engineUrl').val(newValue.url);
           $('#engineNs').val(newValue.namespace);
