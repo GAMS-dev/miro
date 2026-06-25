@@ -183,7 +183,13 @@ test('App launched with GAMS Engine backend', async ({ electronApp }) => {
   expect(jwtValue.length).toBeGreaterThan(20);
 
   // 9. Click the "Close" button
-  await prefsWindow.getByRole('button', { name: 'Close' }).click();
+  try {
+    await prefsWindow.getByRole('button', { name: 'Close' }).click();
+  } catch (e) {
+    if (!String(e).includes('Target page, context or browser has been closed')) {
+      throw e;
+    }
+  }
 
   // test that app starts
   await main.bringToFront();
