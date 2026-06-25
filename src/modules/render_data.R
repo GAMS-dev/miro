@@ -1,5 +1,5 @@
-renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOptions = NULL,
-                         filterOptions = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE) {
+renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, modelDir raus!
+                         graphConfig = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE) {
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -7,48 +7,61 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
   if (!length(type)) {
     type <- "datatable"
   }
+  
+  renderconfig <- getRendererConfig(graphConfig)
+  
+  graphOptions <- renderconfig$graphOptions
+  rendererOptions <- renderconfig$rendererOptions
+  graphTool <- renderconfig$graphTool
 
   if (identical(type, "datatable")) {
     data <- DTOutput(ns("datatable"))
   } else if (type %in% c("graph", "dtgraph")) {
-    if (graphTool == "plotly") {
+    if (identical(graphTool, "plotly")) {
       if (identical(type, "graph")) {
-        dataGraph <- plotlyOutput(ns("graph"), height = "100%")
+        dataGraph <- miroPlotlyOutput(ns("miroPlotly"), height = "100%", options = graphOptions)
       } else {
         dataGraph <- tags$div(
           class = "renderer-wrapper",
           genSpinner(externalStyle = character(0L)),
-          plotlyOutput(ns("graph"), height = "100%")
+          miroPlotlyOutput(ns("miroPlotly"), height = "100%", options = graphOptions)
         )
       }
     } else if (identical(graphTool, "dygraphs")) {
-      dataGraph <- tags$div(class = "dyGraphs-wrapper", dygraphOutput(ns("graph"), height = "70vh"))
+      dataGraph <- miroDygraphsOutput(ns("miroDygraphs"), height = "70vh", options = graphOptions)
     } else if (identical(graphTool, "leaflet")) {
-      dataGraph <- leafletOutput(ns("graph"), height = "70vh")
+      dataGraph <- miroLeafletOutput(ns("miroLeaflet"), height = height, options = graphOptions)
     } else if (identical(graphTool, "timevis")) {
-      dataGraph <- timevisOutput(ns("graph"), height = "70vh")
+      dataGraph <- miroTimevisOutput(ns("miroTimevis"), height = "70vh", options = graphOptions)
     } else {
       stop(paste0("The tool you selected for: '", id, "' is not supported by the current version of GAMS MIRO."))
     }
-    if (length(filterOptions$col)) {
-      data <- tags$div(
-        class = "data-filter-wrapper",
-        if (isTRUE(filterOptions$date)) {
-          dateRangeInput(
-            ns("data_filter"),
-            filterOptions$label
-          )
-        } else {
-          selectInput(ns("data_filter"),
-            filterOptions$label,
-            choices = c(), multiple = isTRUE(filterOptions$multiple)
-          )
-        },
-        dataGraph
-      )
+    
+    if (!graphTool %in% c("leaflet", "plotly", "timevis", "dygraphs")) {
+      filterOptions <- graphOptions$filter
+      if (length(filterOptions$col)) {
+        data <- tags$div(
+          class = "data-filter-wrapper",
+          if (isTRUE(filterOptions$date)) {
+            dateRangeInput(
+              ns("data_filter"),
+              filterOptions$label
+            )
+          } else {
+            selectInput(ns("data_filter"),
+                        filterOptions$label,
+                        choices = c(), multiple = isTRUE(filterOptions$multiple)
+            )
+          },
+          dataGraph
+        )
+      } else {
+        data <- dataGraph
+      }
     } else {
       data <- dataGraph
     }
+    
     if (identical(type, "dtgraph")) {
       data <- tagList(
         tags$div(
@@ -61,9 +74,9 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
   } else if (identical(type, "valuebox")) {
     data <- uiOutput(ns("scalarBoxes"))
   } else if (identical(type, "miropivot")) {
-    data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
+    data <- miroPivotOutput(ns("miroPivot"), height = height, options = rendererOptions)
   } else if (identical(type, "dashboard")) {
-    data <- dashboardOutput(ns("dashboard"), height = height, options = customOptions)
+    data <- dashboardOutput(ns("dashboard"), height = height, options = rendererOptions)
   } else {
     tryCatch(
       {
@@ -75,7 +88,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
       }
     )
     data <- customOutput(ns("custom"),
-      height = height, options = customOptions,
+      height = height, options = graphConfig$options,
       path = customRendererDir
     )
   }
@@ -90,13 +103,16 @@ renderDataUI <- function(id, type, graphTool = NULL, height = NULL, customOption
   ))
 }
 
-renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL,
-                       graphOptions = NULL, customOptions = NULL,
-                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL, views = NULL,
-                       attachments = NULL) {
-  if (!is.null(graphOptions)) {
-    graphTool <- graphOptions$tool
-  }
+renderData <- function(input, output, session, data, type, graphConfig = NULL,
+                       configData = NULL, dtOptions = NULL,
+                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL,
+                       views = NULL, attachments = NULL) {
+  renderconfig <- getRendererConfig(graphConfig)
+  
+  graphOptions <- renderconfig$graphOptions
+  rendererOptions <- renderconfig$rendererOptions
+  graphTool <- renderconfig$graphTool
+
   if (!length(type)) {
     type <- "datatable"
   }
@@ -125,54 +141,92 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   type <- tolower(type)
   if (type %in% c("graph", "dtgraph")) {
     filterCol <- NULL
-    if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
-      showEl(session, "#" %+% session$ns("data_filter_wrapper"))
-      filterCol <- as.name(graphOptions$filter$col)
-      if (isTRUE(graphOptions$filter$date)) {
-        choices <- data[[graphOptions$filter$col]]
-        updateDateRangeInput(session, "data_filter",
-          min = choices[1],
-          max = choices[length(choices)],
-          start = choices[1], end = choices[length(choices)]
-        )
-      } else {
-        choices <- data[[graphOptions$filter$col]]
-        updateSelectInput(session, "data_filter",
-          choices = choices,
-          selected = choices[1]
-        )
+    if (!graphTool %in% c("leaflet", "plotly")) {
+      if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
+        showEl(session, "#" %+% session$ns("data_filter_wrapper"))
+        filterCol <- as.name(graphOptions$filter$col)
+        if (isTRUE(graphOptions$filter$date)) {
+          choices <- data[[graphOptions$filter$col]]
+          updateDateRangeInput(session, "data_filter",
+            min = choices[1],
+            max = choices[length(choices)],
+            start = choices[1], end = choices[length(choices)]
+          )
+        } else {
+          choices <- data[[graphOptions$filter$col]]
+          updateSelectInput(session, "data_filter",
+            choices = choices,
+            selected = choices[1]
+          )
+        }
       }
     }
-    output$graph <- renderGraph(data,
-      configData = configData, options = graphOptions,
-      input = input, filterCol = if (!is.null(filterCol)) filterCol
-    )
+    if (identical(graphTool, "leaflet")) {
+      renderMiroLeaflet("miroLeaflet", data,
+        options = graphOptions,
+        roundPrecision = roundPrecision,
+        rendererEnv = rendererEnv,
+        views = views,
+        outputScalarsFull = configData
+      )
+    } else if (identical(graphTool, "plotly")) {
+      #TODO: views, outputScalarsFull?
+      renderMiroPlotly("miroPlotly", data,
+                       options = graphOptions,
+                       roundPrecision = roundPrecision,
+                       rendererEnv = rendererEnv,
+                       views = views,
+                       outputScalarsFull = configData
+      )
+    } else if (identical(graphTool, "timevis")) {
+      renderMiroTimevis("miroTimevis", data,
+                        options = graphOptions,
+                        roundPrecision = roundPrecision,
+                        rendererEnv = rendererEnv,
+                        views = views,
+                        outputScalarsFull = configData
+      )
+    } else if (identical(graphTool, "dygraphs")) {
+      renderMiroDygraphs("miroDygraphs", data,
+                         options = graphOptions,
+                         roundPrecision = roundPrecision,
+                         rendererEnv = rendererEnv,
+                         views = views,
+                         outputScalarsFull = configData
+      )
+    } else {
+      stop(
+        sprintf("The graph tool '%s' is not currently supported.", graphTool),
+        call. = FALSE
+      )
+    }
+    
     if (type == "dtgraph") {
       output$datatable <- renderDTable(data,
         options = dtOptions, roundPrecision = roundPrecision,
-        metadata = if (length(customOptions)) customOptions[["_metadata_"]]
+        metadata = if (length(rendererOptions)) rendererOptions[["_metadata_"]]
       )
     }
   } else if (type == "datatable") {
     output$datatable <- renderDTable(data,
       options = graphOptions, roundPrecision = roundPrecision,
-      metadata = if (length(customOptions)) customOptions[["_metadata_"]]
+      metadata = if (length(rendererOptions)) rendererOptions[["_metadata_"]]
     )
   } else if (type == "valuebox") {
-    force(customOptions)
+    force(rendererOptions)
     force(roundPrecision)
     output$scalarBoxes <- renderUI({
-      if (!length(customOptions) || !length(names(customOptions[[1]]))) {
-        boxWidth <- if (length(customOptions$width)) customOptions$width else 4L
+      if (!length(rendererOptions) || !length(names(rendererOptions[[1]]))) {
+        boxWidth <- if (length(rendererOptions$width)) rendererOptions$width else 4L
         noBoxesRow <- 12 / boxWidth
         numberRows <- ceiling(boxWidth * length(data[[1]]) / 12)
         oldConfig <- TRUE
       } else {
         oldConfig <- FALSE
-        if (length(names(customOptions))) {
-          customOptions <- customOptions[!names(customOptions) %in% c("_metadata_", "count")]
+        if (length(names(rendererOptions))) {
+          rendererOptions <- rendererOptions[!names(rendererOptions) %in% c("_metadata_", "count")]
         }
-        configuredScalars <- unlist(lapply(customOptions, names), use.names = FALSE)
+        configuredScalars <- unlist(lapply(rendererOptions, names), use.names = FALSE)
         unconfiguredScalars <- !tolower(data[[1]]) %in% tolower(configuredScalars)
         if (any(unconfiguredScalars)) {
           unconfiguredScalars <- data[[1]][unconfiguredScalars]
@@ -186,15 +240,15 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
               scalarNames
             ))
           })
-          customOptions <- c(customOptions, additionalOptions)
+          rendererOptions <- c(rendererOptions, additionalOptions)
         }
-        numberRows <- length(customOptions)
+        numberRows <- length(rendererOptions)
       }
       lapply(seq_len(numberRows), function(rowId) {
         if (oldConfig) {
           rowConfig <- vector("list", noBoxesRow)
         } else {
-          rowConfig <- customOptions[[rowId]]
+          rowConfig <- rendererOptions[[rowId]]
           boxWidth <- 12 / length(rowConfig)
         }
         tags$div(
@@ -206,8 +260,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                 return()
               }
               scalarConfig <- list(
-                icon = customOptions$icon,
-                color = customOptions$color
+                icon = rendererOptions$icon,
+                color = rendererOptions$color
               )
             } else {
               scalarConfig <- rowConfig[[scalarId]]
@@ -247,13 +301,13 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
   } else if (type == "miropivot") {
     renderMiroPivot("miroPivot", data,
-      options = customOptions,
+      options = rendererOptions,
       roundPrecision = roundPrecision,
       rendererEnv = rendererEnv, views = views
     )
   } else if (type == "dashboard") {
     renderDashboard("dashboard", data,
-      options = customOptions,
+      options = rendererOptions,
       rendererEnv = rendererEnv, views = views,
       outputScalarsFull = configData,
       roundPrecision = roundPrecision
@@ -274,7 +328,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     tryCatch(
       {
         callModule(customRenderer, "custom", data,
-          options = customOptions,
+          options = rendererOptions,
           path = customRendererDir, rendererEnv = rendererEnv, views = views,
           attachments = attachments, outputScalarsFull = configData,
           roundPrecision = roundPrecision

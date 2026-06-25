@@ -343,10 +343,10 @@ removeGlobalViews <- function() {
 setViews()
 
 hideFilter <- function() {
-  hideEl(session, "#preview_output_plotly-data_filter")
-  hideEl(session, "#preview_output_dygraphs-data_filter")
-  hideEl(session, "#preview_output_leaflet-data_filter")
-  hideEl(session, "#preview_output_timevis-data_filter")
+  hideEl(session, "#preview_output_plotly-miroPlotly-data_filter")
+  hideEl(session, "#preview_output_dygraphs-miroDygraphs-data_filter")
+  hideEl(session, "#preview_output_leaflet-miroLeaflet-data_filter")
+  hideEl(session, "#preview_output_timevis-miroTimevis-data_filter")
 }
 hideFilter()
 # hideEl(session, any(startsWith("#preview_output_") && endsWith("-data_filter")))
@@ -2527,14 +2527,14 @@ observeEvent(input$cutomOptions, {
 })
 
 observeEvent(input$filter_dim, {
-  if (input$chart_tool %in% plotlyChartTools) {
-    chartToolTmp <- "plotly"
-  } else {
-    chartToolTmp <- input$chart_tool
-  }
+  filterId <- getPreviewFilterId(input$chart_tool)
+  
   if (isFALSE(input$filter_dim)) {
     rv$graphConfig$graph$filter <<- NULL
-    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+    
+    if (length(filterId)) {
+      hideEl(session, filterId)
+    }
   } else {
     rv$graphConfig$graph$filter <<- list(
       col = input$filter_col,
@@ -2542,7 +2542,10 @@ observeEvent(input$filter_dim, {
       multiple = input$filter_multiple,
       date = FALSE
     )
-    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+    
+    if (length(filterId)) {
+      showEl(session, filterId)
+    }
   }
 })
 observeEvent(input$filter_col, {
@@ -2558,9 +2561,14 @@ observeEvent(input$filter_label, {
   } else {
     rv$graphConfig$graph$filter$label <<- NULL
   }
-  updateSelectInput(session, paste0("#preview_output_", input$chart_tool, "-data_filter"),
-    label = newLabel
-  )
+  filterId <- getPreviewFilterId(input$chart_tool)
+  
+  if (length(filterId)) {
+    updateSelectInput(session,
+                      sub("^#", "", filterId),
+                      label = newLabel
+    )
+  }
 })
 observeEvent(input$filter_multiple, {
   req(isTRUE(input$filter_dim))
@@ -4803,9 +4811,14 @@ observe(
           } else {
             callModule(renderData, "preview_output_plotly",
               type = "graph",
-              data = data, configData = configScalars,
-              graphOptions = rv$graphConfig$graph,
-              roundPrecision = roundPrecision, modelDir = modelDir
+              data = data,
+              graphConfig = list(
+                graph = rv$graphConfig$graph,
+                options = list("_metadata_" = metadata)
+              ),
+              configData = configScalars,
+              roundPrecision = roundPrecision,
+              modelDir = modelDir
             )
             showEl(session, "#preview-content-plotly")
             hideEl(session, "#pieValues")
@@ -4819,9 +4832,14 @@ observe(
         } else if (isolate(rv$graphConfig$graph$tool) == "dygraphs") {
           callModule(renderData, "preview_output_dygraphs",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision,
+            modelDir = modelDir
           )
           showEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
@@ -4884,12 +4902,14 @@ observe(
           isolate(callModule(renderData, "preview_output_miropivot",
             type = "miropivot",
             data = data, rendererEnv = customRendererEnv,
-            customOptions = c(
-              list(
-                "_metadata_" = metadata,
-                resetOnInit = TRUE
-              ),
-              miropivotOptions
+            graphConfig = list(
+              options = c(
+                list(
+                  "_metadata_" = metadata,
+                  resetOnInit = TRUE
+                ),
+                miropivotOptions
+              )
             ),
             roundPrecision = 2, modelDir = modelDir, views = views
           ))
@@ -4904,9 +4924,14 @@ observe(
         } else if (isolate(rv$graphConfig$graph$tool) == "timevis") {
           callModule(renderData, "preview_output_timevis",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision,
+            modelDir = modelDir
           )
           showEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-plotly")
@@ -4923,7 +4948,9 @@ observe(
           callModule(renderData, "preview_output_valuebox",
             type = "valuebox",
             data = dataVisible, configData = configScalars,
-            customOptions = customOptionstmp,
+            graphConfig = list(
+              options = customOptionstmp
+            ),
             modelDir = modelDir
           )
           showEl(session, "#preview-content-valuebox")
@@ -4991,9 +5018,14 @@ observe(
         } else {
           callModule(renderData, "preview_output_leaflet",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision,
+            modelDir = modelDir
           )
           showEl(session, "#preview-content-leaflet")
           hideEl(session, "#preview-content-plotly")

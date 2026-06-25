@@ -767,3 +767,76 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
   }
   return(dataTmp)
 }
+getRendererConfig <- function(graphConfig) {
+  graphOptions <- graphConfig$graph
+  rendererOptions <- graphConfig$options
+  
+  if (!length(graphOptions) &&
+      identical(tolower(graphConfig$outType), "graph")) {
+    graphOptions <- rendererOptions
+  }
+  
+  list(
+    graphOptions = graphOptions,
+    rendererOptions = rendererOptions,
+    graphTool = graphOptions$tool
+  )
+}
+getEvent <- function(configData, eventId) {
+  # extracts event from configData
+  #
+  # args:
+  # configData :     configuration dataframe
+  # eventId    :     id of the event
+  #
+  # returns:
+  # string with event information extracted from configData
+  if (length(configData)) {
+    idx <- match(tolower(eventId), tolower(configData[[1]]))
+    if (is.na(idx)) {
+      # index could not be found so return the string (fixed value)
+      return(eventId)
+    } else {
+      return(configData[[3]][[idx]])
+    }
+  } else {
+    # config data does not exist, so return string
+    return(eventId)
+  }
+}
+getMarkerInfo <- function(data) {
+  marker <- list(
+    opacity = data$opacity,
+    size = data$size,
+    line = list(
+      color = data$line$color,
+      width = data$line$width
+    )
+  )
+  if (length(data$color)) {
+    marker$color <- data$color
+  }
+  if (length(data$symbol)) {
+    marker$symbol <- data$symbol
+  }
+  return(marker)
+}
+parseLabel <- function(label, colNames) {
+  if (!nchar(label)) {
+    return(NULL)
+  }
+  label <- gsub("\\", "\\\\", label, fixed = TRUE)
+  label <- gsub('"', '\\"', label, fixed = TRUE)
+  for (colName in colNames) {
+    label <- gsub(paste0("[", colName, "]"), paste0('",data[[\'', colName, '\']],"'),
+                  label,
+                  fixed = TRUE
+    )
+  }
+  return(parse(text = paste0('paste0("', label, '")')))
+}
+isColor <- function(x) {
+  tryCatch(is.matrix(col2rgb(x)),
+           error = function(e) FALSE
+  )
+}

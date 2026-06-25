@@ -310,9 +310,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                 "_", tabId
               ),
               type = graphConfig$outType,
-              graphTool = graphConfig$graph$tool,
-              customOptions = graphConfig$options,
-              filterOptions = graphConfig$graph$filter,
+              graphConfig = graphConfig,
               height = graphConfig$height,
               modelDir = modelDir,
               createdDynamically = FALSE
@@ -374,12 +372,12 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
             }, character(1L), USE.NAMES = FALSE)
             dataToRender <- bind_rows(dataToRender, .id = "_scenName")
             callModule(renderData, paste0(tabsetIdChar, "_", tabId),
-              type = "miroPivot",
-              data = dataToRender,
-              customOptions = graphConfig$options,
-              roundPrecision = roundPrecision,
-              rendererEnv = rendererEnv[[refId]],
-              views = views, attachments = attachments
+                       type = "miroPivot",
+                       data = dataToRender,
+                       graphConfig = graphConfig,
+                       roundPrecision = roundPrecision,
+                       rendererEnv = rendererEnv[[refId]],
+                       views = views, attachments = attachments
             )
             dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
             if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {
@@ -398,24 +396,22 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         tryCatch(
           {
             callModule(renderData, paste0(tabsetIdChar, "_", tabId),
-              type = graphConfig$outType,
-              data = scenData$get(refId,
-                symNames = c(sheetName, graphConfig$additionalData),
-                drop = TRUE
-              ),
-              configData = scenData$getScalars(refId),
-              dtOptions = graphConfig$datatable,
-              graphOptions = graphConfig$graph,
-              customOptions = graphConfig$options,
-              roundPrecision = roundPrecision,
-              modelDir = modelDir,
-              rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments
+                       type = graphConfig$outType,
+                       data = scenData$get(refId,
+                                           symNames = c(sheetName, graphConfig$additionalData),
+                                           drop = TRUE
+                       ),
+                       graphConfig = graphConfig,
+                       configData = scenData$getScalars(refId),
+                       roundPrecision = roundPrecision,
+                       modelDir = modelDir,
+                       rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments
             )
             callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
-              type = "datatable",
-              data = scenData$get(refId, symNames = sheetName, drop = TRUE),
-              graphOptions = graphConfig$datatable, customOptions = graphConfig$options,
-              roundPrecision = roundPrecision
+                       type = "datatable",
+                       data = scenData$get(refId, symNames = sheetName, drop = TRUE),
+                       graphConfig = list(datatable = graphConfig$datatable),
+                       roundPrecision = roundPrecision
             )
             dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
             if (identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)) {

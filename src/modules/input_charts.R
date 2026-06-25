@@ -109,9 +109,7 @@ renderInputGraph <- function(i) {
         insertUI(paste0("#graph-in_", i),
           ui = renderDataUI(paste0("in_", i),
             type = configGraphsIn[[i]]$outType,
-            graphTool = configGraphsIn[[i]]$graph$tool,
-            customOptions = configGraphsIn[[i]]$options,
-            filterOptions = configGraphsIn[[i]]$graph$filter,
+            graphConfig = configGraphsIn[[i]],
             height = configGraphsIn[[i]]$height,
             createdDynamically = TRUE
           ),
@@ -142,14 +140,13 @@ renderInputGraph <- function(i) {
         }
       }
       callModule(renderData, paste0("in_", i),
-        type = configGraphsIn[[i]]$outType,
-        data = data,
-        dtOptions = config$datatable,
-        graphOptions = configGraphsIn[[i]]$graph,
-        customOptions = configGraphsIn[[i]]$options,
-        roundPrecision = roundPrecision, modelDir = modelDir,
-        rendererEnv = rendererEnv[[paste0("in_", i)]],
-        views = views, attachments = attachments
+                 type = configGraphsIn[[i]]$outType,
+                 data = data,
+                 graphConfig = configGraphsIn[[i]],
+                 dtOptions = config$datatable,
+                 roundPrecision = roundPrecision, modelDir = modelDir,
+                 rendererEnv = rendererEnv[[paste0("in_", i)]],
+                 views = views, attachments = attachments
       )
     },
     error = function(e) {

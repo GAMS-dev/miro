@@ -592,11 +592,16 @@ font-size: 12px;
                 id = "preview-content-plotly", style = "overflow: auto;",
                 renderDataUI("preview_output_plotly",
                   type = "graph",
-                  graphTool = "plotly",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "plotly",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -606,11 +611,16 @@ font-size: 12px;
                 id = "preview-content-dygraphs", style = "display:none;",
                 renderDataUI("preview_output_dygraphs",
                   type = "graph",
-                  graphTool = "dygraphs",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "dygraphs",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -619,11 +629,16 @@ font-size: 12px;
                 id = "preview-content-leaflet", style = "display:none;",
                 renderDataUI("preview_output_leaflet",
                   type = "graph",
-                  graphTool = "leaflet",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "leaflet",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -636,18 +651,24 @@ font-size: 12px;
                 ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
-                  height = 400, customOptions = list()
+                  height = 400, 
+                  graphConfig = list(options = list())
                 )
               ),
               tags$div(
                 id = "preview-content-timevis", style = "display:none; overflow:auto;",
                 renderDataUI("preview_output_timevis",
                   type = "graph",
-                  graphTool = "timevis",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "timevis",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -670,7 +691,10 @@ font-size: 12px;
                   id = "preview-content-valuebox", style = "display:none;text-align:left",
                   renderDataUI("preview_output_valuebox",
                     type = "valuebox",
-                    height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count)
+                    height = 400, 
+                    graphConfig = list(
+                      options = list(count = modelOut[[scalarsOutName]]$count)
+                    )
                   )
                 )
               }
@@ -783,8 +807,10 @@ font-size: 12px;
                 renderDataUI("preview_inputTable_pivot",
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
-                  customOptions = list(
-                    "_input_" = TRUE
+                  graphConfig = list(
+                    options = list(
+                      "_input_" = TRUE
+                    )
                   )
                 ),
                 rHandsontableOutput("hot_preview")
@@ -1805,7 +1831,6 @@ font-size: 12px;
                 id = "preview-output-dt", style = "display:none;",
                 renderDataUI("table_preview_dt",
                   type = "datatable",
-                  graphTool = "plotly",
                   height = 700
                 )
               ),
