@@ -768,14 +768,19 @@ dashboardGetData <- function(indicator, dashboardChartData, dataViewsConfig, sel
   return(dataTmp)
 }
 getRendererConfig <- function(graphConfig) {
-  graphOptions <- graphConfig$graph
   rendererOptions <- graphConfig$options
-  
+
+  if (identical(tolower(graphConfig$outType), "datatable")) {
+    graphOptions <- graphConfig$datatable
+  } else {
+    graphOptions <- graphConfig$graph
+  }
+
   if (!length(graphOptions) &&
-      identical(tolower(graphConfig$outType), "graph")) {
+    identical(tolower(graphConfig$outType), "graph")) {
     graphOptions <- rendererOptions
   }
-  
+
   list(
     graphOptions = graphOptions,
     rendererOptions = rendererOptions,
@@ -829,14 +834,14 @@ parseLabel <- function(label, colNames) {
   label <- gsub('"', '\\"', label, fixed = TRUE)
   for (colName in colNames) {
     label <- gsub(paste0("[", colName, "]"), paste0('",data[[\'', colName, '\']],"'),
-                  label,
-                  fixed = TRUE
+      label,
+      fixed = TRUE
     )
   }
   return(parse(text = paste0('paste0("', label, '")')))
 }
 isColor <- function(x) {
   tryCatch(is.matrix(col2rgb(x)),
-           error = function(e) FALSE
+    error = function(e) FALSE
   )
 }
