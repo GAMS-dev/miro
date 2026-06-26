@@ -1,5 +1,5 @@
-renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, modelDir raus!
-                         graphConfig = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE) {
+renderDataUI <- function(id, type, height = NULL, graphConfig = NULL,
+                         createdDynamically = FALSE, showNoDataTxt = TRUE) {
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -7,9 +7,9 @@ renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, mod
   if (!length(type)) {
     type <- "datatable"
   }
-  
+
   renderconfig <- getRendererConfig(graphConfig)
-  
+
   graphOptions <- renderconfig$graphOptions
   rendererOptions <- renderconfig$rendererOptions
   graphTool <- renderconfig$graphTool
@@ -36,7 +36,7 @@ renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, mod
     } else {
       stop(paste0("The tool you selected for: '", id, "' is not supported by the current version of GAMS MIRO."))
     }
-    
+
     if (!graphTool %in% c("leaflet", "plotly", "timevis", "dygraphs")) {
       filterOptions <- graphOptions$filter
       if (length(filterOptions$col)) {
@@ -49,8 +49,8 @@ renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, mod
             )
           } else {
             selectInput(ns("data_filter"),
-                        filterOptions$label,
-                        choices = c(), multiple = isTRUE(filterOptions$multiple)
+              filterOptions$label,
+              choices = c(), multiple = isTRUE(filterOptions$multiple)
             )
           },
           dataGraph
@@ -61,7 +61,7 @@ renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, mod
     } else {
       data <- dataGraph
     }
-    
+
     if (identical(type, "dtgraph")) {
       data <- tagList(
         tags$div(
@@ -105,10 +105,10 @@ renderDataUI <- function(id, type, height = NULL, #TODO: showNoDataTxt weg?, mod
 
 renderData <- function(input, output, session, data, type, graphConfig = NULL,
                        configData = NULL, dtOptions = NULL,
-                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL,
+                       roundPrecision = 2, rendererEnv = NULL,
                        views = NULL, attachments = NULL) {
   renderconfig <- getRendererConfig(graphConfig)
-  
+
   graphOptions <- renderconfig$graphOptions
   rendererOptions <- renderconfig$rendererOptions
   graphTool <- renderconfig$graphTool
@@ -170,29 +170,28 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
         outputScalarsFull = configData
       )
     } else if (identical(graphTool, "plotly")) {
-      #TODO: views, outputScalarsFull?
       renderMiroPlotly("miroPlotly", data,
-                       options = graphOptions,
-                       roundPrecision = roundPrecision,
-                       rendererEnv = rendererEnv,
-                       views = views,
-                       outputScalarsFull = configData
+        options = graphOptions,
+        roundPrecision = roundPrecision,
+        rendererEnv = rendererEnv,
+        views = views,
+        outputScalarsFull = configData
       )
     } else if (identical(graphTool, "timevis")) {
       renderMiroTimevis("miroTimevis", data,
-                        options = graphOptions,
-                        roundPrecision = roundPrecision,
-                        rendererEnv = rendererEnv,
-                        views = views,
-                        outputScalarsFull = configData
+        options = graphOptions,
+        roundPrecision = roundPrecision,
+        rendererEnv = rendererEnv,
+        views = views,
+        outputScalarsFull = configData
       )
     } else if (identical(graphTool, "dygraphs")) {
       renderMiroDygraphs("miroDygraphs", data,
-                         options = graphOptions,
-                         roundPrecision = roundPrecision,
-                         rendererEnv = rendererEnv,
-                         views = views,
-                         outputScalarsFull = configData
+        options = graphOptions,
+        roundPrecision = roundPrecision,
+        rendererEnv = rendererEnv,
+        views = views,
+        outputScalarsFull = configData
       )
     } else {
       stop(
@@ -200,7 +199,7 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
         call. = FALSE
       )
     }
-    
+
     if (type == "dtgraph") {
       output$datatable <- renderDTable(data,
         options = dtOptions, roundPrecision = roundPrecision,
@@ -209,7 +208,8 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
     }
   } else if (type == "datatable") {
     output$datatable <- renderDTable(data,
-      options = graphOptions, roundPrecision = roundPrecision,
+      options = if (!is.null(dtOptions)) dtOptions else graphOptions,
+      roundPrecision = roundPrecision,
       metadata = if (length(rendererOptions)) rendererOptions[["_metadata_"]]
     )
   } else if (type == "valuebox") {

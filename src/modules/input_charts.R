@@ -140,13 +140,13 @@ renderInputGraph <- function(i) {
         }
       }
       callModule(renderData, paste0("in_", i),
-                 type = configGraphsIn[[i]]$outType,
-                 data = data,
-                 graphConfig = configGraphsIn[[i]],
-                 dtOptions = config$datatable,
-                 roundPrecision = roundPrecision, modelDir = modelDir,
-                 rendererEnv = rendererEnv[[paste0("in_", i)]],
-                 views = views, attachments = attachments
+        type = configGraphsIn[[i]]$outType,
+        data = data,
+        graphConfig = configGraphsIn[[i]],
+        dtOptions = config$datatable,
+        roundPrecision = roundPrecision,
+        rendererEnv = rendererEnv[[paste0("in_", i)]],
+        views = views, attachments = attachments
       )
     },
     error = function(e) {

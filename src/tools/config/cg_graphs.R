@@ -2528,10 +2528,10 @@ observeEvent(input$cutomOptions, {
 
 observeEvent(input$filter_dim, {
   filterId <- getPreviewFilterId(input$chart_tool)
-  
+
   if (isFALSE(input$filter_dim)) {
     rv$graphConfig$graph$filter <<- NULL
-    
+
     if (length(filterId)) {
       hideEl(session, filterId)
     }
@@ -2542,7 +2542,7 @@ observeEvent(input$filter_dim, {
       multiple = input$filter_multiple,
       date = FALSE
     )
-    
+
     if (length(filterId)) {
       showEl(session, filterId)
     }
@@ -2562,11 +2562,11 @@ observeEvent(input$filter_label, {
     rv$graphConfig$graph$filter$label <<- NULL
   }
   filterId <- getPreviewFilterId(input$chart_tool)
-  
+
   if (length(filterId)) {
     updateSelectInput(session,
-                      sub("^#", "", filterId),
-                      label = newLabel
+      sub("^#", "", filterId),
+      label = newLabel
     )
   }
 })
@@ -4817,8 +4817,7 @@ observe(
                 options = list("_metadata_" = metadata)
               ),
               configData = configScalars,
-              roundPrecision = roundPrecision,
-              modelDir = modelDir
+              roundPrecision = roundPrecision
             )
             showEl(session, "#preview-content-plotly")
             hideEl(session, "#pieValues")
@@ -4838,8 +4837,7 @@ observe(
               options = list("_metadata_" = metadata)
             ),
             configData = configScalars,
-            roundPrecision = roundPrecision,
-            modelDir = modelDir
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
@@ -4911,7 +4909,7 @@ observe(
                 miropivotOptions
               )
             ),
-            roundPrecision = 2, modelDir = modelDir, views = views
+            roundPrecision = 2, views = views
           ))
           showEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
@@ -4930,8 +4928,7 @@ observe(
               options = list("_metadata_" = metadata)
             ),
             configData = configScalars,
-            roundPrecision = roundPrecision,
-            modelDir = modelDir
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-plotly")
@@ -4950,8 +4947,7 @@ observe(
             data = dataVisible, configData = configScalars,
             graphConfig = list(
               options = customOptionstmp
-            ),
-            modelDir = modelDir
+            )
           )
           showEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-miropivot")
@@ -5024,8 +5020,7 @@ observe(
               options = list("_metadata_" = metadata)
             ),
             configData = configScalars,
-            roundPrecision = roundPrecision,
-            modelDir = modelDir
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-leaflet")
           hideEl(session, "#preview-content-plotly")

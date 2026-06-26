@@ -2360,7 +2360,6 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
         )
       ),
       roundPrecision = 2,
-      modelDir = modelDir,
       views = views
     )
   } else {

@@ -588,7 +588,7 @@ observe(
           callModule(renderData, "table_preview_dt",
             type = "datatable",
             data = data, dtOptions = dtOptions,
-            roundPrecision = 2, modelDir = modelDir
+            roundPrecision = 2
           )
         } else if (isolate(rv$tableConfig$tableType) == "piv") {
           return()
