@@ -12,12 +12,11 @@ miroLeafletOutput <- function(id, height = NULL, options = NULL, path = NULL) {
         end = options$filter$end
       )
     } else {
-      selectizeInput(
+      selectInput(
         ns("data_filter"),
         label = NULL,
         choices = NULL,
-        multiple = isTRUE(options$filter$multiple),
-        options = list(plugins = list("remove_button"))
+        multiple = isTRUE(options$filter$multiple)
       )
     }
 
@@ -38,69 +37,14 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
   moduleServer(
     id,
     function(input, output, session) {
-      ns <- session$ns
-
-      resolveLeafletData <- function() {
-        dataTmp <- if (shiny::is.reactive(data)) {
-          data()
-        } else {
-          data
-        }
-
-        if (is.null(dataTmp)) {
-          return(NULL)
-        }
-
-        if (inherits(dataTmp, "data.frame")) {
-          dataTmp <- type_convert(dataTmp, cols())
-        }
-
-        dataTmp
-      }
-
       if (length(options$filter$col)) {
         observe({
-          dataTmp <- resolveLeafletData()
-
-          if (is.null(dataTmp) || !options$filter$col %in% names(dataTmp)) {
-            return()
-          }
-
-          if (isTRUE(options$filter$date)) {
-            choices <- dataTmp[[options$filter$col]]
-            choices <- choices[!is.na(choices)]
-            if (!length(choices)) {
-              return()
-            }
-
-            currentSelection <- isolate(input$data_filter)
-            updateDateRangeInput(session, "data_filter",
-              min = min(choices, na.rm = TRUE),
-              max = max(choices, na.rm = TRUE),
-              start = if (length(currentSelection)) currentSelection[1] else min(choices, na.rm = TRUE),
-              end = if (length(currentSelection)) currentSelection[2] else max(choices, na.rm = TRUE)
-            )
-          } else {
-            choices <- unique(dataTmp[[options$filter$col]])
-            choices <- choices[!is.na(choices)]
-
-            currentSelection <- isolate(input$data_filter)
-            selected <- currentSelection[currentSelection %in% choices]
-            if (!length(selected) && length(choices)) {
-              selected <- choices[1]
-            }
-
-            updateSelectizeInput(session, "data_filter",
-              choices = choices,
-              selected = selected,
-              server = TRUE
-            )
-          }
+          updateRendererFilterInput(session, input, data, options)
         })
       }
 
       output$graph <- renderLeaflet({
-        dataTmp <- resolveLeafletData()
+        dataTmp <- resolveRendererData(data)
 
         if (is.null(dataTmp)) {
           return(NULL)
@@ -110,24 +54,9 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
           return(leaflet() %>% addTiles())
         }
 
-        if (length(options$filter$col) && length(input$data_filter) &&
-          options$filter$col %in% names(dataTmp)) {
-          if (isTRUE(options$filter$date)) {
-            filterTmp <- as.POSIXct(input$data_filter)
-            dataTmp <- dataTmp[
-              dataTmp[[options$filter$col]] >= filterTmp[1] &
-                dataTmp[[options$filter$col]] <= max(filterTmp[1], filterTmp[2]),
-              drop = FALSE
-            ]
-          } else {
-            dataTmp <- dataTmp[
-              dataTmp[[options$filter$col]] %in% input$data_filter, ,
-              drop = FALSE
-            ]
-          }
-        }
+        dataTmp <- filterRendererData(dataTmp, input, options)
 
-        if (!nrow(dataTmp)) {
+        if (is.null(dataTmp) || !nrow(dataTmp)) {
           return(leaflet() %>% addTiles())
         }
 

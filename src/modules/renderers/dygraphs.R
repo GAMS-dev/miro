@@ -1,22 +1,20 @@
 renderDygraphsGraph <- function(data, configData = NULL, options, height = NULL,
-                                input = NULL, filterCol = NULL) {
-  if (inherits(data, "data.frame")) {
-    data <- type_convert(data, cols())
-  }
-  
+                                input = NULL) {
   renderDygraph({
-    if (length(filterCol) && length(input$data_filter)) {
-      if (isTRUE(options$filter$date)) {
-        filterTmp <- as.POSIXct(input$data_filter)
-        data <- filter(data, between(
-          !!filterCol, filterTmp[1],
-          max(filterTmp[1], filterTmp[2])
-        ))
-      } else {
-        data <- filter(data, !!filterCol %in% input$data_filter)
-      }
+    data <- resolveRendererData(data)
+
+    if (is.null(data)) {
+      return(NULL)
     }
-    
+
+    if (!is.null(input)) {
+      data <- filterRendererData(data, input, options)
+    }
+
+    if (is.null(data)) {
+      return(NULL)
+    }
+
     p <- NULL
     lapply(seq_along(options$ydata), function(j) {
       if (j == 1) {
@@ -30,15 +28,15 @@ renderDygraphsGraph <- function(data, configData = NULL, options, height = NULL,
           # bring data into right matrix format
           if (length(unique(data[[key]])) > 50L) {
             stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.",
-                 call. = FALSE
+              call. = FALSE
             )
           }
-          
+
           xts_data <- pivot_wider(data,
-                                  names_from = !!key,
-                                  values_from = !!value
+            names_from = !!key,
+            values_from = !!value
           )
-          
+
           if (length(options$xdata)) {
             xtsIdx <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
             if (is.na(xtsIdx)) {
@@ -64,8 +62,8 @@ renderDygraphsGraph <- function(data, configData = NULL, options, height = NULL,
             }
           }
           p <<- dygraph(xts_data,
-                        main = options$title, periodicity = NULL, group = NULL,
-                        elementId = NULL
+            main = options$title, periodicity = NULL, group = NULL,
+            elementId = NULL
           )
         } else {
           idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
@@ -79,34 +77,34 @@ renderDygraphsGraph <- function(data, configData = NULL, options, height = NULL,
           dateCol <- data[[dataColId]]
           if (!inherits(dateCol, "POSIXct")) {
             dateCol <- tryCatch(as.POSIXct(dateCol, tz = "GMT"),
-                                error = function(e) {
-                                  stop("X axis data could not be identified as dates. Try: yyyy-mm-dd format.", call. = FALSE)
-                                }
+              error = function(e) {
+                stop("X axis data could not be identified as dates. Try: yyyy-mm-dd format.", call. = FALSE)
+              }
             )
           }
-          
+
           xts_data <- xts(data[, idxVector], order.by = dateCol)
-          
+
           p <<- dygraph(xts_data, main = options$title, periodicity = NULL, group = NULL, elementId = NULL)
           p <<- dySeries(p,
-                         name = names(options$ydata)[[1]], label = options$ydata[[1]]$label,
-                         color = options$ydata[[1]]$color, axis = options$ydata[[1]]$yaxis,
-                         stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot,
-                         fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
-                         pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
-                         strokeWidth = options$ydata[[1]]$strokeWidth,
-                         strokePattern = options$ydata[[1]]$strokePattern,
-                         strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth,
-                         strokeBorderColor = options$ydata[[1]]$strokeBorderColor
+            name = names(options$ydata)[[1]], label = options$ydata[[1]]$label,
+            color = options$ydata[[1]]$color, axis = options$ydata[[1]]$yaxis,
+            stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot,
+            fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
+            pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
+            strokeWidth = options$ydata[[1]]$strokeWidth,
+            strokePattern = options$ydata[[1]]$strokePattern,
+            strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth,
+            strokeBorderColor = options$ydata[[1]]$strokeBorderColor
           )
         }
       } else {
         p <<- dySeries(p,
-                       name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = options$ydata[[j]]$yaxis,
-                       stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                       pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth,
-                       strokePattern = options$ydata[[j]]$strokePattern,
-                       strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor
+          name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = options$ydata[[j]]$yaxis,
+          stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
+          pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth,
+          strokePattern = options$ydata[[j]]$strokePattern,
+          strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor
         )
       }
     })
@@ -169,18 +167,17 @@ renderDygraphsGraph <- function(data, configData = NULL, options, height = NULL,
       })
     }
     p
-    
   })
 }
 
 miroDygraphsOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- NS(id)
-  
+
   dataGraph <- tags$div(
     class = "dyGraphs-wrapper",
     dygraphOutput(ns("graph"), height = if (length(height)) height else "70vh")
   )
-  
+
   if (length(options$filter$col)) {
     return(tags$div(
       class = "data-filter-wrapper",
@@ -200,7 +197,7 @@ miroDygraphsOutput <- function(id, height = NULL, options = NULL, path = NULL) {
       dataGraph
     ))
   }
-  
+
   dataGraph
 }
 
@@ -210,33 +207,16 @@ renderMiroDygraphs <- function(id, data, options = NULL, path = NULL,
   moduleServer(
     id,
     function(input, output, session) {
-      filterCol <- NULL
-      
-      if (length(options$filter) && options$filter$col %in% names(data)) {
-        filterCol <- as.name(options$filter$col)
-        
-        if (isTRUE(options$filter$date)) {
-          choices <- data[[options$filter$col]]
-          updateDateRangeInput(session, "data_filter",
-                               min = choices[1],
-                               max = choices[length(choices)],
-                               start = choices[1],
-                               end = choices[length(choices)]
-          )
-        } else {
-          choices <- data[[options$filter$col]]
-          updateSelectInput(session, "data_filter",
-                            choices = choices,
-                            selected = choices[1]
-          )
-        }
+      if (length(options$filter$col)) {
+        observe({
+          updateRendererFilterInput(session, input, data, options)
+        })
       }
-      
+
       output$graph <- renderDygraphsGraph(data,
-                                          configData = outputScalarsFull,
-                                          options = options,
-                                          input = input,
-                                          filterCol = if (!is.null(filterCol)) filterCol
+        configData = outputScalarsFull,
+        options = options,
+        input = input
       )
     }
   )

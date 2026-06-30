@@ -37,30 +37,7 @@ renderDataUI <- function(id, type, height = NULL, graphConfig = NULL,
       stop(paste0("The tool you selected for: '", id, "' is not supported by the current version of GAMS MIRO."))
     }
 
-    if (!graphTool %in% c("leaflet", "plotly", "timevis", "dygraphs")) {
-      filterOptions <- graphOptions$filter
-      if (length(filterOptions$col)) {
-        data <- tags$div(
-          class = "data-filter-wrapper",
-          if (isTRUE(filterOptions$date)) {
-            dateRangeInput(
-              ns("data_filter"),
-              filterOptions$label
-            )
-          } else {
-            selectInput(ns("data_filter"),
-              filterOptions$label,
-              choices = c(), multiple = isTRUE(filterOptions$multiple)
-            )
-          },
-          dataGraph
-        )
-      } else {
-        data <- dataGraph
-      }
-    } else {
-      data <- dataGraph
-    }
+    data <- dataGraph
 
     if (identical(type, "dtgraph")) {
       data <- tagList(
@@ -140,27 +117,6 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
   typeCustom <- type
   type <- tolower(type)
   if (type %in% c("graph", "dtgraph")) {
-    filterCol <- NULL
-    if (!graphTool %in% c("leaflet", "plotly")) {
-      if (length(graphOptions$filter) && graphOptions$filter$col %in% names(data)) {
-        showEl(session, "#" %+% session$ns("data_filter_wrapper"))
-        filterCol <- as.name(graphOptions$filter$col)
-        if (isTRUE(graphOptions$filter$date)) {
-          choices <- data[[graphOptions$filter$col]]
-          updateDateRangeInput(session, "data_filter",
-            min = choices[1],
-            max = choices[length(choices)],
-            start = choices[1], end = choices[length(choices)]
-          )
-        } else {
-          choices <- data[[graphOptions$filter$col]]
-          updateSelectInput(session, "data_filter",
-            choices = choices,
-            selected = choices[1]
-          )
-        }
-      }
-    }
     if (identical(graphTool, "leaflet")) {
       renderMiroLeaflet("miroLeaflet", data,
         options = graphOptions,

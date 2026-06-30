@@ -845,3 +845,90 @@ isColor <- function(x) {
     error = function(e) FALSE
   )
 }
+resolveRendererData <- function(data) {
+  dataTmp <- if (shiny::is.reactive(data)) {
+    data()
+  } else {
+    data
+  }
+
+  if (is.null(dataTmp)) {
+    return(NULL)
+  }
+
+  if (inherits(dataTmp, "data.frame")) {
+    dataTmp <- type_convert(dataTmp, cols())
+  }
+
+  dataTmp
+}
+
+updateRendererFilterInput <- function(session, input, data, options) {
+  if (!length(options$filter$col)) {
+    return()
+  }
+
+  dataTmp <- resolveRendererData(data)
+
+  if (is.null(dataTmp) || !options$filter$col %in% names(dataTmp)) {
+    return()
+  }
+
+  choices <- dataTmp[[options$filter$col]]
+  choices <- choices[!is.na(choices)]
+
+  if (!length(choices)) {
+    return()
+  }
+
+  if (isTRUE(options$filter$date)) {
+    currentSelection <- isolate(input$data_filter)
+    updateDateRangeInput(session, "data_filter",
+      min = min(choices, na.rm = TRUE),
+      max = max(choices, na.rm = TRUE),
+      start = if (length(currentSelection)) currentSelection[1] else min(choices, na.rm = TRUE),
+      end = if (length(currentSelection)) currentSelection[2] else max(choices, na.rm = TRUE)
+    )
+  } else {
+    choices <- unique(choices)
+    currentSelection <- isolate(input$data_filter)
+    selected <- currentSelection[currentSelection %in% choices]
+
+    if (!length(selected) && length(choices)) {
+      selected <- choices[1]
+    }
+
+    updateSelectInput(session, "data_filter",
+      choices = choices,
+      selected = selected
+    )
+  }
+}
+
+filterRendererData <- function(dataTmp, input, options) {
+  if (is.null(dataTmp) ||
+    !length(options$filter$col) ||
+    !length(input$data_filter) ||
+    !options$filter$col %in% names(dataTmp)) {
+    return(dataTmp)
+  }
+
+  if (isTRUE(options$filter$date)) {
+    filterTmp <- as.POSIXct(input$data_filter)
+
+    if (length(filterTmp) < 2L || any(is.na(filterTmp))) {
+      return(dataTmp)
+    }
+
+    return(dataTmp[
+      dataTmp[[options$filter$col]] >= filterTmp[1] &
+        dataTmp[[options$filter$col]] <= max(filterTmp[1], filterTmp[2]), ,
+      drop = FALSE
+    ])
+  }
+
+  dataTmp[
+    dataTmp[[options$filter$col]] %in% input$data_filter, ,
+    drop = FALSE
+  ]
+}
