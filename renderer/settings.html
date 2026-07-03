@@ -575,7 +575,7 @@
                 class="setting-wrapper"
                 style="border-bottom: none; padding-bottom: 0"
               >
-                <p class="text-muted small">
+                <p class="text-muted small" id="aiAssistantInfo">
                   Enter your API keys to enable various AI models for the MIRO
                   AI Assistant. Keys are securely verified automatically when
                   you finish typing and click outside the field.
@@ -590,7 +590,9 @@
                   >
                     OpenAI
                   </label>
-                  <span id="statusOpenAi" class="badge badge-secondary"
+                  <span
+                    id="statusOpenAi"
+                    class="badge badge-secondary ai-key-status"
                     >Not Configured</span
                   >
                 </div>
@@ -603,19 +605,15 @@
                       type="password"
                       placeholder="sk-proj-..."
                     />
-                    <div id="keyOpenAiValidation" class="invalid-feedback">
-                      Invalid API key.
-                    </div>
-                    <div id="keyOpenAiSuccess" class="valid-feedback">
-                      Connection successful.
-                    </div>
                     <small
                       id="keyOpenAiHelp"
                       class="form-text text-muted"
                       style="margin-top: 5px"
                     >
-                      Don't have a key?
-                      <a href="https://platform.openai.com/api-keys"
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://platform.openai.com/api-keys"
                         >Get one here</a
                       >.
                     </small>
@@ -631,7 +629,9 @@
                   >
                     Google Gemini
                   </label>
-                  <span id="statusGoogle" class="badge badge-secondary"
+                  <span
+                    id="statusGoogle"
+                    class="badge badge-secondary ai-key-status"
                     >Not Configured</span
                   >
                 </div>
@@ -644,19 +644,15 @@
                       type="password"
                       placeholder="AIzaSy..."
                     />
-                    <div id="keyGoogleValidation" class="invalid-feedback">
-                      Invalid API key.
-                    </div>
-                    <div id="keyGoogleSuccess" class="valid-feedback">
-                      Connection successful.
-                    </div>
                     <small
                       id="keyGoogleHelp"
                       class="form-text text-muted"
                       style="margin-top: 5px"
                     >
-                      Don't have a key?
-                      <a href="https://aistudio.google.com/app/apikey"
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://aistudio.google.com/app/apikey"
                         >Get one here</a
                       >.
                     </small>
@@ -672,7 +668,9 @@
                   >
                     Anthropic
                   </label>
-                  <span id="statusAnthropic" class="badge badge-secondary"
+                  <span
+                    id="statusAnthropic"
+                    class="badge badge-secondary ai-key-status"
                     >Not Configured</span
                   >
                 </div>
@@ -685,19 +683,15 @@
                       type="password"
                       placeholder="sk-ant-..."
                     />
-                    <div id="keyAnthropicValidation" class="invalid-feedback">
-                      Invalid API key.
-                    </div>
-                    <div id="keyAnthropicSuccess" class="valid-feedback">
-                      Connection successful.
-                    </div>
                     <small
                       id="keyAnthropicHelp"
                       class="form-text text-muted"
                       style="margin-top: 5px"
                     >
-                      Don't have a key?
-                      <a href="https://console.anthropic.com/settings/keys"
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://console.anthropic.com/settings/keys"
                         >Get one here</a
                       >.
                     </small>

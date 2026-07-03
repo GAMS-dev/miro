@@ -562,7 +562,7 @@ ipcRenderer.on(
       return;
     }
     $('#aiAssistantForm').show();
-})
+  })
 aiProviders.forEach(provider => {
   const inputElement = document.getElementById(`key${provider.id}`);
   const badgeElement = document.getElementById(`status${provider.id}`);
@@ -583,12 +583,12 @@ aiProviders.forEach(provider => {
 
     if (!keyValue) {
       badgeElement.className = 'badge badge-secondary';
-      badgeElement.innerText = 'Not Configured';
+      badgeElement.innerText = lang['ai-key-status-not-configured'];
       return;
     }
 
     badgeElement.className = 'badge badge-info';
-    badgeElement.innerText = 'Checking...';
+    badgeElement.innerText = lang['ai-key-status-checking'];
 
     try {
       __electronLog.debug(`Validating API key for AI provider: ${provider.name}`)
@@ -598,7 +598,7 @@ aiProviders.forEach(provider => {
         __electronLog.debug(`Valid API key for AI provider: ${provider.name} added!`)
         inputElement.classList.add('is-valid');
         badgeElement.className = 'badge badge-success';
-        badgeElement.innerText = 'Connected';
+        badgeElement.innerText = lang['ai-key-status-connected'];
         newConfig.aiAssistantConfig ??= {};
         newConfig.aiAssistantConfig.apiKeys ??= [];
         const existing = newConfig.aiAssistantConfig.apiKeys.find(
@@ -616,13 +616,13 @@ aiProviders.forEach(provider => {
         __electronLog.debug(`Invalid API key for AI provider: ${provider.name}`)
         inputElement.classList.add('is-invalid');
         badgeElement.className = 'badge badge-danger';
-        badgeElement.innerText = 'Invalid Key';
+        badgeElement.innerText = lang['ai-key-status-invalid'];
       }
     } catch (err) {
       __electronLog.warn(`Failed validating API key for AI provider: ${provider.name}. Error: ${err}`)
       inputElement.classList.add('is-invalid');
       badgeElement.className = 'badge badge-danger';
-      badgeElement.innerText = 'Error';
+      badgeElement.innerText = lang['ai-key-status-error'];
     }
   });
 });
@@ -650,6 +650,7 @@ ipcRenderer.on(
         'general-tab',
         'paths-tab',
         'env-tab',
+        'ai-tab',
         'launchBrowser',
         'browserReset',
         'generalLanguage',
@@ -703,12 +704,22 @@ ipcRenderer.on(
         'engineUsernameValidation',
         'enginePasswordValidation',
         'engineJWTValidation',
+        'enableAiAssistantLabel',
+        'aiAssistantInfo'
       ].forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
           el.innerText = lang[id];
         }
       });
+      ['settings-reset',
+        'ai-key-status-invalid',
+        'ai-key-status-connected',
+        'ai-no-key-info',
+        'ai-no-key-link'].forEach((className) => {
+          $(`.${className}`).text(lang[className]);
+        });
+      $('.ai-key-status').text(lang['ai-key-status-not-configured']);
       noEnvDesc = lang.noEnvDesc;
       document.getElementById('btCancel').value = lang.btCancel;
       [
@@ -809,7 +820,7 @@ ipcRenderer.on(
           inputElement.value = apiKey
           inputElement.classList.add('is-valid');
           badgeElement.className = 'badge badge-success';
-          badgeElement.innerText = 'Connected';
+          badgeElement.innerText = lang['ai-key-status-connected'];
         })
         cbEnableAi.prop('checked', aiEnabled);
         if (isImportant) {
