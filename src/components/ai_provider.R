@@ -266,7 +266,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       self$history[[length(self$history) + 1]] <- list(role = "user", content = userInput)
       payload <- list(
         model = private$modelName,
-        max_tokens = 4096,
+        max_tokens = 8192,
         messages = self$history,
         system = list(
           list(type = "text", text = systemInstructions, cache_control = list(type = "ephemeral"))
@@ -284,7 +284,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       resp <- POST(
         url,
         body = toJSON(payload, auto_unbox = TRUE),
-        encode = "json",
+        encode = "raw",
         add_headers(
           `x-api-key` = private$apiKey,
           `anthropic-version` = "2023-06-01"
@@ -310,7 +310,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
             arguments = block$input
           )
         } else if (block$type == "text") {
-          finalText <- block$text
+          finalText <- paste0(finalText, block$text)
         }
       }
       return(list(
