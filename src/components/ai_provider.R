@@ -59,7 +59,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
             }
             list(id = toolCall$id, name = toolCall$name, output = fromJSON(dbRes))
           })
-          payload <- private$prepareNextIterationPayload(toolResults, parsedTurn$rawContent)
+          payload <- private$prepareNextIterationPayload(toolResults)
         } else {
           # AI has drafted its final text response
           finalText <- parsedTurn$text
@@ -83,7 +83,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
     prepareInitialPayload = function(userInput) stop("Abstract"),
     executeHttpCall = function(payload) stop("Abstract"),
     parseApiResponse = function(rawResponse) stop("Abstract"),
-    prepareNextIterationPayload = function(toolResults, rawContent) stop("Abstract"),
+    prepareNextIterationPayload = function(toolResults) stop("Abstract"),
     logToDebugFile = function(title, contentData) {
       timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
       separator <- paste0(rep("=", 80), collapse = "")
@@ -145,11 +145,10 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
         tokens = list(
           input = resContent$usage$total_input_tokens,
           output = resContent$usage$total_output_tokens
-        ),
-        rawContent = resContent
+        )
       ))
     },
-    prepareNextIterationPayload = function(toolResults, rawContent) {
+    prepareNextIterationPayload = function(toolResults) {
       toolSteps <- lapply(toolResults, function(res) {
         list(type = "function_result", call_id = res$id, name = res$name, result = list(output = res$output))
       })
@@ -234,11 +233,10 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         tokens = list(
           input = resContent$usage$input_tokens,
           output = resContent$usage$output_tokens
-        ),
-        rawContent = resContent
+        )
       ))
     },
-    prepareNextIterationPayload = function(toolResults, rawContent) {
+    prepareNextIterationPayload = function(toolResults) {
       toolOutputs <- lapply(toolResults, function(res) {
         list(
           type = "function_call_output",
@@ -320,11 +318,10 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
         tokens = list(
           input = resContent$usage$input_tokens,
           output = resContent$usage$output_tokens
-        ),
-        rawContent = resContent
+        )
       ))
     },
-    prepareNextIterationPayload = function(toolResults, rawContent) {
+    prepareNextIterationPayload = function(toolResults) {
       toolResultBlocks <- lapply(toolResults, function(res) {
         list(
           type = "tool_result",
