@@ -169,6 +169,42 @@ visibility:visible;
 white-space:pre-wrap;
 font-family: Menlo,Monaco,Consolas,Courier New,monospace;
 font-size: 12px;
+}
+body {
+  transition: padding-right 0.3s ease-in-out;
+}
+body.drawer-open {
+  padding-right: 450px;
+}
+.miro-ai-assistant-drawer {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -5px 0 15px rgba(0,0,0,0.15);
+  transition: right 0.3s ease-in-out;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+.miro-ai-assistant-drawer.open {
+  right: 0;
+}
+.drawer-header {
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+.drawer-body {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }')))
     ),
     HTML('<!-- Creates modal dialog for confirm messages -->
@@ -699,6 +735,34 @@ font-size: 12px;
                 )
               }
             )
+          )
+        ),
+        tags$div(
+          id = "miroAiDrawer",
+          class = "miro-ai-assistant-drawer",
+          tags$div(
+            class = "drawer-header",
+            tags$h4(lang$nav$aiBotDialog$title, style = "margin: 0; font-weight: bold;"),
+            tags$div(
+              style = "display: flex; gap: 4px; align-items: center;",
+              tags$button(
+                id = "btMiroAiClearChat",
+                class = "btn btn-default action-button",
+                icon("trash"),
+                title = lang$nav$aiBotDialog$btClear,
+                style = "border: none; background: transparent; color: #6c757d; font-size: 1.1em; padding: 6px 10px; box-shadow: none;"
+              ),
+              tags$button(
+                icon("times"),
+                class = "btn btn-default",
+                style = "border: none; background: transparent; color: #333333; font-size: 1.3em; padding: 6px 10px; box-shadow: none;",
+                onclick = "Miro.closeMiroAiDrawer()"
+              )
+            )
+          ),
+          tags$div(
+            class = "drawer-body",
+            renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, chatHistory = NULL, renderApplyCodeBtn = TRUE)
           )
         )
       ),

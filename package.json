@@ -28,6 +28,7 @@
       "src/global.R",
       "src/app.R",
       "src/LICENSE",
+      "src/miro-pkg-lock.csv",
       "src/modules/**",
       "src/components/**",
       "src/JS/**",

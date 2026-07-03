@@ -61,7 +61,8 @@ filesToInclude <- c(
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R",
   "./components/custom_comparison_data.R", "./components/batch_loader.R",
-  "./components/sandbox_input_data.R", "./components/engine_client.R"
+  "./components/sandbox_input_data.R", "./components/engine_client.R",
+  "./components/ai_adapter.R", "./components/ai_provider.R", "./modules/ai_ui_components.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {
@@ -413,6 +414,31 @@ if (is.null(errMsg)) {
     }
   } else {
     config$activateModules$remoteExecution <- FALSE
+  }
+  if (!identical(Sys.getenv("AI_ASSISTANT_CONFIG"), "")) {
+    flog.info("AI Assistant config found")
+    if (!length(config$aiAssistant)) {
+      config$aiAssistant <- list()
+      if (length(config$readmeFile)) {
+        # Set default domain context
+        config$aiAssistant$domainContext <- sprintf("This is the app's README file:\n%s", config$readmeFile)
+      }
+    }
+    config$activateModules$aiAssistant <- tryCatch(
+      {
+        aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("AI_ASSISTANT_CONFIG"))
+        config$aiAssistant$apiKeys <- aiAssistantTmp$apiKeys
+        config$aiAssistant$supportedModels <- aiAssistantTmp$supportedModels
+        TRUE
+      },
+      error = function(err) {
+        errMsg <<- "Invalid AI assistant configuration. Please contact support@gams.com if this problem persists."
+        flog.error("Invalid AI Assistant config. Error message: %s", conditionMessage(err))
+        return(FALSE)
+      }
+    )
+  } else {
+    config$activateModules$aiAssistant <- FALSE
   }
   if (identical(config$activateModules$hcube, TRUE) &&
     !config$activateModules$remoteExecution && !miroBuildOnly) {
@@ -917,7 +943,7 @@ if (miroBuildOnly) {
 }
 
 if (is.null(errMsg)) {
-  if (config$activateModules$remoteExecution) {
+  if (config$activateModules$remoteExecution || config$activateModules$aiAssistant) {
     requiredPackages <- c("httr", "mirai")
   } else if (length(externalInputConfig) || length(datasetsRemoteExport)) {
     # FIXME: get rid of this when removing remoteImport/remoteExport feature
@@ -970,11 +996,12 @@ if (is.null(errMsg)) {
   }
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
-  if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
+  if ((config$activateModules$remoteExecution || config$activateModules$aiAssistant) && !LAUNCHCONFIGMODE) {
     daemons(1)
   }
   # try to create the DB connection (PostgreSQL)
   db <- NULL
+  dbConnProvider <- NULL
   if (identical(tolower(dbConfig$type), "sqlite")) {
     requiredPackages <- c("DBI", "RSQLite")
   } else {
@@ -995,8 +1022,9 @@ if (is.null(errMsg)) {
   tryCatch(
     {
       dbSchema <<- DbSchema$new(dbSchemaModel)
+      dbConnProvider <- DbConnectionProvider$new(dbConfig)
       db <- Db$new(
-        uid = uid, dbConf = dbConfig,
+        uid = uid, connProvider = dbConnProvider,
         slocktimeLimit = slocktimeLimit, modelName = modelName,
         ugroups = ugroups
       )
@@ -2158,6 +2186,9 @@ if (!is.null(errMsg)) {
       ####### Advanced options
       if (isTRUE(config$activateModules$downloadTempFiles)) {
         source("./modules/download_tmp.R", local = TRUE)
+      }
+      if (config$activateModules$aiAssistant) {
+        source("./modules/ai_analysis.R", local = TRUE)
       }
 
       ####### Batch Load module

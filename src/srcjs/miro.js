@@ -30,8 +30,10 @@ import {
   deactivateMiroPivotPresentation,
   activateMiroPivotPresentationObservers,
 } from './miro_pivot';
+import { registerAiHandlers } from './ai_assistant';
 
 export { default as modal } from './modal';
+export { copyChatContent } from './ai_assistant';
 
 const loadingScreen = new LoadingScreen();
 const miroLogParser = new MiroLogParser();
@@ -299,8 +301,8 @@ $(() => {
     if (
       dropdown.width()
       <= ddButton.width()
-        + ddButton.offset().left
-        - ddButton.parent().offset().left
+      + ddButton.offset().left
+      - ddButton.parent().offset().left
     ) {
       dropdown.addClass('dropdown-menu-right');
     } else {
@@ -459,8 +461,8 @@ $(() => {
   });
   $('#scenTabset').append(
     '<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
-      + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event'});\">"
-      + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>',
+    + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event'});\">"
+    + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>',
   ); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
@@ -497,8 +499,7 @@ $(() => {
     if (params.isClickable !== 'false') {
       $(params.btnSelector).attr(
         'onclick',
-        `Shiny.setInputValue('${params.actionId}','${
-          params.actionVal == null ? 1 : params.actionVal
+        `Shiny.setInputValue('${params.actionId}','${params.actionVal == null ? 1 : params.actionVal
         }',{priority: 'event'});`,
       );
     }
@@ -640,7 +641,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $(data.id).on('scroll', () => {
       if (
         $(data.id)[0].scrollHeight - $(data.id).scrollTop()
-          < $(data.id).outerHeight() + 200
+        < $(data.id).outerHeight() + 200
         && isLoading === false
       ) {
         isLoading = true;
@@ -715,7 +716,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       let crPosition = Infinity;
       let nlPosition = -1;
       let contentToAppend = '';
-      for (;;) {
+      for (; ;) {
         if (crPosition - 1 < 0) {
           crPosition = -1;
           content += contentToAppend;
@@ -791,7 +792,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     const percentCompleted = Math.round(
       (parseInt(data.progress.noCompleted, 10)
         / parseInt(data.progress.noTotal, 10))
-        * 100,
+      * 100,
     );
     let progressBarText;
     if (data.progress.isPercentage === true) {
@@ -991,6 +992,21 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       });
     }
   });
+  $(document).on('shown.bs.modal', '.ai-assistant-modal', () => {
+    $('#miroAiUserText').focus();
+    const chatLog = document.getElementById('miroAiChatLog');
+    if (!chatLog) return;
+    const userBubbles = chatLog.querySelectorAll('.chat-user');
+    if (userBubbles.length > 0) {
+      userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  $(document).on('hidden.bs.modal', '.ai-assistant-modal', () => {
+    Shiny.setInputValue('abortAiCall', 1, {
+      priority: 'event',
+    });
+  });
+  registerAiHandlers();
   const autoNumericBinding = new Shiny.InputBinding();
   $.extend(autoNumericBinding, {
     find(scope) {

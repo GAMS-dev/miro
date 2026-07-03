@@ -1245,6 +1245,22 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        enableAiConfirmTitle: {
+          type: 'string',
+          minLength: 1,
+        },
+        enableAiConfirmMsg: {
+          type: 'string',
+          minLength: 1,
+        },
+        enableAiBtnYes: {
+          type: 'string',
+          minLength: 1,
+        },
+        enableAiBtnNo: {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: [
         'title',
@@ -1335,6 +1351,10 @@ const schema = {
         'engineUsernameValidation',
         'enginePasswordValidation',
         'engineJWTValidation',
+        'enableAiConfirmTitle',
+        'enableAiConfirmMsg',
+        'enableAiBtnYes',
+        'enableAiBtnNo'
       ],
     },
   },
@@ -1656,6 +1676,10 @@ log file should be stored is invalid! Please enter only whole numbers!',
     engineUsernameValidation: 'Invalid username or password.',
     enginePasswordValidation: 'Invalid username or password.',
     engineJWTValidation: 'Invalid or expired token.',
+    enableAiConfirmTitle: 'Enable AI Features?',
+    enableAiConfirmMsg: 'By enabling AI features, you agree that relevant data (including model information and database scenarios) will be processed in accordance with the AI provider\'s terms and data privacy policies.',
+    enableAiBtnYes: 'Yes, Enable Features',
+    enableAiBtnNo: 'No, Keep Disabled',
   },
 };
 const de = {

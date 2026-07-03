@@ -27,9 +27,10 @@ if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
     )
   )
 }
+dbConnProvider <- DbConnectionProvider$new(dbConfig)
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = 400, modelName = "transport",
   ugroups = c("bla_blubb", "test123")
 )

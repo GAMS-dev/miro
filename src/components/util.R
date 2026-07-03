@@ -1,6 +1,7 @@
 "%+%" <- function(x, y) {
   paste(x, y, sep = "")
 }
+`%||%` <- function(x, y) if (is.null(x)) y else x
 getCommandArg <- function(argName, exception = TRUE) {
   # local mode
   args <- commandArgs(trailingOnly = TRUE)

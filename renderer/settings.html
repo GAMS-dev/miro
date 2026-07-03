@@ -81,6 +81,18 @@
           <li class="nav-item">
             <a
               class="nav-link"
+              id="ai-tab"
+              data-toggle="tab"
+              href="#aiAssistant"
+              role="tab"
+              aria-controls="aiAssistant"
+              aria-selected="true"
+              >AI Assistant</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
               id="env-tab"
               data-toggle="tab"
               href="#env"
@@ -518,6 +530,177 @@
                         Invalid or expired token.
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="aiAssistant"
+            role="tabpanel"
+            aria-labelledby="ai-tab"
+          >
+            <div class="setting-wrapper">
+              <label
+                id="enableAiAssistantLabel"
+                class="settings-label"
+                for="enableAiAssistant"
+                style="margin: 0"
+                >Enable AI Features?</label
+              >
+              <div class="settings-item settings-checkbox">
+                <label class="cb-label" for="enableAiAssistant"></label>
+                <div>
+                  <label class="checkbox-material">
+                    <div class="checkbox">
+                      <label>
+                        <input id="enableAiAssistant" type="checkbox" />
+                        <span></span>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+                <small
+                  id="enableAiAssistantReset"
+                  class="form-text btn-reset-nonpath settings-reset reset-db-path"
+                  style="display: none; margin-top: -10px; text-align: right"
+                  data-key="enableAiAssistant"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div id="aiAssistantForm" style="display: none">
+              <div
+                class="setting-wrapper"
+                style="border-bottom: none; padding-bottom: 0"
+              >
+                <p class="text-muted small">
+                  Enter your API keys to enable various AI models for the MIRO
+                  AI Assistant. Keys are securely verified automatically when
+                  you finish typing and click outside the field.
+                </p>
+              </div>
+              <div class="setting-wrapper">
+                <div class="settings-label">
+                  <label
+                    id="keyOpenAiLabel"
+                    for="keyOpenAi"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    OpenAI
+                  </label>
+                  <span id="statusOpenAi" class="badge badge-secondary"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyOpenAi"
+                      class="miro-launcher-input form-control"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="sk-proj-..."
+                    />
+                    <div id="keyOpenAiValidation" class="invalid-feedback">
+                      Invalid API key.
+                    </div>
+                    <div id="keyOpenAiSuccess" class="valid-feedback">
+                      Connection successful.
+                    </div>
+                    <small
+                      id="keyOpenAiHelp"
+                      class="form-text text-muted"
+                      style="margin-top: 5px"
+                    >
+                      Don't have a key?
+                      <a href="https://platform.openai.com/api-keys"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div class="setting-wrapper">
+                <div class="settings-label">
+                  <label
+                    id="keyGoogleLabel"
+                    for="keyGoogle"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Google Gemini
+                  </label>
+                  <span id="statusGoogle" class="badge badge-secondary"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyGoogle"
+                      class="miro-launcher-input form-control"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="AIzaSy..."
+                    />
+                    <div id="keyGoogleValidation" class="invalid-feedback">
+                      Invalid API key.
+                    </div>
+                    <div id="keyGoogleSuccess" class="valid-feedback">
+                      Connection successful.
+                    </div>
+                    <small
+                      id="keyGoogleHelp"
+                      class="form-text text-muted"
+                      style="margin-top: 5px"
+                    >
+                      Don't have a key?
+                      <a href="https://aistudio.google.com/app/apikey"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div class="setting-wrapper">
+                <div class="settings-label">
+                  <label
+                    id="keyAnthropicLabel"
+                    for="keyAnthropic"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Anthropic
+                  </label>
+                  <span id="statusAnthropic" class="badge badge-secondary"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyAnthropic"
+                      class="miro-launcher-input form-control"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="sk-ant-..."
+                    />
+                    <div id="keyAnthropicValidation" class="invalid-feedback">
+                      Invalid API key.
+                    </div>
+                    <div id="keyAnthropicSuccess" class="valid-feedback">
+                      Connection successful.
+                    </div>
+                    <small
+                      id="keyAnthropicHelp"
+                      class="form-text text-muted"
+                      style="margin-top: 5px"
+                    >
+                      Don't have a key?
+                      <a href="https://console.anthropic.com/settings/keys"
+                        >Get one here</a
+                      >.
+                    </small>
                   </div>
                 </div>
               </div>

@@ -37,10 +37,6 @@
       "interrupt":"停止"
     },
     "header":{
-      "remoteExec":{
-        "login": "登陆",
-        "logout": "退出"
-      },
       "scenario":{
         "title":"场景选项",
         "edit":"编辑元数据",
@@ -564,6 +560,27 @@
       "downloadButton":"下载数据",
       "removeButton":"删除场景",
       "removeIncompleteError": "并非所有选定的场景都可以删除。 这可能是因为它们是只读的，或者在此期间已被其他人删除。"
+    },
+    "aiBotDialog": {
+      "title": "MIRO AI 助手",
+      "welcomeMessage": "你好！我是你的 MIRO AI 助手。无论你是想分析单个情景还是对比多个情景，我都能随时为你提供帮助，与你一起探索优化结果。",
+      "welcomeMessageCustomRenderer": "你好！我是你的 MIRO AI 助手。我来协助你编写自定义渲染器代码。只需告诉我你想如何可视化你的数据即可。",
+      "currentContextSandbox": "沙盒情景：%s",
+      "currentContextCompare": "对比 %d 个情景",
+      "chatBubbleUserHeader": "用户：",
+      "chatBubbleAssistantHeader": "助手：",
+      "userTextPlaceholder": "在此输入关于情景的问题...",
+      "inputTokensLabel": "输入 Token 数量：%s",
+      "inputTokensTitle": "提示词所消耗的 Token 数量。",
+      "outputTokensLabel": "输出 Token 数量：%s",
+      "outputTokensTitle": "AI 模型生成的 Token 数量。",
+      "disclaimer": "MIRO AI 助手可能会出错。请核对重要信息。",
+      "nfApplySuccess": "代码应用成功！",
+      "nfApplyErrNoCode": "在最新的 AI 回复中未找到输出函数或渲染器函数",
+      "nfApplyErrNoResponse": "必须应用来自 AI 的最后一条消息中的代码。",
+      "btClear": "清空对话",
+      "btCopy": "复制文本",
+      "btApplyCode": "应用代码"
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",

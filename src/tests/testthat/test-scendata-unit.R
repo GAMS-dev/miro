@@ -168,9 +168,10 @@ if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
   )
 }
 createTestDb()
+dbConnProvider <- DbConnectionProvider$new(dbConfig)
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
   ugroups = c("bla_blubb", "test123")
 )
@@ -265,7 +266,7 @@ db$destroy()
 createTestDb()
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
   ugroups = c("bla_blubb", "test123"),
   forceNew = TRUE

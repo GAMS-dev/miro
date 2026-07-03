@@ -114,6 +114,7 @@ const miroProcessManager = new MiroProcessManager(
   miroBuildMode,
   miroResourcePath,
   appDataPath,
+  miroWorkspaceDir,
 );
 
 log.info(`MIRO launcher is being started (rootDir: ${appRootDir}, pid: ${process.pid}, \
@@ -1031,6 +1032,13 @@ function createSettingsWindow() {
   if (DEVELOPMENT_MODE) {
     settingsWindow.webContents.openDevTools();
   }
+  settingsWindow.webContents.on('will-navigate', (event, url) => {
+    const current = settingsWindow.webContents.getURL();
+    if (url !== current) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
   settingsWindow.on('page-title-updated', (e) => {
     e.preventDefault();
   });
@@ -2033,6 +2041,28 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
     }
   }
 });
+
+ipcMain.on('show-confirm-enable-ai-dialog', async () => {
+  if (!settingsWindow) {
+    log.warn('ipcMessage to open enable AI dialog received, but no settingsWindow initialized')
+    return;
+  }
+  const enableAi = dialog.showMessageBoxSync(settingsWindow, {
+    type: 'info',
+    title: lang.settings.enableAiConfirmTitle,
+    message: lang.settings.enableAiConfirmMsg,
+    cancelId: 1,
+    defaultId: 1,
+    buttons: [
+      lang.settings.enableAiBtnYes,
+      lang.settings.enableAiBtnNo,
+    ],
+  }) === 0;
+  settingsWindow.webContents.send(
+    'confirm-ai-response-received',
+    enableAi
+  );
+})
 
 ipcMain.on('browse-app', (e, options, callback, id = null) => {
   const filePaths = dialog.showOpenDialogSync(mainWindow, options);

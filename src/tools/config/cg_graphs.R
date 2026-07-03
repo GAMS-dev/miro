@@ -2464,8 +2464,8 @@ observeEvent(input$customExternalSymbol, {
   tryCatch(
     {
       rendererFunctions <- getRendererFunctions(rendererToLoad)
-      updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output)
-      updateAceEditor(session, "customRenderFunction", value = rendererFunctions$renderer)
+      updateAceEditor(session, "customOutputFunction", value = paste(rendererFunctions$output, collapse = "\n"))
+      updateAceEditor(session, "customRenderFunction", value = paste(rendererFunctions$renderer, collapse = "\n"))
       session$sendCustomMessage("gms-shinySetInputValue", list(
         id = "btUpdateCustomRendererOutput",
         val = 1L,
@@ -2490,6 +2490,302 @@ observeEvent(input$customPackages,
   },
   ignoreNULL = FALSE
 )
+if (config$activateModules$aiAssistant) {
+  aiAssistantState <- list(
+    history = list(),
+    sessionId = NULL,
+    shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_types = "cc"))[[1]],
+    inputTokens = 0,
+    outputTokens = 0,
+    chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessageCustomRenderer))
+  )
+  session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(aiAssistantState$chatHistory[[1]], lang$nav$aiBotDialog)), role = "model"))
+  renderAiChatBubbleWrapper <- function(msg, lang) {
+    isUser <- msg$role == "user"
+    if (!isUser) {
+      displayText <- msg$text
+      displayText <- gsub("<additional_packages>\\s*</additional_packages>", "", displayText, perl = TRUE)
+      displayText <- gsub("<additional_symbols>\\s*</additional_symbols>", "", displayText, perl = TRUE)
+      displayText <- gsub("<additional_packages>", "**Additional Packages:** `", displayText, fixed = TRUE)
+      displayText <- gsub("</additional_packages>", "`\n\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<additional_symbols>", "**Additional Symbols:** `", displayText, fixed = TRUE)
+      displayText <- gsub("</additional_symbols>", "`\n\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<ui_code>", "**UI Code:**\n```r\n", displayText, fixed = TRUE)
+      displayText <- gsub("</ui_code>", "\n```\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<server_code>", "**Server Code:**\n```r\n", displayText, fixed = TRUE)
+      displayText <- gsub("</server_code>", "\n```\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("**Additional Packages:** ``\n\n", "", displayText, fixed = TRUE)
+      displayText <- gsub("**Additional Symbols:** ``\n\n", "", displayText, fixed = TRUE)
+      msg$text <- displayText
+    }
+    return(renderAiChatBubble(msg, lang))
+  }
+  compileRendererSystemPrompt <- function(currentSymbol, currentAdditionalSymbols, allSymbolsMetadataJson, shippedPackagesVector, currentUiCode = NULL, currentServerCode = NULL) {
+    pkgString <- paste(shippedPackagesVector, collapse = ", ")
+    addSymString <- paste(currentAdditionalSymbols, collapse = ", ")
+    currentCodeSection <- ""
+    if (!is.null(currentUiCode) && currentUiCode != "" && !is.null(currentServerCode) && currentServerCode != "") {
+      currentCodeSection <- sprintf(
+        "\n### BASELINE CODE (MODIFY/UPDATE THIS INSTEAD OF REWRITING):\n<current_ui_code>\n%s\n</current_ui_code>\n<current_server_code>\n%s\n</current_server_code>\n",
+        currentUiCode, currentServerCode
+      )
+    }
+
+    sysPrompt <- sprintf(
+      "You are a GAMS MIRO Shiny developer writing custom renderer modules (UI & Server) to visualize optimization data.
+
+### CONTEXT
+- Target Symbol: '%s'
+- Currently Selected Additional Symbols: [%s]
+- Database Schema:
+%s
+%s
+### RULES
+1. DATA: `data` argument is a STATIC object (not a reactive). Do not call `data()`. If add. symbols are active, `data` is a named list of tibbles (`data[['%s']]`). Column names match JSON `headers` keys exactly.
+2. PACKAGES: Prefer shipped packages: [%s]. Always prefix functions with namespaces (e.g., `plotly::plot_ly()`). List new packages in `<additional_packages>`.
+3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`.
+4. NAMESPACING: UI must define `ns <- shiny::NS(id)`. Wrap EVERY input/output ID in `ns()`.
+5. STYLING: Do NOT use page-level containers (`fluidPage`), custom CSS, or inline styles. Use `tagList()` or `div()`. Inherit global app themes.
+6. SIGNATURES: Use exactly these signatures:
+   - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
+   - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
+7. ROBUSTNESS: Handle empty data early (`if (nrow(data) == 0) return(NULL)`).
+8. OBSERVERS & CLEANUP: Every `observe()` or `observeEvent()` MUST be assigned to the `rendererEnv` argument wrapped in `ns()` to prevent leaks on re-render. CRITICAL EXAMPLE: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. Never use floating observers.
+
+### OUTPUT FORMAT
+Provide a brief 1-2 sentence overview, then output code wrapped in the XML tags below. Do NOT use markdown codeblock ticks (```). Leave packages/symbols tags empty if unneeded.
+
+<additional_packages>ggplot2, stringr</additional_packages>
+<additional_symbols>demand_forecast</additional_symbols>
+
+<ui_code>
+mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ns <- shiny::NS(id)
+}
+</ui_code>
+
+<server_code>
+renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  # Assign observers to rendererEnv via ns()
+}
+</server_code>",
+      currentSymbol, addSymString, allSymbolsMetadataJson, currentCodeSection,
+      currentSymbol, pkgString, currentSymbol, currentSymbol, currentSymbol, currentSymbol
+    )
+    return(sysPrompt)
+  }
+  mAiTask <- NULL
+  aiTask <- ExtendedTask$new(
+    function(userInput, dbConnProvider, sysPrompt, assistantConfig, model, history) {
+      mAiTask <<- mirai(
+        {
+          library(R6)
+          library(httr)
+          library(jsonlite)
+          source("global.R")
+          source("components/ai_provider.R")
+
+          conn <- dbConnProvider$getConnection()
+          on.exit(DBI::dbDisconnect(conn))
+
+          providerAndModel <- strsplit(model, "/", fixed = TRUE)[[1]]
+
+          assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
+          provider <- assistant$getProvider(providerAndModel[1], providerAndModel[2])
+          if (length(history$sessionId)) {
+            provider$sessionId <- history$sessionId
+          }
+          if (length(history$history)) {
+            provider$history <- history$history
+          }
+          result <- provider$sendMessage(
+            userInput = userInput,
+            systemInstructions = sysPrompt
+          )
+          return(list(
+            text = result$text,
+            inputTokens = result$inputTokens,
+            outputTokens = result$outputTokens,
+            newSessionId = provider$sessionId,
+            newHistory = provider$history
+          ))
+        },
+        userInput = userInput,
+        dbConnProvider = dbConnProvider,
+        sysPrompt = sysPrompt,
+        assistantConfig = assistantConfig,
+        model = model,
+        history = history
+      )
+    }
+  )
+
+  observeEvent(input$miroAiUserText, {
+    userText <- input$miroAiUserText
+    req(userText)
+    flog.debug("AI Chat message sent.")
+    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
+    session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(list(role = "user", text = userText), lang$nav$aiBotDialog)), role = "user"))
+
+    multiDimSymbolsTmp <- c(inputSymMultiDimChoices, outputSymMultiDimChoices)
+    allSymbolsMetadata <- c(ioConfig$modelOut, ioConfig$modelIn)
+    allSymbolsMetadata <- allSymbolsMetadata[names(allSymbolsMetadata) %in% multiDimSymbolsTmp]
+    allSymbolsMetadata <- lapply(names(allSymbolsMetadata), function(symName) {
+      obj <- allSymbolsMetadata[[symName]]
+      return(list(name = symName, alias = obj$alias, direction = if (symName %in% inputSymMultiDimChoices) "input" else "output", headers = obj$headers))
+    })
+    allSymbolsMetadataJson <- toJSON(allSymbolsMetadata, dataframe = "rows", auto_unbox = TRUE)
+    customUICode <- paste0(
+      customOutputFunctionName(),
+      " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
+      input$customOutputFunction,
+      "\n}"
+    )
+    customRendererCode <- paste0(
+      customRendererFunctionName(),
+      " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){\n",
+      input$customRenderFunction,
+      "\n}"
+    )
+    sysPrompt <- compileRendererSystemPrompt(
+      activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
+      customUICode, customRendererCode
+    )
+
+    aiTask$invoke(
+      userInput = userText,
+      dbConnProvider = dbConnProvider,
+      sysPrompt = sysPrompt,
+      assistantConfig = config$aiAssistant,
+      model = input$miroAiModel,
+      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
+    )
+  })
+  observe({
+    aiOutput <- ""
+    result <- NULL
+    if (tryCatch(
+      {
+        result <- aiTask$result()
+        aiOutput <- result$text
+        FALSE
+      },
+      shiny.silent.error = function(err) {
+        return(TRUE)
+      },
+      error = function(err) {
+        flog.error("Problems generating AI response. Error message: %s", conditionMessage(err))
+        aiOutput <<- sprintf("### Error\nFailed to calculate response: %s", err$message)
+        return(FALSE)
+      }
+    )) {
+      return()
+    }
+    flog.debug("AI Chat response received.")
+    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "model", text = aiOutput)
+    session$sendCustomMessage(
+      "gms-addAiChatBubble",
+      list(html = as.character(renderAiChatBubbleWrapper(
+        list(role = "model", text = aiOutput),
+        lang$nav$aiBotDialog
+      )), role = "model")
+    )
+    if (!is.null(result)) {
+      aiAssistantState$history <<- result$newHistory
+      aiAssistantState$sessionId <<- result$newSessionId
+      aiAssistantState$inputTokens <<- aiAssistantState$inputTokens + result$inputTokens
+      aiAssistantState$outputTokens <<- aiAssistantState$outputTokens + result$outputTokens
+      setTextContent(session, "#miroAiInputTokens", sprintf(lang$nav$aiBotDialog$inputTokensLabel, format(aiAssistantState$inputTokens, big.mark = ",")))
+      setTextContent(session, "#miroAiOutputTokens", sprintf(lang$nav$aiBotDialog$outputTokensLabel, format(aiAssistantState$outputTokens, big.mark = ",")))
+    }
+  })
+  observeEvent(input$btMiroAiClearChat, {
+    flog.debug("Clear AI chat button clicked.")
+    aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1]
+    setContent(session, "#miroAiChatLog", as.character(tagList(
+      lapply(aiAssistantState$chatHistory, renderAiChatBubble, lang$nav$aiBotDialog),
+      genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1", extraClasses = "gen-spinner-black")
+    )))
+    aiAssistantState$history <<- list()
+    aiAssistantState$sessionId <<- NULL
+  })
+  observeEvent(input$btMiroAiApplyCode, {
+    flog.debug("Button to apply AI code clicked.")
+    history <- aiAssistantState$chatHistory
+    if (length(history) == 0) {
+      return()
+    }
+    lastMsg <- history[[length(history)]]
+    if (lastMsg$role != "model") {
+      showNotification(lang$nav$aiBotDialog$nfApplyErrNoResponse, type = "warning")
+      return()
+    }
+    aiText <- lastMsg$text
+    extract_tag <- function(text, tag) {
+      match <- regmatches(text, regexec(sprintf("(?s)<%s>(.*?)</%s>", tag, tag), text, perl = TRUE))[[1]]
+      if (length(match) > 1) trimws(match[2]) else ""
+    }
+    parse_csv <- function(val) {
+      if (val == "") {
+        return(character(0))
+      }
+      cleaned <- trimws(unlist(strsplit(val, ",")))
+      return(cleaned[cleaned != ""])
+    }
+    reqPackages <- parse_csv(extract_tag(aiText, "additional_packages"))
+    reqPackages <- reqPackages[!reqPackages %in% aiAssistantState$shippedPackagesVector]
+    reqSymbols <- parse_csv(extract_tag(aiText, "additional_symbols"))
+
+    uiCode <- tryCatch(
+      {
+        uiCodeTmp <- parseFunctionBody(extract_tag(aiText, "ui_code"), paste0("mirorenderer_", activeSymbolName, "Output"))
+        if (length(uiCodeTmp) && startsWith(trimws(uiCodeTmp[1]), "ns")) {
+          uiCodeTmp <- uiCodeTmp[-1]
+        }
+        uiCodeTmp
+      },
+      error = function(err) {
+        flog.info("No output function found in AI response. Error message: %s", conditionMessage(err))
+        return(NULL)
+      }
+    )
+
+    serverCode <- tryCatch(
+      {
+        parseFunctionBody(extract_tag(aiText, "server_code"), paste0("renderMirorenderer_", activeSymbolName))
+      },
+      error = function(err) {
+        flog.info("No server function found in AI response. Error message: %s", conditionMessage(err))
+        return(NULL)
+      }
+    )
+
+    codeApplied <- FALSE
+    if (!is.null(uiCode)) {
+      updateAceEditor(session, "customOutputFunction", value = paste(uiCode, collapse = "\n"))
+      codeApplied <- TRUE
+    }
+    if (!is.null(serverCode)) {
+      updateAceEditor(session, "customRenderFunction", value = paste(serverCode, collapse = "\n"))
+      codeApplied <- TRUE
+    }
+    if (!codeApplied) {
+      return(showNotification(lang$nav$aiBotDialog$nfApplyErrNoCode, type = "error"))
+    }
+    updateSelectInput(session, "customPackages", currentGraphConfig[["packages"]])
+    updateSelectInput(session, "customAdditionalData", currentGraphConfig[["additionalData"]])
+    session$sendCustomMessage("gms-shinySetInputValue", list(
+      id = "btUpdateCustomRendererOutput",
+      val = 1L,
+      timeout = 500L
+    ))
+    showNotification(lang$nav$aiBotDialog$nfApplySuccess, type = "message")
+  })
+}
 observeEvent(input$dashboardAdditionalData,
   {
     if (activeSymbol$id > length(modelIn)) {
@@ -4551,6 +4847,15 @@ getCustomOptions <- reactive({
         choices = c("-", externalRendererFiles),
         selected = externalRendererSelected
       ),
+      if (config$activateModules$aiAssistant) {
+        actionButton(
+          "btOpenAiCopilot",
+          "AI Assistant",
+          class = "btn btn-info bt-highlight-1",
+          style = "margin-bottom: 15px; width: 100%;",
+          onclick = "Miro.openMiroAiDrawer()"
+        )
+      },
       tags$div(id = "customOutputBoilerplate", class = "shiny-text-output custom-renderer-boilerplate "),
       aceEditorFullscreenButton(),
       aceEditor(

@@ -420,12 +420,11 @@ export default class ShortcutManager {
   }
 
   handleKeyPressEvent(event) {
-    if (event.code === 'Enter' && !event.ctrlKey) {
+    if (event.code === 'Enter' && !event.ctrlKey && !event.shiftKey) {
       if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
         || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
         return;
       }
-
       $('.bt-gms-confirm:visible:enabled').trigger('click');
       return;
     } // ENTER will confirm modal dialogs

@@ -10,11 +10,13 @@ const {
   getEngineJwt,
   EngineError,
 } = require('../components/engine.cjs');
+const { testAiProviderApiKey } = require('../components/ai-assistant.cjs');
 
 log.errorHandler.startCatching();
 
 const cbLaunchExternal = $('#launchExternal');
 const cbRemoteExecution = $('#remoteExecution');
+const cbEnableAi = $('#enableAiAssistant');
 const inputLogLifetime = $('#logLifeTime');
 const inputLanguage = $('#language');
 const inputColorTheme = $('#colorTheme');
@@ -40,6 +42,12 @@ let importantKeys;
 let noEnvDesc = 'No environment is specified';
 let requireRestart = false;
 let pathValidating = false;
+
+const aiProviders = [
+  { id: 'OpenAi', name: 'openai' },
+  { id: 'Anthropic', name: 'anthropic' },
+  { id: 'Google', name: 'google' }
+];
 
 const optionAliasMap = {
   language: {
@@ -75,6 +83,7 @@ const pathConfig = {
   inputLogLevel,
   cbLaunchExternal,
   cbRemoteExecution,
+  cbEnableAi,
   $('#engineNs'),
   $('#engineUsername'),
   $('#enginePassword'),
@@ -537,6 +546,87 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   $(this).hide();
 });
 
+// AI Assistant Tab
+cbEnableAi.on('change', (event) => {
+  if (event.currentTarget.checked) {
+    ipcRenderer.send('show-confirm-enable-ai-dialog');
+  } else {
+    newConfig.aiAssistantConfig = {};
+    $('#aiAssistantForm').hide();
+  }
+});
+ipcRenderer.on(
+  'confirm-ai-response-received', (_, enableAi) => {
+    if (enableAi !== true) {
+      cbEnableAi.prop('checked', false);
+      return;
+    }
+    $('#aiAssistantForm').show();
+})
+aiProviders.forEach(provider => {
+  const inputElement = document.getElementById(`key${provider.id}`);
+  const badgeElement = document.getElementById(`status${provider.id}`);
+
+  inputElement.addEventListener('blur', async (e) => {
+    saveButton.attr('disabled', false);
+    const keyValue = e.target.value.trim();
+    inputElement.classList.remove('is-valid', 'is-invalid');
+
+    if (newConfig.aiAssistantConfig?.apiKeys) {
+      const index = newConfig.aiAssistantConfig.apiKeys.findIndex(
+        key => key.provider === provider.name
+      );
+      if (index !== -1) {
+        newConfig.aiAssistantConfig.apiKeys.splice(index, 1);
+      }
+    }
+
+    if (!keyValue) {
+      badgeElement.className = 'badge badge-secondary';
+      badgeElement.innerText = 'Not Configured';
+      return;
+    }
+
+    badgeElement.className = 'badge badge-info';
+    badgeElement.innerText = 'Checking...';
+
+    try {
+      __electronLog.debug(`Validating API key for AI provider: ${provider.name}`)
+      const isValid = await testAiProviderApiKey(provider.name, keyValue);
+
+      if (isValid) {
+        __electronLog.debug(`Valid API key for AI provider: ${provider.name} added!`)
+        inputElement.classList.add('is-valid');
+        badgeElement.className = 'badge badge-success';
+        badgeElement.innerText = 'Connected';
+        newConfig.aiAssistantConfig ??= {};
+        newConfig.aiAssistantConfig.apiKeys ??= [];
+        const existing = newConfig.aiAssistantConfig.apiKeys.find(
+          k => k.provider === provider.name
+        );
+        if (existing) {
+          existing.key = keyValue;
+        } else {
+          newConfig.aiAssistantConfig.apiKeys.push({
+            key: keyValue,
+            provider: provider.name
+          });
+        }
+      } else {
+        __electronLog.debug(`Invalid API key for AI provider: ${provider.name}`)
+        inputElement.classList.add('is-invalid');
+        badgeElement.className = 'badge badge-danger';
+        badgeElement.innerText = 'Invalid Key';
+      }
+    } catch (err) {
+      __electronLog.warn(`Failed validating API key for AI provider: ${provider.name}. Error: ${err}`)
+      inputElement.classList.add('is-invalid');
+      badgeElement.className = 'badge badge-danger';
+      badgeElement.innerText = 'Error';
+    }
+  });
+});
+
 ipcRenderer.on(
   'settings-loaded',
   (e, data, defaults, langData, customColorsFileExists) => {
@@ -706,6 +796,31 @@ ipcRenderer.on(
             $('#engineNs').attr('disabled', true);
             $('#engineJWT').attr('disabled', true);
           }
+        }
+      } else if (key === 'aiAssistantConfig') {
+        newConfig.aiAssistantConfig = newValue;
+        const aiEnabled = newValue?.apiKeys?.length > 0;
+        newValue?.apiKeys?.forEach(apiKey => {
+          const provider = aiProviders.find(
+            el => el.name === apiKey.provider
+          );
+          const inputElement = document.getElementById(`key${provider.id}`);
+          const badgeElement = document.getElementById(`status${provider.id}`);
+          inputElement.value = apiKey
+          inputElement.classList.add('is-valid');
+          badgeElement.className = 'badge badge-success';
+          badgeElement.innerText = 'Connected';
+        })
+        cbEnableAi.prop('checked', aiEnabled);
+        if (isImportant) {
+          cbEnableAi.attr('disabled', true);
+        }
+        if (aiEnabled) {
+          $('[data-key="enableAiAssistant"]').show();
+          $('#aiAssistantForm').show();
+        } else {
+          $('[data-key="enableAiAssistant"]').hide();
+          $('#aiAssistantForm').hide();
         }
       } else if (
         ['logLifeTime', 'logLevel', 'language', 'colorTheme'].find(

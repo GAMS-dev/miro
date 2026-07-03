@@ -38,12 +38,14 @@ class MiroProcessManager {
     isInBuildMode,
     miroResourcePath,
     appDataPath,
+    miroWorkspaceDir,
   ) {
     this.configData = configData;
     this.inDevelopmentMode = inDevelopmentMode;
     this.isInBuildMode = isInBuildMode;
     this.miroResourcePath = miroResourcePath;
     this.appDataPath = appDataPath;
+    this.miroWorkspaceDir = miroWorkspaceDir;
     this.miroProcesses = [];
     this.pidPortMap = {};
     this.processIdMap = {};
@@ -135,6 +137,7 @@ class MiroProcessManager {
     const pythonpath = this.configData.get('pythonpath');
     const logpath = this.configData.get('logpath');
     const dbPath = this.configData.getAppDbPath(appData.dbpath);
+    const aiAssistantConfigPromise = this.configData.get('aiAssistantConfig');
 
     const generalConfig = {
       launchExternal: this.configData.get('launchExternal'),
@@ -229,6 +232,14 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         ),
       MIRO_APP_ID: appData.id,
     });
+
+    const aiAssistantConfigRaw = await aiAssistantConfigPromise;
+    if (aiAssistantConfigRaw?.apiKeys.length > 0) {
+      procEnv.AI_ASSISTANT_CONFIG = JSON.stringify(aiAssistantConfigRaw);
+      // TODO: Disable debug logging by default
+      procEnv.AI_ASSISTANT_DEBUG_FILE_PATH = path.join(this.miroWorkspaceDir, 'ai_assistant_trace.log');
+    }
+
     if (process.platform === 'linux') {
       procEnv.R_BROWSER = 'xdg-open';
     }

@@ -1,14 +1,79 @@
 # R6 class for database related functions
+DbConnectionProvider <- R6Class("DbConnectionProvider",
+  public = list(
+    initialize = function(dbConf) {
+      private$dbConf <- dbConf
+      return(self)
+    },
+    getConnection = function(runMigrations = FALSE) {
+      conf <- private$dbConf
+      conn <- NULL
+
+      if (identical(conf$type, "postgres")) {
+        tryCatch(
+          {
+            conn <- DBI::dbConnect(
+              drv = RPostgres::Postgres(), dbname = conf$name,
+              host = conf$host, port = conf$port,
+              user = conf$username, password = conf$password,
+              bigint = "integer"
+            )
+          },
+          error = function(e) {
+            stop(sprintf("Postgres connection failed: %s", conditionMessage(e)), call. = FALSE)
+          }
+        )
+        if (length(conf$schema) && !conf$schema %in% c("public", conf$username)) {
+          DBI::dbExecute(conn, paste0("SET search_path TO ", DBI::dbQuoteIdentifier(conn, conf$schema), ";"))
+        }
+      } else if (identical(conf$type, "sqlite")) {
+        if (runMigrations && length(conf$dbPathToMigrate)) {
+          tryCatch(
+            {
+              source("./migrations/1-4-0-migrate-db.R")
+              migrateMiroDatabase(oldPath = conf$dbPathToMigrate, newPath = dirname(conf$name))
+            },
+            error = function(e) {
+              stop(sprintf("SQLite migration failed: %s", conditionMessage(e)), call. = FALSE)
+            }
+          )
+        }
+        tryCatch(
+          {
+            conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = conf$name, bigint = "integer")
+            DBI::dbExecute(conn, "PRAGMA foreign_keys = ON;")
+          },
+          error = function(e) {
+            stop(sprintf("SQLite connection failed: %s", conditionMessage(e)), call. = FALSE)
+          }
+        )
+      } else {
+        stop(sprintf("Unsupported database type: %s", conf$type), call. = FALSE)
+      }
+      return(conn)
+    },
+    getConnectionInfo = function() {
+      if (identical(private$dbConf$type, "postgres")) {
+        return(list(
+          loc = paste0(private$dbConf$host, ":", private$dbConf$port),
+          name = private$dbConf$name,
+          schema = private$dbConf$schema
+        ))
+      }
+      return(list(loc = private$dbConf$name, name = NULL))
+    }
+  ), private = list(
+    dbConf = NULL
+  )
+)
 Db <- R6Class("Db",
   public = list(
-    initialize = function(uid, dbConf, slocktimeLimit, modelName,
+    initialize = function(uid, connProvider, slocktimeLimit, modelName,
                           ugroups = character(0L), forceNew = FALSE) {
       # Initialize database class
       #
       # Args:
-      #   dbConf:              list with database connection configuration
-      #                        includes: type, host, port(optional), username,
-      #                        password and name elements
+      #   connProvider:        instance of DbConnectionProvider
       #   modelName:           name of the current model
       #   slocktimeLimit:      maximum duration a lock is allowed to persist
       #   ugroups:             user group(s) (optional)
@@ -23,24 +88,9 @@ Db <- R6Class("Db",
           call. = FALSE
         )
       }
-      stopifnot(is.character(uid), length(uid) == 1L)
-      if (!identical(dbConf$type, "sqlite")) {
-        dbConf$type <- "postgres"
-        stopifnot(
-          is.character(dbConf$host), length(dbConf$host) == 1L,
-          is.character(dbConf$username), length(dbConf$username) == 1L,
-          is.character(dbConf$password), length(dbConf$password) == 1L
-        )
-      }
       stopifnot(
-        is.character(dbConf$name), length(dbConf$name) == 1L,
-        is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1L
-      )
-      if (!is.null(dbConf$port)) {
-        stopifnot(is.numeric(dbConf$port) && length(dbConf$port) == 1L)
-      }
-      stopifnot(
-        is.character(dbConf$type), length(dbConf$type) == 1L,
+        is.character(uid), length(uid) == 1L,
+        is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1L,
         is.character(modelName), length(modelName) == 1L
       )
       # END error checks
@@ -53,80 +103,8 @@ Db <- R6Class("Db",
       }
       private$modelName <- modelName
       private$slocktimeLimit <- slocktimeLimit
-
-      if (identical(dbConf$type, "postgres")) {
-        tryCatch(
-          {
-            private$conn <- DBI::dbConnect(
-              drv = RPostgres::Postgres(), dbname = dbConf$name,
-              host = dbConf$host, port = dbConf$port,
-              user = dbConf$username, password = dbConf$password,
-              bigint = "integer"
-            )
-          },
-          error = function(e) {
-            stop(
-              sprintf(
-                "Db: Database connection could not be established. Error message: %s",
-                conditionMessage(e)
-              ),
-              call. = FALSE
-            )
-          }
-        )
-        private$connectionInfo <- list(
-          loc = paste0(dbConf$host, ":", dbConf$port),
-          name = dbConf$name, schema = dbConf$schema
-        )
-        if (length(dbConf$schema) &&
-          !dbConf$schema %in% c("public", dbConf$username)) {
-          # need to add schema to search path
-          self$runQuery(paste0(
-            "SET search_path TO ",
-            dbQuoteIdentifier(private$conn, dbConf$schema),
-            ";"
-          ))
-        }
-      } else if (identical(dbConf$type, "sqlite")) {
-        if (length(dbConf$dbPathToMigrate)) {
-          tryCatch(
-            {
-              source("./migrations/1-4-0-migrate-db.R")
-              migrateMiroDatabase(oldPath = dbConf$dbPathToMigrate, newPath = dirname(dbConf$name))
-            },
-            error = function(e) {
-              stop(sprintf("Db: Database could not be migrated. Error message: %s", conditionMessage(e)),
-                call. = FALSE
-              )
-            }
-          )
-        }
-        tryCatch(
-          {
-            private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name, bigint = "integer")
-            # turn foreign key usage on
-            self$runQuery("PRAGMA foreign_keys = ON;")
-          },
-          error = function(e) {
-            stop(
-              sprintf(
-                "Db: Database connection could not be established. Error message: %s",
-                conditionMessage(e)
-              ),
-              call. = FALSE
-            )
-          }
-        )
-        private$connectionInfo <- list(
-          loc = dbConf$name,
-          name = NULL
-        )
-      } else {
-        stop(sprintf(
-          "Db: A non supported database type (%s) was specified. Could not establish connection.",
-          dbConf$type
-        ), call. = FALSE)
-      }
+      private$conn <- connProvider$getConnection(runMigrations = TRUE)
+      private$connectionInfo <- connProvider$getConnectionInfo()
       return(invisible(self))
     },
     getConn = function() private$conn,

@@ -4728,6 +4728,32 @@
           }
         }
       }
+    },
+    "aiAssistant": {
+      "type": "object",
+      "description": "Configuration of the MIRO AI Assistant!",
+      "additionalProperties": false,
+      "properties": {
+        "domainContext": {
+          "description": "Domain context to give the AI agent (e.g. description of the app, the model, equations etc.). You can use the `[[README]]` placeholder in this string, which MIRO will automatically replace with the content of your README file.",
+          "type": "string",
+          "minLength": 1
+        },
+        "customInstructions": {
+          "description": "Custom instructions to give to the AI agent (e.g. `Assume the user is an economist; use technical CGE terminology.` or `Always format monetary values in Billions of USD ($B).`).",
+          "type": [
+            "array",
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "minItems": 0,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     }
   }
 }

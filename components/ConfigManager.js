@@ -68,6 +68,29 @@ const schema = {
     },
     additionalProperties: false,
   },
+  aiAssistantConfig: {
+    type: 'object',
+    properties: {
+      apiKeys: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            key: {
+              type: 'string',
+              minLength: 5,
+            },
+            provider: {
+              type: 'string',
+              enum: ['openai', 'google', 'anthropic'],
+            }
+          },
+          additionalProperties: false,
+        }
+      }
+    },
+    additionalProperties: false,
+  },
   logLifeTime: {
     type: 'integer',
     minimum: -1,
@@ -113,6 +136,7 @@ const schema = {
         'launchExternal',
         'remoteExecution',
         'remoteConfig',
+        'aiAssistantConfig',
         'logLifeTime',
         'language',
         'colorTheme',
@@ -158,6 +182,7 @@ class ConfigManager extends Store {
           'launchExternal',
           'remoteExecution',
           'remoteConfig',
+          'aiAssistantConfig',
           'logLifeTime',
           'language',
           'colorTheme',
@@ -187,6 +212,7 @@ class ConfigManager extends Store {
       'launchExternal',
       'remoteExecution',
       'remoteConfig',
+      'aiAssistantConfig',
       'logLifeTime',
       'language',
       'colorTheme',

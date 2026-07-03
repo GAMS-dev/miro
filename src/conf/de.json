@@ -37,10 +37,6 @@
       "interrupt":"Stop"
     },
     "header":{
-      "remoteExec":{
-        "login": "Einloggen",
-        "logout": "Ausloggen"
-      },
       "scenario":{
         "title":"Szenario",
         "edit":"Metadaten bearbeiten",
@@ -564,6 +560,27 @@
       "downloadButton":"Daten herunterladen",
       "removeButton": "Szenarien löschen",
       "removeIncompleteError": "Nicht alle der ausgewählten Szenarien konnten entfernt werden. Dies könnte daran liegen, dass sie schreibgeschützt sind oder in der Zwischenzeit bereits von jemand anderem entfernt wurden."
+    },
+    "aiBotDialog": {
+      "title": "MIRO KI-Assistent",
+      "welcomeMessage": "Hallo! Ich bin Ihr MIRO KI-Assistent. Ich bin hier, um Ihnen bei der Untersuchung Ihrer Optimierungsergebnisse zu helfen – egal, ob Sie ein einzelnes Szenario analysieren oder mehrere vergleichen.",
+      "welcomeMessageCustomRenderer": "Hallo! Ich bin Ihr MIRO KI-Assistent. Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
+      "currentContextSandbox": "Sandbox-Szenario: %s",
+      "currentContextCompare": "Vergleich von %d Szenarien",
+      "chatBubbleUserHeader": "Benutzer:",
+      "chatBubbleAssistantHeader": "Assistent:",
+      "userTextPlaceholder": "Stellen Sie hier Ihre Frage zum Szenario...",
+      "inputTokensLabel": "Input-Tokens: %s",
+      "inputTokensTitle": "Für den Prompt verwendete Tokens.",
+      "outputTokensLabel": "Output-Tokens: %s",
+      "outputTokensTitle": "Vom KI-Modell generierte Tokens.",
+      "disclaimer": "Der MIRO KI-Assistent kann Fehler machen. Bitte überprüfen Sie wichtige Informationen.",
+      "nfApplySuccess": "Code angewendet!",
+      "nfApplyErrNoCode": "Weder Output- noch Renderer-Funktion in der letzten KI-Antwort gefunden",
+      "nfApplyErrNoResponse": "Die letzte Nachricht muss von der KI stammen, um Code anzuwenden.",
+      "btClear": "Chat löschen",
+      "btCopy": "Text kopieren",
+      "btApplyCode": "Code anwenden"
     },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",

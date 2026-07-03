@@ -1,5 +1,19 @@
 # UI header
 header <- dashboardHeader(
+  if (identical(config$activateModules$aiAssistant, TRUE)) {
+    tags$li(
+      class = "dropdown",
+      tags$a(
+        href = "#",
+        class = "action-button",
+        id = "btAIOutput",
+        title = lang$nav$header$aiAssistant,
+        tags$i(class = "fa fa-robot"),
+      )
+    )
+  } else {
+    tags$li(class = "dropdown")
+  },
   tags$li(
     class = "dropdown",
     tags$a(
