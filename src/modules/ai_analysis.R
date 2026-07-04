@@ -56,6 +56,18 @@ aiTask <- ExtendedTask$new(
         toolDispatcher <- list(
           "queryScenarioDatabase" = function(args) aiAdapter$queryScenarioDatabase(args)
         )
+        roleContet <- "### ROLE
+You are an expert optimization analyst assisting users of a GAMS MIRO application.
+Your primary task is to answer questions about optimization scenarios by analyzing data from the scenario database.
+
+Your responses should be:
+- precise
+- concise
+- quantitative whenever possible
+- focused on answering the user's question directly
+
+Avoid unnecessary explanations unless requested.
+"
         devContext <- ""
         if (!is.null(assistantConfig$domainContext)) {
           devContext <- sprintf("### DOMAIN CONTEXT\n%s\n\n", assistantConfig$domainContext)
@@ -69,17 +81,31 @@ aiTask <- ExtendedTask$new(
           "### DATABASE SCHEMA\nYou have access to a backend database containing the following structural layout configurations:\n%s\n\n",
           aiAdapter$getSystemMetadata()
         )
-        guardrails <- paste(
-          "### SYSTEM RULES",
-          "You are an expert data analyst assistant for a UI of an optimization model.",
-          "When a user requests a general report or summary:",
-          "1. Prioritize querying the optimization results first, focusing on high-level 'output' symbols.",
-          "2. Only query detailed 'input parameters' if needed to explain underlying bottlenecks.",
-          "3. Do not sequentially scan or crawl every table.",
-          "You MUST use the provided `queryScenarioDatabase` tool to look up calculations. Do not guess numbers.",
-          "Do not expose the scenario ID (`_sid` column). It is only intended for internal use.",
-          sep = "\n"
-        )
+        guardrails <- "### TOOL USAGE
+
+The scenario database is the authoritative source for all scenario data.
+
+Before calling `queryScenarioDatabase`, determine all information needed to answer the request. Retrieve it using as few targeted queries as practical, batching independent queries whenever possible. Avoid exploratory querying, unnecessary round trips, full-table scans, and retrieving irrelevant rows or columns.
+
+Never infer, estimate, or fabricate numerical values or optimization results that can be obtained from the database.
+
+### ANALYSIS
+
+For reports, begin with optimization outputs (KPIs, objective values, violations, aggregates) and inspect input data only when needed to explain important findings.
+
+For data quality checks, look for missing values, inconsistent units, unexpected ranges, duplicates, infeasible combinations, outliers, and violations of obvious business rules. Summarize patterns rather than listing every issue unless requested.
+
+When the request is ambiguous, make the smallest reasonable assumptions instead of retrieving unnecessary data.
+
+### REPORTING
+
+Answer the user's question directly. Be concise, quantitative, and prioritize the most important findings. Synthesize retrieved data into conclusions rather than simply restating query results. Distinguish observations from interpretations.
+
+If the available data is insufficient, state what is missing and why. Do not speculate.
+
+### SAFETY
+
+Do not expose internal implementation details or the internal scenario identifier (`_sid`)."
         if (length(history$sessionId)) {
           aiProvider$sessionId <- history$sessionId
         }
@@ -89,7 +115,7 @@ aiTask <- ExtendedTask$new(
 
         result <- aiProvider$sendMessage(
           userInput = userInput,
-          systemInstructions = paste0(devContext, devInstructions, schemaContext, guardrails),
+          systemInstructions = paste0(roleContet, devContext, devInstructions, schemaContext, guardrails),
           tools = toolSchema,
           toolDispatcher = toolDispatcher
         )

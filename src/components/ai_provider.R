@@ -13,7 +13,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
       self$debugFile <- debugFile
       return(self)
     },
-    sendMessage = function(userInput, systemInstructions, tools = NULL, toolDispatcher = NULL, maxIterations = 5) {
+    sendMessage = function(userInput, systemInstructions, tools = NULL, toolDispatcher = NULL, maxIterations = 10) {
       payload <- private$prepareInitialPayload(userInput, systemInstructions, tools)
       iterationCounter <- 0
       loopActive <- TRUE
