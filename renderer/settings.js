@@ -588,7 +588,7 @@ aiProviders.forEach(provider => {
     }
 
     badgeElement.className = 'badge badge-info';
-    badgeElement.innerText = lang['ai-key-status-checking'];
+    badgeElement.innerText = lang['ai-key-status-validating'];
 
     try {
       __electronLog.debug(`Validating API key for AI provider: ${provider.name}`)
