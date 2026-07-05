@@ -375,6 +375,7 @@ for (dbType in c("sqlite", "postgres")) {
       schema = "mirotests"
     )
   }
+  dbConnProvider <- DbConnectionProvider$new(dbConfig)
   populateDb(procEnv, "pickstock")
   db$destroy()
   db <- Db$new(
@@ -502,6 +503,7 @@ for (dbType in c("sqlite", "postgres")) {
       schema = "mirotests"
     )
   }
+  dbConnProvider <- DbConnectionProvider$new(dbConfig)
   populateDb(procEnv, "indus89", modelPath = modelPathTmp)
   # db$destroy()
   db <- Db$new(
