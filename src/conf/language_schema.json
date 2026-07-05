@@ -2197,6 +2197,89 @@
           },
           "minProperties": 23
         },
+        "aiBotDialog": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "welcomeMessage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "welcomeMessageCustomRenderer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currentContextSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currentContextCompare": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chatBubbleUserHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chatBubbleAssistantHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputTokensLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputTokensTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outputTokensLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outputTokensTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "disclaimer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplySuccess": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplyErrNoCode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplyErrNoResponse": {
+              "type": "string",
+              "minLength": 1
+            },
+            "userTextPlaceholder": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btClear": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btCopy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyCode": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 19
+        },
         "hcubeMode": {
           "type": "object",
           "additionalProperties": false,
@@ -2273,89 +2356,6 @@
               },
               "minProperties": 6
             },
-            "aiBotDialog": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "welcomeMessage": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "welcomeMessageCustomRenderer": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "currentContextSandbox": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "currentContextCompare": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "chatBubbleUserHeader": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "chatBubbleAssistantHeader": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "inputTokensLabel": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "inputTokensTitle": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "outputTokensLabel": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "outputTokensTitle": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "disclaimer": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "nfApplySuccess": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "nfApplyErrNoCode": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "nfApplyErrNoResponse": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "userTextPlaceholder": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "btClear": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "btCopy": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "btApplyCode": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 19
-            },
             "showLogFileDialog": {
               "type": "object",
               "additionalProperties": false,
@@ -2414,7 +2414,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 9
+          "minProperties": 8
         },
         "dialogPaverInUse": {
           "type": "object",
@@ -2642,7 +2642,7 @@
           }
         }
       },
-      "minProperties": 50
+      "minProperties": 51
     },
     "renderers": {
       "description": "language specific objects of renderers",

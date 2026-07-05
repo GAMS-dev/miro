@@ -37,6 +37,7 @@
       "interrupt":"Stop"
     },
     "header":{
+      "aiAssistant": "MIRO KI-Assistent",
       "scenario":{
         "title":"Szenario",
         "edit":"Metadaten bearbeiten",

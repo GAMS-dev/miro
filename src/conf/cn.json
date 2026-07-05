@@ -37,6 +37,7 @@
       "interrupt":"停止"
     },
     "header":{
+      "aiAssistant": "MIRO AI 助手",
       "scenario":{
         "title":"场景选项",
         "edit":"编辑元数据",
