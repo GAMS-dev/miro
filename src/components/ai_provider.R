@@ -18,7 +18,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
       iterationCounter <- 0
       loopActive <- TRUE
       finalText <- "An unexpected error occurred."
-      lastTokenUsage <- list(input = 0, output = 0)
+      totalTokenUsage <- list(input = 0, output = 0)
 
       while (loopActive) {
         iterationCounter <- iterationCounter + 1
@@ -37,7 +37,8 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
         }
 
         parsedTurn <- private$parseApiResponse(rawResponse)
-        lastTokenUsage <- parsedTurn$tokens
+        totalTokenUsage$input <- totalTokenUsage$input + parsedTurn$tokens$input
+        totalTokenUsage$output <- totalTokenUsage$output + parsedTurn$tokens$output
 
         if (parsedTurn$hasToolCalls) {
           if (is.null(toolDispatcher)) {
@@ -68,8 +69,8 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
       }
       return(list(
         text = finalText,
-        inputTokens = lastTokenUsage$input,
-        outputTokens = lastTokenUsage$output
+        inputTokens = totalTokenUsage$input,
+        outputTokens = totalTokenUsage$output
       ))
     },
     clearSession = function() {
