@@ -217,7 +217,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
         escSelect <- DBI::dbQuoteIdentifier(private$conn, selectCol)
         selectExpr <- if (aggregation %in% c("SUM", "AVG", "MAX", "MIN", "COUNT")) {
-          sprintf("%s(%s) AS %s", aggregation, escSelect, DBI::dbQuoteIdentifier(self$conn, tolower(aggregation)))
+          sprintf("%s(%s) AS %s", aggregation, escSelect, DBI::dbQuoteIdentifier(private$conn, tolower(aggregation)))
         } else {
           escSelect
         }
