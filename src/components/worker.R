@@ -455,9 +455,8 @@ AsyncJobManager <- R6Class("AsyncJobManager",
 Worker <- R6Class("Worker",
   public = list(
     asyncJobManager = NULL,
-    initialize = function(adapter, db, dbJobSchema, metadata = NULL) {
+    initialize = function(adapter, db, dbJobSchema) {
       private$adapter <- adapter
-      private$metadata <- metadata
       if (adapter$supportsAsync) {
         self$asyncJobManager <- AsyncJobManager$new(dbJobSchema, db, adapter)
       }

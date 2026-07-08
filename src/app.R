@@ -1965,7 +1965,7 @@ if (!is.null(errMsg)) {
       }
 
       worker <- Worker$new(
-        workerAdapter, db, dbSchema$getDbSchema("_jobMeta"), list()
+        workerAdapter, db, dbSchema$getDbSchema("_jobMeta")
       )
       rendererEnv <- new.env(parent = emptyenv())
 
