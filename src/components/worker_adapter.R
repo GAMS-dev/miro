@@ -272,6 +272,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
         gamsArgs <- c(gamsArgs, paste0('trace="', traceFileName, '"'), "traceopt=3")
         private$metadata$modelDataFiles <- c(private$metadata$modelDataFiles, traceFileName)
       }
+      gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', MIROGdxInName, '"'))
       private$metadata$gamsArgs <- gamsArgs
       return(self)
     },
