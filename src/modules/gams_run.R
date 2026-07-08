@@ -348,6 +348,23 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
       jobInfo <- worker$runAsync(name = jobName, solveOptions = solveOptions)
+      if (isTRUE(jobInfo$error)) {
+        hideEl(session, "#btSubmitAsyncJob")
+        hideModal(session, 6L)
+        if (jobInfo$status == 404L) {
+          flog.warn("404 status code received while running job. Likely bad host.")
+          return(showEl(session, "#jobSubmitUnknownHost"))
+        } else if (jobInfo$status == 402L) {
+          showQuotaWarnings(session, jobInfo$quotaWarning)
+          return(showElReplaceTxt(session, "#jobSubmitUnknownError", lang$errMsg$quotaWarning$quotaExceeded))
+        } else if (jobInfo$status %in% c(401L, 403L)) {
+          flog.info("Some problem occurred while executing job. Status code: %d.", jobInfo$status)
+          return(showEl(session, "#jobSubmitUnauthorized"))
+        } else {
+          flog.error("Unknown error while executing job. Status code: %d.", jobInfo$status)
+          return(showEl(session, "#jobSubmitUnknownError"))
+        }
+      }
       showHideEl(session, "#jobSubmitSuccess", 2000)
       showQuotaWarnings(session, jobInfo$quotaWarning)
       hideModal(session, 2L)
@@ -356,21 +373,9 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       errMsg <- conditionMessage(e)
       hideEl(session, "#btSubmitAsyncJob")
       hideModal(session, 6L)
-
-      if (identical(errMsg, "404") || startsWith(errMsg, "Could not") ||
-        startsWith(errMsg, "Timeout")) {
+      if (startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout")) {
         flog.warn("Some problem occurred while executing job. Error message: '%s'.", errMsg)
         return(showEl(session, "#jobSubmitUnknownHost"))
-      }
-
-      if (identical(errMsg, "402")) {
-        flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
-        return(showElReplaceTxt(session, "#jobSubmitUnknownError", lang$errMsg$quotaWarning$quotaExceeded))
-      }
-
-      if (errMsg %in% c(401L, 403L)) {
-        flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
-        return(showEl(session, "#jobSubmitUnauthorized"))
       }
       flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
 
@@ -1403,6 +1408,24 @@ if (identical(config$activateModules$hcube, TRUE)) {
           solveOptions = solveOptions, dynamicPar = hcubeBuilder,
           sid = sid, tags = input$newHcubeTags
         )
+        if (isTRUE(hcJobInfo$error)) {
+          if (hcJobInfo$status == 401L) {
+            flog.info("Could not generate Hypercube job (unauthorized).")
+            return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$sessionExpired$desc))
+          } else if (hcJobInfo$status == 402L) {
+            flog.info("Could not generate Hypercube job (quota exceeded).")
+            showQuotaWarnings(session, hcJobInfo$quotaWarning)
+            return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$quotaWarning$quotaExceeded))
+          } else {
+            flog.error("Unexpected error while generating new Hypercube job. Status code: %d", hcJobInfo$status)
+            enableEl(session, "#btSubmitHcJobConfirm")
+            hasUnsolvedHcScen <- noHcubeScenSolved() < noHcubeScen()
+            if (identical(length(hasUnsolvedHcScen), 1L) && hasUnsolvedHcScen) {
+              enableEl(session, "#btSubmitHcJobConfirmUnsolved")
+            }
+            return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError))
+          }
+        }
         prog$inc(amount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
         removeModal()
         showHideEl(session, "#hcubeSubmitSuccess", 2000)
@@ -1410,14 +1433,6 @@ if (identical(config$activateModules$hcube, TRUE)) {
       },
       error = function(e) {
         errMsg <- conditionMessage(e)
-        if (identical(errMsg, "401")) {
-          flog.info("Could not generate Hypercube job (unauthorized).")
-          return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$sessionExpired$desc))
-        }
-        if (identical(errMsg, "402")) {
-          flog.info("Could not generate Hypercube job (quota exceeded).")
-          return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$quotaWarning$quotaExceeded))
-        }
         flog.error(
           "Unexpected error while generating new Hypercube job. Error message: '%s'",
           errMsg

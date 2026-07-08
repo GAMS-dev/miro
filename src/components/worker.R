@@ -481,20 +481,22 @@ Worker <- R6Class("Worker",
       if (is_mirai_error(subResp)) {
         stop(subResp$message, call. = FALSE)
       }
-      if (!identical(subResp$status_code, 201L)) {
-        flog.warn("Problems submitting job (status code: %d). Response: %s", subResp$status_code, subResp$response)
-        stop(subResp$status_code, call. = FALSE)
-      }
+      quotaWarning <- NULL
       if (length(subResp$response$quota_warning)) {
         quotaWarning <- calcRemainingQuota(subResp$response$quota_warning)
         quotaWarning$error <- FALSE
-      } else {
-        quotaWarning <- NULL
+      } else if (length(subResp$response$exceeded_quotas)) {
+        quotaWarning <- calcRemainingQuota(subResp$response$exceeded_quotas)
+        quotaWarning$error <- TRUE
+      }
+      if (!identical(subResp$status_code, 201L)) {
+        flog.warn("Problems submitting job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        return(list(error = TRUE, status = subResp$status_code, quotaWarning = quotaWarning))
       }
       procId <- subResp$response$token
       jobId <- self$asyncJobManager$addJob(pid = procId, sid = private$adapter$inputData$getSid(), name = name, tags = tags, isHcJob = FALSE)
       flog.info("New asynchronous job with token: %s and job ID: %d submitted successfully.", procId, jobId)
-      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning))
+      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning, error = FALSE))
     },
     runHypercube = function(solveOptions = NULL, dynamicPar = NULL, sid = NULL, tags = NULL) {
       stopifnot(private$adapter$supportsAsync)
@@ -507,20 +509,22 @@ Worker <- R6Class("Worker",
       if (is_mirai_error(subResp)) {
         stop(subResp$message, call. = FALSE)
       }
-      if (!identical(subResp$status_code, 201L)) {
-        flog.warn("Problems submitting Hypercube job (status code: %d). Response: %s", subResp$status_code, subResp$response)
-        stop(subResp$status_code, call. = FALSE)
-      }
+      quotaWarning <- NULL
       if (length(subResp$response$quota_warning)) {
         quotaWarning <- calcRemainingQuota(subResp$response$quota_warning)
         quotaWarning$error <- FALSE
-      } else {
-        quotaWarning <- NULL
+      } else if (length(subResp$response$exceeded_quotas)) {
+        quotaWarning <- calcRemainingQuota(subResp$response$exceeded_quotas)
+        quotaWarning$error <- TRUE
+      }
+      if (!identical(subResp$status_code, 201L)) {
+        flog.warn("Problems submitting Hypercube job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        return(list(error = TRUE, status = subResp$status_code, quotaWarning = quotaWarning))
       }
       procId <- subResp$response$hypercube_token
-      jobId <- self$asyncJobManager$addJob(pid = procId, sid = private$adapter$inputData$getSid(), tags = tags, isHcJob = TRUE)
+      jobId <- self$asyncJobManager$addJob(pid = procId, sid = sid, tags = tags, isHcJob = TRUE)
       flog.info("New Hypercube job with token: %s and job ID: %s submitted successfully.", procId, jobId)
-      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning))
+      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning, error = FALSE))
     },
     interrupt = function() {
       if (private$hardKill) {
@@ -572,6 +576,9 @@ Worker <- R6Class("Worker",
     },
     updateJobStatus = function(newStatus) {
       return(self$asyncJobManager$updateJobStatus(newStatus, jID = private$jID, pID = private$adapter$processId))
+    },
+    getJobId = function() {
+      return(private$jID)
     }
   ),
   active = list(

@@ -339,7 +339,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
             resData$status_code, resData$response$message
           )
           self$processStatus <- -resData$status_code
-          if (identical(resData$statusCode, 402L) && length(resData$response$exceeded_quotas)) {
+          if (identical(resData$status_code, 402L) && length(resData$response$exceeded_quotas)) {
             self$quotaWarning <- calcRemainingQuota(resData$response$exceeded_quotas)
             self$quotaWarning$error <- TRUE
           }
@@ -432,7 +432,11 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
               httr::timeout(20L)
             )
             if (httr::status_code(streamEntryResp) != 200L) {
-              stop(sprintf("Could not fetch stream entry (status code: %d). Error: %s", httr::status_code(streamEntryResp), httr::content(streamEntryResp, as = "text", encoding = "utf-8")), call. = FALSE)
+              stop(sprintf(
+                "Could not fetch stream entry (status code: %d). Error: %s",
+                httr::status_code(streamEntryResp),
+                trimws(httr::content(streamEntryResp, as = "text", encoding = "utf-8"))
+              ), call. = FALSE)
             }
             return(httr::content(streamEntryResp, type = "application/json", encoding = "utf-8")$entry_value)
           },
