@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import aiofiles
@@ -7,16 +8,18 @@ from fastapi.exceptions import HTTPException
 from pydantic import ValidationError
 from starlette import status
 
-from app.config import logger, settings
+from app.config import settings
 from app.dependencies import Paginator
 from app.utils.miro_proc import run_miro_proc_async
 from app.utils.models import (
     ExportFileType,
+    PaginatedResponse,
     ScenarioConfig,
     ScenarioPermissions,
     User,
-    PaginatedResponse,
 )
+
+logger = logging.getLogger(__name__)
 
 
 async def add_data(

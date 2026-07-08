@@ -1,3 +1,4 @@
+import logging
 import asyncio
 import math
 
@@ -9,13 +10,15 @@ from fastapi import Depends, HTTPException, Query, Request, Response, status, Pa
 from fastapi.security import HTTPBearer, HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 
-from app.config import logger, settings
+from app.config import settings
 from app.utils.app_utils import app_is_invisible
 from app.utils.utils import SingletonAiohttp
 from app.utils.models import User, OidcLoginData
 
 bearer_auth = HTTPBearer(auto_error=False)
 basic_auth = HTTPBasic(auto_error=False)
+
+logger = logging.getLogger(__name__)
 
 
 async def _send_token_request(
