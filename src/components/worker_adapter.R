@@ -26,9 +26,6 @@ WorkerAdapter <- R6Class("WorkerAdapter",
     pingLog = function() {
       stop("Method 'pingLog' must be implemented by subclass.")
     },
-    getSid = function(resultsPath = NULL) {
-      stop("Method 'getSid' must be implemented by subclass.")
-    },
     getResults = function(resultsPath = NULL) {
       stop("Method 'getResults' must be implemented by subclass.")
     },
