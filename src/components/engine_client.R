@@ -251,9 +251,10 @@ EngineClient <- R6Class("EngineClient", public = list(
         type = "application/json",
         encoding = "utf-8"
       )
+      errMsg <- if (is.null(errMsg[["message"]])) "Unknown error" else errMsg[["message"]]
       stop(sprintf(
         "Invalid status code: %s. Error message: %s",
-        httr::status_code(updateDefaultInstanceReq), errMsg[["message"]]
+        httr::status_code(updateDefaultInstanceReq), errMsg
       ), call. = FALSE)
     }
     private$instanceInfo$selected <- newDefault

@@ -43,7 +43,7 @@ WorkerAdapter <- R6Class("WorkerAdapter",
         private$logContent <- ""
         return(currentLogContent)
       }
-      if (!identical(newLogContent, "")) {
+      if (length(newLogContent) > 0 && !identical(newLogContent, "")) {
         private$logContent <- paste0(private$logContent, newLogContent)
         private$updateLog <- private$updateLog + 1L
       }
