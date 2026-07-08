@@ -274,6 +274,15 @@ AsyncJobManager <- R6Class("AsyncJobManager",
       jIDChar <- as.character(jID)
       pid <- self$getPid(jID)
       if (is_mirai(private$mJobRes[[jIDChar]]) && !unresolved(private$mJobRes[[jIDChar]])) {
+        if (is_error_value(private$mJobRes[[jIDChar]]$data)) {
+          stop(sprintf(
+            "Problems downloading results of job: '%s' (Hypercube: %s). Error message: '%s'.",
+            jIDChar, isHcJob, private$mJobRes[[jIDChar]]$data$message
+          ), call. = FALSE)
+        }
+        if (length(private$mJobRes[[jIDChar]]$data$warnings)) {
+          flog.warn("Warnings downloading results of job: '%s' (Hypercube: %s): %s", jIDChar, isHcJob, private$mJobRes[[jIDChar]]$data$warnings)
+        }
         if (isHcJob) {
           if (!file.exists(private$jobResultsFile[[jIDChar]])) {
             file.rename(
@@ -286,15 +295,6 @@ AsyncJobManager <- R6Class("AsyncJobManager",
             )
           }
         } else {
-          if (is_error_value(private$mJobRes[[jIDChar]]$data)) {
-            stop(sprintf(
-              "Problems downloading results of job: '%s'. Error message: '%s'.",
-              jIDChar, private$mJobRes[[jIDChar]]$data$message
-            ), call. = FALSE)
-          }
-          if (length(private$mJobRes[[jIDChar]]$data$warnings)) {
-            flog.warn("Warnings downloading results of job: '%s': %s", jIDChar, private$mJobRes[[jIDChar]]$data$warnings)
-          }
           if (identical(unlink(paste0(private$jobResultsFile[[jIDChar]], ".dl")), 1L)) {
             stop(sprintf(
               "Could not remove temporary file: '%s'.",
