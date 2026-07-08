@@ -301,7 +301,7 @@ observeEvent(input$btSubmitJob, {
   if (is.null(inputData)) {
     return(NULL)
   }
-  worker$setInputData(inputData)
+  worker$inputData <- inputData
   tryCatch(
     {
       scenHashTmp <- inputData$generateScenHash()
@@ -335,11 +335,6 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       flog.error("User has no execute permission for this scenario. This looks like an attempt to tamper with the app!")
       return()
     }
-    sid <- activeScen$getSid()
-  }
-  if (identical(worker$validateCredentials(), FALSE)) {
-    flog.error("User has no valid credentials. This looks like an attempt to tamper with the app!")
-    return(NULL)
   }
   solveOptions <- NULL
   instanceInfo <- engineClient$getInstanceInfo()
@@ -352,9 +347,9 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
       disableEl(session, "#btSubmitAsyncJob")
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runAsync(sid, name = jobName, solveOptions = solveOptions)
+      jobInfo <- worker$runAsync(name = jobName, solveOptions = solveOptions)
       showHideEl(session, "#jobSubmitSuccess", 2000)
-      showQuotaWarnings(session, worker$getQuotaWarning())
+      showQuotaWarnings(session, jobInfo$quotaWarning)
       hideModal(session, 2L)
     },
     error = function(e) {
@@ -370,7 +365,6 @@ observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
 
       if (identical(errMsg, "402")) {
         flog.info("Some problem occurred while executing job. Error message: '%s'.", errMsg)
-        showQuotaWarnings(session, worker$getQuotaWarning())
         return(showElReplaceTxt(session, "#jobSubmitUnknownError", lang$errMsg$quotaWarning$quotaExceeded))
       }
 
@@ -466,7 +460,6 @@ if (config$activateModules$miroLogFile) {
 logFilePath <- NULL
 if (config$activateModules$logFile ||
   config$activateModules$miroLogFile) {
-  logfileObs <- NULL
   logfile <- NULL
   if (config$activateModules$logFile) {
     output$btDownloadLogFilesLog <- downloadHandler(paste0(modelNameRaw, ".log"),
@@ -522,7 +515,6 @@ output$modelStatus <- renderUI({
   } else if (identical(currModelStat, "d")) {
     return(lang$nav$gamsModelStatus$collection)
   }
-  modelStatusObs$destroy()
   modelStatus <<- NULL
   enableEl(session, "#btSolve")
   disableEl(session, "#btInterrupt")
@@ -530,8 +522,6 @@ output$modelStatus <- renderUI({
 
   if (config$activateModules$logFile ||
     config$activateModules$miroLogFile) {
-    logfileObs$destroy()
-    logfileObs <- NULL
     logfile <- NULL
     if (config$activateModules$miroLogFile) {
       if (config$activateModules$logFile) {
@@ -628,12 +618,9 @@ verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun
     }
     if (length(modelStatus)) {
       if (detachCurrentRun) {
-        modelStatusObs$destroy()
         modelStatus <<- NULL
         if (config$activateModules$logFile ||
           config$activateModules$miroLogFile) {
-          logfileObs$destroy()
-          logfileObs <- NULL
           logfile <- NULL
         }
       } else if (config$activateModules$remoteExecution) {
@@ -675,13 +662,6 @@ verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun
     flog.info("User has no execute permission for this scenario.")
     return(FALSE)
   }
-  if (identical(worker$validateCredentials(), FALSE)) {
-    showLoginDialog(
-      cred = worker$getCredentials(),
-      forwardOnSuccess = buttonId
-    )
-    return(FALSE)
-  }
   return(TRUE)
 }
 
@@ -692,11 +672,7 @@ runGAMSJob <- function() {
   inconsistentOutput <<- FALSE
   tryCatch(
     {
-      jobSid <- NULL
-      if (length(activeScen) && length(activeScen$getSid())) {
-        jobSid <- activeScen$getSid()
-      }
-      worker$run(jobSid, name = activeScen$getScenName())
+      worker$run(name = activeScen$getScenName())
     },
     error_duplicate_records = function(e) {
       flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
@@ -736,9 +712,7 @@ runGAMSJob <- function() {
   errMsg <- NULL
   tryCatch(
     {
-      modelStatusRE <- worker$getReactiveStatus(session)
-      modelStatusObs <<- modelStatusRE$obs
-      modelStatus <<- modelStatusRE$re
+      modelStatus <<- worker$getReactiveStatus(session)
     },
     error = function(e) {
       flog.error(
@@ -755,9 +729,7 @@ runGAMSJob <- function() {
 
   tryCatch(
     {
-      logRE <- worker$getReactiveLog(session)
-      logfileObs <<- logRE$obs
-      logfile <<- logRE$re
+      logfile <<- worker$getReactiveLog(session)
     },
     error = function(e) {
       flog.error(
@@ -784,7 +756,7 @@ runNewSynchronousJob <- function(detachCurrentRun = FALSE) {
   if (is.null(inputData)) {
     return(NULL)
   }
-  worker$setInputData(inputData)
+  worker$inputData <- inputData
   tryCatch(
     {
       scenHashTmp <- inputData$generateScenHash()
@@ -850,12 +822,9 @@ observeEvent(input$btDetachCurrentJob, {
     showNotification(lang$errMsg$jobRunning$descAsyncSubmittingDetach, type = "error", duration = 10L)
     return()
   }
-  modelStatusObs$destroy()
   modelStatus <<- NULL
   if (config$activateModules$logFile ||
     config$activateModules$miroLogFile) {
-    logfileObs$destroy()
-    logfileObs <- NULL
     logfile <- NULL
   }
   clearLogs(session)
@@ -867,7 +836,7 @@ observeEvent(input$btDetachCurrentJob, {
 observeEvent(input$btRemoveDuplicates, {
   flog.debug("Button to open remove duplicate records dialog clicked.")
   inputData <- prepareModelRun(saveAttachments = FALSE)
-  worker$setInputData(inputData)
+  worker$inputData <- inputData
   tempie <- tempfile(fileext = ".gdx")
   if (is.null(inputData)) {
     return()
@@ -952,7 +921,7 @@ removeDuplicateRecords <- function(keep = c("first", "last")) {
     {
       keep <- match.arg(keep)
       duplicateSymNames <- gdxio$getSymbolsWithDuplicates()
-      inputData <- worker$getInputData()
+      inputData <- worker$inputData
       newData <- lapply(duplicateSymNames, function(symName) {
         oldData <- inputData$get(symName)
         isNumCol <- vapply(oldData, is.numeric, logical(1L), USE.NAMES = FALSE)
@@ -1239,7 +1208,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
     if (is.null(inputData)) {
       return(NULL)
     }
-    worker$setInputData(inputData)
+    worker$inputData <- inputData
     if (is.null(hcubeBuilder)) {
       hcubeBuilder <<- HcubeBuilder$new(inputData$getDataHashes(), inputData$getScalarData())
     } else {
@@ -1430,15 +1399,14 @@ if (identical(config$activateModules$hcube, TRUE)) {
         if (length(instanceInfo) && identical(instanceInfo[["instancesSupported"]], TRUE)) {
           solveOptions <- list(selectedInstance = input$selHcWorkerInstance)
         }
-        worker$runHcube(
-          dynamicPar = hcubeBuilder,
-          sid = sid, tags = input$newHcubeTags,
-          solveOptions = solveOptions
+        hcJobInfo <- worker$runHypercube(
+          solveOptions = solveOptions, dynamicPar = hcubeBuilder,
+          sid = sid, tags = input$newHcubeTags
         )
         prog$inc(amount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
         removeModal()
         showHideEl(session, "#hcubeSubmitSuccess", 2000)
-        showQuotaWarnings(session, worker$getQuotaWarning())
+        showQuotaWarnings(session, hcJobInfo$quotaWarning)
       },
       error = function(e) {
         errMsg <- conditionMessage(e)
@@ -1448,7 +1416,6 @@ if (identical(config$activateModules$hcube, TRUE)) {
         }
         if (identical(errMsg, "402")) {
           flog.info("Could not generate Hypercube job (quota exceeded).")
-          showQuotaWarnings(session, worker$getQuotaWarning())
           return(showElReplaceTxt(session, "#newHcJobError", lang$errMsg$quotaWarning$quotaExceeded))
         }
         flog.error(

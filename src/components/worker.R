@@ -1,1864 +1,595 @@
-Worker <- R6Class("Worker", public = list(
-  initialize = function(metadata, remote, db = NULL) {
-    stopifnot(
-      is.list(metadata), is.logical(remote),
-      identical(length(remote), 1L)
-    )
-    private$remote <- remote
-    private$metadata <- metadata
-    if (length(db)) {
+AsyncJobManager <- R6Class("AsyncJobManager",
+  public = list(
+    initialize = function(dbJobSchema, db, adapter) {
+      stopifnot(adapter$supportsAsync)
+      private$dbJobSchema <- dbJobSchema
       private$db <- db
       private$conn <- db$getConn()
-      jobMetaSchema <- dbSchema$getDbSchema("_jobMeta")
-      private$dbColNames <- jobMetaSchema$colNames
-      private$dbTabName <- jobMetaSchema$tabName
-    }
-    return(invisible(self))
-  },
-  getAuthHeader = function() {
-    # TODO: Cleanly separate EngineClient and worker
-    return(private$authHeader)
-  },
-  getQuotaWarning = function() {
-    return(private$quotaWarning)
-  },
-  setCredentials = function(url, username, password, namespace,
-                            useRegistered, useBearer = TRUE) {
-    engineUrl <- trimws(url, which = "right", whitespace = "/")
-    if (!endsWith(engineUrl, "/api")) {
-      engineUrl <- paste0(engineUrl, "/api")
-    }
-    private$metadata$url <- engineUrl
-    private$metadata$username <- username
-    private$metadata$useRegistered <- useRegistered
-    private$metadata$password <- password
-    private$metadata$namespace <- namespace
+      private$uid <- db$getUid()
+      private$adapter <- adapter
+      return(invisible(self))
+    },
+    getInfoFromJobList = function(jID, key = NULL) {
+      if (!length(private$jobList) || !nrow(private$jobList)) {
+        return(NULL)
+      }
+      jIDs <- private$jobList[[1]]
+      jIdx <- match(jID, jIDs)
+      if (is.na(jIdx)) {
+        return(NULL)
+      }
+      if (length(key)) {
+        return(private$jobList[[key]][[jIdx]])
+      }
+      return(private$jobList[jIdx, ])
+    },
+    getPid = function(jID) {
+      return(self$getInfoFromJobList(jID, private$dbJobSchema$colNames[["pid"]]))
+    },
+    getStatus = function(jID) {
+      return(self$getInfoFromJobList(jID, private$dbJobSchema$colNames[["status"]]))
+    },
+    addJob = function(pid, sid, tags = NULL, status = NULL, name = NULL, isHcJob = FALSE) {
+      stopifnot(length(pid) == 1)
 
-    private$authHeader <- private$buildAuthHeader(useBearer)
-    return(invisible(self))
-  },
-  getCredentials = function() {
-    return(list(
-      url = private$metadata$url,
-      user = private$metadata$username,
-      ns = private$metadata$namespace,
-      reg = private$metadata$useRegistered
-    ))
-  },
-  validateCredentials = function() {
-    cred <- c(
-      private$metadata$url,
-      private$metadata$password,
-      private$metadata$namespace
-    )
-    if (private$remote &&
-      !identical(private$metadata$noNeedCred, TRUE) &&
-      (!length(cred) ||
-        any(vapply(cred, private$isEmptyString,
-          logical(1L),
-          USE.NAMES = FALSE
-        )))) {
-      return(FALSE)
-    }
-    return(TRUE)
-  },
-  setWorkDir = function(workDir) {
-    private$workDir <- workDir
-  },
-  getInputData = function() private$inputData,
-  setInputData = function(inputData) {
-    private$inputData <- inputData
-    return(invisible(self))
-  },
-  run = function(sid = NULL, name = NULL) {
-    private$initRun(sid)
-
-    if (private$remote) {
-      private$runRemote(name = name)
-      return(0L)
-    }
-    private$runLocal()
-    return(0L)
-  },
-  runAsync = function(sid = NULL, tags = NULL,
-                      dynamicPar = NULL, name = NULL, solveOptions = NULL) {
-    stopifnot(private$remote)
-
-    private$runRemote(dynamicPar, name = name, solveOptions = solveOptions)
-    tryCatch(
-      {
-        remoteSubValue <- value(private$fRemoteSub)
-      },
-      error = function(e) {
-        errMsg <- conditionMessage(e)
-        flog.error(errMsg)
-        if (startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout was")) {
-          stop(404L, call. = FALSE)
-        } else {
-          stop(500L, call. = FALSE)
+      if (length(sid)) {
+        stopifnot(length(sid) == 1, is.integer(sid))
+      } else {
+        sid <- NULL
+      }
+      if (length(status)) {
+        stopifnot(length(status) == 1L, status %in% JOBSTATUSMAP)
+      } else {
+        status <- JOBSTATUSMAP[["running"]]
+      }
+      if (length(name)) {
+        stopifnot(is.character(name), length(name) == 1L)
+        if (nchar(name) > 255) {
+          name <- substr(name, 0L, 255L)
         }
-      }
-    )
-    if (identical(remoteSubValue$statusCode, 201L)) {
-      if (identical(remoteSubValue$hcJob, TRUE)) {
-        tokenTmp <- as.character(remoteSubValue$response$hypercube_token)[1]
       } else {
-        tokenTmp <- as.character(remoteSubValue$response$token)[1]
+        name <- ""
       }
-      if (!length(tokenTmp)) {
-        flog.error(
-          "Invalid response received from Engine server when posting job. Reponse: %s",
-          remoteSubValue$response
-        )
-        private$fRemoteSub <- NULL
-        stop(500L, call. = FALSE)
-      }
-      private$process <- tokenTmp
-      if (length(remoteSubValue$response$quota_warning)) {
-        private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$quota_warning)
-        private$quotaWarning$error <- FALSE
-      }
-      if (length(private$db)) {
-        tryCatch(
-          {
-            private$jID <- self$addJobDb(private$process, sid,
-              tags = tags, name = name,
-              isHcJob = is.R6(dynamicPar)
-            )
-          },
-          error = function(e) {
-            flog.warn(
-              "Could not add job to database. Error message; '%s'.",
-              conditionMessage(e)
-            )
-          }
-        )
-      }
-    } else {
-      flog.info(
-        "Could not execute model remotely. Status code: %s. Error message: %s",
-        remoteSubValue$statusCode, remoteSubValue$response$message
+      colNames <- private$dbJobSchema$colNames
+      tabName <- private$dbJobSchema$tabName
+      err <- FALSE
+      tryCatch(
+        {
+          private$db$createJobMeta()
+        },
+        error = function(e) {
+          flog.error(
+            "Problems creating job metadata table. Error message: '%s'.",
+            conditionMessage(e)
+          )
+          err <<- TRUE
+        }
       )
-      if (identical(remoteSubValue$statusCode, 402L) && length(remoteSubValue$response$exceeded_quotas)) {
-        private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$exceeded_quotas)
-        private$quotaWarning$error <- TRUE
+      if (err) {
+        return(-1L)
       }
-      private$fRemoteSub <- NULL
-      stop(remoteSubValue$statusCode, call. = FALSE)
-    }
-    flog.trace("Job submitted successfuly. Job process ID: '%s'.", private$process)
-    private$fRemoteSub <- NULL
-    return(private$process)
-  },
-  runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL,
-                      attachmentFilePaths = NULL, solveOptions = NULL) {
-    stopifnot(private$remote)
-    req(length(private$db) > 0L)
-
-    private$initRun(sid)
-
-    pID <- self$runAsync(
-      sid = sid,
-      tags = tags,
-      dynamicPar = dynamicPar,
-      solveOptions = solveOptions
-    )
-
-    self$updateJobStatus(status = JOBSTATUSMAP[["running"]], updatePid = !private$remote)
-    flog.trace("Process ID: '%s' added to Hypercube job ID: '%s'.", pID, private$jID)
-    return(0L)
-  },
-  interrupt = function(hardKill = NULL, process = NULL, isHcJob = FALSE) {
-    if (is.null(process)) {
-      if (is.null(private$process)) {
-        return()
+      tryCatch(
+        {
+          query <- paste0(
+            "INSERT INTO ",
+            dbQuoteIdentifier(private$conn, tabName),
+            " (", dbQuoteIdentifier(private$conn, colNames[[2]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[3]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[4]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[5]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[6]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[7]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[9]]), ",",
+            dbQuoteIdentifier(private$conn, colNames[[10]]),
+            ") VALUES (",
+            dbQuoteLiteral(private$conn, private$uid), ",",
+            status, ",",
+            dbQuoteLiteral(private$conn, as.character(Sys.time(), usetz = TRUE)), ",",
+            dbQuoteLiteral(private$conn, vector2Csv(tags)), ",",
+            dbQuoteLiteral(private$conn, as.character(pid)), ",",
+            if (length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",",
+            dbQuoteLiteral(
+              private$conn,
+              if (isHcJob) {
+                SCODEMAP[["hcube_jobconfig"]]
+              } else {
+                SCODEMAP[["scen"]]
+              }
+            ), ",",
+            dbQuoteString(private$conn, name), ")",
+            " RETURNING ", dbQuoteIdentifier(private$conn, colNames[[1]])
+          )
+          jID <- dbGetQuery(private$conn, SQL(query))[[1L]][1L]
+          return(jID)
+        },
+        error = function(e) {
+          flog.error(
+            "Problems writing job metadata. Error message: '%s'.",
+            conditionMessage(e)
+          )
+        }
+      )
+      return(-1L)
+    },
+    updateJobStatus = function(newStatus, jID, tags = NULL, pID = NULL) {
+      isHcJob <- FALSE
+      if (is.null(pID)) {
+        pID <- self$getPid(jID)
       }
-      process <- private$process
-    }
-    if (is.null(hardKill)) {
-      hardKill <- FALSE
-      if (private$hardKill) {
-        hardKill <- TRUE
-      } else {
-        private$hardKill <- TRUE
-      }
-    }
-
-    if (private$remote) {
-      return(private$interruptRemote(hardKill, process, isHcJob = isHcJob))
-    }
-
-    return(private$interruptLocal(hardKill, process))
-  },
-  getInfoFromJobList = function(jID, key = NULL) {
-    if (!length(private$jobList) || !nrow(private$jobList)) {
-      return(NULL)
-    }
-    jIDs <- private$jobList[[1]]
-    jIdx <- match(jID, jIDs)
-    if (is.na(jIdx)) {
-      return(NULL)
-    }
-    if (length(key)) {
-      return(private$jobList[[key]][[jIdx]])
-    }
-    return(private$jobList[jIdx, ])
-  },
-  updateJobStatus = function(status, jID = NULL, tags = NULL, updatePid = FALSE) {
-    if (!private$remote) {
-      return()
-    }
-    tags <- NULL
-    isHcJob <- FALSE
-    if (is.null(jID)) {
-      req(length(private$process) > 0L)
-
-      jID <- private$jID
-      if (private$remote) {
-        pID <- private$process
-      } else {
-        pID <- private$process$get_pid()
-      }
-    } else {
-      pID <- self$getPid(jID)
       isHcJob <- identical(
         self$getInfoFromJobList(jID, "_scode"),
         SCODEMAP[["hcube_jobconfig"]]
       )
-    }
-    if (!is.integer(jID) || jID < 0L) {
-      flog.warn("Could not update job status as job ID is invalid.")
-      return()
-    }
-    if (length(pID) == 0L) {
-      flog.warn("Could not update job status as job process ID is invalid.")
-      return()
-    }
-    gamsRetCode <- NULL
-    if (status %in% c(
-      JOBSTATUSMAP[["imported"]],
-      JOBSTATUSMAP[["discarded"]]
-    )) {
-      jobStatus <- private$getJobStatus(pID, jID, isHcJob = isHcJob)
-      gamsRetCode <- jobStatus$gamsRetCode
-      if (identical(status, JOBSTATUSMAP[["discarded"]])) {
-        if (jobStatus$status >= JOBSTATUSMAP[["corrupted"]] &&
-          jobStatus$status < JOBSTATUSMAP[["discarded"]]) {
-          status <- JOBSTATUSMAP[["discarded(corrupted)"]]
-        } else if (identical(jobStatus$status, JOBSTATUSMAP[["running"]]) ||
-          identical(jobStatus$status, JOBSTATUSMAP[["queued"]])) {
-          self$interrupt(hardKill = TRUE, process = pID, isHcJob = isHcJob)
-          status <- JOBSTATUSMAP[["discarded(running)"]]
-        } else if (identical(jobStatus$status, JOBSTATUSMAP[["completed"]])) {
-          if (private$remote) {
-            private$removeJobResults(pID, isHcJob = isHcJob)
+      if (!is.integer(jID) || jID < 0L) {
+        flog.warn("Could not update job status as job ID is invalid.")
+        return()
+      }
+      if (length(pID) == 0L) {
+        flog.warn("Could not update job status as job process ID is invalid.")
+        return()
+      }
+      gamsRetCode <- NULL
+      if (newStatus %in% c(
+        JOBSTATUSMAP[["imported"]],
+        JOBSTATUSMAP[["discarded"]]
+      )) {
+        jobStatus <- private$getJobStatus(pID, isHcJob = isHcJob)
+        gamsRetCode <- jobStatus$gamsRetCode
+        if (identical(newStatus, JOBSTATUSMAP[["discarded"]])) {
+          if (jobStatus$status >= JOBSTATUSMAP[["corrupted"]] &&
+            jobStatus$status < JOBSTATUSMAP[["discarded"]]) {
+            newStatus <- JOBSTATUSMAP[["discarded(corrupted)"]]
+          } else if (identical(jobStatus$status, JOBSTATUSMAP[["running"]]) ||
+            identical(jobStatus$status, JOBSTATUSMAP[["queued"]])) {
+            private$adapter$interrupt(hardKill = TRUE, processId = pID, isHypercubeJob = isHcJob)
+            newStatus <- JOBSTATUSMAP[["discarded(running)"]]
+          } else if (identical(jobStatus$status, JOBSTATUSMAP[["completed"]])) {
+            private$adapter$removeResults(pID, isHypercubeJob = isHcJob)
+            newStatus <- JOBSTATUSMAP[["discarded(completed)"]]
           }
-          status <- JOBSTATUSMAP[["discarded(completed)"]]
         }
       }
-    }
 
-    colNames <- private$dbColNames[["status"]]
-    values <- status
+      colNames <- private$dbJobSchema$colNames
 
-    if (length(gamsRetCode)) {
-      colNames <- c(colNames, private$dbColNames[["gamsret"]])
-      values <- c(values, gamsRetCode)
-    }
-    if (length(tags)) {
-      colNames <- c(colNames, private$dbColNames[["tag"]])
-      values <- c(values, tags)
-    }
-    if (updatePid) {
-      colNames <- c(colNames, private$dbColNames[["pid"]])
-      values <- c(values, pID)
-    }
-    private$db$updateRows("_jobMeta",
-      tibble(private$dbColNames[[1L]], jID),
-      colNames = colNames, values = values
-    )
+      colNamesToUpdate <- colNames[["status"]]
+      valuesToUpdate <- newStatus
 
-    return(invisible(self))
-  },
-  getJobList = function(jobHist = FALSE) {
-    newCompleted <- FALSE
-    jobList <- private$db$importDataset("_jobMeta",
-      tibble(
-        c(
-          private$dbColNames[["uid"]],
-          private$dbColNames[["status"]],
-          private$dbColNames[["scode"]]
+      if (length(gamsRetCode)) {
+        colNamesToUpdate <- c(colNamesToUpdate, colNames[["gamsret"]])
+        valuesToUpdate <- c(valuesToUpdate, gamsRetCode)
+      }
+      if (length(tags)) {
+        colNamesToUpdate <- c(colNamesToUpdate, colNames[["tag"]])
+        valuesToUpdate <- c(valuesToUpdate, tags)
+      }
+      private$db$updateRows("_jobMeta",
+        tibble(colNames[[1L]], jID),
+        colNames = colNamesToUpdate, values = valuesToUpdate
+      )
+      return(invisible(self))
+    },
+    getJobList = function(jobHist = FALSE) {
+      colNames <- private$dbJobSchema$colNames
+      newCompleted <- FALSE
+      jobList <- private$db$importDataset("_jobMeta",
+        tibble(
+          c(
+            colNames[["uid"]],
+            colNames[["status"]],
+            colNames[["scode"]]
+          ),
+          c(
+            private$uid,
+            JOBSTATUSMAP[["discarded"]],
+            SCODEMAP[["hcube_jobconfig"]]
+          ),
+          c(
+            "=", if (jobHist) ">=" else "<",
+            ">="
+          )
         ),
-        c(
-          private$metadata$uid,
-          JOBSTATUSMAP[["discarded"]],
-          SCODEMAP[["hcube_jobconfig"]]
-        ),
-        c(
-          "=", if (jobHist) ">=" else "<",
-          ">="
-        )
-      ),
-      orderBy = private$dbColNames[["time"]], orderAsc = FALSE
-    )
-
-    # TODO: allow import of jobs solved via Engine if in local mode and vice versa...
-    if (length(jobList)) {
-      if (private$remote) {
-        jobList <- filter(jobList, grepl("-", !!sym(private$dbColNames[["pid"]]), fixed = TRUE))
+        orderBy = colNames[["time"]], orderAsc = FALSE
+      )
+      if (jobHist) {
+        return(list(jobList = jobList, newCompleted = FALSE))
+      }
+      if (!length(jobList) || !nrow(jobList)) {
+        private$jobList <- jobList
+        private$jobListInit <- TRUE
+        return(list(jobList = private$jobList, newCompleted = newCompleted))
       } else {
-        jobList <- filter(jobList, !grepl("-", !!sym(private$dbColNames[["pid"]]), fixed = TRUE))
+        jobList[
+          jobList[[1]] %in% self$getFinishedDownloads(),
+          3L
+        ] <- JOBSTATUSMAP[["downloaded"]]
+        private$jobList <- jobList
       }
-    }
-    if (jobHist) {
-      return(list(jobList = jobList, newCompleted = FALSE))
-    }
-
-
-    if (!length(jobList) || !nrow(jobList)) {
-      private$jobList <- jobList
-      private$jobListInit <- TRUE
-      return(list(jobList = private$jobList, newCompleted = newCompleted))
-    } else {
-      jobList[
-        jobList[[1]] %in% self$getFinishedDownloads(),
-        3L
-      ] <- JOBSTATUSMAP[["downloaded"]]
-      private$jobList <- jobList
-    }
-
-    jIDs <- private$jobList[[1]]
-    pIDs <- private$jobList[[6]]
-    jStatus <- private$jobList[[3]]
-    for (i in seq_along(jIDs)) {
-      if (jStatus[i] > JOBSTATUSMAP[["running"]]) {
-        next
-      }
-
-      jobStatus <- private$getJobStatus(pIDs[i], jIDs[i],
-        isHcJob = identical(
+      jIDs <- private$jobList[[1]]
+      pIDs <- private$jobList[[6]]
+      jStatus <- private$jobList[[3]]
+      for (i in seq_along(jIDs)) {
+        if (jStatus[i] > JOBSTATUSMAP[["running"]]) {
+          next
+        }
+        jobStatus <- private$getJobStatus(pIDs[i], isHcJob = identical(
           private$jobList[["_scode"]][i],
           SCODEMAP[["hcube_jobconfig"]]
-        )
-      )
-      gamsRetCode <- jobStatus$gamsRetCode
-      newStatus <- jobStatus$status
-
-      if (identical(newStatus, JOBSTATUSMAP[["completed"]]) &&
-        !private$jobListInit) {
-        newCompleted <- TRUE
+        ))
+        gamsRetCode <- jobStatus$gamsRetCode
+        newStatus <- jobStatus$status
+        if (identical(newStatus, JOBSTATUSMAP[["completed"]]) &&
+          !private$jobListInit) {
+          newCompleted <- TRUE
+        }
+        if (length(newStatus)) {
+          self$updateJobStatus(newStatus, jIDs[i])
+          private$jobList[i, 3] <- newStatus
+        }
       }
-
-      if (length(newStatus)) {
-        self$updateJobStatus(newStatus, jIDs[i])
-        private$jobList[i, 3] <- newStatus
-      }
-    }
-    private$jobListInit <- TRUE
-    return(list(jobList = private$jobList, newCompleted = newCompleted))
-  },
-  getPid = function(jID) {
-    return(self$getInfoFromJobList(jID, "_pid"))
-  },
-  getJobId = function() {
-    return(private$jID)
-  },
-  getSid = function(jID) {
-    if (!length(private$jobList) || !nrow(private$jobList)) {
-      return(NULL)
-    }
-    jIDs <- private$jobList[[1]]
-    jIdx <- match(jID, jIDs)
-    if (is.na(jIdx)) {
-      return(NULL)
-    }
-    return(private$jobList[[7]][[jIdx]])
-  },
-  getJobName = function(jID) {
-    if (!length(private$jobList) || !nrow(private$jobList)) {
-      return(NULL)
-    }
-    jIDs <- private$jobList[[1]]
-    jIdx <- match(jID, jIDs)
-    if (is.na(jIdx)) {
-      return(NULL)
-    }
-    return(private$jobList[[10]][[jIdx]])
-  },
-  getStatus = function(jID) {
-    if (!length(private$jobList) || !nrow(private$jobList)) {
-      return(NULL)
-    }
-    jIDs <- private$jobList[[1]]
-    jIdx <- match(jID, jIDs)
-    if (is.na(jIdx)) {
-      return(NULL)
-    }
-    return(private$jobList[[3]][[jIdx]])
-  },
-  getHcubeJobProgress = function(jID) {
-    if (is.na(jID) || length(jID) != 1L) {
-      stop(sprintf("Invalid job ID: '%s'.", jID), call. = FALSE)
-    }
-    stopifnot(private$remote)
-    return(private$getHcubeJobProgressRemote(jID))
-  },
-  getJobResultsPath = function(jID) {
-    jIDChar <- as.character(jID)
-    if (!jIDChar %in% names(private$jobResultsFile)) {
-      stop(sprintf("Job directory not found for job: '%s'.", jID),
-        call. = FALSE
-      )
-    }
-    return(private$jobResultsFile[[jIDChar]])
-  },
-  getActiveDownloads = function() {
-    return(as.integer(names(private$resultFileSize)))
-  },
-  getFinishedDownloads = function() {
-    return(setdiff(
-      as.integer(names(private$jobResultsFile)),
-      self$getActiveDownloads()
-    ))
-  },
-  removeActiveDownload = function(jID) {
-    if (!private$remote) {
-      return(invisible(self))
-    }
-    jIDChar <- as.character(jID)
-    private$fJobRes[[jIDChar]] <- NULL
-    if (file.exists(private$jobResultsFile[[jIDChar]])) {
-      if (identical(unlink(private$jobResultsFile[[jIDChar]],
-        force = TRUE
-      ), 1L)) {
-        flog.error(
-          "Problems removing job file: '%s'.",
-          private$jobResultsFile[[jIDChar]]
+      private$jobListInit <- TRUE
+      return(list(jobList = private$jobList, newCompleted = newCompleted))
+    },
+    getJobResultsPath = function(jID) {
+      jIDChar <- as.character(jID)
+      if (!jIDChar %in% names(private$jobResultsFile)) {
+        stop(sprintf("Job directory not found for job: '%s'.", jID),
+          call. = FALSE
         )
       }
-    }
-    private$jobResultsFile[[jIDChar]] <- NULL
-    private$resultFileSize[[jIDChar]] <- NULL
-    return(invisible(self))
-  },
-  getJobResults = function(jID) {
-    req(private$remote)
-    isHcJob <- identical(
-      self$getInfoFromJobList(jID, "_scode"),
-      SCODEMAP[["hcube_jobconfig"]]
-    )
-    jIDChar <- as.character(jID)
-    if (length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])) {
-      if (isHcJob) {
-        private$removeJobResults(self$getPid(jID), isHcJob = isHcJob)
-        if (!file.exists(private$jobResultsFile[[jIDChar]])) {
-          file.rename(
-            paste0(private$jobResultsFile[[jIDChar]], ".dl"),
-            private$jobResultsFile[[jIDChar]]
+      return(private$jobResultsFile[[jIDChar]])
+    },
+    getActiveDownloads = function() {
+      return(as.integer(names(private$resultFileSize)))
+    },
+    getFinishedDownloads = function() {
+      return(setdiff(
+        as.integer(names(private$jobResultsFile)),
+        self$getActiveDownloads()
+      ))
+    },
+    removeActiveDownload = function(jID) {
+      jIDChar <- as.character(jID)
+      private$mJobRes[[jIDChar]] <- NULL
+      filePath <- private$jobResultsFile[[jIDChar]]
+      if (length(filePath) > 0 && file.exists(filePath)) {
+        if (identical(unlink(filePath,
+          force = TRUE
+        ), 1L)) {
+          flog.error(
+            "Problems removing job file: '%s'.",
+            filePath
           )
+        }
+      }
+      private$jobResultsFile[[jIDChar]] <- NULL
+      private$resultFileSize[[jIDChar]] <- NULL
+      return(invisible(self))
+    },
+    getJobResults = function(jID) {
+      isHcJob <- identical(
+        self$getInfoFromJobList(jID, "_scode"),
+        SCODEMAP[["hcube_jobconfig"]]
+      )
+      jIDChar <- as.character(jID)
+      pid <- self$getPid(jID)
+      if (is_mirai(private$mJobRes[[jIDChar]]) && !unresolved(private$mJobRes[[jIDChar]])) {
+        if (isHcJob) {
+          if (!file.exists(private$jobResultsFile[[jIDChar]])) {
+            file.rename(
+              paste0(private$jobResultsFile[[jIDChar]], ".dl"),
+              private$jobResultsFile[[jIDChar]]
+            )
+            flog.debug(
+              "Hypercube results of job: '%s' were downloaded to: '%s'.",
+              jIDChar, private$jobResultsFile[[jIDChar]]
+            )
+          }
+        } else {
+          if (is_error_value(private$mJobRes[[jIDChar]]$data)) {
+            stop(sprintf(
+              "Problems downloading results of job: '%s'. Error message: '%s'.",
+              jIDChar, private$mJobRes[[jIDChar]]$data$message
+            ), call. = FALSE)
+          }
+          if (length(private$mJobRes[[jIDChar]]$data$warnings)) {
+            flog.warn("Warnings downloading results of job: '%s': %s", jIDChar, private$mJobRes[[jIDChar]]$data$warnings)
+          }
+          if (identical(unlink(paste0(private$jobResultsFile[[jIDChar]], ".dl")), 1L)) {
+            stop(sprintf(
+              "Could not remove temporary file: '%s'.",
+              paste0(private$jobResultsFile[[jIDChar]], ".dl")
+            ), call. = FALSE)
+          }
+          private$jobResultsFile[[jIDChar]] <- dirname(private$jobResultsFile[[jIDChar]])
           flog.debug(
-            "Hypercube results of job: '%s' were downloaded to: '%s'.",
+            "Job results of job: '%s' were downloaded to: '%s'.",
             jIDChar, private$jobResultsFile[[jIDChar]]
           )
         }
-      } else {
-        if (!identical(value(private$fJobRes[[jIDChar]]), 0L)) {
-          stop(sprintf(
-            "Problems downloading results of job: '%s'. Error message: '%s'.",
-            jIDChar, value(private$fJobRes[[jIDChar]])
-          ), call. = FALSE)
-        }
-        if (identical(unlink(paste0(private$jobResultsFile[[jIDChar]], ".dl")), 1L)) {
-          stop(sprintf(
-            "Could not remove temporary file: '%s'.",
-            paste0(private$jobResultsFile[[jIDChar]], ".dl")
-          ), call. = FALSE)
-        }
-        private$jobResultsFile[[jIDChar]] <- dirname(private$jobResultsFile[[jIDChar]])
-        flog.debug(
-          "Job results of job: '%s' were downloaded to: '%s'.",
-          jIDChar, private$jobResultsFile[[jIDChar]]
-        )
-      }
-
-      private$fJobRes[[jIDChar]] <- NULL
-      private$resultFileSize[[jIDChar]] <- NULL
-      return(100L)
-    }
-
-    if (!length(private$jobResultsFile[[jIDChar]])) {
-      jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-
-      if (file.exists(jobResultsFile)) {
-        private$jobResultsFile[[jIDChar]] <- jobResultsFile
+        private$mJobRes[[jIDChar]] <- NULL
+        private$resultFileSize[[jIDChar]] <- NULL
         return(100L)
       }
-
-      if (dir.exists(dirname(jobResultsFile)) &&
-        identical(unlink(dirname(jobResultsFile),
-          recursive = TRUE, force = TRUE
-        ), 1L)) {
-        stop(sprintf(
-          "Problems removing existing directory: '%s'.",
-          jobResultsFile
-        ), call. = FALSE)
-      }
-
-      if (!dir.create(dirname(jobResultsFile), recursive = TRUE)) {
-        stop("Problems creating temporary directory for saving results.",
-          call. = FALSE
+      if (!length(private$jobResultsFile[[jIDChar]])) {
+        jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
+        if (file.exists(jobResultsFile)) {
+          private$jobResultsFile[[jIDChar]] <- jobResultsFile
+          return(100L)
+        }
+        if (dir.exists(dirname(jobResultsFile)) &&
+          identical(unlink(dirname(jobResultsFile),
+            recursive = TRUE, force = TRUE
+          ), 1L)) {
+          stop(sprintf(
+            "Problems removing existing directory: '%s'.",
+            jobResultsFile
+          ), call. = FALSE)
+        }
+        if (!dir.create(dirname(jobResultsFile), recursive = TRUE)) {
+          stop("Problems creating temporary directory for saving results.",
+            call. = FALSE
+          )
+        }
+        resultInfoResp <- private$adapter$getResultsInfo(pid, isHcJob)
+        if (!identical(status_code(resultInfoResp), 200L)) {
+          stop(status_code(resultInfoResp), call. = FALSE)
+        }
+        fileSize <- suppressWarnings(
+          as.integer(headers(resultInfoResp)[["content-length"]])
         )
+        if (!length(fileSize) || is.na(fileSize)) {
+          stop(sprintf(
+            "Could not determine file size of job results (job id: '%s').",
+            jIDChar
+          ), call. = FALSE)
+        }
+        private$resultFileSize[[jIDChar]] <- fileSize
+        private$jobResultsFile[[jIDChar]] <- jobResultsFile
+        private$mJobRes[[jIDChar]] <- private$adapter$getResults(pid, paste0(private$jobResultsFile[[jIDChar]], ".dl"), isHcJob)
+        return(5L)
       }
-      ret <- HEAD(
-        url = paste0(
-          private$metadata$url,
-          if (isHcJob) "/hypercube/" else "/jobs/",
-          self$getPid(jID), "/result"
-        ),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(10L)
-      )
-      if (!identical(status_code(ret), 200L)) {
-        stop(status_code(ret), call. = FALSE)
+      if (!length(private$resultFileSize[[jIDChar]])) {
+        if (!unresolved(private$mJobRes[[jIDChar]])) {
+          stop("Future is still running, but no file size determined. This should never happen!",
+            call. = FALSE
+          )
+        }
       }
-
-
-      fileSize <- suppressWarnings(
-        as.integer(headers(ret)[["content-length"]])
-      )
-
-      if (!length(fileSize) || is.na(fileSize)) {
-        stop(sprintf(
-          "Could not determine file size of job results (job id: '%s').",
-          jIDChar
-        ), call. = FALSE)
+      bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[["size"]]
+      if (is.na(bytesDownloaded)) {
+        return(5L)
       }
-
-      private$resultFileSize[[jIDChar]] <- fileSize
-      private$jobResultsFile[[jIDChar]] <- jobResultsFile
-
-      if (isHcJob) {
-        private$fJobRes[[jIDChar]] <- future(
-          {
-            private$getRemoteHcubeResults(resultsPath, pID)
-          },
-          globals = list(
-            private = private, pID = self$getPid(jID),
-            resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")
-          ),
-          packages = c("curl", "httr")
-        )
-      } else {
-        private$fJobRes[[jIDChar]] <- future(
-          {
-            private$readRemoteOutput(self$getPid(jID),
-              workDir = dirname(private$jobResultsFile[[jIDChar]]),
-              resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")
-            )
-          },
-          packages = c("curl", "httr")
-        )
+      if (identical(private$resultFileSize[[jIDChar]], bytesDownloaded)) {
+        return(99L)
       }
-      return(5L)
+      return(max(5L, round(bytesDownloaded / private$resultFileSize[[jIDChar]] * 100)))
+    },
+    readTextEntry = function(...) {
+      return(private$adapter$readTextEntry(...))
+    },
+    getHcubeJobProgress = function(jID) {
+      resp <- private$getJobStatus(self$getPid(jID), isHcJob = TRUE)$resp
+      return(c(resp$finished, resp$job_count, resp$successfully_finished))
     }
-
-    if (!length(private$resultFileSize[[jIDChar]])) {
-      if (length(private$fJobRes[[jIDChar]])) {
-        stop("Future is still running, but no file size determined. This should never happen!",
-          call. = FALSE
-        )
-      }
-    }
-
-    bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[["size"]]
-
-    if (is.na(bytesDownloaded)) {
-      return(5L)
-    }
-
-    if (identical(private$resultFileSize[[jIDChar]], bytesDownloaded)) {
-      return(99L)
-    }
-
-    return(max(5L, round(bytesDownloaded / private$resultFileSize[[jIDChar]] * 100)))
-  },
-  readTextEntry = function(name, jID, chunkNo = 0L, getSize = FALSE) {
-    req(private$remote)
-    return(private$readRemoteTextEntry(name, jID,
-      saveDisk = FALSE,
-      maxSize = private$metadata$maxSizeToRead,
-      chunkNo = chunkNo, getSize = getSize
-    ))
-  },
-  setAppAccessGroups = function(appAccessGroups) {
-    private$appAccessGroups <- appAccessGroups
-    return(self)
-  },
-  getRemoteAccessGroups = function() {
-    stopifnot(private$remote)
-    groupsTmp <- private$validateAPIResponse(GET(
-      url = paste0(
-        private$metadata$url,
-        "/namespaces/",
-        private$metadata$namespace, "/user-groups"
-      ),
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE)
-      ),
-      timeout(10L)
-    ))
-    groupsTmp <- unlist(lapply(groupsTmp, function(accessGroup) {
-      if (!identical(accessGroup$label, tolower(accessGroup$label))) {
-        flog.warn("Remote access group: %s ignored as it contains uppercase letters. Currently, MIRO does not support group labels that include uppercase letters.", accessGroup$label)
-        return(NULL)
-      }
-      if (!accessGroup$label %in% private$appAccessGroups) {
-        flog.debug(
-          "Remote access group: %s ignored as it is not part of the app's access groups.",
-          accessGroup$label
-        )
-        return(NULL)
-      }
-      return(c(
-        paste0("#", accessGroup$label),
-        vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)
-      ))
-    }), use.names = FALSE)
-    groupsTmp <- groupsTmp[!groupsTmp %in% c("#admins", "#users")]
-    groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
-    return(c("#users", if ("#admins" %in% private$db$getUserAccessGroups()) "#admins", groupsTmp))
-  },
-  pingLog = function() {
-    if (inherits(private$process, "process")) {
-      return(private$pingLocalLog())
-    }
-    return(private$updateLog)
-  },
-  pingProcess = function() {
-    if (is.integer(private$status)) {
-      return(private$status)
-    }
-    if (inherits(private$process, "process")) {
-      return(private$pingLocalProcess())
-    }
-    return(private$pingRemoteProcess())
-  },
-  getReactiveLog = function(session) {
-    if (private$metadata$hiddenLogFile &&
-      inherits(private$process, "process")) {
-      return(reactiveFileReaderAppend(
-        500, session,
-        file.path(
-          private$workDir,
-          private$metadata$miroLogFile
-        )
-      ))
-    }
-    return(reactivePoll2(500, session, checkFunc = function() {
-      self$pingLog()
-    }, valueFunc = function() {
-      log <- private$log
-      private$log <- ""
-      return(log)
-    }))
-  },
-  getReactiveStatus = function(session) {
-    return(reactivePoll2(1100, session, checkFunc = function() {
-      self$pingProcess()
-    }, valueFunc = function() {
-      private$status
-    }))
-  },
-  addJobDb = function(pid, sid, tags = NULL, status = NULL, name = NULL, isHcJob = FALSE) {
-    stopifnot(length(pid) == 1)
-
-    if (!is.null(sid)) {
-      stopifnot(length(sid) == 1, is.integer(sid))
-    }
-    if (length(status)) {
-      stopifnot(length(status) == 1L, status %in% JOBSTATUSMAP)
-    } else {
-      status <- JOBSTATUSMAP[["running"]]
-    }
-    if (length(name)) {
-      stopifnot(is.character(name), length(name) == 1L)
-      if (nchar(name) > 255) {
-        name <- substr(name, 0L, 255L)
-      }
-    } else {
-      name <- ""
-    }
-    colNames <- private$dbColNames
-    tabName <- private$dbTabName
-    err <- FALSE
-    tryCatch(
-      {
-        private$db$createJobMeta()
-      },
-      error = function(e) {
-        flog.error(
-          "Problems creating job metadata table. Error message: '%s'.",
-          conditionMessage(e)
-        )
-        err <<- TRUE
-      }
-    )
-    if (err) {
-      return(-1L)
-    }
-    tryCatch(
-      {
-        query <- paste0(
-          "INSERT INTO ",
-          dbQuoteIdentifier(private$conn, tabName),
-          " (", DBI::dbQuoteIdentifier(private$conn, colNames[[2]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[3]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[4]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[5]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[6]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[7]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[9]]), ",",
-          dbQuoteIdentifier(private$conn, colNames[[10]]),
-          ") VALUES (",
-          dbQuoteLiteral(private$conn, private$metadata$uid), ",",
-          status, ",",
-          dbQuoteLiteral(private$conn, as.character(Sys.time(), usetz = TRUE)), ",",
-          dbQuoteLiteral(private$conn, vector2Csv(tags)), ",",
-          dbQuoteLiteral(private$conn, as.character(pid)), ",",
-          if (length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",",
-          dbQuoteLiteral(
-            private$conn,
-            if (isHcJob) {
-              SCODEMAP[["hcube_jobconfig"]]
+  ), private = list(
+    dbJobSchema = NULL,
+    jobList = NULL,
+    jobListInit = FALSE,
+    db = NULL,
+    conn = NULL,
+    adapter = NULL,
+    uid = NULL,
+    mJobRes = list(),
+    jobResultsFile = list(),
+    resultFileSize = list(),
+    getJobStatus = function(pID, isHcJob = FALSE) {
+      return(tryCatch(
+        {
+          statusTmp <- private$adapter$getJobStatus(pID, isHcJob)
+          if (isHcJob) {
+            statusTmp <- statusTmp$results[[1L]]
+            if (identical(statusTmp$finished, statusTmp$job_count)) {
+              status <- JOBSTATUSMAP[["completed"]]
             } else {
-              SCODEMAP[["scen"]]
+              status <- JOBSTATUSMAP[["running"]]
             }
-          ), ",",
-          dbQuoteString(private$conn, name), ")",
-          if (inherits(private$conn, "PqConnection")) {
-            paste0(" RETURNING", dbQuoteIdentifier(private$conn, colNames[[1]]))
+            return(list(status = status, gamsRetCode = NULL, resp = statusTmp))
           }
-        )
-        if (inherits(private$conn, "PqConnection")) {
-          jID <- dbGetQuery(private$conn, SQL(query))[[1L]][1L]
-        } else {
-          private$db$runQuery(query)
-          # need to send second SQL statement because SQLite doesn't support RETURNING function
-          query <- paste0(
-            "SELECT last_insert_rowid() FROM ",
-            dbQuoteIdentifier(private$conn, tabName)
-          )
-          jID <- dbGetQuery(private$conn, SQL(query))[[1]][1L]
-        }
-        return(jID)
-      },
-      error = function(e) {
-        flog.error(
-          "Problems writing job metadata. Error message: '%s'.",
-          conditionMessage(e)
-        )
-      }
-    )
-    return(-1L)
-  }
-), private = list(
-  remote = logical(1L),
-  status = NULL,
-  jID = NULL,
-  jobName = NULL,
-  db = NULL,
-  conn = NULL,
-  jobListInit = FALSE,
-  dbTabName = character(1L),
-  dbColNames = character(1L),
-  sid = NULL,
-  metadata = NULL,
-  apiInfo = NULL,
-  instanceInfo = NULL,
-  quotaWarning = NULL,
-  inputData = NULL,
-  log = character(1L),
-  authHeader = character(1L),
-  process = NULL,
-  workDir = NULL,
-  hardKill = FALSE,
-  updateLog = 0L,
-  streamEntryQueueFinished = FALSE,
-  gamsRet = NULL,
-  waitCnt = integer(1L),
-  wait = integer(1L),
-  pingQueuePosition = FALSE,
-  fRemoteSub = NULL,
-  fJobRes = list(),
-  jobResultsFile = list(),
-  resultFileSize = list(),
-  fRemoteRes = NULL,
-  jobList = NULL,
-  appAccessGroups = character(),
-  runLocal = function() {
-    stopifnot(!is.null(private$inputData))
-    private$status <- NULL
-    private$inputData$writeDisk(private$workDir, fileName = private$metadata$MIROGdxInName)
-
-    if (identical(private$metadata$isGamsPy, TRUE)) {
-      procArgs <- private$metadata$modelGmsName
-      procWd <- private$workDir
-      stderrHandler <- if (private$metadata$hiddenLogFile) NULL else "2>&1"
-      if (length(private$metadata$extraClArgs)) {
-        procArgs <- c(procArgs, private$metadata$extraClArgs)
-      }
-    } else {
-      gamsArgs <- c(
-        if (length(private$metadata$extraClArgs)) private$metadata$extraClArgs,
-        paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs,
-        paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'),
-        "LstTitleLeftAligned=1"
-      )
-      if (private$metadata$saveTraceFile) {
-        gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
-      }
-      pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
-      writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
-      procArgs <- c(private$metadata$modelGmsName, "pf", pfFilePath)
-      procWd <- NULL
-      stderrHandler <- NULL
-    }
-
-    private$process <- process$new(private$metadata$executablePath,
-      args = procArgs,
-      stdout = if (private$metadata$hiddenLogFile) NULL else "|",
-      stderr = stderrHandler,
-      windows_hide_window = TRUE,
-      wd = procWd,
-      env = private$getProcEnv()
-    )
-    return(self)
-  },
-  runRemote = function(hcubeData = NULL, name = NULL, solveOptions = NULL) {
-    stopifnot(!is.null(private$inputData))
-    private$status <- "s"
-    private$inputData$writeDisk(private$workDir,
-      fileName = private$metadata$MIROGdxInName
-    )
-    if (!is.R6(hcubeData)) {
-      private$jobName <- name
-      private$inputData$copyMiroWs(private$workDir, jobName = name)
-    }
-    private$quotaWarning <- NULL
-    private$fRemoteSub <- future(
-      {
-        dataFilesToFetch <- metadata$modelDataFiles
-
-        requestBody <- list(
-          model = metadata$modelId,
-          run = metadata$modelGmsName,
-          arguments = paste0("pf=", metadata$modelName, ".pf"),
-          namespace = metadata$namespace
-        )
-
-        gamsArgs <- c(
-          if (length(metadata$extraClArgs)) metadata$extraClArgs,
-          metadata$clArgs
-        )
-        if (metadata$saveTraceFile) {
-          traceFileName <- "_scenTrc.trc"
-          gamsArgs <- c(gamsArgs, paste0('trace="', traceFileName, '"'), "traceopt=3")
-          if (length(dataFilesToFetch)) {
-            dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
-          }
-        }
-        textEntries <- ""
-        if (is.R6(hcubeData)) {
-          gamsArgs <- c(gamsArgs, paste0(
-            'IDCGDXInput="',
-            metadata$MIROGdxInName, '"'
-          ))
-          requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir),
-            type = "application/json"
-          )
-          filesToInclude <- c(
-            dataFilesToFetch,
-            metadata$textEntries,
-            requestBody$stdout_filename
-          )
-          filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
-        } else {
-          gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-          if (length(metadata$textEntries)) {
-            escapedTextEntries <- vapply(metadata$textEntries,
-              URLencode, character(1L),
-              reserved = TRUE,
-              USE.NAMES = FALSE
-            )
-            textEntries <- paste0("?text_entries=", paste(escapedTextEntries,
-              collapse = "&text_entries="
+          if (identical(statusTmp$status, 10L)) {
+            # job finished successfully
+            return(list(
+              status = JOBSTATUSMAP[["completed"]],
+              gamsRetCode = statusTmp$process_status,
+              resp = statusTmp
             ))
           }
-          if (metadata$hiddenLogFile) {
-            requestBody$stream_entries <- metadata$miroLogFile
+          if (identical(statusTmp$status, 0L)) {
+            # job queued
+            return(list(
+              status = JOBSTATUSMAP[["queued"]],
+              gamsRetCode = NULL,
+              resp = statusTmp
+            ))
           }
-          requestBody$stdout_filename <- paste0(metadata$modelNameRaw, ".log")
-          filesToInclude <- c(
-            dataFilesToFetch,
-            metadata$textEntries,
-            requestBody$stdout_filename,
-            "_miro_ws_/*"
-          )
-        }
-        pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
-        writeLines(c(pfFileContent, gamsArgs), pfFilePath)
-
-        requestBody$inex_file <- upload_file(
-          inputData$
-            addInexFile(
-            workDir,
-            filesToInclude
-          ),
-          type = "application/json"
-        )
-        requestBody$data <- upload_file(
-          inputData$
-            addFilePaths(pfFilePath)$
-            compress(),
-          type = "application/zip"
-        )
-
-        if (identical(metadata$useRegistered, FALSE)) {
-          requestBody$model_data <- upload_file(metadata[["modelData"]],
-            type = "application/zip"
-          )
-        }
-        if (length(solveOptions) && length(solveOptions$selectedInstance)) {
-          requestBody$labels <- paste0("instance=", solveOptions$selectedInstance)
-        }
-        ret <- POST(paste0(metadata$url, if (is.R6(hcubeData)) "/hypercube/" else "/jobs/", textEntries),
-          encode = "multipart",
-          body = requestBody,
-          add_headers(
-            Authorization = authHeader,
-            Timestamp = as.character(Sys.time(),
-              usetz = TRUE
-            )
-          ),
-          timeout(120L)
-        )
-        jobPostStatusCode <- status_code(ret)
-        jobPostResponse <- tryCatch(content(ret,
-          type = "application/json",
-          encoding = "utf-8"
-        ), error = function(e) {
-          list(message = sprintf("No valid UTF-8 encoded JSON received. Error message: %s", conditionMessage(e)))
-        })
-        queuePosition <- NULL
-        if (identical(jobPostStatusCode, 201L)) {
-          ret <- GET(
-            paste0(
-              metadata$url,
-              if (is.R6(hcubeData)) paste0("/hypercube/?hypercube_token=", jobPostResponse$hypercube_token) else paste0("/jobs/", jobPostResponse$token)
-            ),
-            add_headers(
-              Authorization = authHeader,
-              Timestamp = as.character(Sys.time(),
-                usetz = TRUE
-              ),
-              `X-Fields` = "queue_position"
-            ),
-            timeout(10L)
-          )
-          if (identical(status_code(ret), 200L)) {
-            try({
-              queuePosition <- content(ret,
-                type = "application/json",
-                encoding = "utf-8"
-              )$queue_position
-              if (identical(length(queuePosition), 1L) &&
-                is.integer(queuePosition) && queuePosition > 0L) {
-                queuePosition <- queuePosition
-              }
-            })
+          if (statusTmp$status %in% c(-3, -1)) {
+            # job cancelled or corrupted
+            return(list(
+              status = JOBSTATUSMAP[["corrupted"]],
+              gamsRetCode = NULL,
+              resp = statusTmp
+            ))
           }
-        }
-        return(list(
-          statusCode = jobPostStatusCode,
-          hcJob = is.R6(hcubeData),
-          response = jobPostResponse,
-          queuePosition = queuePosition
-        ))
-      },
-      globals = list(
-        metadata = private$metadata, workDir = private$workDir,
-        pfFileContent = private$inputData$getClArgs(),
-        inputData = private$inputData,
-        authHeader = private$authHeader,
-        gmsFilePath = gmsFilePath,
-        isWindows = isWindows, hcubeData = hcubeData, solveOptions = solveOptions
-      ),
-      packages = c("zip", "curl", "httr", "R6", "readr", "jsonlite", "digest")
-    )
-    return(self)
-  },
-  readRemoteTextEntry = function(textEntry, jID = NULL, saveDisk = TRUE, maxSize = NULL,
-                                 workDir = private$workDir, chunkNo = 0L, getSize = FALSE) {
-    if (is.null(jID)) {
-      jID <- private$process
-    }
-    if (!is.null(maxSize)) {
-      ret <- HEAD(
-        paste0(
-          private$metadata$url, "/jobs/", jID, "/text-entry/",
-          URLencode(textEntry, reserved = TRUE)
-        ),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(10L)
-      )
-
-      if (!identical(status_code(ret), 200L)) {
-        return(status_code(ret))
-      }
-      teLength <- tryCatch(
-        {
-          suppressWarnings(as.numeric(headers(ret)[["char_length"]]))
+          return(list(
+            status = JOBSTATUSMAP[["running"]],
+            gamsRetCode = NULL,
+            resp = statusTmp
+          ))
         },
-        error = function(e) {
-          return(404L)
-        }
-      )
-      if (identical(teLength, 404L) || is.na(teLength)) {
-        return(404L)
-      }
-      startPos <- maxSize * chunkNo + 1L
-    } else {
-      teLength <- NULL
-    }
-
-    requestURL <- tryCatch(paste0(
-      private$metadata$url, "/jobs/", jID, "/text-entry/",
-      URLencode(textEntry, reserved = TRUE),
-      if (!is.null(teLength)) {
-        sprintf(
-          "?start_position=%d&length=%d",
-          startPos, min(teLength - startPos, maxSize)
-        )
-      }
-    ), error = function(e) {
-      if (!endsWith(conditionMessage(e), "for numeric objects")) {
-        flog.warn(
-          "Unexpected error while building request URL to fetch text entry. Error message: %s",
-          conditionMessage(e)
-        )
-      }
-      return(413L)
-    })
-
-    if (identical(requestURL, 413L)) {
-      return(413L)
-    }
-
-    ret <- GET(
-      requestURL,
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE)
-      ),
-      timeout(10L)
-    )
-
-    if (identical(status_code(ret), 200L)) {
-      if (saveDisk) {
-        entryContent <- content(ret, encoding = "utf-8")$entry_value
-        if (!length(entryContent)) {
-          entryContent <- ""
-        }
-        writeLines(
-          entryContent,
-          file.path(workDir, textEntry)
-        )
-        return(200L)
-      }
-      if (getSize) {
-        return(list(
-          content = content(ret, encoding = "utf-8")$entry_value,
-          chunkNo = ceiling(teLength / maxSize)
-        ))
-      }
-      return(content(ret, encoding = "utf-8")$entry_value)
-    }
-    return(status_code(ret))
-  },
-  pingLocalProcess = function() {
-    exitStatus <- private$process$get_exit_status()
-
-    if (length(exitStatus)) {
-      private$gamsRet <- exitStatus
-      if (private$metadata$hiddenLogFile) {
-        private$status <- exitStatus
-      }
-    }
-    return(private$status)
-  },
-  pingLocalLog = function() {
-    if (!length(private$process)) {
-      return(private$updateLog)
-    }
-    private$log <- tryCatch(
-      paste0(private$log, private$process$read_output()),
-      error = function(e) {
-        return(private$log)
-      }
-    )
-    if (!identical(private$log, "")) {
-      private$updateLog <- private$updateLog + 1L
-    }
-    if (length(private$gamsRet)) {
-      private$status <- private$gamsRet
-    }
-    return(private$updateLog)
-  },
-  readStreamEntry = function(jID, name) {
-    tryCatch(
-      {
-        return(private$validateAPIResponse(DELETE(
-          paste0(
-            private$metadata$url, "/jobs/", jID, "/stream-entry/",
-            name
-          ),
-          add_headers(
-            Authorization = private$authHeader,
-            Timestamp = as.character(Sys.time(), usetz = TRUE)
-          ),
-          timeout(10L)
-        )))
-      },
-      error = function(e) {
-        statusCode <- conditionMessage(e)
-        if (identical(statusCode, "308") || identical(statusCode, "410")) {
-          return(list(entry_value = "", queue_finished = TRUE))
-        } else if (identical(statusCode, "404")) {
-          flog.debug("Stream entry not found.")
-        } else {
-          flog.warn("Problems fetching stream entry. Return code: '%s'.", statusCode)
-        }
-        return(list(entry_value = "", queue_finished = FALSE))
-      }
-    )
-  },
-  pingRemoteProcess = function() {
-    if (private$wait > 0L) {
-      private$wait <- private$wait - 1L
-      return(private$status)
-    }
-    if (length(private$fRemoteSub)) {
-      if (resolved(private$fRemoteSub)) {
-        noError <- TRUE
-        tryCatch(
-          {
-            remoteSubValue <- value(private$fRemoteSub)
-          },
-          error = function(e) {
-            errMsg <- conditionMessage(e)
-            flog.error(errMsg)
-            if (startsWith(errMsg, "Failed to connect") || startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout was")) {
-              private$status <- -404L
-            } else {
-              private$status <- -500L
-            }
-            noError <<- FALSE
-          }
-        )
-        if (!noError) {
-          return(private$status)
-        }
-        private$wait <- 0L
-        private$waitCnt <- 0L
-        private$pingQueuePosition <- FALSE
-        if (identical(remoteSubValue$statusCode, 201L)) {
-          if (identical(remoteSubValue$hcJob, TRUE)) {
-            tokenTmp <- as.character(remoteSubValue$response$hypercube_token)[1]
+        error = function(err) {
+          errMsg <- conditionMessage(err)
+          if (errMsg == 405L) {
+            return(list(
+              status = JOBSTATUSMAP[["corrupted(noProcess)"]],
+              gamsRetCode = NULL,
+              resp = NULL
+            ))
+          } else if (errMsg == 404L) {
+            return(list(
+              status = JOBSTATUSMAP[["corrupted(noProcess)"]],
+              gamsRetCode = NULL,
+              resp = NULL
+            ))
+          } else if (errMsg == -404L) {
+            stop(404L, call. = FALSE)
           } else {
-            tokenTmp <- as.character(remoteSubValue$response$token)[1]
+            stop(errMsg, call. = FALSE)
           }
-          if (!length(tokenTmp)) {
-            flog.error(
-              "Invalid response received from Engine server when posting job. Reponse: %s",
-              remoteSubValue$response
-            )
-            private$status <- -500L
-            private$fRemoteSub <- NULL
-            return(private$status)
-          }
-          private$process <- tokenTmp
-          if (length(remoteSubValue$response$quota_warning)) {
-            private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$quota_warning)
-            private$quotaWarning$error <- FALSE
-          }
-          if (length(private$db)) {
-            tryCatch(
-              {
-                private$jID <- self$addJobDb(private$process, private$sid,
-                  name = private$jobName
-                )
-              },
-              error = function(e) {
-                flog.warn(
-                  "Could not add job to database. Error message; '%s'.",
-                  conditionMessage(e)
-                )
-              }
-            )
-          }
-          if (is.null(remoteSubValue$queuePosition)) {
-            private$status <- "q"
-          } else {
-            private$status <- paste0("q", remoteSubValue$queuePosition)
-            if (remoteSubValue$queuePosition > 1L) {
-              private$pingQueuePosition <- TRUE
-            }
-          }
-        } else {
-          flog.info(
-            "Could not execute model remotely. Status code: %s. Error message: %s",
-            remoteSubValue$statusCode, remoteSubValue$response$message
-          )
-          if (identical(remoteSubValue$statusCode, 402L) && length(remoteSubValue$response$exceeded_quotas)) {
-            private$quotaWarning <- calcRemainingQuota(remoteSubValue$response$exceeded_quotas)
-            private$quotaWarning$error <- TRUE
-          }
-          private$status <- -remoteSubValue$statusCode
         }
-        private$fRemoteSub <- NULL
-      } else {
-        private$wait <- bitwShiftL(2L, private$waitCnt)
-        if (private$waitCnt < 10L) {
-          private$waitCnt <- private$waitCnt + 1L
-        } else {
-          flog.warn("Pinging remote process timed out (error: 126318).")
-          private$status <- -404L
-        }
-      }
-      return(private$status)
-    }
-    if (length(private$gamsRet)) {
-      if (resolved(private$fRemoteRes)) {
-        resVal <- tryCatch(
-          {
-            value(private$fRemoteRes)
-          },
-          error = function(err) {
-            flog.error("Problems resolving fRemoteRes promise. Error message: %s", conditionMessage(err))
-            return(-500L)
-          }
-        )
-        if (identical(resVal, 0L)) {
-          private$status <- private$gamsRet
-        } else if (identical(resVal, -100L)) {
-          flog.error("Fetching results timed out.")
-          private$status <- -100L
-        } else {
-          flog.error("Invalid value returned while resolving model results future: %s", resVal)
-          private$status <- -500L
-        }
-      } else {
-        private$wait <- bitwShiftL(2L, private$waitCnt)
-        if (private$waitCnt < 10L) {
-          private$waitCnt <- private$waitCnt + 1L
-        } else {
-          flog.warn("Pinging remote process timed out (error: 7126360).")
-          private$status <- -404L
-        }
-      }
-      return(private$status)
-    }
-    tryCatch(
-      {
-        ret <- DELETE(
-          paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"),
-          add_headers(
-            Authorization = private$authHeader,
-            Timestamp = as.character(Sys.time(), usetz = TRUE)
-          ),
-          timeout(10L)
-        )
-        statusCode <- status_code(ret)
-      },
-      error = function(e) {
-        errMsgTmp <- conditionMessage(e)
-        if (identical(errMsgTmp, "Operation was aborted by an application callback")) {
-          flog.debug("Problems reading log from remote executor. Error message: %s", errMsgTmp)
-        } else {
-          flog.warn("Problems reading log from remote executor. Error message: %s", errMsgTmp)
-        }
-        statusCode <<- 403L
-      }
-    )
-
-    if (identical(statusCode, 200L)) {
-      responseContent <- tryCatch(
-        {
-          content(ret,
-            type = "application/json",
-            encoding = "utf-8"
-          )
-        },
-        error = function(e) {
-          flog.info(
-            "Invalid JSON reponse received from server: %s",
-            conditionMessage(e)
-          )
-          private$status <- -404L
-          return(-1L)
-        }
-      )
-      if (identical(responseContent, -1L)) {
-        return(private$status)
-      }
-      if (private$metadata$hiddenLogFile) {
-        if (private$streamEntryQueueFinished) {
-          if (identical(responseContent$queue_finished, TRUE)) {
-            private$gamsRet <- responseContent$gams_return_code
-            private$wait <- 0L
-            private$waitCnt <- 0L
-            private$pingQueuePosition <- FALSE
-            private$fRemoteRes <- future(
-              {
-                private$readRemoteOutput()
-              },
-              packages = c("curl", "httr")
-            )
-            private$status <- "d"
-          } else {
-            private$status <- NULL
-          }
-          return(private$status)
-        }
-        responseContentStream <- private$readStreamEntry(
-          private$process,
-          private$metadata$miroLogFile
-        )
-        private$streamEntryQueueFinished <- identical(responseContentStream$queue_finished, TRUE)
-        private$log <- responseContentStream$entry_value
-      } else {
-        private$log <- responseContent$message
-      }
-      if (identical(responseContent$queue_finished, TRUE)) {
-        private$gamsRet <- responseContent$gams_return_code
-        private$wait <- 0L
-        private$waitCnt <- 0L
-        private$pingQueuePosition <- FALSE
-        private$fRemoteRes <- future(
-          {
-            private$readRemoteOutput()
-          },
-          packages = c("curl", "httr")
-        )
-        private$status <- "d"
-      } else {
-        private$status <- NULL
-      }
-      if (!identical(private$log, "")) {
-        private$updateLog <- private$updateLog + 1L
-      }
-      return(private$status)
-    }
-    if (identical(statusCode, 308L) || identical(statusCode, 410L)) {
-      # job finished, get full log
-      ret <- private$getRemoteStatus(private$process)
-      gamsRetCode <- content(ret)$process_status
-
-      if (is.null(gamsRetCode)) {
-        flog.error("Engine returned %d return code but process_status was NULL.", statusCode)
-        private$status <- -500L
-      } else {
-        private$status <- gamsRetCode
-      }
-      return(private$status)
-    }
-    if (identical(statusCode, 403L)) {
-      private$wait <- min(bitwShiftL(1L, private$waitCnt), 10L)
-      private$waitCnt <- private$waitCnt + 1L
-      if (private$pingQueuePosition) {
-        ret <- GET(
-          paste0(
-            private$metadata$url,
-            "/jobs/", private$process
-          ),
-          add_headers(
-            Authorization = private$authHeader,
-            Timestamp = as.character(Sys.time(), usetz = TRUE),
-            `X-Fields` = "queue_position"
-          ),
-          timeout(10L)
-        )
-        if (identical(status_code(ret), 200L)) {
-          tryCatch(
-            {
-              queuePosition <- content(ret,
-                type = "application/json",
-                encoding = "utf-8"
-              )$queue_position
-              if (identical(length(queuePosition), 1L) &&
-                is.integer(queuePosition)) {
-                if (queuePosition <= 1L) {
-                  private$pingQueuePosition <- FALSE
-                }
-                if (queuePosition > 0L) {
-                  private$status <- paste0("q", queuePosition)
-                }
-              } else {
-                flog.warn("Invalid response returned when fetching queue position.")
-                private$status <- "q"
-                private$pingQueuePosition <- FALSE
-              }
-            },
-            error = function(e) {
-              flog.info(
-                "Invalid JSON reponse received from server when fetching queue position: %s",
-                conditionMessage(e)
-              )
-              private$status <- "q"
-              private$pingQueuePosition <- FALSE
-            }
-          )
-        } else {
-          flog.warn("Fetching queue position returned status code: %s", status_code(ret))
-          private$status <- "q"
-          private$pingQueuePosition <- FALSE
-        }
-      }
-      return(private$status)
-    }
-    if (identical(statusCode, 410L)) {
-      # job canceled while queued.
-      private$status <- -9L
-    } else {
-      private$status <- -500L
-    }
-    return(private$status)
-  },
-  readRemoteOutput = function(jID = NULL, workDir = NULL, resultsPath = NULL) {
-    if (is.null(jID)) {
-      jID <- private$process
-    }
-    if (is.null(workDir)) {
-      workDir <- private$workDir
-    }
-    if (!length(jID)) {
-      return("Process not started")
-    }
-    if (!length(resultsPath)) {
-      resultsPath <- tempfile(pattern = "res_", fileext = ".zip")
-    }
-    timeout <- FALSE
-    errMsg <- NULL
-    tryCatch(
-      ret <- GET(
-        url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
-        write_disk(resultsPath),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(36000)
-      ),
-      error = function(e) {
-        errMsg <<- conditionMessage(e)
-        if (startsWith(errMsg, "Timeout was")) {
-          timeout <<- TRUE
-        }
-      }
-    )
-    if (timeout) {
-      unlink(resultsPath)
-      return(-100L)
-    } else if (!is.null(errMsg)) {
-      unlink(resultsPath)
-      return(errMsg)
-    }
-    private$removeJobResults(jID, isHcJob = FALSE)
-
-    if (identical(status_code(ret), 200L)) {
-      tryCatch(
-        unzip(resultsPath, exdir = workDir),
-        error = function(e) {
-          contentPreview <- tryCatch(
-            paste(
-              as.character(readBin(resultsPath,
-                what = "raw", n = 20L
-              )),
-              collapse = " "
-            ),
-            error = function(e2) {
-              return(conditionMessage(e2))
-            }
-          )
-          errMsg <<- sprintf(
-            "Problems extracting results archive. Error message: %s. Preview of content received: %s.",
-            conditionMessage(e), contentPreview
-          )
-        }
-      )
-      if (!is.null(errMsg)) {
-        unlink(resultsPath)
-        return(errMsg)
-      }
-    } else {
-      unlink(resultsPath)
-      return(sprintf("Could not download job results. Return code: %s.", status_code(ret)))
-    }
-    unlink(resultsPath)
-    return(0L)
-  },
-  getRemoteStatus = function(jID) {
-    GET(
-      paste0(private$metadata$url, "/jobs/", jID),
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE),
-        "X-Fields" = "process_status,status"
-      ),
-      timeout(10L)
-    )
-  },
-  interruptLocal = function(hardKill = FALSE, process = NULL) {
-    errMsg <- NULL
-
-    if (is.R6(process)) {
-      tryCatch(
-        {
-          if (hardKill) {
-            process$kill_tree()
-          } else if (isWindows()) {
-            if (!identical(private$metadata$isGamsPy, TRUE) && "miroUtil" %in% installedPackages) {
-              miroUtil::windowsInterruptGAMS(process$get_pid())
-            } else {
-              process$interrupt()
-            }
-          } else {
-            process$signal(tools::SIGINT)
-          }
-        },
-        error = function(e) {
-          errMsg <<- "error"
-          pID <<- process$get_pid()
-        }
-      )
-    } else {
-      errMsg <- "External process"
-      pID <- suppressWarnings(as.integer(process))
-
-      if (is.na(pID)) {
-        flog.error("Invalid process id: '%s'. Could not interrupt job", pID)
-        return(0L)
-      }
-      if (!pidExists(pID)) {
-        return(0L)
-      }
-    }
-    if (!is.null(errMsg)) {
-      errMsg <- NULL
-      flog.info("Interrupting process with pid: '%s'.", pID)
-      if (private$metadata$serverOS == "windows") {
-        tryCatch(
-          {
-            processx::run(
-              command = "taskkill", args = c(
-                if (hardKill) "/F",
-                "/PID",
-                pID,
-                "/T"
-              ),
-              windows_hide_window = TRUE, timeout = 10L
-            )
-          },
-          error = function(e) {
-            flog.error(
-              "Problems interrupting process with pid: %s. Error message: '%s'.",
-              pID, conditionMessage(e)
-            )
-          }
-        )
-      } else if (private$metadata$serverOS %in% c("linux", "osx")) {
-        tryCatch(
-          {
-            processx::run(
-              command = "kill",
-              args = c(
-                if (hardKill) "-SIGKILL" else "-SIGINT",
-                -pID
-              ), timeout = 10L
-            )
-          },
-          error = function(e) {
-            flog.error(
-              "Problems interrupting process with pid: %s. Error message: '%s'.",
-              pID, conditionMessage(e)
-            )
-          }
-        )
-      } else {
-        flog.error("Operating system: '%s' not supported.", private$metadata$serverOS)
-      }
-    }
-    return(0L)
-  },
-  interruptRemote = function(hardKill = FALSE, process = NULL, isHcJob = FALSE) {
-    if (!length(process)) {
-      return("Process not started")
-    }
-    private$validateAPIResponse(DELETE(
-      url = paste0(
-        private$metadata$url,
-        if (isHcJob) "/hypercube/" else "/jobs/", process
-      ),
-      body = list(hard_kill = hardKill),
-      add_headers(
-        Authorization = private$authHeader,
-        Timestamp = as.character(Sys.time(), usetz = TRUE)
-      ),
-      timeout(10L)
-    ))
-    return(0L)
-  },
-  removeJobResults = function(jID, isHcJob = FALSE) {
-    tryCatch(
-      private$validateAPIResponse(
-        DELETE(
-          url = paste0(
-            private$metadata$url,
-            if (isHcJob) "/hypercube/" else "/jobs/",
-            jID, "/result"
-          ),
-          add_headers(
-            Authorization = private$authHeader,
-            Timestamp = as.character(Sys.time(), usetz = TRUE)
-          ),
-          timeout(10L)
-        )
-      ),
-      error = function(e) {
-        warning(sprintf(
-          "Problems removing results of job: '%s'. Error message: '%s'.",
-          jID, conditionMessage(e)
-        ), call. = FALSE)
-      }
-    )
-    return(invisible(self))
-  },
-  getHcubeJobProgressRemote = function(jID) {
-    jobProgress <- private$validateAPIResponse(
-      GET(
-        url = paste0(private$metadata$url, "/hypercube/?hypercube_token=", self$getPid(jID)),
-        add_headers(
-          `X-Fields` = "finished,job_count,successfully_finished",
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(10L)
-      )
-    )$results
-    if (length(jobProgress) < 1L) {
-      stop(404L)
-    }
-    jobProgress <- jobProgress[[1]]
-    return(c(jobProgress$finished, jobProgress$job_count, jobProgress$successfully_finished))
-  },
-  getHcubeJobStatusRemote = function(pID, jID) {
-    jobProgress <- tryCatch(private$getHcubeJobProgressRemote(jID),
-      error = function(e) {
-        errMsg <- conditionMessage(e)
-        if (errMsg == 405L) {
-          return(-405L)
-        } else if (errMsg == 404L) {
-          return(-404L)
-        } else if (errMsg == -404L) {
-          stop(404L, call. = FALSE)
-        } else {
-          stop(errMsg, call. = FALSE)
-        }
-      }
-    )
-    if (!length(jobProgress)) {
-      stop("Problems determining job status. If this problem persists, please contact a system administrator!",
-        call. = FALSE
-      )
-    }
-    if (length(jobProgress) == 1L &&
-      jobProgress %in% c(-404L, -405L)) {
-      status <- JOBSTATUSMAP[["corrupted(noProcess)"]]
-    } else if (length(jobProgress) >= 2L &&
-      identical(jobProgress[[1L]], jobProgress[[2L]])) {
-      status <- JOBSTATUSMAP[["completed"]]
-    } else {
-      status <- JOBSTATUSMAP[["running"]]
-    }
-    return(list(status = status, gamsRetCode = NULL))
-  },
-  getRemoteHcubeResults = function(resultsPath, pID) {
-    return(private$validateAPIResponse(
-      GET(
-        url = paste0(private$metadata$url, "/hypercube/", pID, "/result"),
-        write_disk(resultsPath, overwrite = TRUE),
-        add_headers(
-          Authorization = private$authHeader,
-          Timestamp = as.character(Sys.time(), usetz = TRUE)
-        ),
-        timeout(36000)
-      )
-    ))
-  },
-  isEmptyString = function(string) {
-    if (!length(string) || identical(string, "")) {
-      return(TRUE)
-    }
-    return(FALSE)
-  },
-  buildAuthHeader = function(useTokenAuth = FALSE) {
-    if (useTokenAuth) {
-      return(paste0("Bearer ", private$metadata$password))
-    }
-    return(paste0(
-      "Basic ",
-      base64_encode(charToRaw(
-        paste0(
-          private$metadata$username,
-          ":", private$metadata$password
-        )
       ))
-    ))
-  },
-  initRun = function(sid) {
-    private$sid <- sid
-    private$log <- character(1L)
-    private$streamEntryQueueFinished <- FALSE
-    private$gamsRet <- NULL
-    private$fRemoteRes <- NULL
-    private$fRemoteSub <- NULL
-    private$jID <- NULL
-    private$hardKill <- FALSE
-    private$updateLog <- 0L
-    private$wait <- 0L
-    private$waitCnt <- 0L
-    private$pingQueuePosition <- FALSE
+    }
+  )
+)
 
-    return(invisible(self))
-  },
-  getJobStatus = function(pID, jID = NULL, isHcJob = FALSE) {
-    if (isHcJob) {
-      return(private$getHcubeJobStatus(pID, jID))
-    }
-    stopifnot(private$remote)
-    return(tryCatch(
-      {
-        statusInfo <- private$validateAPIResponse(
-          private$getRemoteStatus(pID)
-        )
-        if (identical(statusInfo$status, 10L)) {
-          # job finished successfully
-          return(list(
-            status = JOBSTATUSMAP[["completed"]],
-            gamsRetCode = statusInfo$process_status
-          ))
-        }
-        if (identical(statusInfo$status, 0L)) {
-          # job queued
-          return(list(
-            status = JOBSTATUSMAP[["queued"]],
-            gamsRetCode = NULL
-          ))
-        }
-        if (statusInfo$status %in% c(-3, -1)) {
-          # job cancelled or corrupted
-          return(list(
-            status = JOBSTATUSMAP[["corrupted"]],
-            gamsRetCode = NULL
-          ))
-        }
-        return(list(
-          status = JOBSTATUSMAP[["running"]],
-          gamsRetCode = NULL
-        ))
-      },
-      error = function(e) {
-        errMsg <- conditionMessage(e)
-        if (errMsg == 405L) {
-          return(list(
-            status = JOBSTATUSMAP[["corrupted(noProcess)"]],
-            gamsRetCode = NULL
-          ))
-        } else if (errMsg == 404L) {
-          return(list(
-            status = JOBSTATUSMAP[["corrupted(noProcess)"]],
-            gamsRetCode = NULL
-          ))
-        } else if (errMsg == -404L) {
-          stop(404L, call. = FALSE)
-        } else {
-          stop(errMsg, call. = FALSE)
-        }
-      }
-    ))
-  },
-  getHcubeJobStatus = function(pID, jID) {
-    return(private$getHcubeJobStatusRemote(pID, jID))
-  },
-  validateAPIResponse = function(response) {
-    if (status_code(response) >= 300L) {
-      stop(status_code(response),
-        call. = FALSE
-      )
-    }
-    ret <- tryCatch(
-      {
-        content(response,
-          type = "application/json",
-          encoding = "utf-8"
-        )
-      },
-      error = function(e) {
-        stop(-404L, call. = FALSE)
-      }
-    )
 
-    return(ret)
-  },
-  resolveRemoteURL = function(url) {
-    url <- trimws(url, "right", whitespace = "/")
-    if (startsWith(url, "https://")) {
-      return(url)
-    }
-    if (grepl("(http://)?localhost([:/].*)?$", url)) {
-      if (startsWith(url, "http://")) {
-        return(url)
+Worker <- R6Class("Worker",
+  public = list(
+    asyncJobManager = NULL,
+    initialize = function(adapter, db, dbJobSchema, metadata = NULL) {
+      private$adapter <- adapter
+      private$metadata <- metadata
+      if (adapter$supportsAsync) {
+        self$asyncJobManager <- AsyncJobManager$new(dbJobSchema, db, adapter)
       }
-      return(paste0("http://", url))
-    } else if (grepl("://", url, fixed = TRUE)) {
-      stop(426, call. = FALSE)
+      return(invisible(self))
+    },
+    run = function(solveOptions = NULL, name = NULL, tags = NULL) {
+      private$jID <- NULL
+      private$hardKill <- FALSE
+      if (private$adapter$supportsAsync) {
+        private$jobInfo <- list(name = name, tags = tags, sid = private$adapter$inputData$getSid())
+        private$adapter$run(solveOptions, stri_sub(name, 1, 255))
+      } else {
+        procId <- private$adapter$run(solveOptions, stri_sub(name, 1, 255))
+        flog.info("New job with process ID: %s submitted.", procId)
+      }
+      return(invisible(self))
+    },
+    runAsync = function(solveOptions = NULL, name = NULL, tags = NULL) {
+      stopifnot(private$adapter$supportsAsync)
+      subResp <- private$adapter$runAsync(solveOptions, stri_sub(name, 1, 255))[]
+      if (is_mirai_error(subResp)) {
+        stop(subResp$message, call. = FALSE)
+      }
+      if (!identical(subResp$status_code, 201L)) {
+        flog.warn("Problems submitting job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        stop(subResp$status_code, call. = FALSE)
+      }
+      if (length(subResp$response$quota_warning)) {
+        quotaWarning <- calcRemainingQuota(subResp$response$quota_warning)
+        quotaWarning$error <- FALSE
+      } else {
+        quotaWarning <- NULL
+      }
+      procId <- subResp$response$token
+      jobId <- self$asyncJobManager$addJob(pid = procId, sid = private$adapter$inputData$getSid(), name = name, tags = tags, isHcJob = FALSE)
+      flog.info("New asynchronous job with token: %s and job ID: %d submitted successfully.", procId, jobId)
+      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning))
+    },
+    runHypercube = function(solveOptions = NULL, dynamicPar = NULL, sid = NULL, tags = NULL) {
+      stopifnot(private$adapter$supportsAsync)
+      if (length(tags)) {
+        jobName <- stri_sub(paste(tags, collapse = ","), 1, 255)
+      } else {
+        jobName <- NULL
+      }
+      subResp <- private$adapter$runHypercube(dynamicPar, solveOptions, jobName)[]
+      if (is_mirai_error(subResp)) {
+        stop(subResp$message, call. = FALSE)
+      }
+      if (!identical(subResp$status_code, 201L)) {
+        flog.warn("Problems submitting Hypercube job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        stop(subResp$status_code, call. = FALSE)
+      }
+      if (length(subResp$response$quota_warning)) {
+        quotaWarning <- calcRemainingQuota(subResp$response$quota_warning)
+        quotaWarning$error <- FALSE
+      } else {
+        quotaWarning <- NULL
+      }
+      procId <- subResp$response$hypercube_token
+      jobId <- self$asyncJobManager$addJob(pid = procId, sid = private$adapter$inputData$getSid(), tags = tags, isHcJob = TRUE)
+      flog.info("New Hypercube job with token: %s and job ID: %s submitted successfully.", procId, jobId)
+      return(list(pid = procId, jid = jobId, quotaWarning = quotaWarning))
+    },
+    interrupt = function() {
+      if (private$hardKill) {
+        hardKill <- TRUE
+      } else {
+        hardKill <- FALSE
+        private$hardKill <- TRUE
+      }
+      return(private$adapter$interrupt(hardKill))
+    },
+    getReactiveLog = function(session) {
+      if (!is.null(private$logObs)) {
+        private$logObs$destroy()
+      }
+      reactiveLogObsTmp <- reactivePoll2(private$adapter$pollInterval, session, checkFunc = function() {
+        if (is.integer(private$adapter$processStatus)) {
+          private$logObs$destroy()
+        }
+        private$adapter$pingLog()
+      }, valueFunc = function() {
+        return(private$adapter$log)
+      })
+      private$logObs <- reactiveLogObsTmp$obs
+      return(reactiveLogObsTmp$re)
+    },
+    getReactiveStatus = function(session) {
+      if (!is.null(private$statusObs)) {
+        private$statusObs$destroy()
+      }
+      reactiveStatusTmp <- reactivePoll2(private$adapter$pollInterval, session, checkFunc = function() {
+        if (is.integer(private$adapter$processStatus)) {
+          private$statusObs$destroy()
+        }
+        private$adapter$pingProcess()
+      }, valueFunc = function() {
+        procStat <- private$adapter$processStatus
+        if (length(private$jobInfo) && length(private$adapter$processId)) {
+          private$jID <- self$asyncJobManager$addJob(pid = private$adapter$processId, sid = private$jobInfo$sid, name = private$jobInfo$name, tags = private$jobInfo$tags, isHcJob = FALSE)
+          flog.info("New synchronous job with token: %s and job ID: %d submitted successfully.", private$adapter$processId, private$jID)
+          private$jobInfo <- NULL
+        }
+        return(procStat)
+      })
+      private$statusObs <- reactiveStatusTmp$obs
+      return(reactiveStatusTmp$re)
+    },
+    getQuotaWarning = function() {
+      return(private$adapter$quotaWarning)
+    },
+    updateJobStatus = function(newStatus) {
+      return(self$asyncJobManager$updateJobStatus(newStatus, jID = private$jID, pID = private$adapter$processId))
     }
-    return(paste0("https://", url))
-  },
-  getProcEnv = function() {
-    if (identical(private$metadata$isGamsPy, TRUE)) {
-      procEnv <- Sys.getenv()
-      procEnv[["GAMS_IDC_GDX_INPUT"]] <- file.path(private$workDir, private$metadata$MIROGdxInName)
-      procEnv[["GAMS_IDC_GDX_OUTPUT"]] <- file.path(private$workDir, private$metadata$MIROGdxOutName)
-      return(procEnv)
+  ),
+  active = list(
+    inputData = function(newInputData) {
+      if (missing(newInputData)) {
+        return(private$adapter$inputData)
+      }
+      private$adapter$inputData <- newInputData
     }
-    # workaround since GAMS31 has a bug on Linux that causes an infinite loop in case
-    # XDG_DATA_DIRS or XDG_CONFIG_DIRS has more than 8 entries
-    procEnv <- NULL
-    if (identical(Sys.info()[["sysname"]], "Linux")) {
-      procEnv <- Sys.getenv()
-      XDG_DATA_DIRS <- strsplit(Sys.getenv("XDG_DATA_DIRS"), ":", fixed = TRUE)[[1L]]
-      procEnv[["XDG_DATA_DIRS"]] <- paste(XDG_DATA_DIRS[seq_len(min(length(XDG_DATA_DIRS), 7L))],
-        collapse = ":"
-      )
-    }
-    return(procEnv)
-  }
-))
+  ),
+  private = list(
+    metadata = NULL,
+    jID = NULL,
+    jobInfo = NULL,
+    adapter = NULL,
+    statusObs = NULL,
+    logObs = NULL,
+    jobList = NULL,
+    hardKill = FALSE
+  )
+)

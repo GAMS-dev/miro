@@ -55,6 +55,7 @@ filesToInclude <- c(
   "./components/load_scen_data.R", "./components/localfileio.R",
   "./components/xlsio.R", "./components/csvio.R",
   "./components/input_data_instance.R", "./components/worker.R",
+  "./components/worker_adapter.R",
   "./components/custom_dataio.R", "./components/scen_export.R",
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
@@ -91,8 +92,6 @@ if (is.null(errMsg)) {
   })
   # set maximum upload size
   options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
-  # disable check for global size in futures
-  options(future.globals.maxSize = Inf)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]
@@ -338,7 +337,6 @@ if (is.null(errMsg)) {
         modelInTemplate[[length(modelInTemplate)]] <- scalarsInTemplate
         scenDataTemplate <- c(scenDataTemplate, list(scalarsInTemplate))
       }
-      rm(dbSchema)
     }
     if (!exists("confFileVersion")) {
       # legacy app (<2.8.0), need to convert some configuration
@@ -920,7 +918,7 @@ if (miroBuildOnly) {
 
 if (is.null(errMsg)) {
   if (config$activateModules$remoteExecution) {
-    requiredPackages <- c("future", "httr")
+    requiredPackages <- c("httr", "mirai")
   } else if (length(externalInputConfig) || length(datasetsRemoteExport)) {
     # FIXME: get rid of this when removing remoteImport/remoteExport feature
     requiredPackages <- "httr"
@@ -973,11 +971,7 @@ if (is.null(errMsg)) {
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
   if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
-    if (identical(tolower(Sys.info()[["sysname"]]), "linux")) {
-      plan(multicore)
-    } else {
-      plan(multisession)
-    }
+    daemons(1)
   }
   # try to create the DB connection (PostgreSQL)
   db <- NULL
@@ -1095,6 +1089,7 @@ if (is.null(errMsg)) {
       username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
       password = Sys.getenv("MIRO_REMOTE_EXEC_TOKEN"),
       namespace = Sys.getenv("MIRO_REMOTE_EXEC_NS"),
+      useBearer = TRUE,
       useRegistered = FALSE
     )
   }
@@ -1790,7 +1785,6 @@ if (!is.null(errMsg)) {
       isInRefreshMode <- LazyFlagRegistry$new()
       isInSolveMode <- TRUE
       modelStatus <- NULL
-      modelStatusObs <- NULL
 
       dynamicUILoaded <- list(
         inputGraphs = vector("logical", length(modelIn)),
@@ -1934,56 +1928,45 @@ if (!is.null(errMsg)) {
       } else {
         remoteModelId <- modelName
       }
-
-      worker <- Worker$new(
-        metadata = list(
-          uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-          modelId = remoteModelId,
-          maxSizeToRead = 100000,
+      if (length(credConfig)) {
+        engineClient <- EngineClient$new(
+          url = credConfig$url,
+          username = credConfig$username,
+          password = credConfig$password,
+          namespace = credConfig$namespace,
+          useBearer = credConfig$useBearer,
+          appAccessGroups = csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", "")))
+        )
+        workerAdapter <- RemoteWorkerAdapter$new(list(
+          isGamsPy = isTRUE(config$isGamsPy), modelName = modelName, modelGmsName = modelGmsName, modelNameRaw = modelNameRaw, modelId = remoteModelId,
+          clArgs = GAMSClArgs, extraClArgs = config$extraClArgs, saveTraceFile = isTRUE(config$saveTraceFile),
+          logFileName = if (identical(config$activateModules$logFile, FALSE)) config$miroLogFile,
           modelDataFiles = c(
-            if (identical(config$fileExchange, "gdx")) {
-              c(MIROGdxInName, MIROGdxOutName)
-            } else {
-              paste0(c(names(modelOut), inputDsNames), ".csv")
-            },
+            c(MIROGdxInName, MIROGdxOutName),
             vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)
-          ),
-          MIROGdxInName = MIROGdxInName,
-          MIROGdxOutName = MIROGdxOutName,
-          clArgs = GAMSClArgs,
+          ), modelDataPath = modelData,
           textEntries = c(
             if (config$activateModules$logFile) paste0(modelNameRaw, ".log"),
             if (config$activateModules$lstFile) paste0(modelNameRaw, ".lst"),
             if (config$activateModules$miroLogFile) config$miroLogFile
-          ),
-          miroLogFile = config$miroLogFile,
-          extraClArgs = config$extraClArgs,
-          saveTraceFile = config$saveTraceFile,
-          modelGmsName = modelGmsName, modelNameRaw = modelNameRaw,
-          executablePath = if (identical(config$isGamsPy, TRUE)) {
+          ), useRegistered = credConfig$useRegistered
+        ), workDir, engineClient$getConfig())
+      } else {
+        workerAdapter <- LocalWorkerAdapter$new(list(
+          isGamsPy = isTRUE(config$isGamsPy), modelGmsName = modelGmsName, executablePath = if (identical(config$isGamsPy, TRUE)) {
             Sys.getenv("PYTHON_EXEC_PATH")
           } else {
             file.path(gamsSysDir, "gams")
-          },
-          csvDelim = config$csvDelim,
-          isGamsPy = config$isGamsPy,
-          serverOS = getOS(), modelData = modelData,
-          hiddenLogFile = !config$activateModules$logFile
-        ),
-        remote = config$activateModules$remoteExecution,
-        db = db
+          }, clArgs = GAMSClArgs,
+          extraClArgs = config$extraClArgs,
+          saveTraceFile = isTRUE(config$saveTraceFile),
+          modelName = modelName, modelGmsName = modelGmsName, logFileName = if (identical(config$activateModules$logFile, FALSE)) config$miroLogFile
+        ), workDir)
+      }
+
+      worker <- Worker$new(
+        workerAdapter, db, dbSchema$getDbSchema("_jobMeta"), list()
       )
-      if (length(credConfig)) {
-        do.call(worker$setCredentials, credConfig)
-        engineClient <- EngineClient$new(
-          url = credConfig$url,
-          username = credConfig$username,
-          authHeader = worker$getAuthHeader()
-        )
-      }
-      if (isShinyProxy) {
-        worker$setAppAccessGroups(csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", ""))))
-      }
       rendererEnv <- new.env(parent = emptyenv())
 
       # scenario metadata of scenario saved in database
@@ -2004,8 +1987,6 @@ if (!is.null(errMsg)) {
         "Session started (model: '%s', user: '%s', workdir: '%s').",
         modelName, uid, workDir
       )
-
-      worker$setWorkDir(workDir)
       scriptOutput <- NULL
 
       if (length(config$scripts$base) || length(config$scripts$hcube)) {

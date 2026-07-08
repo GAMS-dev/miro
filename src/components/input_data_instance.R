@@ -19,6 +19,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     private$views <- views
     return(invisible(self))
   },
+  getSid = function() private$activeScen$getSid(),
   getDataHashes = function() private$dataHashes,
   getScalarData = function() {
     emptyScalarTibble <- tibble(scalar = character(), value = character())
@@ -223,7 +224,7 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     private$addDirPaths(miroMetaDir)
     return(invisible(self))
   },
-  compress = function(fileName = NULL, recurse = FALSE) {
+  getCompressArgs = function(fileName = NULL, recurse = FALSE) {
     if (!is.null(fileName)) {
       stopifnot(is.character(fileName), identical(length(fileName), 1L))
     } else {
@@ -238,10 +239,12 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
       if (length(rootPath) > 1L) {
         stop("Zipping files and directories with different root currently not supported!", call. = FALSE)
       }
-      zipr(fileName, basename(filesToZip), recurse = TRUE, compression_level = 9L, mode = "mirror", root = rootPath)
-    } else {
-      zipr(fileName, private$filePaths, recurse = recurse, compression_level = 9L)
+      return(list(zipfile = fileName, files = basename(filesToZip), recurse = TRUE, compression_level = 9L, mode = "mirror", root = rootPath))
     }
+    return(list(zipfile = fileName, files = private$filePaths, recurse = recurse, compression_level = 9L))
+  },
+  compress = function(fileName = NULL, recurse = FALSE) {
+    do.call(zipr, self$getCompressArgs(fileName, recurse))
     return(invisible(fileName))
   }
 ), private = list(
