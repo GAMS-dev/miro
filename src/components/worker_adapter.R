@@ -430,7 +430,11 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
               ),
               httr::timeout(20L)
             )
-            if (httr::status_code(streamEntryResp) != 200L) {
+            statusCode <- httr::status_code(streamEntryResp)
+            if (statusCode == 308L || statusCode == 410L) {
+              # Stream is gone because the job finished
+              return(list(entry_value = "", queue_finished = TRUE))
+            } else if (statusCode != 200L) {
               stop(sprintf(
                 "Could not fetch stream entry (status code: %d). Error: %s",
                 httr::status_code(streamEntryResp),
