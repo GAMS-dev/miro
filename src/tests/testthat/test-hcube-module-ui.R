@@ -1,6 +1,6 @@
 test_that(
   "HC module works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  {
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping asynchronous solve tests as no ENGINE_URL was not set."
@@ -124,5 +124,5 @@ test_that(
     removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))
-  })
+  }
 )
