@@ -199,7 +199,18 @@ LocalWorkerAdapter <- R6Class("LocalWorkerAdapter",
         {
           info <- file.info(private$logFileInfo$path)
           info <- paste(private$logFileInfo$path, info$mtime, info$size)
-          read_lines(private$logFileInfo$path, skip = private$logFileInfo$cursor)
+          fileContent <- read_lines(private$logFileInfo$path, skip = private$logFileInfo$cursor)
+          if (length(fileContent)) {
+            if (identical(private$logFileInfo$cursor, 0L)) {
+              private$logFileInfo$cursor <- length(fileContent)
+            } else {
+              private$logFileInfo$cursor <- private$logFileInfo$cursor + length(fileContent)
+              fileContent <- c("", fileContent)
+            }
+            paste(fileContent, collapse = "\n")
+          } else {
+            ""
+          }
         },
         error = function(err) {
           flog.info("Problems reading log file. Error message: %s", conditionMessage(err))

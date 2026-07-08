@@ -21,6 +21,7 @@ expect_error(app$wait_for_js(paste0(
   "$('#modelStatus').is(':visible')&&$('#",
   logContainerId, "').is(':visible');"
 ), timeout = 5000L), NA)
+Sys.sleep(1L)
 logContent <- app$get_js(paste0("$('#", logContainerId, "').text()"))
 expect_match(logContent, "Symbol IBM  has negative price at the date: 2016-01-04", fixed = TRUE)
 expect_match(logContent, "Symbol GS   has negative price at the date: 2016-01-12", fixed = TRUE)

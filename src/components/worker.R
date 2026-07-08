@@ -538,9 +538,18 @@ Worker <- R6Class("Worker",
       if (!is.null(private$logObs)) {
         private$logObs$destroy()
       }
+      private$logParseDelay <- FALSE
       reactiveLogObsTmp <- reactivePoll2(private$adapter$pollInterval, session, checkFunc = function() {
         if (is.integer(private$adapter$processStatus)) {
-          private$logObs$destroy()
+          if (private$logParseDelay) {
+            session$sendCustomMessage("gms-parseLog", list())
+            private$logObs$destroy()
+          } else if (private$adapter$processStatus > 0) {
+            # did not solve successfully - need to delay parsing until log has been updated
+            private$logParseDelay <- TRUE
+          } else {
+            private$logObs$destroy()
+          }
         }
         private$adapter$pingLog()
       }, valueFunc = function() {
@@ -599,6 +608,7 @@ Worker <- R6Class("Worker",
     statusObs = NULL,
     logObs = NULL,
     jobList = NULL,
-    hardKill = FALSE
+    hardKill = FALSE,
+    logParseDelay = FALSE
   )
 )

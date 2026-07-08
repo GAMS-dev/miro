@@ -566,7 +566,6 @@ output$modelStatus <- renderUI({
       returnCodeText <- sprintf(lang$nav$gamsModelStatus$errorReturnCode, currModelStat)
     }
     statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
-    session$sendCustomMessage("gms-parseLog", list())
     flog.debug(
       "GAMS model was not solved successfully (model: '%s'). Model status: %s.",
       modelName, statusText
