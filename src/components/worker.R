@@ -489,7 +489,7 @@ Worker <- R6Class("Worker",
         quotaWarning$error <- TRUE
       }
       if (!identical(subResp$status_code, 201L)) {
-        flog.warn("Problems submitting job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        flog.info("Problems submitting job (status code: %d). Response: %s", subResp$status_code, subResp$response)
         return(list(error = TRUE, status = subResp$status_code, quotaWarning = quotaWarning))
       }
       procId <- subResp$response$token
@@ -517,7 +517,7 @@ Worker <- R6Class("Worker",
         quotaWarning$error <- TRUE
       }
       if (!identical(subResp$status_code, 201L)) {
-        flog.warn("Problems submitting Hypercube job (status code: %d). Response: %s", subResp$status_code, subResp$response)
+        flog.info("Problems submitting Hypercube job (status code: %d). Response: %s", subResp$status_code, subResp$response)
         return(list(error = TRUE, status = subResp$status_code, quotaWarning = quotaWarning))
       }
       procId <- subResp$response$hypercube_token
@@ -574,6 +574,9 @@ Worker <- R6Class("Worker",
       return(private$adapter$quotaWarning)
     },
     updateJobStatus = function(newStatus) {
+      if (is.null(self$asyncJobManager)) {
+        return(invisible(self))
+      }
       return(self$asyncJobManager$updateJobStatus(newStatus, jID = private$jID, pID = private$adapter$processId))
     },
     getJobId = function() {
