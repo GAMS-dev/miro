@@ -282,6 +282,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       self$processId <- NULL
       self$processStatus <- "s"
       self$quotaWarning <- NULL
+      private$seQueueGone <- FALSE
       if (is_mirai(private$mSubRes) && unresolved(private$mSubRes)) {
         flog.warn("Previous submission promise still running. Stopping it.")
         stop_mirai(private$mSubRes)
@@ -416,7 +417,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       if (is.null(private$metadata$logFileName)) {
         return(private$updateLog)
       }
-      if (is.null(self$processId) || isTRUE(startsWith(as.character(self$processStatus), "q"))) {
+      if (is.null(self$processId) || isTRUE(startsWith(as.character(self$processStatus), "q")) || private$seQueueGone) {
         return(private$updateLog)
       }
       if (is.null(private$mLogRes)) {
@@ -439,7 +440,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
                 trimws(httr::content(streamEntryResp, as = "text", encoding = "utf-8"))
               ), call. = FALSE)
             }
-            return(httr::content(streamEntryResp, type = "application/json", encoding = "utf-8")$entry_value)
+            return(httr::content(streamEntryResp, type = "application/json", encoding = "utf-8"))
           },
           .args = list(config = private$engineConfig, pid = self$processId, fileName = URLencode(private$metadata$logFileName, reserved = TRUE))
         )
@@ -449,7 +450,11 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
         if (is_error_value(private$mLogRes$data)) {
           flog.info("Error fetching MIRO log: %s", private$mLogRes$data$message)
         } else {
-          self$log <- private$mLogRes$data
+          if (isTRUE(private$mLogRes$data$queue_finished)) {
+            flog.debug("Stream entry queue: %s finished.", private$metadata$logFileName)
+            private$seQueueGone <- TRUE
+          }
+          self$log <- private$mLogRes$data$entry_value
         }
         private$mLogRes <- NULL
       }
@@ -695,6 +700,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
     mSubRes = NULL,
     mJobRes = NULL,
     mLogRes = NULL,
+    seQueueGone = FALSE,
     gamsReturnCode = NULL,
     validateMetadata = function(metadata) {
       stopifnot(
