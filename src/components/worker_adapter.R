@@ -281,16 +281,16 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       self$processId <- NULL
       self$processStatus <- "s"
       self$quotaWarning <- NULL
-      if (is_mirai(private$mSubRes) && !unresolved(private$mSubRes)) {
+      if (is_mirai(private$mSubRes) && unresolved(private$mSubRes)) {
         flog.warn("Previous submission promise still running. Stopping it.")
         stop_mirai(private$mSubRes)
       }
-      if (is_mirai(private$mJobRes) && !unresolved(private$mJobRes)) {
+      if (is_mirai(private$mJobRes) && unresolved(private$mJobRes)) {
         flog.warn("Previous result download promise still running. Stopping it.")
         stop_mirai(private$mJobRes)
         private$mJobRes <- NULL
       }
-      if (is_mirai(private$mLogRes) && !unresolved(private$mLogRes)) {
+      if (is_mirai(private$mLogRes) && unresolved(private$mLogRes)) {
         flog.warn("Previous log fetching promise still running. Stopping it.")
         stop_mirai(private$mLogRes)
         private$mLogRes <- NULL
