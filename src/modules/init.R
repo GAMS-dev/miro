@@ -2617,6 +2617,13 @@ if (is.null(errMsg)) {
         )
       }
     )
+    if (length(config$aiAssistant$domainContext)) {
+      config$aiAssistant$domainContext <- stri_replace_all_fixed(
+        config$aiAssistant$domainContext,
+        pattern = "[[README]]",
+        replacement = config$readmeFile
+      )
+    }
   }
   dropdownAliases <- lapply(modelIn, function(el) {
     if (identical(el$type, "dropdown") &&

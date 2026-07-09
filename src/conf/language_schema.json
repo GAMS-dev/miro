@@ -4564,6 +4564,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tabAiAssistant": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "tabData": {
                   "type": "string",
                   "minLength": 1
@@ -4649,7 +4653,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 26
+              "minProperties": 27
             },
             "modalDialog": {
               "type": "object",
@@ -4983,7 +4987,7 @@
                       "type": "string",
                       "minLength": 1
                     },
-                    "reamdeHeader": {
+                    "rawHeader": {
                       "type": "string",
                       "minLength": 1
                     },
@@ -5008,6 +5012,87 @@
                 }
               },
               "minProperties": 8
+            },
+            "aiAssistant": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cbEnable": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btEditContext": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btEditInstructions": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dialogEditContext": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "helpText": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "rawHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "markdownHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btCancel": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btSave": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 6
+                },
+                "dialogEditInstructions": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "helpText": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "rawHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "markdownHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btCancel": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btSave": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 6
+                }
+              },
+              "minProperties": 5
             },
             "saveDuration": {
               "type": "object",
@@ -5281,7 +5366,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 41
         },
         "tables": {
           "type": "object",

@@ -4734,6 +4734,11 @@
       "description": "Configuration of the MIRO AI Assistant!",
       "additionalProperties": false,
       "properties": {
+        "enable": {
+          "description": "Whether to enable the AI agent",
+          "type": "boolean",
+          "default": true
+        },
         "domainContext": {
           "description": "Domain context to give the AI agent (e.g. description of the app, the model, equations etc.). You can use the `[[README]]` placeholder in this string, which MIRO will automatically replace with the content of your README file.",
           "type": "string",

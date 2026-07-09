@@ -513,9 +513,9 @@ export function mdToHTML(mdContent, destId, useKatex) {
   }
 }
 
-export function mdSave(mdContentId) {
+export function mdSave(mdContentId, eventId) {
   Shiny.setInputValue(
-    'btMdSave',
+    eventId,
     $(mdContentId).val(),
     { priority: 'event' },
   );

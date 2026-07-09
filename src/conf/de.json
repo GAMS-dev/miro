@@ -1174,6 +1174,7 @@
         "tabSubmission": "GAMS Jobs",
         "tabLogs": "Log-Dateien",
         "tabComparison": "Szenariovergleich",
+        "tabAiAssistant": "KI-Assistent",
         "tabData": "Szenariodaten und Anhänge",
         "tabSymbolLinks": "Versteckte Symbole und Symbolverknüpfungen",
         "headerGeneral": "Titel und Logo",
@@ -1280,9 +1281,30 @@
         "btEdit": "README bearbeiten",
         "dialogEdit": {
           "title": "README Editor",
-          "reamdeHeader": "Markdown content",
+          "rawHeader": "Markdown content",
           "markdownHeader": "Readme preview",
           "msgErrSave": "Probleme beim Schreiben der README-Datei. Prüfen Sie, ob Sie ausreichende Schreibrechte in Ihrem Modell-Verzeichnis haben.",
+          "btCancel": "Abbrechen",
+          "btSave": "Speichern"
+        }
+      },
+      "aiAssistant": {
+        "cbEnable": "KI-Assistent aktivieren",
+        "btEditContext": "Domänenkontext bearbeiten",
+        "btEditInstructions": "Allgemeine Anweisungen bearbeiten",
+        "dialogEditContext": {
+          "title": "KI-Assistent: Domänenkontext bearbeiten",
+          "helpText": "**Was es macht:** Gibt der KI Hintergrundwissen über Ihr Optimierungsmodell, damit sie relevante, domänenspezifische Erkenntnisse und Datenanalysen liefern kann.\n\n**Wie man es nutzt:** Beschreiben Sie den Zweck Ihrer App, das zugrunde liegende geschäftliche oder wissenschaftliche Problem, das sie löst, wichtige Fachbegriffe und wie das Modell funktioniert.\n\n**Tipp:** Sie können den Platzhalter `[[README]]` überall in diesem Feld verwenden. MIRO ersetzt ihn automatisch durch den aktuellen Inhalt der README-Datei Ihrer App, sodass Sie Ihre Dokumentation nicht duplizieren müssen.",
+          "rawHeader": "Markdown-Inhalt",
+          "markdownHeader": "Vorschau",
+          "btCancel": "Abbrechen",
+          "btSave": "Speichern"
+        },
+        "dialogEditInstructions": {
+          "title": "KI-Assistent: Anweisungen bearbeiten",
+          "helpText": "**Was es macht:** Definiert spezifische Regeln, Verhaltensrichtlinien und Einschränkungen dafür, wie der KI-Assistent mit Benutzern interagieren und seine Ausgaben formatieren soll.\n\n**Wie man es nutzt:** Geben Sie klare Anweisungen für das Verhalten der KI. Dies umfasst Formatierungseinstellungen (z. B. „Geldwerte immer in Millionen Dollar formatieren“ oder „Tabellen zum Vergleich von Szenarioergebnissen verwenden“), den Tonfall oder bestimmte Schritte, die bei der Analyse von Dateninkonsistenzen unternommen werden sollen (z. B. „Negative Werte in der Nachfragetabelle immer als Fehler markieren“).",
+          "rawHeader": "Markdown-Inhalt",
+          "markdownHeader": "Vorschau",
           "btCancel": "Abbrechen",
           "btSave": "Speichern"
         }

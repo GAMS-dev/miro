@@ -426,10 +426,14 @@ if (is.null(errMsg)) {
     }
     config$activateModules$aiAssistant <- tryCatch(
       {
-        aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("AI_ASSISTANT_CONFIG"))
-        config$aiAssistant$apiKeys <- aiAssistantTmp$apiKeys
-        config$aiAssistant$supportedModels <- aiAssistantTmp$supportedModels
-        TRUE
+        if (isFALSE(config$aiAssistant$enable)) {
+          FALSE
+        } else {
+          aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("AI_ASSISTANT_CONFIG"))
+          config$aiAssistant$apiKeys <- aiAssistantTmp$apiKeys
+          config$aiAssistant$supportedModels <- aiAssistantTmp$supportedModels
+          TRUE
+        }
       },
       error = function(err) {
         errMsg <<- "Invalid AI assistant configuration. Please contact support@gams.com if this problem persists."

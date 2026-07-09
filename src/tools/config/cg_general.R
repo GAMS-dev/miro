@@ -22,6 +22,7 @@ isolate({
   rv$generalConfig$outputAttachments <- configJSON$outputAttachments
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
   rv$generalConfig$UILogo <- configJSON$UILogo
+  rv$generalConfig$aiAssistant <- configJSON$aiAssistant
 })
 scalarSymbols <- setNames(
   c(
@@ -971,6 +972,56 @@ observeEvent(input$remove_general, {
     groupTemp[[arrayID]][[arrayIdxAll]] <<- NULL
   }
 })
+openMarkdownEditor <- function(lang, contentRaw, contentParsed, saveButtonId, enableMath = FALSE, overwriteEditorHeight = NULL) {
+  showModal(modalDialog(
+    title = lang$title,
+    tags$div(
+      class = "gmsalert gmsalert-error center-alert", id = "mdSaveError",
+      lang$msgErrSave
+    ),
+    if (length(lang$helpText)) {
+      tags$p(
+        markdown(lang$helpText)
+      )
+    },
+    fluidRow(
+      column(
+        6L,
+        tags$div(class = "readme-preview-header", lang$rawHeader),
+        tags$textarea(
+          id = "mdContent", class = "readme-wrapper readme-preview-markdown",
+          style = if (!is.null(overwriteEditorHeight)) paste0("height:", overwriteEditorHeight),
+          oninput = paste0(
+            "Miro.mdToHTML(this.value,'mdConvertedContent',",
+            if (isTRUE(enableMath)) "true" else "false", ")"
+          ),
+          contentRaw
+        )
+      ),
+      column(
+        6L,
+        tags$div(class = "readme-preview-header", lang$markdownHeader),
+        tags$div(
+          id = "mdConvertedContent",
+          style = if (!is.null(overwriteEditorHeight)) paste0("height:", overwriteEditorHeight),
+          class = "readme-wrapper readme-preview-output", contentParsed
+        )
+      ),
+      tags$script(paste0(
+        "setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'mdConvertedContent',",
+        if (isTRUE(enableMath)) "true" else "false", ")},500)"
+      ))
+    ),
+    footer = tagList(
+      modalButton(lang$btCancel),
+      tags$button(
+        id = saveButtonId, lang$btSave, onclick = paste0("Miro.mdSave('#mdContent','", saveButtonId, "')"),
+        class = "btn btn-default bt-highlight-1"
+      )
+    ),
+    fade = TRUE, easyClose = FALSE, size = "l"
+  ))
+}
 observeEvent(input$btEditReadme, {
   req(
     length(rv$generalConfig$readme$filename) > 0L,
@@ -995,47 +1046,9 @@ observeEvent(input$btEditReadme, {
     )))
   }
 
-  showModal(modalDialog(
-    title = lang$adminMode$general$readme$dialogEdit$title,
-    tags$div(
-      class = "gmsalert gmsalert-error center-alert", id = "mdSaveError",
-      lang$adminMode$general$readme$dialogEdit$msgErrSave
-    ),
-    fluidRow(
-      column(
-        6L,
-        tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$reamdeHeader),
-        tags$textarea(
-          id = "mdContent", class = "readme-wrapper readme-preview-markdown",
-          oninput = paste0(
-            "Miro.mdToHTML(this.value,'mdConvertedContent',",
-            if (isTRUE(input$general_readmeEnableMath)) "true" else "false", ")"
-          ),
-          readmeContent
-        )
-      ),
-      column(
-        6L,
-        tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$markdownHeader),
-        tags$div(
-          id = "mdConvertedContent",
-          class = "readme-wrapper readme-preview-output", readmeContentParsed
-        )
-      ),
-      tags$script(paste0(
-        "setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'mdConvertedContent',",
-        if (isTRUE(input$general_readmeEnableMath)) "true" else "false", ")},500)"
-      ))
-    ),
-    footer = tagList(
-      modalButton(lang$adminMode$general$readme$dialogEdit$btCancel),
-      tags$button(
-        id = "btMdSave", lang$adminMode$general$readme$dialogEdit$btSave, onclick = "Miro.mdSave('#mdContent')",
-        class = "btn btn-default bt-highlight-1"
-      )
-    ),
-    fade = TRUE, easyClose = FALSE, size = "l"
-  ))
+  openMarkdownEditor(lang$adminMode$general$readme$dialogEdit, readmeContent, readmeContentParsed,
+    saveButtonId = "btMdSave", enableMath = input$general_readmeEnableMath
+  )
 })
 observeEvent(input$btMdSave, {
   req(length(rv$generalConfig$readme$filename))
@@ -1051,6 +1064,39 @@ observeEvent(input$btMdSave, {
       showHideEl(session, "mdSaveError", 4000L)
     }
   )
+})
+observeEvent(input$general_enableAiAssistant, {
+  rv$generalConfig$aiAssistant$enable <<- !isFALSE(input$general_enableAiAssistant)
+})
+observeEvent(input$btEditAiContext, {
+  contextContent <- rv$generalConfig$aiAssistant$domainContext
+  if (!length(contextContent)) {
+    contextContent <- "This is the app's README file: [[README]]"
+  }
+  contextContentParsed <- HTML(markdownParser$parse(contextContent))
+  openMarkdownEditor(lang$adminMode$general$aiAssistant$dialogEditContext, contextContent, contextContentParsed,
+    saveButtonId = "btAiContextSave", overwriteEditorHeight = "50vh"
+  )
+})
+observeEvent(input$btAiContextSave, {
+  rv$generalConfig$aiAssistant$domainContext <- input$btAiContextSave
+  removeModal()
+})
+observeEvent(input$btEditAiInstructions, {
+  instructionsContent <- rv$generalConfig$aiAssistant$customInstructions
+  if (length(instructionsContent)) {
+    instructionsContentParsed <- HTML(markdownParser$parse(instructionsContent))
+  } else {
+    instructionsContent <- character(0L)
+    instructionsContentParsed <- character(0L)
+  }
+  openMarkdownEditor(lang$adminMode$general$aiAssistant$dialogEditInstructions, instructionsContent, instructionsContentParsed,
+    saveButtonId = "btAiInstructionsSave", overwriteEditorHeight = "50vh"
+  )
+})
+observeEvent(input$btAiInstructionsSave, {
+  rv$generalConfig$aiAssistant$customInstructions <- input$btAiInstructionsSave
+  removeModal()
 })
 
 #  =======================================

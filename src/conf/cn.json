@@ -1174,6 +1174,7 @@
         "tabSubmission": "工作提交",
         "tabLogs": "日志文件",
         "tabComparison": "情景比较",
+        "tabAiAssistant": "AI 助手",
         "tabData": "情景数据和附件",
         "tabSymbolLinks": "隐藏的符号和符号链接",
         "headerGeneral": "标题和标志",
@@ -1279,9 +1280,30 @@
         "btEdit": "编辑README",
         "dialogEdit": {
           "title": "README编辑器",
-          "reamdeHeader": "Markdown内容",
+          "rawHeader": "Markdown内容",
           "markdownHeader": "README预览",
           "msgErrSave": "编写README文件时出现错误。 请检查您在模型目录中是否具有足够的写入权限。",
+          "btCancel": "取消",
+          "btSave": "保存"
+        }
+      },
+      "aiAssistant": {
+        "cbEnable": "启用 AI 助手",
+        "btEditContext": "编辑领域上下文",
+        "btEditInstructions": "编辑通用指令",
+        "dialogEditContext": {
+          "title": "编辑 AI 助手领域上下文",
+          "helpText": "**它的作用：** 为 AI 提供关于您的优化模型的背景知识，以便其能够提供相关的、具有领域意识的见解和数据分析。\n\n**如何使用：** 描述您的应用程序的目的、它所解决的潜在商业或科学问题、关键术语以及模型的运作方式。\n\n**提示：** 您可以在此字段中的任何位置使用占位符 `[[README]]`。MIRO 将自动使用您应用程序的 README 文件的当前内容替换它，从而避免您重复编写文档。",
+          "rawHeader": "Markdown 内容",
+          "markdownHeader": "预览",
+          "btCancel": "取消",
+          "btSave": "保存"
+        },
+        "dialogEditInstructions": {
+          "title": "编辑 AI 助手指令",
+          "helpText": "**它的作用：** 定义 AI 助手应如何与用户交互及其输出格式的具体规则、行为准则和约束。\n\n**如何使用：** 提供关于 AI 行为的明确指令。这包括格式偏好（例如，“始终将货币值格式化为百万美元”或“使用表格比较情景结果”）、语气或分析数据不一致时应采取的具体步骤（例如，“始终将需求表中的负值标记为错误”）。",
+          "rawHeader": "Markdown 内容",
+          "markdownHeader": "预览",
           "btCancel": "取消",
           "btSave": "保存"
         }

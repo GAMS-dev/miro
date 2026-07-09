@@ -1478,6 +1478,34 @@ body.drawer-open {
                     tags$div(class = "space")
                   )
                 )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabAiAssistant,
+                tags$div(
+                  class = "col-sm-12", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    checkboxInput_SIMPLE("general_enableAiAssistant",
+                      lang$adminMode$general$aiAssistant$cbEnable,
+                      value = !isFALSE(configJSON$aiAssistant$enable)
+                    ),
+                    conditionalPanel(
+                      condition = "input.general_enableAiAssistant===true",
+                      tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
+                        actionButton(
+                          inputId = "btEditAiContext",
+                          label = lang$adminMode$general$aiAssistant$btEditContext
+                        )
+                      }),
+                      tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
+                        actionButton(
+                          inputId = "btEditAiInstructions",
+                          label = lang$adminMode$general$aiAssistant$btEditInstructions
+                        )
+                      })
+                    )
+                  )
+                )
               )
             )
           )

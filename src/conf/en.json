@@ -1174,6 +1174,7 @@
         "tabSubmission": "Job Submission",
         "tabLogs": "Log Files",
         "tabComparison": "Scenario Comparison",
+        "tabAiAssistant": "AI Assistant",
         "tabData": "Scenario Data and Attachments",
         "tabSymbolLinks": "Hidden Symbols and Symbol Links",
         "headerGeneral": "Title and Logo",
@@ -1280,9 +1281,30 @@
         "btEdit": "Edit README",
         "dialogEdit": {
           "title": "Readme editor",
-          "reamdeHeader": "Markdown content",
+          "rawHeader": "Markdown content",
           "markdownHeader": "Readme preview",
           "msgErrSave": "Problems writing the README file. Check whether you have sufficient write permissions in your model directory.",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        }
+      },
+      "aiAssistant": {
+        "cbEnable": "Enable AI Assistant",
+        "btEditContext": "Edit Domain Context",
+        "btEditInstructions": "Edit General Instructions",
+        "dialogEditContext": {
+          "title": "Edit AI Assistant Domain Context",
+          "helpText": "**What it does:** Gives the AI background knowledge about your optimization model so it can provide relevant, domain-aware insights and data analysis.\n\n**How to use it:** Describe the purpose of your app, the underlying business or scientific problem it solves, key terminology, and how the model operates.\n\n**Tip:** You can use the placeholder `[[README]]` anywhere in this field. MIRO will automatically replace it with the current content of your app's README file, saving you from duplicating your documentation.",
+          "rawHeader": "Markdown content",
+          "markdownHeader": "Preview",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        },
+        "dialogEditInstructions": {
+          "title": "Edit AI Assistant Instructions",
+          "helpText": "**What it does:** Defines specific rules, behavioral guidelines, and constraints for how the AI assistant should interact with users and format its output.\n\n**How to use it:** Provide clear directives for the AI's behavior. This includes formatting preferences (e.g., \"Always format monetary values in millions of dollars\" or \"Use tables for comparing scenario results\"), tone of voice, or specific steps it should take when analyzing data inconsistencies (e.g., \"Always flag negative values in the demand table as an error\").",
+          "rawHeader": "Markdown content",
+          "markdownHeader": "Preview",
           "btCancel": "Cancel",
           "btSave": "Save"
         }
