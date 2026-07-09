@@ -558,6 +558,7 @@
       "interactiveButtonTab":"Compare (Tab)",
       "interactiveButtonPivot":"Compare (Pivot)",
       "interactiveButtonSplit": "Compare (Split)",
+      "interactiveButtonAi": "AI Assistant",
       "downloadButton":"Download data",
       "removeButton": "Delete scenarios",
       "removeIncompleteError": "Not all of the selected scenarios could be removed. This could be because they are read-only or have already been removed by someone else in the meantime."

@@ -558,6 +558,7 @@
       "interactiveButtonTab":"Vergleichen (Tab)",
       "interactiveButtonPivot":"Vergleichen (Pivot)",
       "interactiveButtonSplit": "Vergleichen (Split)",
+      "interactiveButtonAi": "KI-Assistent",
       "downloadButton":"Daten herunterladen",
       "removeButton": "Szenarien löschen",
       "removeIncompleteError": "Nicht alle der ausgewählten Szenarien konnten entfernt werden. Dies könnte daran liegen, dass sie schreibgeschützt sind oder in der Zwischenzeit bereits von jemand anderem entfernt wurden."

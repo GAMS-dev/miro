@@ -1,33 +1,65 @@
-aiAssistantState <- list(
-  history = list(),
-  sessionId = NULL,
-  activeSids = NULL,
-  inputTokens = 0L,
-  outputTokens = 0L,
-  chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
-)
+observe({
+  dialogState <- aiAssistantDialogState()
+  isolate({
+    if (is.null(dialogState$sidsToLoad)) {
+      return()
+    }
+    # append if last history item is not a context item, else overwrite
+    historyIdx <- length(aiAssistantState$chatHistory)
+    if (!is.null(aiAssistantState$chatHistory[[historyIdx]]$role)) {
+      historyIdx <- historyIdx + 1L
+    }
+    aiAssistantState$chatHistory[[historyIdx]] <<- list(dialogState$chatContext)
+    showModal(tagAppendAttributes(modalDialog(
+      size = "l",
+      easyClose = TRUE,
+      footer = tagList(
+        modalButton(lang$general$modal$cancelButton),
+        actionButton("btMiroAiClearChat", lang$nav$aiBotDialog$btClear,
+          class = "btn btn-default bt-remove", style = "float: left;"
+        ),
+        renderAiTokenInfoContainer(lang$nav$aiBotDialog, aiAssistantState$inputTokens, aiAssistantState$outputTokens)
+      ),
+      tags$div(
+        class = "miro-ai-modal-body",
+        renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, aiAssistantState$chatHistory)
+      )
+    ), class = "ai-assistant-modal"))
+  })
+})
 
 observeEvent(input$btAIOutput, {
   flog.debug("AI Output Analysis button clicked.")
-  if (!identical(activeScen$getSid(), aiAssistantState$activeSids)) {
-    aiAssistantState$activeSids <<- activeScen$getSid()
-    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(sprintf(lang$nav$aiBotDialog$currentContextSandbox, activeScen$getScenName()))
+  tempScenName <- lang$nav$dialogNewScen$newScenName
+  tempScenTags <- NULL
+  sidToLoad <- NULL
+  if (!is.null(activeScen)) {
+    if (isFALSE(rv$sandboxUnsaved)) {
+      sidToLoad <- activeScen$getSid()
+    } else {
+      tempScenName <- activeScen$getScenName()
+      tempScenTags <- activeScen$getStags()
+    }
   }
-  showModal(tagAppendAttributes(modalDialog(
-    size = "l",
-    easyClose = TRUE,
-    footer = tagList(
-      modalButton(lang$general$modal$cancelButton),
-      actionButton("btMiroAiClearChat", lang$nav$aiBotDialog$btClear,
-        class = "btn btn-default bt-remove", style = "float: left;"
-      ),
-      renderAiTokenInfoContainer(lang$nav$aiBotDialog, aiAssistantState$inputTokens, aiAssistantState$outputTokens)
-    ),
-    tags$div(
-      class = "miro-ai-modal-body",
-      renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, aiAssistantState$chatHistory)
+  if (is.null(sidToLoad)) {
+    aiAssistantState$tempScen <<- tryCatch(
+      {
+        saveScenDumpTempToDb(tempScenName, tempScenTags)
+      },
+      error = function(err) {
+        flog.error("Unable to open AI Assistant because sandbox scenario could not be dumped to database. Error message: %s", conditionMessage(err))
+        return(NULL)
+      }
     )
-  ), class = "ai-assistant-modal"))
+    if (is.null(aiAssistantState$tempScen)) {
+      return()
+    }
+    sidToLoad <- aiAssistantState$tempScen$getSid()
+  }
+  aiAssistantDialogState(list(
+    sidsToLoad = sidToLoad, scenIdNameMap = NULL,
+    chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, activeScen$getScenName()), timestamp = Sys.time()
+  ))
 })
 
 mAiTask <- NULL
@@ -49,6 +81,9 @@ aiTask <- ExtendedTask$new(
 
         assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
         aiAdapter <- AIToolAdapter$new(dbSchema, conn, ioConfig)
+        if (length(scenIdNameMap)) {
+          aiAdapter$setScenIdNameMap(scenIdNameMap)
+        }
         aiProvider <- assistant$getProvider(providerAndModel[1], providerAndModel[2])
         aiAdapter$setAllowedSids(allowedSids)
 
@@ -134,6 +169,7 @@ Do not expose internal implementation details or the internal scenario identifie
       assistantConfig = assistantConfig,
       model = model,
       allowedSids = allowedSids,
+      scenIdNameMap = scenIdNameMap,
       history = history
     )
   }
@@ -151,6 +187,7 @@ observeEvent(input$miroAiUserText, {
       lang$nav$aiBotDialog
     )), role = "user")
   )
+  dialogState <- aiAssistantDialogState()
   aiTask$invoke(
     userInput = userText,
     dbConnProvider = dbConnProvider,
@@ -158,7 +195,8 @@ observeEvent(input$miroAiUserText, {
     ioConfig = ioConfig,
     assistantConfig = config$aiAssistant,
     model = input$miroAiModel,
-    allowedSids = aiAssistantState$activeSids,
+    allowedSids = dialogState$sidsToLoad,
+    scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
   )
 })
@@ -219,8 +257,21 @@ observeEvent(input$btMiroAiClearChat, {
   )))
   aiAssistantState$history <<- list()
   aiAssistantState$sessionId <<- NULL
+  aiAssistantState$inputTokens <<- NULL
+  aiAssistantState$outputTokens <<- NULL
 })
 observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant dialog closed")
   stop_mirai(mAiTask)
+  if (!is.null(aiAssistantState$tempScen)) {
+    tryCatch(
+      {
+        aiAssistantState$tempScen$delete()$destroy()
+      },
+      error = function(err) {
+        flog.warn("Problems removing temporary scenario. Error message: %s", conditionMessage(err))
+      }
+    )
+    aiAssistantState$tempScen <<- NULL
+  }
 })

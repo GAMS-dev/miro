@@ -1818,6 +1818,20 @@ if (!is.null(errMsg)) {
       isInSolveMode <- TRUE
       modelStatus <- NULL
 
+      if (config$activateModules$aiAssistant) {
+        aiAssistantDialogState <- reactiveVal(list(sidsToLoad = NULL, scenIdNameMap = NULL, chatContext = NULL, timestamp = Sys.time()))
+        aiAssistantState <- list(
+          history = list(),
+          sessionId = NULL,
+          inputTokens = 0L,
+          outputTokens = 0L,
+          tempScen = NULL,
+          chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
+        )
+      } else {
+        aiAssistantState <- list()
+      }
+
       dynamicUILoaded <- list(
         inputGraphs = vector("logical", length(modelIn)),
         outputTablesUI = vector("logical", length(configGraphsOut)),
@@ -1933,6 +1947,16 @@ if (!is.null(errMsg)) {
           )
         }
         activeScen$destroy()
+        if (!is.null(aiAssistantState$tempScen)) {
+          tryCatch(
+            {
+              aiAssistantState$tempScen$delete()$destroy()
+            },
+            error = function(err) {
+              flog.warn("Problems removing temporary scenario. Error message: %s", conditionMessage(err))
+            }
+          )
+        }
         if (!interactive() && !isShinyProxy) {
           tryCatch(
             {

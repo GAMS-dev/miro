@@ -24,6 +24,7 @@ listOfOperators <- list(
 
 # scenario code mapping
 SCODEMAP <- c(
+  "sb_cache" = -3L,
   "hcube_inputs" = -2L,
   "hcube_jobconfig" = -1L,
   "scen" = 0L

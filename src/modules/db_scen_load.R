@@ -500,6 +500,9 @@ observeEvent(input$btBatchCompare, {
     } else {
       loadInLeftBoxSplit <<- identical(sidInLeftSplit, 0L)
     }
+  } else if (identical(input$btBatchCompare, "aiCompare")) {
+    viewMode <- "aiCompare"
+    removeModal()
   } else {
     viewMode <- input$btBatchCompare
     if (!viewMode %in% names(config[["customCompareModules"]])) {
@@ -508,6 +511,7 @@ observeEvent(input$btBatchCompare, {
     }
     currentCompMode <<- viewMode
   }
+  scenIdNameMap <- character(0L)
   if (length(input$batchCompareNameCols)) {
     if (tryCatch(
       {
@@ -533,7 +537,7 @@ observeEvent(input$btBatchCompare, {
           "name",
           sep = "_"
         )[[1]])
-        scenData$setScenIdNameMap(setNames(scenNamesTmp, as.character(sidsToLoad)))
+        scenIdNameMap <- setNames(scenNamesTmp, as.character(sidsToLoad))
         FALSE
       },
       error = function(e) {
@@ -546,10 +550,17 @@ observeEvent(input$btBatchCompare, {
     )) {
       return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
     }
-  } else {
-    scenData$setScenIdNameMap(character(0L))
   }
   flog.debug("Load batch of scenarios to compare mode (%s) button clicked.", viewMode)
+  if (identical(viewMode, "aiCompare")) {
+    return(aiAssistantDialogState(list(
+      sidsToLoad = sidsToLoad,
+      chatContext = sprintf(lang$nav$aiBotDialog$currentContextCompare, length(sidsToLoad)),
+      scenIdNameMap = scenIdNameMap, timestamp = Sys.time()
+    )))
+  } else {
+    scenData$setScenIdNameMap(scenIdNameMap)
+  }
   pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE

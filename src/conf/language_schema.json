@@ -2182,6 +2182,10 @@
               "type": "string",
               "minLength": 1
             },
+            "interactiveButtonAi": {
+              "type": "string",
+              "minLength": 1
+            },
             "downloadButton": {
               "type": "string",
               "minLength": 1
@@ -2195,7 +2199,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 23
+          "minProperties": 24
         },
         "aiBotDialog": {
           "type": "object",

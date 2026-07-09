@@ -10,6 +10,10 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       private$allowedSids <- as.integer(allowedSids)[!is.na(as.integer(allowedSids))]
       return(self)
     },
+    setScenIdNameMap = function(scenIdNameMap) {
+      private$scenIdNameMap <- scenIdNameMap
+      return(invisible(self))
+    },
     getSystemMetadata = function() {
       scenMetaTable <- private$dbSchema$getDbTableName("_scenMeta")
       scenMetaSchema <- private$dbSchema$getDbSchema("_scenMeta")
@@ -33,6 +37,14 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           data.frame(sid = integer(0), name = character(0), tags = character(0))
         }
       )
+
+      if (length(private$scenIdNameMap)) {
+        sidNameMapIds <- match(as.character(activeScenariosDf$sid), names(private$scenIdNameMap))
+        namesNeedRemapping <- !is.na(sidNameMapIds)
+        if (any(namesNeedRemapping)) {
+          activeScenariosDf$name[namesNeedRemapping] <- private$scenIdNameMap[sidNameMapIds[namesNeedRemapping]]
+        }
+      }
 
       allSymbols <- private$dbSchema$getDbTableNames()
       databaseSymbols <- list()
@@ -314,6 +326,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     conn = NULL,
     ioConfig = NULL,
     allowedSids = NULL,
+    scenIdNameMap = NULL,
     getSymbolType = function(symType) {
       if (symType %in% c("dropdown", "set", "date", "daterange", "custom", "hot", "dt", "string")) {
         return("string")

@@ -1300,39 +1300,38 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
     }
     defCompModeButton <- tags$button(
       class = "btn btn-default", type = "button", id = "btBatchCompare",
-      style = if (length(compareModesList) > 0L) {
-        "margin:6px 0px 6px 5px;border-right:0px;"
-      } else {
-        "margin:6px 0px 6px 5px;"
-      },
+      style = "flex-grow: 1;", # Removed inline margins breaking the group
       onclick = paste0("Shiny.setInputValue('btBatchCompare','", defCompModeButton$id, "',{priority:'event'});"),
       defCompModeButton$label
     )
     return(tags$div(
-      class = "btn-group", class = "batch-load-content",
-      defCompModeButton,
-      if (length(compareModeList) > 0L) {
-        tagList(
-          tags$button(
-            class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-            style = "margin:6px 0px 6px 0;display:block;",
-            tags$span(class = "caret"),
-            tags$span(class = "sr-only", "toggle dropdown")
-          ),
-          tags$ul(
-            class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
-            lapply(names(compareModesList), function(compareModeId) {
-              tags$li(
-                tags$a(
-                  href = "#",
-                  onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModeId, "',{priority:'event'});"),
-                  compareModesList[[compareModeId]]
+      class = "col-sm-6", style = "margin-bottom: 15px;",
+      tags$div(
+        class = "btn-group batch-load-content", style = "display: flex; width: 100%;",
+        defCompModeButton,
+        if (length(compareModesList) > 0L) {
+          tagList(
+            tags$button(
+              class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+              style = "display:block;",
+              tags$span(class = "caret"),
+              tags$span(class = "sr-only", "toggle dropdown")
+            ),
+            tags$ul(
+              class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
+              lapply(names(compareModesList), function(compareModeId) {
+                tags$li(
+                  tags$a(
+                    href = "#",
+                    onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModeId, "',{priority:'event'});"),
+                    compareModesList[[compareModeId]]
+                  )
                 )
-              )
-            })
+              })
+            )
           )
-        )
-      }
+        }
+      )
     ))
   }
   showModal(
@@ -1376,18 +1375,11 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               )
             ),
             tags$div(
-              class = "batch-load-content",
-              if (length(sidsToLoad) <= 50L) {
-                lang$nav$dialogBatchLoad$selectMethod
-              } else {
-                sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+%
-                  lang$nav$dialogBatchLoad$maxScenWarning2
-              },
+              class = "batch-load-content", style = "margin-bottom: 25px;",
               if (length(sidsToLoad) <= 50L) {
                 tagList(
                   tags$label(lang$nav$dialogBatchLoad$scenNameCols,
-                    `for` = "batchCompareNameCols",
-                    style = "font-weight:unset;margin-top:10px;"
+                    `for` = "batchCompareNameCols"
                   ),
                   selectInput("batchCompareNameCols", NULL,
                     choices = colNamesForNaming,
@@ -1398,7 +1390,15 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                     textInput("prefixBatchCompareNameCols", label = lang$nav$dialogBatchLoad$scenNamePrefix)
                   )
                 )
-              }
+              },
+              tags$p(tags$strong(
+                if (length(sidsToLoad) <= 50L) {
+                  lang$nav$dialogBatchLoad$selectMethod
+                } else {
+                  sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+%
+                    lang$nav$dialogBatchLoad$maxScenWarning2
+                }
+              ))
             ),
             tags$div(
               class = "batch-load-sb-content", style = "display:none;",
@@ -1422,42 +1422,49 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               )
             },
             tags$div(
+              class = "row",
               tags$div(
-                class = "btn-group", class = "batch-load-content",
-                tags$a(
-                  class = "btn btn-default shiny-download-link", type = "button",
-                  id = "btBatchDownloadGDX", target = "_blank", href = "", download = NA,
-                  style = "margin:6px 0px 6px 0;border-right:0px;",
-                  paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")
-                ),
-                tags$button(
-                  class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                  style = "margin:6px 0px 6px 0;display:block;",
-                  tags$span(class = "caret"),
-                  tags$span(class = "sr-only", "toggle dropdown")
-                ),
-                tags$ul(
-                  class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                  tags$li(
-                    tags$a(
-                      class = "shiny-download-link", type = "button",
-                      id = "btBatchDownloadCSV", target = "_blank", href = "", download = NA,
-                      paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)")
+                class = "col-sm-6", style = "margin-bottom: 15px;",
+                tags$div(
+                  class = "btn-group batch-load-content", style = "display: flex; width: 100%;",
+                  tags$a(
+                    class = "btn btn-default shiny-download-link", type = "button",
+                    id = "btBatchDownloadGDX", target = "_blank", href = "", download = NA,
+                    style = "flex-grow: 1; text-align: center;",
+                    paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")
+                  ),
+                  tags$button(
+                    class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                    style = "display: block;",
+                    tags$span(class = "caret"),
+                    tags$span(class = "sr-only", "toggle dropdown")
+                  ),
+                  tags$ul(
+                    class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                    tags$li(
+                      tags$a(
+                        class = "shiny-download-link", type = "button",
+                        id = "btBatchDownloadCSV", target = "_blank", href = "", download = NA,
+                        paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)")
+                      )
                     )
                   )
                 )
               ),
               if (length(analysisTabset)) {
                 tagList(
-                  actionButton("btAnalysisConfig",
-                    class = "batch-load-content",
-                    lang$nav$dialogBatchLoad$analysisButton
+                  tags$div(
+                    class = "col-sm-6", style = "margin-bottom: 15px;",
+                    actionButton("btAnalysisConfig",
+                      class = "btn-block batch-load-content",
+                      lang$nav$dialogBatchLoad$analysisButton
+                    )
                   ),
                   tags$div(
                     style = "display:none;",
-                    class = "batch-load-content batch-load-analysis-footer",
+                    class = "col-sm-12 batch-load-content batch-load-analysis-footer",
                     actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
-                      class = "bt-highlight-1 bt-gms-confirm"
+                      class = "btn-block bt-highlight-1 bt-gms-confirm"
                     )
                   ),
                   downloadButton("btDownloadBatchLoadScript",
@@ -1468,28 +1475,42 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               },
               if (identical(length(sidsToLoad), 1L)) {
                 tagList(
-                  actionButton("btBatchLoadSb",
-                    class = "batch-load-content",
-                    style = "margin-left:5px",
-                    lang$nav$dialogBatchLoad$interactiveButtonSb
+                  tags$div(
+                    class = "col-sm-6", style = "margin-bottom: 15px;",
+                    actionButton("btBatchLoadSb",
+                      class = "btn-block batch-load-content",
+                      lang$nav$dialogBatchLoad$interactiveButtonSb
+                    )
                   ),
-                  actionButton("btBatchLoadSbOverwrite",
-                    class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
-                    style = "display:none",
-                    lang$nav$dialogBatchLoad$interactiveButtonSb
+                  tags$div(
+                    class = "col-sm-6", style = "display:none; margin-bottom: 15px;",
+                    actionButton("btBatchLoadSbOverwrite",
+                      class = "btn-block bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                      lang$nav$dialogBatchLoad$interactiveButtonSb
+                    )
                   )
                 )
               },
-              createCompareModesDropdown(length(sidsToLoad))
+              createCompareModesDropdown(length(sidsToLoad)),
+              if (config$activateModules$aiAssistant) {
+                tags$div(
+                  class = "col-sm-6", style = "margin-bottom: 15px;",
+                  tags$button(
+                    class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
+                    onclick = "Shiny.setInputValue('btBatchCompare','aiCompare',{priority:'event'});",
+                    lang$nav$dialogBatchLoad$interactiveButtonAi
+                  )
+                )
+              }
             )
           ),
           tags$div(
             class = "modal-footer",
-            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
             actionButton("btBatchRemove",
               lang$nav$dialogBatchLoad$removeButton,
-              class = "bt-remove batch-load-content batch-load-remove-content"
+              class = "bt-remove batch-load-content batch-load-remove-content pull-left"
             ),
+            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton)
           )
         )
       ),
