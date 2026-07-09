@@ -281,7 +281,10 @@ AsyncJobManager <- R6Class("AsyncJobManager",
           ), call. = FALSE)
         }
         if (length(private$mJobRes[[jIDChar]]$data$warnings)) {
-          flog.warn("Warnings downloading results of job: '%s' (Hypercube: %s): %s", jIDChar, isHcJob, private$mJobRes[[jIDChar]]$data$warnings)
+          flog.warn(
+            "Warnings downloading results of job: '%s' (Hypercube: %s): %s",
+            jIDChar, isHcJob, paste(private$mJobRes[[jIDChar]]$data$warnings, collapse = ",")
+          )
         }
         if (isHcJob) {
           if (!file.exists(private$jobResultsFile[[jIDChar]])) {
@@ -468,9 +471,10 @@ Worker <- R6Class("Worker",
       if (private$adapter$supportsAsync) {
         private$jobInfo <- list(name = name, tags = tags, sid = private$adapter$inputData$getSid())
         private$adapter$run(solveOptions, stri_sub(name, 1, 255))
+        flog.trace("New synchronous is being submitted.")
       } else {
         procId <- private$adapter$run(solveOptions, stri_sub(name, 1, 255))
-        flog.info("New job with process ID: %s submitted.", procId)
+        flog.info("New synchronous job with process ID: %s submitted.", procId)
       }
       return(invisible(self))
     },
@@ -532,6 +536,7 @@ Worker <- R6Class("Worker",
         hardKill <- FALSE
         private$hardKill <- TRUE
       }
+      flog.debug("Request to interrupt job sent (hardkill: %s).", hardKill)
       return(private$adapter$interrupt(hardKill))
     },
     getReactiveLog = function(session) {

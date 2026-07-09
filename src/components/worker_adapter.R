@@ -473,20 +473,35 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       return(private$updateLog)
     },
     interrupt = function(hardKill = FALSE, processId = NULL, isHypercubeJob = FALSE) {
+      ignore404 <- FALSE
       if (is.null(processId)) {
         stopifnot(!is.null(self$processId))
         processId <- self$processId
+        if (is_mirai(private$mJobRes) && unresolved(private$mJobRes)) {
+          flog.info("Job downloading while interrupt signal sent. Stopping download.")
+          stop_mirai(private$mJobRes)
+          return(0L)
+        }
+        if (is_mirai(private$mSubRes) && unresolved(private$mSubRes)) {
+          flog.info("Job still submitting while interrupt signal sent. Stopping submission.")
+          stop_mirai(private$mSubRes)
+          ignore404 <- TRUE
+        }
         isHypercubeJob <- FALSE
       }
 
       endpoint <- if (isHypercubeJob) "/hypercube/" else "/jobs/"
 
-      private$validateApiResponse(DELETE(
+      deleteResp <- DELETE(
         paste0(private$engineConfig$url, endpoint, processId),
         body = list(hard_kill = hardKill), encode = "json",
         add_headers(Authorization = private$engineConfig$authHeader),
         timeout(10L)
-      ))
+      )
+      if (ignore404 && status_code(deleteResp) == 404L) {
+        return(0)
+      }
+      private$validateApiResponse(deleteResp)
       return(0L)
     },
     getResults = function(processId = NULL, resultsPath = NULL, isHypercubeJob = FALSE) {
@@ -552,7 +567,11 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
             httr::timeout(20L)
           )
           if (httr::status_code(deleteResp) != 200L) {
-            return(list(warnings = sprintf("Could not delete job results (status code: %d). Response: %s", httr::status_code(deleteResp), httr::content(deleteResp, as = "text", encoding = "utf-8"))))
+            return(list(warnings = sprintf(
+              "Could not delete job results (status code: %d). Response: %s",
+              httr::status_code(deleteResp),
+              httr::content(deleteResp, as = "text", encoding = "utf-8")
+            )))
           }
         },
         .args = list(config = private$engineConfig, pid = processId, path = resultsPath, workDir = workDir, isHypercubeJob = isHypercubeJob)
@@ -576,6 +595,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
           timeout(10L)
         )
       )
+      flog.debug("Results of job: %s removed", processId)
       return(invisible(self))
     },
     getJobStatus = function(processId = NULL, isHypercubeJob = FALSE) {
