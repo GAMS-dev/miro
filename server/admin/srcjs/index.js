@@ -1,7 +1,3 @@
-/* global $:false Shiny: false */
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-
 import { dom, state } from './state';
 import setupEventListeners from './events';
 import setupShinyHandlers from './shiny';

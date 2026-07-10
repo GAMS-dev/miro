@@ -1,4 +1,3 @@
-/* global $:false Shiny: false */
 import bootbox from 'bootbox';
 import { state, dom } from './state';
 import { escapeHtml, indirectEval, unicodeToHTMLID } from './utils';

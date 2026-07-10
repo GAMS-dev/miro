@@ -1,5 +1,3 @@
-/* global $:false Shiny: false */
-
 import bootbox from 'bootbox';
 import { dom, state } from './state';
 import { PLACEHOLDERS, SUPPORTED_FILE_TYPES } from './constants';

@@ -1,4 +1,3 @@
-/* global $: false Shiny:false */
 import bootbox from 'bootbox';
 
 import { dom, state } from './state';
