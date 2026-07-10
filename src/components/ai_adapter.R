@@ -11,7 +11,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       return(self)
     },
     setScenIdNameMap = function(scenIdNameMap) {
-      private$scenIdNameMap <- scenIdNameMap
+      private$customscenIdNameMap <- scenIdNameMap
       return(invisible(self))
     },
     getSystemMetadata = function() {
@@ -38,13 +38,14 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
       )
 
-      if (length(private$scenIdNameMap)) {
-        sidNameMapIds <- match(as.character(activeScenariosDf$sid), names(private$scenIdNameMap))
+      if (length(private$customscenIdNameMap)) {
+        sidNameMapIds <- match(as.character(activeScenariosDf$sid), names(private$customscenIdNameMap))
         namesNeedRemapping <- !is.na(sidNameMapIds)
         if (any(namesNeedRemapping)) {
-          activeScenariosDf$name[namesNeedRemapping] <- private$scenIdNameMap[sidNameMapIds[namesNeedRemapping]]
+          activeScenariosDf$name[namesNeedRemapping] <- private$customscenIdNameMap[sidNameMapIds[namesNeedRemapping]]
         }
       }
+      private$scenarioMap <- setNames(activeScenariosDf$name, activeScenariosDf$sid)
 
       allSymbols <- private$dbSchema$getDbTableNames()
       databaseSymbols <- list()
@@ -127,7 +128,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         list(
           name = "queryScenarioDatabase",
           type = "function",
-          description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, or filter rows across the selected scenarios.",
+          description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows.",
           parameters = list(
             type = "object",
             properties = list(
@@ -135,7 +136,16 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               selectColumn = list(type = "string", description = "Optional. The specific column to aggregate or extract. If omitted, ALL columns for this symbol will be returned (equivalent to SELECT *)."),
               aggregation = list(type = "string", enum = c("SUM", "AVG", "MAX", "MIN", "COUNT", "NONE"), description = "Math aggregation to perform on the database level."),
               groupByColumn = list(type = "string", description = "Optional index column used to group calculations. CRITICAL: If you use groupByColumn, you MUST also provide a valid aggregation (e.g., SUM, MAX, AVG) and a selectColumn. Do not use groupByColumn with aggregation='NONE'."),
-              scenarioIds = list(type = "array", items = list(type = "integer"), description = "An array of internal numerical database sids pulled from the active_scenarios block matching the user's scenario request context."),
+              scenarioIds = list(type = "array", items = list(type = "integer"), description = "An array of internal numerical database sids pulled from the activeScenarios block matching the user's scenario request context."),
+              analysisMode = list(
+                type = "string",
+                enum = c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"),
+                description = "Optional. STANDARD returns normal values. DIFFERENCE calculates (Target - Baseline). PERCENT_CHANGE calculates ((Target - Baseline)/Baseline)*100."
+              ),
+              baselineScenarioId = list(
+                type = "integer",
+                description = "Required if analysisMode is DIFFERENCE or PERCENT_CHANGE. Defines which scenario ID in scenarioIds acts as the baseline."
+              ),
               filters = list(
                 type = "array",
                 description = "Optional. An array of filter conditions to apply to the rows.",
@@ -161,7 +171,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               ),
               orderBy = list(
                 type = "string",
-                description = "Optional. The column name to sort the results by (e.g., sorting by the value or aggregation column to find top elements)."
+                description = "Optional. The column to sort results by. CRITICAL: If analysisMode is DIFFERENCE, use '_delta'. If PERCENT_CHANGE, use '_pct_change'. For STANDARD mode aggregation, use the aggregation alias with a leading underscore (e.g., '_sum', '_max', '_count'). Otherwise, use the target column name."
               ),
               sortDirection = list(
                 type = "string",
@@ -194,6 +204,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       filters <- args$filters
       scenarioIds <- args$scenarioIds
       aggregation <- if (is.null(args$aggregation)) "NONE" else toupper(args$aggregation)
+      analysisMode <- if (is.null(args$analysisMode)) "STANDARD" else toupper(args$analysisMode)
+      if (!(analysisMode %in% c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"))) {
+        return(jsonlite::toJSON(list(error = sprintf("Invalid analysisMode '%s'. Must be STANDARD, DIFFERENCE, or PERCENT_CHANGE.", analysisMode)), auto_unbox = TRUE))
+      }
+      baselineSid <- args$baselineScenarioId
       orderBy <- args$orderBy
       sortDir <- if (is.null(args$sortDirection)) "ASC" else toupper(args$sortDirection)
 
@@ -221,6 +236,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
 
       # Whitelist validation check for projection column targeting
       if (is.null(selectCol) || selectCol == "" || selectCol == "NONE") {
+        if (analysisMode != "STANDARD") {
+          return(jsonlite::toJSON(list(error = "You must provide a specific selectColumn and aggregation to use DIFFERENCE or PERCENT_CHANGE."), auto_unbox = TRUE))
+        }
         colsToSelect <- validCols[validCols != "_sid"]
         selectExpr <- paste(DBI::dbQuoteIdentifier(private$conn, colsToSelect), collapse = ", ")
       } else {
@@ -228,10 +246,35 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           return(jsonlite::toJSON(list(error = sprintf("Invalid column '%s' for symbol '%s'.", selectCol, symName)), auto_unbox = TRUE))
         }
         escSelect <- DBI::dbQuoteIdentifier(private$conn, selectCol)
-        selectExpr <- if (aggregation %in% c("SUM", "AVG", "MAX", "MIN", "COUNT")) {
-          sprintf("%s(%s) AS %s", aggregation, escSelect, DBI::dbQuoteIdentifier(private$conn, tolower(aggregation)))
+
+        if (analysisMode == "STANDARD") {
+          selectExpr <- if (aggregation %in% c("SUM", "AVG", "MAX", "MIN", "COUNT")) {
+            sprintf("%s(%s) AS %s", aggregation, escSelect, DBI::dbQuoteIdentifier(private$conn, paste0("_", tolower(aggregation))))
+          } else {
+            escSelect
+          }
+          selectExpr <- sprintf("%s, %s", DBI::dbQuoteIdentifier(private$conn, "_sid"), selectExpr)
         } else {
-          escSelect
+          if (length(validatedSids) < 2) {
+            return(jsonlite::toJSON(list(error = "Logic Error: You must provide at least two valid scenarioIds in the array to calculate a DIFFERENCE or PERCENT_CHANGE."), auto_unbox = TRUE))
+          }
+          if (is.null(baselineSid) || !(baselineSid %in% validatedSids)) {
+            return(jsonlite::toJSON(list(error = "baselineScenarioId is required and must be in scenarioIds for DIFFERENCE/PERCENT_CHANGE."), auto_unbox = TRUE))
+          }
+
+          targetSid <- setdiff(validatedSids, baselineSid)[1]
+          if (is.na(targetSid)) targetSid <- baselineSid
+
+          aggFunc <- if (aggregation %in% c("SUM", "AVG", "MAX", "MIN", "COUNT")) aggregation else "SUM"
+
+          baseExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE 0 END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), baselineSid, escSelect)
+          targExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE 0 END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), targetSid, escSelect)
+
+          if (analysisMode == "DIFFERENCE") {
+            selectExpr <- sprintf("(%s - %s) AS %s", targExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_delta"))
+          } else if (analysisMode == "PERCENT_CHANGE") {
+            selectExpr <- sprintf("CASE WHEN %s = 0 THEN NULL ELSE ((%s - %s) / %s * 100.0) END AS %s", baseExpr, targExpr, baseExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_pct_change"))
+          }
         }
       }
 
@@ -240,7 +283,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
 
       query <- sprintf("SELECT %s", selectExpr)
       if (!is.null(groupByCol) && groupByCol != "") {
-        if (aggregation == "NONE") {
+        if (aggregation == "NONE" && analysisMode == "STANDARD") {
           return(jsonlite::toJSON(list(error = "Logic Error: You provided a groupByColumn but no aggregation method. You must specify an aggregation like SUM, MAX, or COUNT when grouping data.")))
         }
         if (!(groupByCol %in% validCols)) {
@@ -269,7 +312,6 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           }
 
           if (fOp == "IN") {
-            # Split string by commas, trim whitespace, and quote each element individually
             val_vector <- trimws(unlist(strsplit(fVal, ",")))
             quoted_vals <- paste(vapply(val_vector, function(v) DBI::dbQuoteLiteral(private$conn, v), character(1)), collapse = ", ")
             query <- sprintf("%s AND %s IN (%s)", query, DBI::dbQuoteIdentifier(private$conn, fCol), quoted_vals)
@@ -280,12 +322,21 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       # Step F: Grouping evaluation closure
+      groupingCols <- c()
+      if (analysisMode == "STANDARD" && aggregation != "NONE") {
+        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, "_sid"))
+      }
       if (!is.null(groupByCol) && groupByCol != "") {
-        query <- sprintf("%s GROUP BY %s", query, DBI::dbQuoteIdentifier(private$conn, groupByCol))
+        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, groupByCol))
+      }
+      if (length(groupingCols) > 0) {
+        query <- sprintf("%s GROUP BY %s", query, paste(groupingCols, collapse = ", "))
       }
       if (!is.null(orderBy) && orderBy != "") {
-        aggAlias <- tolower(aggregation)
-        if (!(orderBy %in% c(validCols, aggAlias))) {
+        aggAlias <- paste0("_", tolower(aggregation))
+        allowedOrderCols <- c(validCols, aggAlias, "_delta", "_pct_change")
+
+        if (!(orderBy %in% allowedOrderCols)) {
           return(jsonlite::toJSON(list(error = "Invalid orderBy column targeted.")))
         }
         if (!sortDir %in% c("ASC", "DESC")) sortDir <- "ASC"
@@ -308,6 +359,24 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
       )
 
+      # Map sids to scenario names
+      if (analysisMode == "STANDARD") {
+        if ("_sid" %in% names(resDf)) {
+          mappedNames <- private$scenarioMap[as.character(resDf$`_sid`)]
+          resDf$`_scenario_name` <- ifelse(is.na(mappedNames), paste("Scenario", resDf$`_sid`), mappedNames)
+          resDf$`_sid` <- NULL
+          resDf <- resDf[, c("_scenario_name", setdiff(names(resDf), "_scenario_name")), drop = FALSE]
+        }
+      } else {
+        targetSid <- setdiff(validatedSids, baselineSid)[1]
+        if (is.na(targetSid)) targetSid <- baselineSid
+        targetName <- private$scenarioMap[as.character(targetSid)]
+        baseName <- private$scenarioMap[as.character(baselineSid)]
+        resDf$`_target_scenario` <- ifelse(is.na(targetName), paste("Scenario", targetSid), targetName)
+        resDf$`_baseline_scenario` <- ifelse(is.na(baseName), paste("Scenario", baselineSid), baseName)
+        resDf <- resDf[, c("_target_scenario", "_baseline_scenario", setdiff(names(resDf), c("_target_scenario", "_baseline_scenario"))), drop = FALSE]
+      }
+
       truncated <- FALSE
       if (nrow(resDf) > safeLimit) {
         resDf <- resDf[seq_len(safeLimit), , drop = FALSE]
@@ -329,7 +398,8 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     conn = NULL,
     ioConfig = NULL,
     allowedSids = NULL,
-    scenIdNameMap = NULL,
+    customscenIdNameMap = character(),
+    scenarioMap = NULL,
     getSymbolType = function(symType) {
       if (symType %in% c("dropdown", "set", "date", "daterange", "custom", "hot", "dt", "string")) {
         return("string")
