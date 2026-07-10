@@ -415,7 +415,7 @@ if (is.null(errMsg)) {
   } else {
     config$activateModules$remoteExecution <- FALSE
   }
-  if (!identical(Sys.getenv("AI_ASSISTANT_CONFIG"), "")) {
+  if (!identical(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"), "")) {
     flog.info("AI Assistant config found")
     if (!length(config$aiAssistant)) {
       config$aiAssistant <- list()
@@ -429,7 +429,7 @@ if (is.null(errMsg)) {
         if (isFALSE(config$aiAssistant$enable)) {
           FALSE
         } else {
-          aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("AI_ASSISTANT_CONFIG"))
+          aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"))
           config$aiAssistant$apiKeys <- aiAssistantTmp$apiKeys
           config$aiAssistant$supportedModels <- aiAssistantTmp$supportedModels
           TRUE

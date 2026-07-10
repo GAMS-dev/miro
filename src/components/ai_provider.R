@@ -383,7 +383,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     ),
     debugFile = NULL,
     initialize = function(config = NULL, apiKeys = NULL) {
-      debugFileTmp <- trimws(Sys.getenv("AI_ASSISTANT_DEBUG_FILE_PATH", ""))
+      debugFileTmp <- trimws(Sys.getenv("MIRO_AI_ASSISTANT_DEBUG_FILE_PATH", ""))
       if (!identical(debugFileTmp, "")) {
         self$debugFile <- debugFileTmp
       }
