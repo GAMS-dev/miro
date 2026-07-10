@@ -45,7 +45,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           activeScenariosDf$name[namesNeedRemapping] <- private$customscenIdNameMap[sidNameMapIds[namesNeedRemapping]]
         }
       }
-      private$scenarioMap <- setNames(activeScenariosDf$name, activeScenariosDf$sid)
+      private$scenarioMap <- setNames(as.character(activeScenariosDf$sid), activeScenariosDf$name)
 
       allSymbols <- private$dbSchema$getDbTableNames()
       databaseSymbols <- list()
@@ -117,13 +117,75 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         )
       }
       combinedContext <- list(
-        activeScenarios = activeScenariosDf,
+        activeScenarios = activeScenariosDf[, c("name", "tags"), drop = FALSE],
         databaseSymbols = databaseSymbols
       )
 
       return(jsonlite::toJSON(combinedContext, auto_unbox = TRUE, pretty = TRUE))
     },
     getToolSchema = function() {
+      propertiesList <- list(
+        symbolName = list(type = "string", description = "The technical symbol identifier string from the databaseSymbols layout (e.g., table names for parameters or scalars)."),
+        selectColumn = list(type = "string", description = "Optional. The specific column to aggregate. CRITICAL: If you select ONLY a numeric value column during a standard query, you will lose the descriptive label columns (e.g., 'mac', 'gov', 'sector'). To retain context, you should OMIT this parameter to return all columns (equivalent to SELECT *)."),
+        aggregation = list(type = "string", enum = c("SUM", "AVG", "MAX", "MIN", "COUNT", "NONE"), description = "Math aggregation to perform on the database level."),
+        groupByColumn = list(type = "string", description = "Optional index column used to group calculations. CRITICAL: If you use groupByColumn, you MUST also provide a valid aggregation (e.g., SUM, MAX, AVG) and a selectColumn. Do not use groupByColumn with aggregation='NONE'."),
+        scenarioNames = list(type = "array", items = list(type = "string"), description = "An array of scenario names pulled from the activeScenarios block matching the user's request."),
+        filters = list(
+          type = "array",
+          description = "Optional. An array of filter conditions to apply to the rows.",
+          items = list(
+            type = "object",
+            properties = list(
+              column = list(
+                type = "string",
+                description = "The name of the column to filter on."
+              ),
+              operator = list(
+                type = "string",
+                enum = c("=", "!=", ">", "<", "LIKE", "IN"),
+                description = "The SQL comparison operator."
+              ),
+              value = list(
+                type = "string",
+                description = "The value to filter by."
+              )
+            ),
+            required = c("column", "operator", "value")
+          )
+        ),
+        orderBy = list(
+          type = "string",
+          description = "Optional. The column to sort results by. CRITICAL: If analysisMode is DIFFERENCE, use '_delta'. If PERCENT_CHANGE, use '_pct_change'. For STANDARD mode aggregation, use the aggregation alias with a leading underscore (e.g., '_sum', '_max', '_count'). Otherwise, use the target column name."
+        ),
+        sortDirection = list(
+          type = "string",
+          enum = c("ASC", "DESC"),
+          description = "Optional. Pairs with orderBy. Use DESC for finding highest values/bottlenecks, ASC for lowest."
+        ),
+        limit = list(
+          type = "integer",
+          description = "Optional. Maximum number of rows to return. Default is 50. Use a small limit (e.g., 5) if you just need to inspect data structure or find unique values."
+        )
+      )
+
+      requiredList <- c("symbolName", "scenarioNames")
+
+      # Conditionally add comparison features ONLY if >1 scenario exists
+      if (length(private$allowedSids) > 1) {
+        propertiesList$analysisMode <- list(
+          type = "string",
+          enum = c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"),
+          description = "Optional. STANDARD returns normal values. DIFFERENCE calculates (Target - Baseline). PERCENT_CHANGE calculates ((Target - Baseline)/Baseline)*100."
+        )
+        propertiesList$baselineScenarioName <- list(
+          type = "string",
+          description = "Required if analysisMode is DIFFERENCE or PERCENT_CHANGE. Defines which scenario name in scenarioNames acts as the baseline."
+        )
+      } else {
+        # If only 1 scenario, force the orderBy description to drop delta references
+        propertiesList$orderBy$description <- "Optional. The column to sort results by. For aggregation, use the alias with a leading underscore (e.g., '_sum'). Otherwise, use the target column name."
+      }
+
       return(list(
         list(
           name = "queryScenarioDatabase",
@@ -131,59 +193,8 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows.",
           parameters = list(
             type = "object",
-            properties = list(
-              symbolName = list(type = "string", description = "The technical symbol identifier string from the databaseSymbols layout (e.g., table names for parameters or scalars)."),
-              selectColumn = list(type = "string", description = "Optional. The specific column to aggregate or extract. If omitted, ALL columns for this symbol will be returned (equivalent to SELECT *)."),
-              aggregation = list(type = "string", enum = c("SUM", "AVG", "MAX", "MIN", "COUNT", "NONE"), description = "Math aggregation to perform on the database level."),
-              groupByColumn = list(type = "string", description = "Optional index column used to group calculations. CRITICAL: If you use groupByColumn, you MUST also provide a valid aggregation (e.g., SUM, MAX, AVG) and a selectColumn. Do not use groupByColumn with aggregation='NONE'."),
-              scenarioIds = list(type = "array", items = list(type = "integer"), description = "An array of internal numerical database sids pulled from the activeScenarios block matching the user's scenario request context."),
-              analysisMode = list(
-                type = "string",
-                enum = c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"),
-                description = "Optional. STANDARD returns normal values. DIFFERENCE calculates (Target - Baseline). PERCENT_CHANGE calculates ((Target - Baseline)/Baseline)*100."
-              ),
-              baselineScenarioId = list(
-                type = "integer",
-                description = "Required if analysisMode is DIFFERENCE or PERCENT_CHANGE. Defines which scenario ID in scenarioIds acts as the baseline."
-              ),
-              filters = list(
-                type = "array",
-                description = "Optional. An array of filter conditions to apply to the rows.",
-                items = list(
-                  type = "object",
-                  properties = list(
-                    column = list(
-                      type = "string",
-                      description = "The name of the column to filter on."
-                    ),
-                    operator = list(
-                      type = "string",
-                      enum = c("=", "!=", ">", "<", "LIKE", "IN"),
-                      description = "The SQL comparison operator."
-                    ),
-                    value = list(
-                      type = "string",
-                      description = "The value to filter by."
-                    )
-                  ),
-                  required = c("column", "operator", "value")
-                )
-              ),
-              orderBy = list(
-                type = "string",
-                description = "Optional. The column to sort results by. CRITICAL: If analysisMode is DIFFERENCE, use '_delta'. If PERCENT_CHANGE, use '_pct_change'. For STANDARD mode aggregation, use the aggregation alias with a leading underscore (e.g., '_sum', '_max', '_count'). Otherwise, use the target column name."
-              ),
-              sortDirection = list(
-                type = "string",
-                enum = c("ASC", "DESC"),
-                description = "Optional. Pairs with orderBy. Use DESC for finding highest values/bottlenecks, ASC for lowest."
-              ),
-              limit = list(
-                type = "integer",
-                description = "Optional. Maximum number of rows to return. Default is 50. Use a small limit (e.g., 5) if you just need to inspect data structure or find unique values."
-              )
-            ),
-            required = c("symbolName", "scenarioIds")
+            properties = propertiesList,
+            required = requiredList
           )
         )
       ))
@@ -202,13 +213,21 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       selectCol <- args$selectColumn
       groupByCol <- args$groupByColumn
       filters <- args$filters
-      scenarioIds <- args$scenarioIds
+      requestedNames <- args$scenarioNames
+      scenarioIds <- as.integer(private$scenarioMap[requestedNames])
+      if (any(is.na(scenarioIds))) {
+        return(jsonlite::toJSON(list(error = "Access Denied: Requested `scenarioNames` are not available or loaded in the current active session context."), auto_unbox = TRUE))
+      }
       aggregation <- if (is.null(args$aggregation)) "NONE" else toupper(args$aggregation)
       analysisMode <- if (is.null(args$analysisMode)) "STANDARD" else toupper(args$analysisMode)
       if (!(analysisMode %in% c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"))) {
         return(jsonlite::toJSON(list(error = sprintf("Invalid analysisMode '%s'. Must be STANDARD, DIFFERENCE, or PERCENT_CHANGE.", analysisMode)), auto_unbox = TRUE))
       }
-      baselineSid <- args$baselineScenarioId
+      baselineName <- args$baselineScenarioName
+      baselineSid <- if (!is.null(baselineName)) as.integer(private$scenarioMap[baselineName]) else NULL
+      if (any(is.na(baselineSid))) {
+        return(jsonlite::toJSON(list(error = "Access Denied: Requested `baselineScenarioName` is not available or loaded in the current active session context."), auto_unbox = TRUE))
+      }
       orderBy <- args$orderBy
       sortDir <- if (is.null(args$sortDirection)) "ASC" else toupper(args$sortDirection)
 
@@ -253,7 +272,6 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           } else {
             escSelect
           }
-          selectExpr <- sprintf("%s, %s", DBI::dbQuoteIdentifier(private$conn, "_sid"), selectExpr)
         } else {
           if (length(validatedSids) < 2) {
             return(jsonlite::toJSON(list(error = "Logic Error: You must provide at least two valid scenarioIds in the array to calculate a DIFFERENCE or PERCENT_CHANGE."), auto_unbox = TRUE))
@@ -322,15 +340,8 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       # Step F: Grouping evaluation closure
-      groupingCols <- c()
-      if (analysisMode == "STANDARD" && aggregation != "NONE") {
-        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, "_sid"))
-      }
       if (!is.null(groupByCol) && groupByCol != "") {
-        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, groupByCol))
-      }
-      if (length(groupingCols) > 0) {
-        query <- sprintf("%s GROUP BY %s", query, paste(groupingCols, collapse = ", "))
+        query <- sprintf("%s GROUP BY %s", query, DBI::dbQuoteIdentifier(private$conn, groupByCol))
       }
       if (!is.null(orderBy) && orderBy != "") {
         aggAlias <- paste0("_", tolower(aggregation))
@@ -358,24 +369,6 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           return(data.frame(error = sprintf("Database Engine Interface Error: %s", e$message)))
         }
       )
-
-      # Map sids to scenario names
-      if (analysisMode == "STANDARD") {
-        if ("_sid" %in% names(resDf)) {
-          mappedNames <- private$scenarioMap[as.character(resDf$`_sid`)]
-          resDf$`_scenario_name` <- ifelse(is.na(mappedNames), paste("Scenario", resDf$`_sid`), mappedNames)
-          resDf$`_sid` <- NULL
-          resDf <- resDf[, c("_scenario_name", setdiff(names(resDf), "_scenario_name")), drop = FALSE]
-        }
-      } else {
-        targetSid <- setdiff(validatedSids, baselineSid)[1]
-        if (is.na(targetSid)) targetSid <- baselineSid
-        targetName <- private$scenarioMap[as.character(targetSid)]
-        baseName <- private$scenarioMap[as.character(baselineSid)]
-        resDf$`_target_scenario` <- ifelse(is.na(targetName), paste("Scenario", targetSid), targetName)
-        resDf$`_baseline_scenario` <- ifelse(is.na(baseName), paste("Scenario", baselineSid), baseName)
-        resDf <- resDf[, c("_target_scenario", "_baseline_scenario", setdiff(names(resDf), c("_target_scenario", "_baseline_scenario"))), drop = FALSE]
-      }
 
       truncated <- FALSE
       if (nrow(resDf) > safeLimit) {

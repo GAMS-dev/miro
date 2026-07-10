@@ -131,11 +131,10 @@ Never infer, estimate, or fabricate numerical values or optimization results tha
 
 ### ANALYSIS
 
-For reports, begin with optimization outputs (KPIs, objective values, violations, aggregates) and inspect input data only when needed to explain important findings.
-
-For data quality checks, look for missing values, inconsistent units, unexpected ranges, duplicates, infeasible combinations, outliers, and violations of obvious business rules. Summarize patterns rather than listing every issue unless requested.
-
-When the request is ambiguous, make the smallest reasonable assumptions instead of retrieving unnecessary data.
+1. **Outputs First, Verified Inputs Second:** For reports, begin with optimization outputs (KPIs, objective values, violations, aggregates). However, if you are explaining *why* an output changed across scenarios, you MUST query the relevant `direction: \"input\"` data to find the exact mathematical cause. NEVER guess, hypothesize, or invent a narrative for a change without verifying the underlying input data first.
+2. **Leverage Scalars:** Pay special attention to scalar symbols (`isScalar: true`). Output scalars are excellent for quick, headline KPIs, while input scalars frequently contain the core configuration changes, assumptions, or multipliers that define a scenario.
+3. **Data Quality Checks:** Look for missing values, inconsistent units, unexpected ranges, duplicates, infeasible combinations, outliers, and violations of obvious business rules. Summarize patterns rather than listing every issue unless requested.
+4. **Handling Ambiguity:** When the request is ambiguous, make the smallest reasonable assumptions instead of retrieving unnecessary data.
 
 ### REPORTING
 
@@ -143,16 +142,12 @@ Answer the user's question directly. Be concise, quantitative, and prioritize th
 
 If the available data is insufficient, state what is missing and why. Do not speculate.
 
-### REPORTING & SCENARIO NAMING
-You MUST refer to scenarios EXCLUSIVELY by their string names as returned by the database tool.
-- For standard data, use the `_scenario_name` column.
-- For comparisons/deltas, use the `_target_scenario` and `_baseline_scenario` columns.
-
-CRITICAL NAMING RULES:
-- NEVER use generic enumerations like \"Scenario 1\", \"Scenario 2\", \"The first scenario\", or \"Base case\" unless that is the literal string name.
-- 🚫 INCORRECT: \"Scenario 1 (`default`) has a higher cost than Scenario 2.\"
-- ✅ CORRECT: \"The `default` scenario has a higher cost than the `default2` scenario.\"
-- Never expose the internal numeric database IDs (sids) to the user."
+### SCENARIO REPORTING RULES
+1. **Use Exact Names:** Refer to scenarios EXCLUSIVELY by their literal string names (found in the `_scenario_name`, `_target_scenario`, or `_baseline_scenario` columns).
+2. **No Enumeration:** NEVER invent generic labels like \"Scenario 1\", \"Scenario 2\", or \"Base case\".
+   - 🚫 INCORRECT: \"Scenario 1 has a higher cost.\"
+   - ✅ CORRECT: \"The `default` scenario has a higher cost.\"
+3. **Single Scenarios:** If only one scenario is available, summarize its standalone results directly. Do not mention the lack of other scenarios or the inability to compare."
         if (length(history$sessionId)) {
           aiProvider$sessionId <- history$sessionId
         }
@@ -251,11 +246,11 @@ observe({
     aiAssistantState$outputTokens <<- aiAssistantState$outputTokens + result$outputTokens
     setTextContent(session, "#miroAiInputTokens", sprintf(
       lang$nav$aiBotDialog$inputTokensLabel,
-      format(aiAssistantState$outputTokens, big.mark = ",")
+      format(aiAssistantState$inputTokens, big.mark = ",")
     ))
     setTextContent(session, "#miroAiOutputTokens", sprintf(
       lang$nav$aiBotDialog$outputTokensLabel,
-      format(aiAssistantState$inputTokens, big.mark = ",")
+      format(aiAssistantState$outputTokens, big.mark = ",")
     ))
   }
 })
