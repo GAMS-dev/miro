@@ -4,12 +4,16 @@ observe({
     if (is.null(dialogState$sidsToLoad)) {
       return()
     }
-    # append if last history item is not a context item, else overwrite
-    historyIdx <- length(aiAssistantState$chatHistory)
-    if (!is.null(aiAssistantState$chatHistory[[historyIdx]]$role)) {
-      historyIdx <- historyIdx + 1L
+    newSids <- unique(sort(dialogState$sidsToLoad))
+    if (!identical(newSids, aiAssistantState$activeSids)) {
+      aiAssistantState$activeSids <<- newSids
+      # append if last history item is not a context item, else overwrite
+      historyIdx <- length(aiAssistantState$chatHistory)
+      if (!is.null(aiAssistantState$chatHistory[[historyIdx]]$role)) {
+        historyIdx <- historyIdx + 1L
+      }
+      aiAssistantState$chatHistory[[historyIdx]] <<- list(dialogState$chatContext)
     }
-    aiAssistantState$chatHistory[[historyIdx]] <<- list(dialogState$chatContext)
     showModal(tagAppendAttributes(modalDialog(
       size = "l",
       easyClose = TRUE,
@@ -195,7 +199,7 @@ observeEvent(input$miroAiUserText, {
     ioConfig = ioConfig,
     assistantConfig = config$aiAssistant,
     model = input$miroAiModel,
-    allowedSids = dialogState$sidsToLoad,
+    allowedSids = aiAssistantState$activeSids,
     scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
   )

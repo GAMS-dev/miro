@@ -1826,6 +1826,7 @@ if (!is.null(errMsg)) {
           inputTokens = 0L,
           outputTokens = 0L,
           tempScen = NULL,
+          activeSids = NULL,
           chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
         )
       } else {
