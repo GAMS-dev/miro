@@ -1823,6 +1823,7 @@ if (!is.null(errMsg)) {
         aiAssistantState <- list(
           history = list(),
           sessionId = NULL,
+          model = NULL,
           inputTokens = 0L,
           outputTokens = 0L,
           tempScen = NULL,

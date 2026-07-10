@@ -41,7 +41,7 @@ renderAiTokenInfoContainer <- function(lang, inputTokens = 0L, outputTokens = 0L
     )
   )
 }
-renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE) {
+renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL) {
   tagList(
     tags$div(
       id = "miroAiChatLog",
@@ -76,6 +76,7 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
               inputId = "miroAiModel",
               label = NULL,
               choices = supportedModels,
+              selected = selectedModel,
               width = "100%",
               selectize = TRUE
             ),

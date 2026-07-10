@@ -26,7 +26,7 @@ observe({
       ),
       tags$div(
         class = "miro-ai-modal-body",
-        renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, aiAssistantState$chatHistory)
+        renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, aiAssistantState$chatHistory, selectedModel = aiAssistantState$model)
       )
     ), class = "ai-assistant-modal"))
   })
@@ -184,6 +184,7 @@ observeEvent(input$miroAiUserText, {
   userText <- input$miroAiUserText
   req(userText)
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
+  aiAssistantState$model <<- input$miroAiModel
   session$sendCustomMessage(
     "gms-addAiChatBubble",
     list(html = as.character(renderAiChatBubble(
@@ -198,7 +199,7 @@ observeEvent(input$miroAiUserText, {
     dbSchema = dbSchema,
     ioConfig = ioConfig,
     assistantConfig = config$aiAssistant,
-    model = input$miroAiModel,
+    model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
     scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
