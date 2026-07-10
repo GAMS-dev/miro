@@ -64,7 +64,7 @@ observeEvent(input$btAIOutput, {
 
 mAiTask <- NULL
 aiTask <- ExtendedTask$new(
-  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, history) {
+  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history) {
     mAiTask <<- mirai(
       {
         library(R6)

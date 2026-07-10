@@ -210,7 +210,7 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         if (item$type == "function_call") {
           hasToolCalls <- TRUE
           toolCalls[[length(toolCalls) + 1]] <- list(
-            id = item$id,
+            id = item$call_id,
             name = item$name,
             arguments = fromJSON(item$arguments)
           )
@@ -349,13 +349,14 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     apiKeys = NULL,
     allModels = list(
       OpenAI = c(
-        "GPT-5.5 (Flagship)" = "openai/gpt-5.5",
-        "GPT-5.5 Pro (Advanced Reasoning)" = "openai/gpt-5.5-pro",
-        "GPT-5.4 (Standard/Balanced)" = "openai/gpt-5.4",
-        "GPT-5.4 Mini (Fast/Cheap)" = "openai/gpt-5.4-mini",
-        "GPT-4.1 (Proven/Stable)" = "openai/gpt-4.1",
-        "GPT-4o (Legacy Standard)" = "openai/gpt-4o",
-        "GPT-4o Mini (Ultra-Cheap)" = "openai/gpt-4o-mini"
+        "GPT-5.6 (Best Overall)" = "openai/gpt-5.6",
+        "GPT-5.6 Pro (Deep Reasoning)" = "openai/gpt-5.6-pro",
+        "GPT-5.6 Terra (Balanced)" = "openai/gpt-5.6-terra",
+        "GPT-5.6 Luna (Fast & Affordable)" = "openai/gpt-5.6-luna",
+        "GPT-5.5 (Previous Flagship)" = "openai/gpt-5.5",
+        "GPT-5.5 Pro" = "openai/gpt-5.5-pro",
+        "GPT-5.4 (Affordable)" = "openai/gpt-5.4",
+        "GPT-5.4 Mini (Fast/Cheap)" = "openai/gpt-5.4-mini"
       ),
       Anthropic = c(
         "Claude Fable 5 (Long-horizon agents)" = "anthropic/claude-fable-5",
