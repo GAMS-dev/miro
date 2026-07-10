@@ -5,6 +5,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
   public = list(
     sessionId = NULL,
     history = NULL,
+    dataChanged = TRUE,
     debugFile = NULL,
     initialize = function(modelName, apiKey, debugFile = NULL) {
       private$modelName <- modelName
@@ -181,6 +182,10 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
       }
       if (!is.null(self$sessionId)) {
         payload$previous_response_id <- self$sessionId
+        if (self$dataChanged) {
+          # need to re-send instructions if context changed (i.e. data changed)
+          payload$instructions <- systemInstructions
+        }
       } else {
         # Only inject the system instruction if it's a brand new thread to save tokens
         payload$instructions <- systemInstructions

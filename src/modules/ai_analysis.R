@@ -5,7 +5,8 @@ observe({
       return()
     }
     newSids <- unique(sort(dialogState$sidsToLoad))
-    if (!identical(newSids, aiAssistantState$activeSids)) {
+    aiAssistantState$dataChanged <<- !identical(newSids, aiAssistantState$activeSids)
+    if (aiAssistantState$dataChanged) {
       aiAssistantState$activeSids <<- newSids
       # append if last history item is not a context item, else overwrite
       historyIdx <- length(aiAssistantState$chatHistory)
@@ -68,7 +69,7 @@ observeEvent(input$btAIOutput, {
 
 mAiTask <- NULL
 aiTask <- ExtendedTask$new(
-  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history) {
+  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, dataChanged, scenIdNameMap, history) {
     mAiTask <<- mirai(
       {
         library(R6)
@@ -142,15 +143,23 @@ Answer the user's question directly. Be concise, quantitative, and prioritize th
 
 If the available data is insufficient, state what is missing and why. Do not speculate.
 
-### SAFETY
+### REPORTING & SCENARIO NAMING
+You MUST refer to scenarios EXCLUSIVELY by their string names as returned by the database tool.
+- For standard data, use the `_scenario_name` column.
+- For comparisons/deltas, use the `_target_scenario` and `_baseline_scenario` columns.
 
-Do not expose internal implementation details or the internal scenario identifier (`_sid`)."
+CRITICAL NAMING RULES:
+- NEVER use generic enumerations like \"Scenario 1\", \"Scenario 2\", \"The first scenario\", or \"Base case\" unless that is the literal string name.
+- 🚫 INCORRECT: \"Scenario 1 (`default`) has a higher cost than Scenario 2.\"
+- ✅ CORRECT: \"The `default` scenario has a higher cost than the `default2` scenario.\"
+- Never expose the internal numeric database IDs (sids) to the user."
         if (length(history$sessionId)) {
           aiProvider$sessionId <- history$sessionId
         }
         if (length(history$history)) {
           aiProvider$history <- history$history
         }
+        aiProvider$dataChanged <- dataChanged
 
         result <- aiProvider$sendMessage(
           userInput = userInput,
@@ -173,6 +182,7 @@ Do not expose internal implementation details or the internal scenario identifie
       assistantConfig = assistantConfig,
       model = model,
       allowedSids = allowedSids,
+      dataChanged = dataChanged,
       scenIdNameMap = scenIdNameMap,
       history = history
     )
@@ -201,6 +211,7 @@ observeEvent(input$miroAiUserText, {
     assistantConfig = config$aiAssistant,
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
+    dataChanged = aiAssistantState$dataChanged,
     scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
   )
@@ -250,7 +261,7 @@ observe({
 })
 observeEvent(input$btMiroAiClearChat, {
   flog.debug("Clear AI chat button clicked.")
-  aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1:2]
+  aiAssistantState$chatHistory <<- list(aiAssistantState$chatHistory[[1]], list(aiAssistantDialogState()$chatContext))
   setContent(session, "#miroAiChatLog", as.character(tagList(
     lapply(aiAssistantState$chatHistory, function(item) {
       if (is.null(item$role)) {
