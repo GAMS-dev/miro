@@ -920,11 +920,15 @@ filterRendererData <- function(dataTmp, input, options) {
       return(dataTmp)
     }
 
-    return(dataTmp[
-      dataTmp[[options$filter$col]] >= filterTmp[1] &
-        dataTmp[[options$filter$col]] <= max(filterTmp[1], filterTmp[2]), ,
-      drop = FALSE
-    ])
+    filterValues <- dataTmp[[options$filter$col]]
+
+    keep <- !is.na(filterValues) &
+      filterValues >= filterTmp[1] &
+      filterValues <= filterTmp[2]
+
+    dataTmp <- dataTmp[keep, , drop = FALSE]
+
+    return(dataTmp)
   }
 
   dataTmp[

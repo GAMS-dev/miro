@@ -7,14 +7,14 @@ miroLeafletOutput <- function(id, height = NULL, options = NULL, path = NULL) {
     filterInput <- if (isTRUE(options$filter$date)) {
       dateRangeInput(
         ns("data_filter"),
-        label = NULL,
+        label = options$filter$label,
         start = options$filter$start,
         end = options$filter$end
       )
     } else {
       selectInput(
         ns("data_filter"),
-        label = NULL,
+        label = options$filter$label,
         choices = NULL,
         multiple = isTRUE(options$filter$multiple)
       )

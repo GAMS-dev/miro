@@ -158,7 +158,8 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
 
     if (type == "dtgraph") {
       output$datatable <- renderDTable(data,
-        options = dtOptions, roundPrecision = roundPrecision,
+        options = if (length(graphConfig$datatable)) graphConfig$datatable else dtOptions,
+        roundPrecision = roundPrecision,
         metadata = if (length(rendererOptions)) rendererOptions[["_metadata_"]]
       )
     }
