@@ -1,7 +1,11 @@
 import bootbox from 'bootbox';
 import { state, dom } from './state';
 import { escapeHtml, indirectEval, unicodeToHTMLID } from './utils';
-import { ADD_APP_WRAPPER_HTML, PLACEHOLDERS, SUPPORTED_FILE_TYPES } from './constants';
+import {
+  ADD_APP_WRAPPER_HTML,
+  PLACEHOLDERS,
+  SUPPORTED_FILE_TYPES,
+} from './constants';
 import { sendUpdateAppShinyEvent } from './api';
 
 export function exitOverlayMode() {
@@ -46,11 +50,92 @@ export function registerSelectizeInputs(selector = '') {
   });
 }
 
+export const AI_PROVIDERS = [
+  {
+    id: 'OpenAI',
+    name: 'openai',
+    label: 'OpenAI',
+    url: 'https://platform.openai.com/api-keys',
+    placeholder: 'sk-proj-...',
+  },
+  {
+    id: 'Google',
+    name: 'google',
+    label: 'Google',
+    url: 'https://aistudio.google.com/app/apikey',
+    placeholder: 'AIzaSy...',
+  },
+  {
+    id: 'Anthropic',
+    name: 'anthropic',
+    label: 'Anthropic',
+    url: 'https://console.anthropic.com/settings/keys',
+    placeholder: 'sk-ant-...',
+  },
+];
+
+const testAiProviderApiKey = async (provider, apiKey) => {
+  if (apiKey.length < 10) {
+    return false;
+  }
+  let url = '';
+  let headers = {};
+
+  switch (provider) {
+    case 'openai':
+      url = 'https://api.openai.com/v1/models';
+      headers = { Authorization: `Bearer ${apiKey}` };
+      break;
+    case 'anthropic':
+      url = 'https://api.anthropic.com/v1/models';
+      headers = {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      };
+      break;
+    case 'google':
+      url = 'https://generativelanguage.googleapis.com/v1beta/models';
+      headers = { 'x-goog-api-key': apiKey };
+      break;
+    default:
+      return false;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response.status === 200;
+  } catch (error) {
+    console.error(
+      `Network or configuration error for ${provider}:`,
+      error.message,
+    );
+    return false;
+  }
+};
+
 export function openAdvancedSettingsDialog() {
   const appEnvBtn = $(this);
   const appKey = appEnvBtn.data('id') ?? '~$_newApp';
   const initialData = state.appEnvironment[appKey] ?? {};
   const data = { ...initialData };
+  let aiConfig = { apiKeys: [] };
+  try {
+    if (data.MIRO_AI_ASSISTANT_CONFIG?.value) {
+      aiConfig = JSON.parse(data.MIRO_AI_ASSISTANT_CONFIG.value);
+    }
+  } catch (e) {
+    console.warn('Failed to parse MIRO_AI_ASSISTANT_CONFIG JSON.', e);
+  }
   const maxEnvVars = 47;
 
   const createRow = (
@@ -128,6 +213,9 @@ export function openAdvancedSettingsDialog() {
               <li class="nav-item" role="presentation">
                 <button class="nav-link" id="conf-permissions-tab" data-toggle="tab" data-target="#conf-permissions" type="button" role="tab" aria-controls="conf-permissions" aria-selected="false">Scenario Permissions</button>
               </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conf-ai-assistant-tab" data-toggle="tab" data-target="#conf-ai-assistant" type="button" role="tab" aria-controls="conf-ai-assistant" aria-selected="false">AI Assistant</button>
+              </li>
             </ul>
             <div class="tab-content pt-3" id="confTabContent">
               <div id="form-error" class="text-danger mb-2"></div>
@@ -148,7 +236,8 @@ export function openAdvancedSettingsDialog() {
         .map(
           (permType) => `MIRO_DEFAULT_SCEN_PERM_${permType}`,
         )
-        .includes(envName),
+        .includes(envName)
+          && envName !== 'MIRO_AI_ASSISTANT_CONFIG',
     )
     .map((envName) => createRow(
       escapeHtml(envName),
@@ -193,6 +282,48 @@ export function openAdvancedSettingsDialog() {
                   </tbody>
                 </table>
               </div>
+
+              <div class="tab-pane fade" id="conf-ai-assistant" role="tabpanel" aria-labelledby="conf-ai-assistant-tab">
+                <p class="text-muted small">
+                  Enter your API keys to enable various AI models for the MIRO AI Assistant.
+                  Keys are securely verified automatically when you finish typing and click outside the field.
+                </p>
+                <table class="table table-bordered">
+                  <thead>
+                      <tr>
+                          <th style="width: 20%">AI Provider</th>
+                          <th>Token</th>
+                          <th style="width: 15%">Status</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    ${AI_PROVIDERS.map((provider) => {
+    const providerData = aiConfig.apiKeys?.find((k) => k.provider === provider.name);
+    const hasKey = providerData && providerData.key !== '';
+    return `
+                      <tr>
+                        <td class="align-middle">${provider.label}</td>
+                        <td>
+                          <input type="password"
+                            id="key${provider.id}"
+                            class="form-control env-name"
+                            value="${hasKey ? escapeHtml(providerData.key) : ''}"
+                            placeholder="${provider.placeholder}">
+                          <small class="form-text text-muted" style="margin-top: 5px">
+                            <span>Don't have a key?</span>
+                            <a href="${provider.url}" target="_blank" rel="noopener noreferrer">Get one here</a>.
+                          </small>
+                        </td>
+                        <td class="align-middle text-center">
+                          <span id="status${provider.id}" class="badge badge-${hasKey ? 'success' : 'secondary'}">
+                            ${hasKey ? 'Saved' : 'Not Configured'}
+                          </span>
+                        </td>
+                      </tr>`;
+  }).join('')}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>`;
 
@@ -226,6 +357,26 @@ export function openAdvancedSettingsDialog() {
               value: envValue,
             };
           });
+
+          const apiKeys = [];
+          AI_PROVIDERS.forEach((provider) => {
+            const inputElement = document.getElementById(`key${provider.id}`);
+            if (inputElement && inputElement.value.trim() !== '') {
+              apiKeys.push({
+                key: inputElement.value.trim(),
+                provider: provider.name,
+              });
+            }
+          });
+
+          if (apiKeys.length > 0) {
+            const envName = 'MIRO_AI_ASSISTANT_CONFIG';
+            seenEnvNames.add(envName);
+            updatedData[envName] = {
+              description: 'MIRO AI Assistant Configuration',
+              value: JSON.stringify({ apiKeys }),
+            };
+          }
 
           $('#env-rows tr').each(function () {
             const envName = $(this).find('.env-name').val().trim();
@@ -274,6 +425,57 @@ export function openAdvancedSettingsDialog() {
 
   $('#conf-permissions [rel=tooltip]').tooltip({ placement: 'right' });
 
+  AI_PROVIDERS.forEach((provider) => {
+    const inputElement = document.getElementById(`key${provider.id}`);
+    const badgeElement = document.getElementById(`status${provider.id}`);
+
+    if (!inputElement || !badgeElement) return;
+
+    inputElement.addEventListener('blur', async (e) => {
+      const keyValue = e.target.value.trim();
+      inputElement.classList.remove('is-valid', 'is-invalid');
+
+      if (!keyValue) {
+        badgeElement.className = 'badge badge-secondary';
+        badgeElement.innerText = 'Not Configured';
+        return;
+      }
+
+      badgeElement.className = 'badge badge-info';
+      badgeElement.innerText = 'Validating...';
+
+      $('.confirm-btn').attr('disabled', true);
+
+      try {
+        console.debug(`Validating API key for AI provider: ${provider.name}`);
+        const isValid = await testAiProviderApiKey(provider.name, keyValue);
+
+        if (isValid) {
+          console.debug(
+            `Valid API key for AI provider: ${provider.name} added!`,
+          );
+          inputElement.classList.add('is-valid');
+          badgeElement.className = 'badge badge-success';
+          badgeElement.innerText = 'Connected';
+        } else {
+          console.debug(`Invalid API key for AI provider: ${provider.name}`);
+          inputElement.classList.add('is-invalid');
+          badgeElement.className = 'badge badge-danger';
+          badgeElement.innerText = 'Invalid Key';
+        }
+      } catch (err) {
+        console.warn(
+          `Failed validating API key for AI provider: ${provider.name}. Error: ${err}`,
+        );
+        inputElement.classList.add('is-invalid');
+        badgeElement.className = 'badge badge-danger';
+        badgeElement.innerText = 'Connection Error';
+      } finally {
+        $('.confirm-btn').attr('disabled', false);
+      }
+    });
+  });
+
   const tableBody = $('#env-rows');
 
   tableBody.on('click', '.toggle-visibility', function () {
@@ -304,36 +506,37 @@ export function openAdvancedSettingsDialog() {
 export function refreshConfigList() {
   state.currentAppId = null;
   state.currentAppLogo = null;
-  const appsList = state.currentConfigList.reduce((html, configData, indexRaw) => {
-    const appNameSafe = escapeHtml(configData.alias);
-    const descSafe = escapeHtml(configData.desc);
-    const { id, isDirty } = configData;
-    const appIdSafe = escapeHtml(id);
-    const idEncoded = unicodeToHTMLID(id);
-    const index = indexRaw + 1;
-    state.appEnvironment[idEncoded] = configData.appEnv;
-    let groupOptions = configData.groups != null
-      ? configData.groups.reduce(
-        (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}" selected>${escapeHtml(groupName.toLowerCase())}</option>`,
-        '',
-      )
-      : '';
-    if (state.currentGroupList.length > 0) {
-      let nonSelectedGroups = state.currentGroupList;
-      if (configData.groups != null) {
-        nonSelectedGroups = state.currentGroupList.filter(
-          (groupName) => !configData.groups.includes(groupName),
+  const appsList = state.currentConfigList.reduce(
+    (html, configData, indexRaw) => {
+      const appNameSafe = escapeHtml(configData.alias);
+      const descSafe = escapeHtml(configData.desc);
+      const { id, isDirty } = configData;
+      const appIdSafe = escapeHtml(id);
+      const idEncoded = unicodeToHTMLID(id);
+      const index = indexRaw + 1;
+      state.appEnvironment[idEncoded] = configData.appEnv;
+      let groupOptions = configData.groups != null
+        ? configData.groups.reduce(
+          (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}" selected>${escapeHtml(groupName.toLowerCase())}</option>`,
+          '',
+        )
+        : '';
+      if (state.currentGroupList.length > 0) {
+        let nonSelectedGroups = state.currentGroupList;
+        if (configData.groups != null) {
+          nonSelectedGroups = state.currentGroupList.filter(
+            (groupName) => !configData.groups.includes(groupName),
+          );
+        }
+        groupOptions += nonSelectedGroups.reduce(
+          (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}">${escapeHtml(groupName.toLowerCase())}</option>`,
+          '',
         );
       }
-      groupOptions += nonSelectedGroups.reduce(
-        (optionsHTML, groupName) => `${optionsHTML}<option value="${escapeHtml(groupName)}">${escapeHtml(groupName.toLowerCase())}</option>`,
-        '',
-      );
-    }
-    const dirtyMarker = isDirty === true
-      ? '<span class="dirty-app-button app-corner-button" title="The app is not registered on GAMS Engine. You will not be able to solve your model. Update app to fix this issue."><i class="fas fa-bolt"></i></span>'
-      : '';
-    return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${idEncoded}">
+      const dirtyMarker = isDirty === true
+        ? '<span class="dirty-app-button app-corner-button" title="The app is not registered on GAMS Engine. You will not be able to solve your model. Update app to fix this issue."><i class="fas fa-bolt"></i></span>'
+        : '';
+      return `${html}<div class="col-xxl-3 col-lg-4 col-sm-6 col-12 miro-app-item" data-id="${idEncoded}">
         <div id="appBox_${idEncoded}" class="app-box app-box-draggable launch-app-box app-box-fixed-height" data-id="${idEncoded}" data-index="${index}" draggable="true">
           <div id="appSpinner_${idEncoded}" class="app-spinner">
             <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
@@ -371,12 +574,18 @@ export function refreshConfigList() {
               <div class="app-id-field app-id-position" title="${appIdSafe}">
                 <small>ID: <i>${appIdSafe}</i></small>
               </div>
-              ${(configData.version != null && configData.version !== '') ? `<div class="app-id-field app-version-field" title="${escapeHtml(configData.version)}">
+              ${configData.version != null && configData.version !== ''
+    ? `<div class="app-id-field app-version-field" title="${escapeHtml(configData.version)}">
                   <small><i>${escapeHtml(configData.version)}</i></small>
-                </div>` : ''}
-              ${(configData.authors != null && configData.authors.length > 0) ? `<div class="app-id-field app-authors-field" title="${escapeHtml(configData.authors.join(', '))}">
+                </div>`
+    : ''
+}
+              ${configData.authors != null && configData.authors.length > 0
+    ? `<div class="app-id-field app-authors-field" title="${escapeHtml(configData.authors.join(', '))}">
                   <small><i>by ${escapeHtml(configData.authors.join(', '))}</i></small>
-                </div>` : ''}
+                </div>`
+    : ''
+}
             </div>
           </div>
         </div>
@@ -388,7 +597,9 @@ export function refreshConfigList() {
         <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${idEncoded}"><i class="fas fa-xmark"></i></a>
       </div>
     </div>`;
-  }, '');
+    },
+    '',
+  );
   Shiny.unbindAll(document.getElementById('appsWrapper'));
   dom.$appsWrapper.html(
     `${appsList}<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-sm-6 col-12">${ADD_APP_WRAPPER_HTML}</div>`,
@@ -410,7 +621,8 @@ export function expandAddAppForm() {
 
   $('#addAppWrapper').css('z-index', 11);
   dom.$overlay.data('current', $('#addAppWrapper')).fadeIn(300);
-  $('#addAppWrapper').html(`<div class="app-box app-box-expanded" id="expandedAddAppWrapper">
+  $('#addAppWrapper')
+    .html(`<div class="app-box app-box-expanded" id="expandedAddAppWrapper">
                         <div id="addAppSpinner" class="app-spinner">
                           <div class="progress" style="position:relative;top:50%;margin-left:auto;margin-right:auto;width:90%">
                             <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>

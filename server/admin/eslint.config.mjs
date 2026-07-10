@@ -32,6 +32,7 @@ export default [
     },
     rules: {
       "func-names": ["error", "never"],
+      "no-console": ["warn", { allow: ["debug", "warn", "error"] }],
     },
   },
 ];
