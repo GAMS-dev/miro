@@ -5,11 +5,81 @@ import {
 } from './ui';
 import {
   sendAddRequest, sendUpdateRequest, sendRemoveRequest, sendUpdateAppOrderRequest,
+  sendUpdateAppShinyEvent,
 } from './api';
 import { escapeHtml, HTMLIDToUnicode, unicodeToHTMLID } from './utils';
 import { PLACEHOLDERS, SUPPORTED_FILE_TYPES } from './constants';
 
 export default function setupEventListeners() {
+  $(document).on('keyup', (event) => {
+    if (event.key === 'Enter' && !event.ctrlKey) {
+      if (
+        $('#shiny-modal').find('.selectize-input.input-active').length > 0
+        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')
+      ) {
+        return;
+      }
+      $('.bt-gms-confirm:visible:enabled').trigger('click');
+    } // ENTER will confirm modal dialogues
+  });
+
+  $(document).on('dragover', '.drag-drop-area', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  $(document).on('dragenter', '.drag-drop-area', function (e) {
+    if (state.reorderAppsMode) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    state.dragAddAppCounter += 1;
+    $(this).addClass('drag-drop-area-dragover');
+  });
+
+  $(document).on('dragleave', '.drag-drop-area', function (e) {
+    if (state.reorderAppsMode) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    state.dragAddAppCounter -= 1;
+    if (state.dragAddAppCounter === 0) {
+      $(this).removeClass('drag-drop-area-dragover');
+    }
+  });
+
+  $(document).on('shiny:inputchanged', (event) => {
+    const eventName = event.name;
+    if (
+      eventName.startsWith('appFiles_')
+      && event.value != null
+      && event.value.length > 0
+    ) {
+      const appId = HTMLIDToUnicode(eventName.substring(9));
+      const fileTypes = event.value.map((fileTmp) => fileTmp.name.split('.').pop().toLowerCase());
+      state.uploadAppDataFinished[appId] = true;
+      setTimeout(() => sendUpdateAppShinyEvent(appId, fileTypes), 800);
+    }
+  });
+
+  $(document).on('click', '#btLogin', () => {
+    $('#loginFormWrapper').hide();
+    $('#loginError').hide();
+    $('#loginLoadingIndicator').show();
+    Shiny.setInputValue(
+      'loginRequest',
+      {
+        user: document.getElementById('loginUser').value,
+        password: document.getElementById('loginPassword').value,
+      },
+      {
+        priority: 'event',
+      },
+    );
+  });
+
   const $appsWrapper = $('#appsWrapper');
 
   $appsWrapper.on('click', '#addAppBox', expandAddAppForm);
