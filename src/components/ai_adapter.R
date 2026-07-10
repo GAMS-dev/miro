@@ -134,7 +134,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               symbolName = list(type = "string", description = "The technical symbol identifier string from the databaseSymbols layout (e.g., table names for parameters or scalars)."),
               selectColumn = list(type = "string", description = "Optional. The specific column to aggregate or extract. If omitted, ALL columns for this symbol will be returned (equivalent to SELECT *)."),
               aggregation = list(type = "string", enum = c("SUM", "AVG", "MAX", "MIN", "COUNT", "NONE"), description = "Math aggregation to perform on the database level."),
-              groupByColumn = list(type = "string", description = "Optional index column used to slice or group calculations (e.g., indices, set dimensions, or scenario IDs)."),
+              groupByColumn = list(type = "string", description = "Optional index column used to group calculations. CRITICAL: If you use groupByColumn, you MUST also provide a valid aggregation (e.g., SUM, MAX, AVG) and a selectColumn. Do not use groupByColumn with aggregation='NONE'."),
               scenarioIds = list(type = "array", items = list(type = "integer"), description = "An array of internal numerical database sids pulled from the active_scenarios block matching the user's scenario request context."),
               filters = list(
                 type = "array",
@@ -240,6 +240,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
 
       query <- sprintf("SELECT %s", selectExpr)
       if (!is.null(groupByCol) && groupByCol != "") {
+        if (aggregation == "NONE") {
+          return(jsonlite::toJSON(list(error = "Logic Error: You provided a groupByColumn but no aggregation method. You must specify an aggregation like SUM, MAX, or COUNT when grouping data.")))
+        }
         if (!(groupByCol %in% validCols)) {
           return(jsonlite::toJSON(list(error = "Invalid groupBy column targeted.")))
         }
