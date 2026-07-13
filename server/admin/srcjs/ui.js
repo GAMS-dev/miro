@@ -306,7 +306,7 @@ export function openAdvancedSettingsDialog() {
                         <td>
                           <input type="password"
                             id="key${provider.id}"
-                            class="form-control env-name"
+                            class="form-control"
                             value="${hasKey ? escapeHtml(providerData.key) : ''}"
                             placeholder="${provider.placeholder}">
                           <small class="form-text text-muted" style="margin-top: 5px">
