@@ -817,7 +817,7 @@ ipcRenderer.on(
           );
           const inputElement = document.getElementById(`key${provider.id}`);
           const badgeElement = document.getElementById(`status${provider.id}`);
-          inputElement.value = apiKey
+          inputElement.value = apiKey.key;
           inputElement.classList.add('is-valid');
           badgeElement.className = 'badge badge-success';
           badgeElement.innerText = lang['ai-key-status-connected'];

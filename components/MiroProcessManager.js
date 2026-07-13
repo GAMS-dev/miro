@@ -234,7 +234,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     });
 
     const aiAssistantConfigRaw = await aiAssistantConfigPromise;
-    if (aiAssistantConfigRaw?.apiKeys.length > 0) {
+    if (aiAssistantConfigRaw?.apiKeys?.length > 0) {
       procEnv.MIRO_AI_ASSISTANT_CONFIG = JSON.stringify(aiAssistantConfigRaw);
       // TODO: Disable debug logging by default
       procEnv.MIRO_AI_ASSISTANT_DEBUG_FILE_PATH = path.join(this.miroWorkspaceDir, 'ai_assistant_trace.log');
