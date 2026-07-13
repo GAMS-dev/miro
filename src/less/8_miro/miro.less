@@ -37,13 +37,13 @@ header.main-header {
   overflow:auto;
   position:relative;
 }
-.readme-wrapper table{
+.miro-markdown table{
   margin: 10px 0;
 }
-.readme-wrapper td{
+.miro-markdown td{
   padding: 10px;
 }
-.readme-wrapper tr:nth-child(even){
+.miro-markdown tr:nth-child(even){
   .responsiveDark({
      background-color: @table-row-even;
   },
@@ -51,7 +51,7 @@ header.main-header {
      background-color: @table-row-even-dark;
   });
 }
-.readme-wrapper tr:nth-child(odd){
+.rmiro-markdown tr:nth-child(odd){
   .responsiveDark({
      background-color: @table-row-odd;
   },
@@ -59,7 +59,7 @@ header.main-header {
      background-color: @table-row-odd-dark;
   });
 }
-.readme-wrapper tr:hover {
+.miro-markdown tr:hover {
   .responsiveDark({
      background-color: @table-hover;
   },
@@ -67,7 +67,7 @@ header.main-header {
      background-color: @table-hover-dark;
   });
 }
-.readme-wrapper th {
+.miro-markdown th {
   position: -webkit-sticky;
   position: sticky;
   z-index:500;
@@ -80,7 +80,7 @@ header.main-header {
      background: @modal-bg-dark;
   });
 }
-.readme-wrapper code {
+.miro-markdown code {
   .responsiveDark({
      color: @primary-color;
      background-color: @highlight-bg;
@@ -2057,7 +2057,7 @@ li.drop-index-item[data-col-hidden="true"] {
     z-index:3000;
 }
 .miro-tabset-group-1,
-.readme-wrapper a {
+.miro-markdown a {
   .responsiveDark({
      color: @tabset-group-out !important;
   },
@@ -2066,7 +2066,7 @@ li.drop-index-item[data-col-hidden="true"] {
   });
 }
 .miro-tabset-group-1:hover,
-.readme-wrapper a:hover {
+.miro-markdown a:hover {
   .responsiveDark({
      color: @darken-1673785d !important;
   },
@@ -3257,11 +3257,17 @@ li.drop-index-item[data-col-hidden="true"] {
   display: flex;
   gap: 10px;
   align-items: center;
-  border: 1px solid #ccc;
   border-radius: 16px;
   padding: 12px 16px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  .responsiveDark({
+    background: @modal-bg;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }, {
+    background: @modal-bg-dark;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  });
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -3289,7 +3295,13 @@ li.drop-index-item[data-col-hidden="true"] {
   display: inline-block;
   margin-left: 15px;
   margin-top: 8px;
-  color: #777777;
+  opacity: 0.65;
+  .responsiveDark({
+    color: @text-color;
+  },
+  {
+    color: @text-color-dark;
+  });
   font-size: 11px;
   font-family: monospace;
   display: flex;
@@ -3311,25 +3323,33 @@ li.drop-index-item[data-col-hidden="true"] {
   overflow-y: hidden;
   box-sizing: border-box;
 }
-.chat-bubble-wrapper {
+.miro-ai-chat-bubble-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
   max-width: 80%;
 }
-.chat-user {
+.miro-ai-chat-user {
   margin-left: auto;
 }
-.chat-assistant {
+.miro-ai-chat-assistant {
   margin-right: auto;
 }
-.chat-bubble {
+.miro-ai-chat-bubble {
   padding: 12px;
   border-radius: 8px;
   position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
-.chat-user .chat-bubble {
+.miro-ai-chat-bubble table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.miro-ai-chat-user .miro-ai-chat-bubble {
   .responsiveDark({
     background-color: @primary-color;
     color: #fff;
@@ -3341,9 +3361,9 @@ li.drop-index-item[data-col-hidden="true"] {
     border: 1px solid color-mix(in srgb, @primary-color-dark 90%, black);
   });
 }
-.chat-assistant .chat-bubble {
+.miro-ai-chat-assistant .miro-ai-chat-bubble {
   .responsiveDark({
-    background-color: #f5f5f5;
+    background-color: #fff;
     color: @text-color;
     border: 1px solid #e0e0e0;
   },
@@ -3353,12 +3373,15 @@ li.drop-index-item[data-col-hidden="true"] {
     border: 1px solid @dropdown-sidebar-bg-dark;
   });
 }
-.chat-author {
+.miro-ai-chat-user .miro-ai-chat-content-html {
+  white-space: pre-wrap;
+}
+.miro-ai-chat-author {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
-.chat-actions {
+.miro-ai-chat-actions {
   position: absolute;
   top: -12px;
   right: 10px;
@@ -3369,11 +3392,11 @@ li.drop-index-item[data-col-hidden="true"] {
   transition: all 0.2s ease-in-out;
   z-index: 10;
 }
-.chat-bubble-wrapper:hover .chat-actions {
+.miro-ai-chat-bubble-wrapper:hover .miro-ai-chat-actions {
   opacity: 1;
   visibility: visible;
 }
-.chat-btn {
+.miro-ai-chat-btn {
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 13px;
@@ -3392,7 +3415,7 @@ li.drop-index-item[data-col-hidden="true"] {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   });
 }
-.chat-btn:hover {
+.miro-ai-chat-btn:hover {
   .responsiveDark({
     background: @table-hover;
     color: @primary-color;
@@ -3402,7 +3425,7 @@ li.drop-index-item[data-col-hidden="true"] {
     color: @primary-color-dark;
   });
 }
-.chat-context-divider {
+.miro-ai-chat-context-divider {
   position: sticky;
   top: -15px;
   z-index: 5;
@@ -3429,7 +3452,13 @@ li.drop-index-item[data-col-hidden="true"] {
 }
 .miro-ai-disclaimer {
   font-size: 11px;
-  color: #7f8c8d;
+  opacity: 0.55;
+  .responsiveDark({
+    color: @text-color;
+  },
+  {
+    color: @text-color-dark;
+  });
   text-align: center;
   margin-top: 5px;
   width: 100%;
@@ -3452,8 +3481,16 @@ li.drop-index-item[data-col-hidden="true"] {
   line-height: 20px;
   font-size: 13px;
   border-radius: 6px;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  .responsiveDark({
+    background-color: @modal-bg;
+    border: 1px solid @btn-border;
+    color: @text-color;
+  },
+  {
+    background-color: @widget-bg-dark;
+    border: 1px solid @readme-preview-border-dark;
+    color: @text-color-dark;
+  });
   box-shadow: none;
 }
 .miro-ai-lean-select .selectize-input .item {
@@ -3469,6 +3506,46 @@ li.drop-index-item[data-col-hidden="true"] {
 .miro-ai-lean-select .selectize-dropdown {
   font-size: 13px;
   line-height: 1.4;
+  .responsiveDark({
+    background-color: @modal-bg;
+    border: 1px solid @btn-border;
+  },
+  {
+    background-color: @widget-bg-dark;
+    border: 1px solid @readme-preview-border-dark;
+  });
+}
+
+/* AI Assistant in Config Mode (drawer) - colors only */
+.miro-ai-assistant-drawer {
+  .responsiveDark({
+    background: @modal-bg;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.15);
+  },
+  {
+    background: @modal-bg-dark;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.4);
+  });
+}
+
+.miro-ai-assistant-drawer-header {
+  .responsiveDark({
+    background-color: @main-bg;
+    border-bottom: 1px solid @btn-border;
+  },
+  {
+    background-color: @main-bg-dark;
+    border-bottom: 1px solid @readme-preview-border-dark;
+  });
+}
+
+.miro-ai-assistant-drawer-header .btn {
+  .responsiveDark({
+    color: @text-color;
+  },
+  {
+    color: @text-color-dark;
+  });
 }
 
 /* dashboard */

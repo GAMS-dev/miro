@@ -341,7 +341,7 @@ if (buildUI) {
                 class = "label-toggle-wrapper",
                 tags$div(
                   id = paste0("tableLabel_", i),
-                  class = "readme-wrapper label-wrapper label-collapsed",
+                  class = "label-wrapper miro-markdown label-collapsed",
                   markdownKatex(modelIn[[i]]$label)
                 ),
                 tags$div(
@@ -485,7 +485,7 @@ if (buildUI) {
       tagList(
         tags$div(class = "small-space"),
         tags$div(
-          class = "readme-wrapper",
+          class = "readme-wrapper miro-markdown",
           HTML(config$readmeFile)
         ),
         tags$div(class = "small-space")
@@ -941,7 +941,7 @@ if (buildUI) {
             class = "label-toggle-wrapper",
             tags$div(
               id = paste0("tableOutLabel_", i),
-              class = "readme-wrapper label-wrapper label-collapsed",
+              class = "label-wrapper miro-markdown label-collapsed",
               markdownKatex(configGraphsOut[[i]]$label)
             ),
             tags$div(
@@ -1178,7 +1178,7 @@ if (buildUI) {
             tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
             tags$script(
               type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = "Array.prototype.forEach.call(document.getElementsByClassName('readme-wrapper'), function(el) {Miro.parseKatex(el);});"
+              onload = "Array.prototype.forEach.call(document.getElementsByClassName('miro-markdown'), function(el) {Miro.parseKatex(el);});"
             )
           )
         } else {

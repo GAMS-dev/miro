@@ -182,8 +182,6 @@ body.drawer-open {
   right: -450px;
   width: 450px;
   height: 100vh;
-  background: #ffffff;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.15);
   transition: right 0.3s ease-in-out;
   z-index: 9999;
   display: flex;
@@ -192,15 +190,26 @@ body.drawer-open {
 .miro-ai-assistant-drawer.open {
   right: 0;
 }
-.drawer-header {
+.miro-ai-assistant-drawer-header {
   padding: 15px;
-  border-bottom: 1px solid #e5e5e5;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8f9fa;
 }
-.drawer-body {
+.miro-ai-assistant-drawer-header .btn {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  box-shadow: none;
+}
+.miro-ai-close-drawer-btn {
+  font-size: 1.3em;
+}
+#btMiroAiClearChat {
+  font-size: 1.1em;
+  opacity: 0.7;
+}
+.miro-ai-assistant-drawer-body {
   padding: 15px;
   flex-grow: 1;
   display: flex;
@@ -741,7 +750,7 @@ body.drawer-open {
           id = "miroAiDrawer",
           class = "miro-ai-assistant-drawer",
           tags$div(
-            class = "drawer-header",
+            class = "miro-ai-assistant-drawer-header",
             tags$h4(lang$nav$aiBotDialog$title, style = "margin: 0; font-weight: bold;"),
             tags$div(
               style = "display: flex; gap: 4px; align-items: center;",
@@ -749,19 +758,17 @@ body.drawer-open {
                 id = "btMiroAiClearChat",
                 class = "btn btn-default action-button",
                 icon("trash"),
-                title = lang$nav$aiBotDialog$btClear,
-                style = "border: none; background: transparent; color: #6c757d; font-size: 1.1em; padding: 6px 10px; box-shadow: none;"
+                title = lang$nav$aiBotDialog$btClear
               ),
               tags$button(
                 icon("times"),
-                class = "btn btn-default",
-                style = "border: none; background: transparent; color: #333333; font-size: 1.3em; padding: 6px 10px; box-shadow: none;",
+                class = "btn btn-default miro-ai-close-drawer-btn",
                 onclick = "Miro.closeMiroAiDrawer()"
               )
             )
           ),
           tags$div(
-            class = "drawer-body",
+            class = "miro-ai-assistant-drawer-body",
             renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, chatHistory = NULL, renderApplyCodeBtn = TRUE)
           )
         )

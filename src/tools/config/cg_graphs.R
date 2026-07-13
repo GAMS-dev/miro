@@ -638,7 +638,7 @@ output$rendererLabelWrapper <- renderUI({
     tagList(
       tags$div(
         id = "rendererLabel",
-        class = "readme-wrapper label-wrapper",
+        class = "label-wrapper miro-markdown",
         markdownKatex(rv$graphConfig$label)
       ),
       tags$script("setTimeout(function(){Miro.parseKatex(document.getElementById('rendererLabel'))},500)")

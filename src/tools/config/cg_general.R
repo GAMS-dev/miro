@@ -989,7 +989,7 @@ openMarkdownEditor <- function(lang, contentRaw, contentParsed, saveButtonId, en
         6L,
         tags$div(class = "readme-preview-header", lang$rawHeader),
         tags$textarea(
-          id = "mdContent", class = "readme-wrapper readme-preview-markdown",
+          id = "mdContent", class = "readme-wrapper miro-markdown readme-preview-markdown",
           style = if (!is.null(overwriteEditorHeight)) paste0("height:", overwriteEditorHeight),
           oninput = paste0(
             "Miro.mdToHTML(this.value,'mdConvertedContent',",
@@ -1004,7 +1004,7 @@ openMarkdownEditor <- function(lang, contentRaw, contentParsed, saveButtonId, en
         tags$div(
           id = "mdConvertedContent",
           style = if (!is.null(overwriteEditorHeight)) paste0("height:", overwriteEditorHeight),
-          class = "readme-wrapper readme-preview-output", contentParsed
+          class = "readme-wrapper miro-markdown readme-preview-output", contentParsed
         )
       ),
       tags$script(paste0(

@@ -1,8 +1,8 @@
 /* global $:false, Shiny:false */
 
 export function copyChatContent(button) {
-  const wrapper = button.closest('.chat-bubble-wrapper');
-  const contentToCopy = wrapper.querySelector('.chat-content-raw').textContent;
+  const wrapper = button.closest('.miro-ai-chat-bubble-wrapper');
+  const contentToCopy = wrapper.querySelector('.miro-ai-chat-content-raw').textContent;
   navigator.clipboard.writeText(contentToCopy).then(() => {
     const icon = button.querySelector('i');
     if (icon) {

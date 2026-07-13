@@ -1,28 +1,37 @@
 renderAiChatBubble <- function(msg, lang) {
   isUser <- msg$role == "user"
-  wrapperClass <- if (isUser) "chat-bubble-wrapper chat-user" else "chat-bubble-wrapper chat-assistant"
+  wrapperClass <- if (isUser) "miro-ai-chat-bubble-wrapper miro-ai-chat-user" else "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant"
   return(tags$div(
     class = wrapperClass,
     tags$div(
-      class = "chat-actions",
+      class = "miro-ai-chat-actions",
       tags$button(
-        class = "chat-btn",
+        class = "miro-ai-chat-btn",
         onclick = "Miro.copyChatContent(this)",
         title = lang$btCopy,
         tags$i(class = "fas fa-copy")
       )
     ),
     tags$div(
-      class = "chat-bubble",
-      tags$b(class = "chat-author", if (isUser) lang$chatBubbleUserHeader else lang$chatBubbleAssistantHeader),
-      tags$div(class = "chat-content-html", markdown(msg$text)),
-      tags$div(class = "chat-content-raw", style = "display: none;", msg$text)
+      class = "miro-ai-chat-bubble",
+      tags$b(class = "miro-ai-chat-author", if (isUser) lang$chatBubbleUserHeader else lang$chatBubbleAssistantHeader),
+      tags$div(
+        class = "miro-ai-chat-content-html miro-markdown",
+        if (isUser) {
+          msg$text
+        } else {
+          HTML(commonmark::markdown_html(htmltools::htmlEscape(msg$text),
+            hardbreaks = TRUE, smart = TRUE, extensions = TRUE
+          ))
+        }
+      ),
+      tags$div(class = "miro-ai-chat-content-raw", style = "display: none;", msg$text)
     )
   ))
 }
 renderAiChatDivider <- function(contextText) {
   tags$div(
-    class = "chat-context-divider",
+    class = "miro-ai-chat-context-divider",
     contextText
   )
 }

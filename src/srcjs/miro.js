@@ -996,7 +996,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $('#miroAiUserText').focus();
     const chatLog = document.getElementById('miroAiChatLog');
     if (!chatLog) return;
-    const userBubbles = chatLog.querySelectorAll('.chat-user');
+    const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
     if (userBubbles.length > 0) {
       userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
