@@ -219,7 +219,7 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
             name = item$name,
             arguments = fromJSON(item$arguments)
           )
-        } else if (item$type == "message" && item$phase != "commentary") {
+        } else if (item$type == "message" && !identical(item$phase, "commentary")) {
           messageText <- paste(vapply(item$content, function(contentItem) {
             if (contentItem$type == "output_text") {
               return(contentItem$text)
