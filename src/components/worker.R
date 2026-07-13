@@ -391,6 +391,9 @@ AsyncJobManager <- R6Class("AsyncJobManager",
         {
           statusTmp <- private$adapter$getJobStatus(pID, isHcJob)
           if (isHcJob) {
+            if (!length(statusTmp$results)) {
+              stop(404L, call. = FALSE)
+            }
             statusTmp <- statusTmp$results[[1L]]
             if (identical(statusTmp$finished, statusTmp$job_count)) {
               status <- JOBSTATUSMAP[["completed"]]
