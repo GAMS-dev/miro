@@ -622,6 +622,7 @@ verifyCanSolve <- function(async = FALSE, buttonId = "btSolve", detachCurrentRun
     }
     if (length(modelStatus)) {
       if (detachCurrentRun) {
+        worker$destroyObservers()
         modelStatus <<- NULL
         if (config$activateModules$logFile ||
           config$activateModules$miroLogFile) {

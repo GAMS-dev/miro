@@ -584,6 +584,17 @@ Worker <- R6Class("Worker",
       private$statusObs <- reactiveStatusTmp$obs
       return(reactiveStatusTmp$re)
     },
+    destroyObservers = function() {
+      if (!is.null(private$statusObs)) {
+        private$statusObs$destroy()
+        private$statusObs <- NULL
+      }
+      if (!is.null(private$logObs)) {
+        private$logObs$destroy()
+        private$logObs <- NULL
+      }
+      return(invisible(self))
+    },
     getQuotaWarning = function() {
       return(private$adapter$quotaWarning)
     },
