@@ -144,7 +144,16 @@ AsyncJobManager <- R6Class("AsyncJobManager",
             private$adapter$interrupt(hardKill = TRUE, processId = pID, isHypercubeJob = isHcJob)
             newStatus <- JOBSTATUSMAP[["discarded(running)"]]
           } else if (identical(jobStatus$status, JOBSTATUSMAP[["completed"]])) {
-            private$adapter$removeResults(pID, isHypercubeJob = isHcJob)
+            tryCatch(
+              private$adapter$removeResults(pID, isHypercubeJob = isHcJob),
+              error = function(err) {
+                flog.warn(
+                  "Could not remove results for job %s: %s",
+                  jID,
+                  conditionMessage(err)
+                )
+              }
+            )
             newStatus <- JOBSTATUSMAP[["discarded(completed)"]]
           }
         }
