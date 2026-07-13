@@ -473,20 +473,19 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       return(private$updateLog)
     },
     interrupt = function(hardKill = FALSE, processId = NULL, isHypercubeJob = FALSE) {
-      ignore404 <- FALSE
       if (is.null(processId)) {
-        stopifnot(!is.null(self$processId))
-        processId <- self$processId
+        if (is_mirai(private$mSubRes) && unresolved(private$mSubRes)) {
+          flog.info("Job still submitting while interrupt signal sent. Stopping submission.")
+          stop_mirai(private$mSubRes)
+          return(0L)
+        }
         if (is_mirai(private$mJobRes) && unresolved(private$mJobRes)) {
           flog.info("Job downloading while interrupt signal sent. Stopping download.")
           stop_mirai(private$mJobRes)
           return(0L)
         }
-        if (is_mirai(private$mSubRes) && unresolved(private$mSubRes)) {
-          flog.info("Job still submitting while interrupt signal sent. Stopping submission.")
-          stop_mirai(private$mSubRes)
-          ignore404 <- TRUE
-        }
+        stopifnot(!is.null(self$processId))
+        processId <- self$processId
         isHypercubeJob <- FALSE
       }
 
@@ -498,7 +497,7 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
         add_headers(Authorization = private$engineConfig$authHeader),
         timeout(10L)
       )
-      if (ignore404 && status_code(deleteResp) == 404L) {
+      if (status_code(deleteResp) == 404L) {
         return(0)
       }
       private$validateApiResponse(deleteResp)
