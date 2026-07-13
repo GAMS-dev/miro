@@ -5,8 +5,6 @@ library(jsonlite)
 
 source("../../components/ai_adapter.R")
 
-# --- Mock Objects Setup ---
-
 # Mock DbSchema class to simulate the schema behavior
 MockDbSchema <- R6Class("MockDbSchema",
   public = list(
@@ -21,7 +19,7 @@ MockDbSchema <- R6Class("MockDbSchema",
     },
     getDbSchema = function(sym) {
       if (sym == "_scenMeta") {
-        return(list(colNames = c(sid = "_sid", name = "_sname", stag = "_stag")))
+        return(list(colNames = c(sid = "_sid", sname = "_sname", stag = "_stag")))
       }
       if (sym == "demand") {
         return(list(colNames = c("_sid", "region", "year", "value")))
@@ -75,28 +73,39 @@ setup_test_env <- function() {
 
 # --- Unit Tests ---
 
-test_that("AIToolAdapter initializes and sets SIDs correctly", {
+test_that("AIToolAdapter initializes and getSystemMetadata builds scenario maps correctly", {
   env <- setup_test_env()
   adapter <- env$adapter
 
-  # Test setting allowed SIDs
-  adapter$setAllowedSids(c(1, "2", NA))
+  adapter$setAllowedSids(c(1, 2, 3))
 
-  # Use an accessor or test behavior to verify (since allowedSids is private)
-  # We test this implicitly by checking metadata filtering later
+  # getSystemMetadata is required to build private$scenarioMap
+  meta_json <- adapter$getSystemMetadata()
+  meta <- jsonlite::fromJSON(meta_json)
+
   expect_true(inherits(adapter, "AIToolAdapter"))
+  expect_equal(nrow(meta$activeScenarios), 3)
+  expect_true("Base" %in% meta$activeScenarios$name)
 
   DBI::dbDisconnect(env$conn)
 })
 
-test_that("getToolSchema returns correct JSON schema structure", {
+test_that("getToolSchema returns correct JSON schema structure with analysis modes", {
   env <- setup_test_env()
-  schema <- env$adapter$getToolSchema()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2))
+
+  schema <- adapter$getToolSchema()
 
   expect_type(schema, "list")
   expect_equal(schema[[1]]$name, "queryScenarioDatabase")
   expect_equal(schema[[1]]$type, "function")
   expect_true("symbolName" %in% schema[[1]]$parameters$required)
+  expect_true("scenarioNames" %in% schema[[1]]$parameters$required)
+
+  # Check conditional addition of analysis properties
+  expect_true("analysisMode" %in% names(schema[[1]]$parameters$properties))
+  expect_true("baselineScenarioName" %in% names(schema[[1]]$parameters$properties))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -104,11 +113,12 @@ test_that("getToolSchema returns correct JSON schema structure", {
 test_that("queryScenarioDatabase blocks unauthorized scenarios (Security Guardrail)", {
   env <- setup_test_env()
   adapter <- env$adapter
-  adapter$setAllowedSids(c(1, 2)) # Only allow SIDs 1 and 2
+  adapter$setAllowedSids(c(1, 2)) # Only allow Base and High Demand
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(3) # Attempting to access unauthorized SID 3
+    scenarioNames = c("Low Demand") # Attempting to access unauthorized scenario
   )
 
   res <- adapter$queryScenarioDatabase(query_args)
@@ -120,21 +130,28 @@ test_that("queryScenarioDatabase blocks unauthorized scenarios (Security Guardra
   DBI::dbDisconnect(env$conn)
 })
 
-test_that("queryScenarioDatabase executes basic SELECT correctly", {
+test_that("queryScenarioDatabase executes basic SELECT correctly and maps names", {
   env <- setup_test_env()
   adapter <- env$adapter
   adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(1) # Only fetch for SID 1
+    scenarioNames = c("Base")
   )
 
   res <- adapter$queryScenarioDatabase(query_args)
   res_df <- jsonlite::fromJSON(res)
+  print(res_df)
 
+  # Check basic filtering
   expect_equal(nrow(res_df), 2)
   expect_equal(res_df$region, c("NA", "EU"))
+
+  # Check scenario name mapping was applied instead of raw _sid
+  expect_true("_scenario_name" %in% names(res_df))
+  expect_true(all(res_df$`_scenario_name` == "Base"))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -143,10 +160,11 @@ test_that("queryScenarioDatabase handles aggregations and grouping", {
   env <- setup_test_env()
   adapter <- env$adapter
   adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(1, 2),
+    scenarioNames = c("Base", "High Demand"),
     selectColumn = "value",
     aggregation = "SUM",
     groupByColumn = "region"
@@ -155,14 +173,83 @@ test_that("queryScenarioDatabase handles aggregations and grouping", {
   res <- adapter$queryScenarioDatabase(query_args)
   res_df <- jsonlite::fromJSON(res)
 
-  # NA region: SID 1 (100) + SID 2 (200) = 300
-  # EU region: SID 1 (150)
-  expect_equal(nrow(res_df), 2)
-  expect_true("sum" %in% names(res_df))
-  na_sum <- res_df$sum[res_df$region == "NA"]
-  expect_equal(na_sum, 300)
-  eu_sum <- res_df$sum[res_df$region == "EU"]
-  expect_equal(eu_sum, 150)
+  # The adapter groups by _sid AND region in STANDARD mode.
+  # Base NA: 100, Base EU: 150, High Demand NA: 200
+  expect_equal(nrow(res_df), 3)
+
+  # Assert the new _sum column alias is applied
+  expect_true("_sum" %in% names(res_df))
+
+  base_na_sum <- res_df$`_sum`[res_df$`_scenario_name` == "Base" & res_df$region == "NA"]
+  high_demand_na_sum <- res_df$`_sum`[res_df$`_scenario_name` == "High Demand" & res_df$region == "NA"]
+
+  expect_equal(base_na_sum, 100)
+  expect_equal(high_demand_na_sum, 200)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase calculates DIFFERENCE correctly", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # Should output `_delta` column
+  expect_true("_delta" %in% names(res_df))
+  expect_true("_target_scenario" %in% names(res_df))
+  expect_true("_baseline_scenario" %in% names(res_df))
+
+  # NA region: Target(High Demand=200) - Base(Base=100) = 100
+  # EU region: Target(High Demand=0) - Base(Base=150) = -150
+  delta_na <- res_df$`_delta`[res_df$region == "NA"]
+  delta_eu <- res_df$`_delta`[res_df$region == "EU"]
+
+  expect_equal(delta_na, 100)
+  expect_equal(delta_eu, -150)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase calculates PERCENT_CHANGE correctly", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "PERCENT_CHANGE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # Should output `_pct_change` column
+  expect_true("_pct_change" %in% names(res_df))
+
+  # EU region: Target(Low Demand=50) - Base(Base=150) / 150 * 100 = -66.666...
+  pct_eu <- res_df$`_pct_change`[res_df$region == "EU"]
+
+  expect_equal(round(pct_eu, 2), -66.67)
 
   DBI::dbDisconnect(env$conn)
 })
@@ -171,10 +258,11 @@ test_that("queryScenarioDatabase sanitizes and applies IN filters", {
   env <- setup_test_env()
   adapter <- env$adapter
   adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(1, 2, 3),
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
     filters = data.frame(
       column = "region",
       operator = "IN",
@@ -195,10 +283,11 @@ test_that("queryScenarioDatabase prevents SQL injection via invalid column names
   env <- setup_test_env()
   adapter <- env$adapter
   adapter$setAllowedSids(c(1))
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(1),
+    scenarioNames = c("Base"),
     selectColumn = "value; DROP TABLE data_demand;--"
   )
 
@@ -215,10 +304,11 @@ test_that("queryScenarioDatabase handles pagination/truncation warnings", {
   env <- setup_test_env()
   adapter <- env$adapter
   adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
 
   query_args <- list(
     symbolName = "demand",
-    scenarioIds = c(1, 2, 3),
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
     limit = 2
   )
 

@@ -46,6 +46,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
       }
       private$scenarioMap <- setNames(as.character(activeScenariosDf$sid), activeScenariosDf$name)
+      private$scenarioMapById <- setNames(activeScenariosDf$name, as.character(activeScenariosDf$sid))
 
       allSymbols <- private$dbSchema$getDbTableNames()
       databaseSymbols <- list()
@@ -258,8 +259,12 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         if (analysisMode != "STANDARD") {
           return(jsonlite::toJSON(list(error = "You must provide a specific selectColumn and aggregation to use DIFFERENCE or PERCENT_CHANGE."), auto_unbox = TRUE))
         }
-        colsToSelect <- validCols[validCols != "_sid"]
-        selectExpr <- paste(DBI::dbQuoteIdentifier(private$conn, colsToSelect), collapse = ", ")
+        if (length(private$allowedSids) > 1L) {
+          colsToSelect <- validCols
+        } else {
+          colsToSelect <- validCols[validCols != "_sid"]
+        }
+        selectExpr <- paste(DBI::dbQuoteIdentifier(private$conn, validCols), collapse = ", ")
       } else {
         if (!selectCol %in% validCols) {
           return(jsonlite::toJSON(list(error = sprintf("Invalid column '%s' for symbol '%s'.", selectCol, symName)), auto_unbox = TRUE))
@@ -271,6 +276,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
             sprintf("%s(%s) AS %s", aggregation, escSelect, DBI::dbQuoteIdentifier(private$conn, paste0("_", tolower(aggregation))))
           } else {
             escSelect
+          }
+          if (length(private$allowedSids) > 1L) {
+            selectExpr <- sprintf("%s, %s", DBI::dbQuoteIdentifier(private$conn, "_sid"), selectExpr)
           }
         } else {
           if (length(validatedSids) < 2) {
@@ -340,8 +348,15 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       # Step F: Grouping evaluation closure
+      groupingCols <- c()
+      if (length(private$allowedSids) > 1L && analysisMode == "STANDARD" && aggregation != "NONE") {
+        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, "_sid"))
+      }
       if (!is.null(groupByCol) && groupByCol != "") {
-        query <- sprintf("%s GROUP BY %s", query, DBI::dbQuoteIdentifier(private$conn, groupByCol))
+        groupingCols <- c(groupingCols, DBI::dbQuoteIdentifier(private$conn, groupByCol))
+      }
+      if (length(groupingCols) > 0) {
+        query <- sprintf("%s GROUP BY %s", query, paste(groupingCols, collapse = ", "))
       }
       if (!is.null(orderBy) && orderBy != "") {
         aggAlias <- paste0("_", tolower(aggregation))
@@ -370,6 +385,26 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
       )
 
+      # Map sids to scenario names
+      if (length(private$allowedSids) > 1L) {
+        if (analysisMode == "STANDARD") {
+          if ("_sid" %in% names(resDf)) {
+            mappedNames <- private$scenarioMapById[as.character(resDf$`_sid`)]
+            resDf$`_scenario_name` <- ifelse(is.na(mappedNames), paste("Scenario", resDf$`_sid`), mappedNames)
+            resDf$`_sid` <- NULL
+            resDf <- resDf[, c("_scenario_name", setdiff(names(resDf), "_scenario_name")), drop = FALSE]
+          }
+        } else {
+          targetSid <- setdiff(validatedSids, baselineSid)[1]
+          if (is.na(targetSid)) targetSid <- baselineSid
+          targetName <- private$scenarioMapById[as.character(targetSid)]
+          baseName <- private$scenarioMapById[as.character(baselineSid)]
+          resDf$`_target_scenario` <- ifelse(is.na(targetName), paste("Scenario", targetSid), targetName)
+          resDf$`_baseline_scenario` <- ifelse(is.na(baseName), paste("Scenario", baselineSid), baseName)
+          resDf <- resDf[, c("_target_scenario", "_baseline_scenario", setdiff(names(resDf), c("_target_scenario", "_baseline_scenario"))), drop = FALSE]
+        }
+      }
+
       truncated <- FALSE
       if (nrow(resDf) > safeLimit) {
         resDf <- resDf[seq_len(safeLimit), , drop = FALSE]
@@ -393,6 +428,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     allowedSids = NULL,
     customscenIdNameMap = character(),
     scenarioMap = NULL,
+    scenarioMapById = NULL,
     getSymbolType = function(symType) {
       if (symType %in% c("dropdown", "set", "date", "daterange", "custom", "hot", "dt", "string")) {
         return("string")
