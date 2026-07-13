@@ -225,7 +225,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(jsonlite::toJSON(list(error = sprintf("Invalid analysisMode '%s'. Must be STANDARD, DIFFERENCE, or PERCENT_CHANGE.", analysisMode)), auto_unbox = TRUE))
       }
       baselineName <- args$baselineScenarioName
-      baselineSid <- if (!is.null(baselineName)) as.integer(private$scenarioMap[baselineName]) else NULL
+      baselineSid <- if (!is.null(baselineName) && baselineName != "") as.integer(private$scenarioMap[baselineName]) else NULL
       if (any(is.na(baselineSid))) {
         return(jsonlite::toJSON(list(error = "Access Denied: Requested `baselineScenarioName` is not available or loaded in the current active session context."), auto_unbox = TRUE))
       }
