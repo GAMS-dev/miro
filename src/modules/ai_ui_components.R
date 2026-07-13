@@ -63,7 +63,7 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
       }),
       genSpinner("miroAiChatSpinner",
         hidden = TRUE, absolute = FALSE,
-        externalStyle = "z-index: 1", extraClasses = "gen-spinner-black"
+        externalStyle = "z-index: 1"
       )
     ),
     tags$div(
