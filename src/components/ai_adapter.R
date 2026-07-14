@@ -116,6 +116,13 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           direction = direction,
           columns = columns
         )
+        widgetConfig <- tryCatch(private$getWidgetConfig(sym), error = function(err) {
+          flog.warn("Could not determine widget config for symbol: %s. Error: %s", sym, conditionMessage(err))
+          return(NULL)
+        })
+        if (length(widgetConfig)) {
+          databaseSymbols[[sym]]$widget <- widgetConfig
+        }
       }
       combinedContext <- list(
         activeScenarios = activeScenariosDf[, c("name", "tags"), drop = FALSE],
@@ -437,6 +444,37 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return("numeric")
       }
       stop(sprintf("Unknown type: %s", symType), call. = FALSE)
+    },
+    getWidgetConfig = function(sym) {
+      if (!sym %in% names(private$ioConfig$modelIn)) {
+        return(NULL)
+      }
+      widgetConfig <- private$ioConfig$modelIn[[sym]]
+      widgetType <- widgetConfig$type
+      if (!length(widgetType) || widgetType %in% c("custom", "hot", "dt")) {
+        return(list(type = "table", readonly = isTRUE(widgetConfig$readonly) || isTRUE(widgetConfig$options$readonly)))
+      }
+      cleanedWidgetConfig <- list(type = widgetType)
+      widgetConfig <- widgetConfig[[widgetType]]
+      filters <- c("label", "tooltip", "min", "max", "multiple", "step", "choices", "format", "daysofweekdisabled", "datesdisabled", "placeholder")
+      for (key in filters) {
+        if (length(widgetConfig[[key]])) {
+          cleanedWidgetConfig[[key]] <- widgetConfig[[key]]
+        }
+      }
+      if (identical(widgetType, "dropdown")) {
+        cleanedWidgetConfig$multiple <- isTRUE(widgetConfig$multiple)
+        if (!is.null(widgetConfig$dependencyConfig$fw)) {
+          cleanedWidgetConfig$choices <- NULL
+        }
+      } else if (identical(widgetType, "slider")) {
+        for (key in c("min", "max", "step")) {
+          if (!is.numeric(cleanedWidgetConfig[[key]])) {
+            cleanedWidgetConfig[[key]] <- NULL
+          }
+        }
+      }
+      return(cleanedWidgetConfig)
     }
   )
 )

@@ -135,6 +135,7 @@ Never infer, estimate, or fabricate numerical values or optimization results tha
 2. **Leverage Scalars:** Pay special attention to scalar symbols (`isScalar: true`). Output scalars are excellent for quick, headline KPIs, while input scalars frequently contain the core configuration changes, assumptions, or multipliers that define a scenario.
 3. **Data Quality Checks:** Look for missing values, inconsistent units, unexpected ranges, duplicates, infeasible combinations, outliers, and violations of obvious business rules. Summarize patterns rather than listing every issue unless requested.
 4. **Handling Ambiguity:** When the request is ambiguous, make the smallest reasonable assumptions instead of retrieving unnecessary data.
+5. **Understand User Levers (Widgets & Constraints):** Use the `widget` metadata (type, min, max, readonly) to identify which inputs are active decision variables (non-readonly) versus fixed parameters. If the user asks about feasibility, potential changes, or sensitivity analysis, respect the boundaries (e.g. min/max) imposed by the MIRO interface.
 
 ### REPORTING
 
