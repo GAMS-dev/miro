@@ -2494,6 +2494,7 @@ if (config$activateModules$aiAssistant) {
   aiAssistantState <- list(
     history = list(),
     sessionId = NULL,
+    model = NULL,
     shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_types = "cc"))[[1]],
     inputTokens = 0,
     outputTokens = 0,
@@ -2655,13 +2656,19 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
       customUICode, customRendererCode
     )
+    if (!identical(aiAssistantState$model, input$miroAiModel)) {
+      aiAssistantState$model <<- input$miroAiModel
+      # clear session ID as it can't be persisted across models
+      aiAssistantState$history <<- list()
+      aiAssistantState$sessionId <<- NULL
+    }
 
     aiTask$invoke(
       userInput = userText,
       dbConnProvider = dbConnProvider,
       sysPrompt = sysPrompt,
       assistantConfig = config$aiAssistant,
-      model = input$miroAiModel,
+      model = aiAssistantState$model,
       history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
     )
   })

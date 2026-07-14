@@ -189,7 +189,12 @@ observeEvent(input$miroAiUserText, {
   userText <- input$miroAiUserText
   req(userText)
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
-  aiAssistantState$model <<- input$miroAiModel
+  if (!identical(aiAssistantState$model, input$miroAiModel)) {
+    aiAssistantState$model <<- input$miroAiModel
+    # clear session ID as it can't be persisted across models
+    aiAssistantState$history <<- list()
+    aiAssistantState$sessionId <<- NULL
+  }
   session$sendCustomMessage(
     "gms-addAiChatBubble",
     list(html = as.character(renderAiChatBubble(
