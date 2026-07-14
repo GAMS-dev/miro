@@ -1,4 +1,4 @@
-/* global $:false HTMLWidgets:false Chart:false Shiny:false */
+/* global $:false HTMLWidgets:false Chart:false Shiny:false renderMathInElement:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => { setTimeout(resolve, ms); });
@@ -299,4 +299,16 @@ export function getActualHeight($target, method, options) {
   restore();
   // IMPORTANT, this plugin only return the value of the first element
   return actual;
+}
+
+export function parseKatex(element, options = {}) {
+  const defaultDelimiters = [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false },
+  ];
+  const delimiters = options.delimiters || defaultDelimiters;
+  renderMathInElement(element, {
+    throwOnError: options.throwOnError !== undefined ? options.throwOnError : false,
+    delimiters,
+  });
 }

@@ -22,7 +22,7 @@ renderAiChatBubble <- function(msg, lang, charLimit = 300) {
           msg$text
         } else {
           HTML(commonmark::markdown_html(msg$text,
-            hardbreaks = TRUE, smart = TRUE, extensions = TRUE
+            hardbreaks = FALSE, smart = TRUE, extensions = TRUE
           ))
         }
       ),

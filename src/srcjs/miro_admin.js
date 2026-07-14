@@ -4,8 +4,9 @@ import { debounce, colorPickerBinding } from './util';
 import { parseKatex } from './miro';
 
 export {
-  confirmModalShow, slideToggleEl, resetDropdownFilter, parseKatex,
+  confirmModalShow, slideToggleEl, resetDropdownFilter,
 } from './miro';
+export { parseKatex } from './util';
 export {
   copyChatContent, openMiroAiDrawer, closeMiroAiDrawer, toggleChatCollapse,
 } from './ai_assistant';

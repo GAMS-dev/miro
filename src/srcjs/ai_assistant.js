@@ -1,5 +1,7 @@
 /* global $:false, Shiny:false */
 
+import { parseKatex } from './util';
+
 export function copyChatContent(button) {
   const wrapper = button.closest('.miro-ai-chat-bubble-wrapper');
   const contentToCopy = wrapper.querySelector('.miro-ai-chat-content-raw').textContent;
@@ -101,6 +103,15 @@ export function registerAiHandlers() {
       $('#miroAiChatSpinner').show();
       $chatLog.scrollTop($chatLog[0].scrollHeight);
     } else {
+      const contentDiv = $newElement.find('.miro-ai-chat-content-html').get(0);
+      parseKatex(contentDiv, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true },
+        ],
+      });
       $('#miroAiChatSpinner').hide();
       const scrollToPosition = $newElement.position().top + $chatLog.scrollTop();
       $chatLog.animate({ scrollTop: scrollToPosition }, 300);

@@ -1172,25 +1172,15 @@ if (buildUI) {
   miroBody <- dashboardBody({
     tagList(
       tags$head(
-        if (isTRUE(config$readme$enableMath)) {
-          tagList(
-            tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
-            tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
-            tags$script(
-              type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = "Array.prototype.forEach.call(document.getElementsByClassName('miro-markdown'), function(el) {Miro.parseKatex(el);});"
-            )
+        tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
+        tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
+        tags$script(
+          type = "application/javascript", `defer src` = "auto-render.min.js",
+          onload = paste0(
+            "Array.prototype.forEach.call(document.getElementsByClassName('",
+            if (isTRUE(config$readme$enableMath)) "miro-markdown" else "label-wrapper", "), function(el) {Miro.parseKatex(el);});"
           )
-        } else {
-          tagList(
-            tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
-            tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
-            tags$script(
-              type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = "Array.prototype.forEach.call(document.getElementsByClassName('label-wrapper'), function(el) {Miro.parseKatex(el);});"
-            )
-          )
-        },
+        ),
         tags$meta(
           name = "color-scheme",
           content = if (identical(config$theme, "browser")) "dark light" else "normal"

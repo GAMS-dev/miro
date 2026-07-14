@@ -1,4 +1,4 @@
-/* global $:false Shiny: false Selectize:false renderMathInElement:false */
+/* global $:false Shiny: false Selectize:false */
 
 import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
@@ -32,6 +32,7 @@ import {
 } from './miro_pivot';
 import { registerAiHandlers } from './ai_assistant';
 
+export { parseKatex } from './util';
 export { default as modal } from './modal';
 export { copyChatContent, toggleChatCollapse } from './ai_assistant';
 
@@ -219,20 +220,6 @@ export function resetDropdownFilter(that) {
   }
   setTimeout(() => {
     filter.focus();
-  });
-}
-
-export function parseKatex(element) {
-  renderMathInElement(element, {
-    throwOnError: false,
-    delimiters: [
-      {
-        left: '$$',
-        right: '$$',
-        display: true,
-      },
-      { left: '$', right: '$', display: false },
-    ],
   });
 }
 
