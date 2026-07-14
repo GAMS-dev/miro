@@ -490,6 +490,9 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
           stop_mirai(private$mJobRes)
           return(0L)
         }
+        if (is.null(self$processId)) {
+          self$pingProcess()
+        }
         stopifnot(!is.null(self$processId))
         processId <- self$processId
         isHypercubeJob <- FALSE
