@@ -20,7 +20,7 @@ renderAiChatBubble <- function(msg, lang) {
         if (isUser) {
           msg$text
         } else {
-          HTML(commonmark::markdown_html(htmltools::htmlEscape(msg$text),
+          HTML(commonmark::markdown_html(msg$text,
             hardbreaks = TRUE, smart = TRUE, extensions = TRUE
           ))
         }
