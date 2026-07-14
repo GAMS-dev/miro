@@ -2549,7 +2549,9 @@ if (config$activateModules$aiAssistant) {
 1. DATA: `data` argument is a STATIC object (not a reactive). Do not call `data()`. If add. symbols are active, `data` is a named list of tibbles (`data[['%s']]`). Column names match JSON `headers` keys exactly.
 2. PACKAGES: Prefer shipped packages: [%s]. Always prefix functions with namespaces (e.g., `plotly::plot_ly()`). List new packages in `<additional_packages>`.
 3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`.
-4. NAMESPACING: UI must define `ns <- shiny::NS(id)`. Wrap EVERY input/output ID in `ns()`.
+4. NAMESPACING (CRITICAL):
+   - UI FUNCTION: Define `ns <- shiny::NS(id)`. You MUST wrap every element ID in `ns()` (e.g., `plotlyOutput(ns('myChart'))`).
+   - SERVER FUNCTION: Do NOT define `ns` unless required for Rule 8. NEVER use `ns()` when reading `input` or assigning to `output`. The `session` handles this automatically. Use `output[['myChart']] <- ...` (WRONG: `output[[ns('myChart')]] <- ...`).
 5. STYLING: Do NOT use page-level containers (`fluidPage`), custom CSS, or inline styles. Use `tagList()` or `div()`. Inherit global app themes.
 6. SIGNATURES: Use exactly these signatures:
    - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
