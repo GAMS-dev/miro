@@ -159,7 +159,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
                 name = options$ydata[[1]]$label,
                 mode = options$ydata[[1]]$mode,
                 yaxis = yaxis,
-                marker = getMarkerInfo(options$ydata[[1]]$marker),
+                marker = rendererUtilGetMarkerInfo(options$ydata[[1]]$marker),
                 line = list(
                   color = options$ydata[[1]]$line$color,
                   width = options$ydata[[1]]$line$width,
@@ -187,7 +187,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
                 y = try(dataTmp[[names(options$ydata)[[j]]]]), name = options$ydata[[j]]$label,
                 yaxis = yaxis,
                 mode = options$ydata[[j]]$mode,
-                marker = getMarkerInfo(options$ydata[[j]]$marker),
+                marker = rendererUtilGetMarkerInfo(options$ydata[[j]]$marker),
                 line = list(
                   color = options$ydata[[j]]$line$color,
                   width = options$ydata[[j]]$line$width,
@@ -266,7 +266,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
                   },
                   sizemode = options$ydata[[1]]$marker$sizemode, sizeref = sizeref,
                   color = if (!is.null(options$ydata[[1]]$marker$color)) {
-                    if (isColor(options$ydata[[1]]$marker$color) ||
+                    if (rendererUtilIsColor(options$ydata[[1]]$marker$color) ||
                       startsWith(options$ydata[[1]]$marker$color, "rgba(")) {
                       options$ydata[[1]]$marker$color
                     } else {

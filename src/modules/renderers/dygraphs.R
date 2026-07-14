@@ -184,29 +184,29 @@ renderMiroDygraphs <- function(id, data, options = NULL, path = NULL,
         # Event lines to note points within a time series.
         if (!is.null(options$dyEvent)) {
           lapply(seq_along(options$dyEvent), function(j) {
-            event <- getEvent(outputScalarsFull, names(options$dyEvent)[[j]])
+            event <- rendererUtilGetEvent(outputScalarsFull, names(options$dyEvent)[[j]])
             p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
           })
         }
         # Limit lines to highlight data levels.
         if (!is.null(options$dyLimit)) {
           lapply(seq_along(options$dyLimit), function(j) {
-            options$dyLimit[[j]]$limit <- getEvent(outputScalarsFull, options$dyLimit[[j]]$limit)
+            options$dyLimit[[j]]$limit <- rendererUtilGetEvent(outputScalarsFull, options$dyLimit[[j]]$limit)
             p <<- do.call(dyLimit, c(list(dygraph = p), options$dyLimit[[j]]))
           })
         }
         # Annotations to note points within a time series.
         if (!is.null(options$dyAnnotation)) {
           lapply(seq_along(options$dyAnnotation), function(j) {
-            event <- getEvent(outputScalarsFull, names(options$dyAnnotation)[[j]])
+            event <- rendererUtilGetEvent(outputScalarsFull, names(options$dyAnnotation)[[j]])
             p <<- do.call(dyAnnotation, c(list(dygraph = p, x = event), options$dyAnnotation[[j]]))
           })
         }
         # Add a shading effect to the graph background for one or more time ranges.
         if (length(options$dyShading)) {
           lapply(seq_along(options$dyShading), function(j) {
-            options$dyShading[[j]]$from <- getEvent(outputScalarsFull, options$dyShading[[j]]$from)
-            options$dyShading[[j]]$to <- getEvent(outputScalarsFull, options$dyShading[[j]]$to)
+            options$dyShading[[j]]$from <- rendererUtilGetEvent(outputScalarsFull, options$dyShading[[j]]$from)
+            options$dyShading[[j]]$to <- rendererUtilGetEvent(outputScalarsFull, options$dyShading[[j]]$to)
             p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
           })
         }

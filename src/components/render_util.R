@@ -787,7 +787,7 @@ getRendererConfig <- function(graphConfig) {
     graphTool = graphOptions$tool
   )
 }
-getEvent <- function(configData, eventId) {
+rendererUtilGetEvent <- function(configData, eventId) {
   # extracts event from configData
   #
   # args:
@@ -809,7 +809,7 @@ getEvent <- function(configData, eventId) {
     return(eventId)
   }
 }
-getMarkerInfo <- function(data) {
+rendererUtilGetMarkerInfo <- function(data) {
   marker <- list(
     opacity = data$opacity,
     size = data$size,
@@ -826,7 +826,7 @@ getMarkerInfo <- function(data) {
   }
   return(marker)
 }
-parseLabel <- function(label, colNames) {
+rendererUtilParseLabel <- function(label, colNames) {
   if (!nchar(label)) {
     return(NULL)
   }
@@ -840,7 +840,7 @@ parseLabel <- function(label, colNames) {
   }
   return(parse(text = paste0('paste0("', label, '")')))
 }
-isColor <- function(x) {
+rendererUtilIsColor <- function(x) {
   tryCatch(is.matrix(col2rgb(x)),
     error = function(e) FALSE
   )

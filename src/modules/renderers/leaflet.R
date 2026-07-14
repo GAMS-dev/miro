@@ -92,7 +92,7 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
             group = markerOptions$group,
             label = if (length(markerOptions[["label"]])) {
               eval(
-                parseLabel(markerOptions[["label"]], names(dataTmp)),
+                rendererUtilParseLabel(markerOptions[["label"]], names(dataTmp)),
                 envir = list(data = dataTmp)
               )
             },
@@ -130,7 +130,7 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
             minThickness = flowOptions$minThickness,
             layerId = if (length(flowOptions$layerId)) {
               eval(
-                parseLabel(flowOptions$layerId, names(dataTmp)),
+                rendererUtilParseLabel(flowOptions$layerId, names(dataTmp)),
                 envir = list(data = dataTmp)
               )
             },
