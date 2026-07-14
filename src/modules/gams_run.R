@@ -827,6 +827,7 @@ observeEvent(input$btDetachCurrentJob, {
     showNotification(lang$errMsg$jobRunning$descAsyncSubmittingDetach, type = "error", duration = 10L)
     return()
   }
+  worker$destroyObservers()
   modelStatus <<- NULL
   if (config$activateModules$logFile ||
     config$activateModules$miroLogFile) {
