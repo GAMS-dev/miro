@@ -846,7 +846,7 @@ isColor <- function(x) {
   )
 }
 resolveRendererData <- function(data) {
-  dataTmp <- if (shiny::is.reactive(data)) {
+  dataTmp <- if (is.reactive(data)) {
     data()
   } else {
     data
