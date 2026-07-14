@@ -20,6 +20,21 @@ export function copyChatContent(button) {
     console.error('Failed to copy AI chat content: ', err);
   });
 }
+export function toggleChatCollapse(btn) {
+  const bubble = btn.closest('.miro-ai-chat-bubble');
+  const content = bubble.querySelector('.miro-ai-chat-content-html');
+  const icon = btn.querySelector('i');
+
+  if (content.classList.contains('miro-ai-text-collapsed')) {
+    content.classList.remove('miro-ai-text-collapsed');
+    icon.classList.remove('fa-chevron-down');
+    icon.classList.add('fa-chevron-up');
+  } else {
+    content.classList.add('miro-ai-text-collapsed');
+    icon.classList.remove('fa-chevron-up');
+    icon.classList.add('fa-chevron-down');
+  }
+}
 export function openMiroAiDrawer() {
   document.getElementById('miroAiDrawer').classList.add('open');
   document.body.classList.add('drawer-open');

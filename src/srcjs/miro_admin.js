@@ -6,7 +6,9 @@ import { parseKatex } from './miro';
 export {
   confirmModalShow, slideToggleEl, resetDropdownFilter, parseKatex,
 } from './miro';
-export { copyChatContent, openMiroAiDrawer, closeMiroAiDrawer } from './ai_assistant';
+export {
+  copyChatContent, openMiroAiDrawer, closeMiroAiDrawer, toggleChatCollapse,
+} from './ai_assistant';
 
 /* global $:false Shiny:false showdown:false */
 

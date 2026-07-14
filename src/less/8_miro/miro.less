@@ -3381,6 +3381,33 @@ li.drop-index-item[data-col-hidden="true"] {
     border: 1px solid @dropdown-sidebar-bg-dark;
   });
 }
+.miro-ai-text-collapsed {
+  display: -webkit-box;
+  line-clamp: 4;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.miro-ai-expand-wrapper {
+  text-align: right;
+  margin-top: 6px;
+}
+.miro-ai-expand-btn {
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease-in-out;
+}
+.miro-ai-expand-btn:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
 .miro-ai-chat-user .miro-ai-chat-content-html {
   white-space: pre-wrap;
 }

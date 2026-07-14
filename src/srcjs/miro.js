@@ -33,7 +33,7 @@ import {
 import { registerAiHandlers } from './ai_assistant';
 
 export { default as modal } from './modal';
-export { copyChatContent } from './ai_assistant';
+export { copyChatContent, toggleChatCollapse } from './ai_assistant';
 
 const loadingScreen = new LoadingScreen();
 const miroLogParser = new MiroLogParser();

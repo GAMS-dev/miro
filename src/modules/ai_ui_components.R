@@ -1,6 +1,7 @@
-renderAiChatBubble <- function(msg, lang) {
+renderAiChatBubble <- function(msg, lang, charLimit = 300) {
   isUser <- msg$role == "user"
   wrapperClass <- if (isUser) "miro-ai-chat-bubble-wrapper miro-ai-chat-user" else "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant"
+  isLongUserMsg <- isUser && nchar(msg$text) > charLimit
   return(tags$div(
     class = wrapperClass,
     tags$div(
@@ -16,7 +17,7 @@ renderAiChatBubble <- function(msg, lang) {
       class = "miro-ai-chat-bubble",
       tags$b(class = "miro-ai-chat-author", if (isUser) lang$chatBubbleUserHeader else lang$chatBubbleAssistantHeader),
       tags$div(
-        class = "miro-ai-chat-content-html miro-markdown",
+        class = paste("miro-ai-chat-content-html miro-markdown", if (isLongUserMsg) "miro-ai-text-collapsed" else ""),
         if (isUser) {
           msg$text
         } else {
@@ -25,6 +26,16 @@ renderAiChatBubble <- function(msg, lang) {
           ))
         }
       ),
+      if (isLongUserMsg) {
+        tags$div(
+          class = "miro-ai-expand-wrapper",
+          tags$button(
+            class = "miro-ai-expand-btn",
+            onclick = "Miro.toggleChatCollapse(this)",
+            tags$i(class = "fas fa-chevron-down")
+          )
+        )
+      },
       tags$div(class = "miro-ai-chat-content-raw", style = "display: none;", msg$text)
     )
   ))
