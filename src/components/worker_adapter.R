@@ -403,17 +403,23 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
               return(-404L)
             }
           )
-        } else if (status_code(logResp) == 403L) {
-          # job still pending. Try again
-        } else if (status_code(logResp) == 308L) {
-          # partial log no longer available
-          gamsRetCode <- tryCatch(self$getJobStatus()$process_status, error = function(err) {
+        } else if (status_code(logResp) %in% c(403L, 308L)) {
+          # partial log not available
+          jobStatus <- tryCatch(self$getJobStatus(), error = function(err) {
             flog.warn("Could not determine job status. Error message: %s", conditionMessage(err))
             NULL
           })
+          gamsRetCode <- jobStatus$process_status
           if (is.null(gamsRetCode)) {
-            flog.error("DELETE unread-logs endpoint returned %d status but job's process_status was NULL.", status_code(logResp))
-            self$processStatus <- -500L
+            if (jobStatus$status %in% c(-10L, -2L, 0L, 1L)) {
+              # job still running -> try again
+            } else if (identical(jobStatus$status, -3L)) {
+              # cancelled
+              self$processStatus <- -9L
+            } else {
+              flog.error("DELETE unread-logs endpoint returned %d status but job's process_status was NULL.", status_code(logResp))
+              self$processStatus <- -500L
+            }
           } else {
             self$processStatus <- gamsRetCode
           }
