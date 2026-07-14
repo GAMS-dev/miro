@@ -284,7 +284,7 @@ export function openAdvancedSettingsDialog() {
               </div>
 
               <div class="tab-pane fade" id="conf-ai-assistant" role="tabpanel" aria-labelledby="conf-ai-assistant-tab">
-                <p class="text-muted small">
+                <p class="small">
                   Enter your API keys to enable various AI models for the MIRO AI Assistant.
                   Keys are securely verified automatically when you finish typing and click outside the field.
                 </p>
@@ -309,7 +309,7 @@ export function openAdvancedSettingsDialog() {
                             class="form-control"
                             value="${hasKey ? escapeHtml(providerData.key) : ''}"
                             placeholder="${provider.placeholder}">
-                          <small class="form-text text-muted" style="margin-top: 5px">
+                          <small class="form-text" style="margin-top: 5px">
                             <span>Don't have a key?</span>
                             <a href="${provider.url}" target="_blank" rel="noopener noreferrer">Get one here</a>.
                           </small>
