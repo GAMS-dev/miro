@@ -154,6 +154,9 @@ If the available data is insufficient, state what is missing and why. Do not spe
         if (length(history$history)) {
           aiProvider$history <- history$history
         }
+        if (length(history$chatHistory)) {
+          aiProvider$chatHistory <- history$chatHistory
+        }
         aiProvider$dataChanged <- dataChanged
 
         result <- aiProvider$sendMessage(
@@ -189,11 +192,15 @@ observeEvent(input$miroAiUserText, {
   userText <- input$miroAiUserText
   req(userText)
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
+  chatHistory <- NULL
   if (!identical(aiAssistantState$model, input$miroAiModel)) {
+    if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
+      # switch from one provider to another -> need to pass state as chat history
+      chatHistory <- aiAssistantState$chatHistory[lapply(aiAssistantState$chatHistory, length) > 1L][-1]
+      aiAssistantState$history <<- list()
+      aiAssistantState$sessionId <<- NULL
+    }
     aiAssistantState$model <<- input$miroAiModel
-    # clear session ID as it can't be persisted across models
-    aiAssistantState$history <<- list()
-    aiAssistantState$sessionId <<- NULL
   }
   session$sendCustomMessage(
     "gms-addAiChatBubble",
@@ -213,7 +220,7 @@ observeEvent(input$miroAiUserText, {
     allowedSids = aiAssistantState$activeSids,
     dataChanged = aiAssistantState$dataChanged,
     scenIdNameMap = dialogState$scenIdNameMap,
-    history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
+    history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
   )
 })
 observe({

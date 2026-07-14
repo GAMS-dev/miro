@@ -79,9 +79,12 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
       self$history <- list()
       return(self)
     }
+  ), active = list(
+    chatHistory = function(newChatHistory) stop("Abstract")
   ), private = list(
     modelName = NULL,
     apiKey = NULL,
+    .chatHistory = NULL,
     prepareInitialPayload = function(userInput) stop("Abstract"),
     executeHttpCall = function(payload) stop("Abstract"),
     parseApiResponse = function(rawResponse) stop("Abstract"),
@@ -108,6 +111,19 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
 #' ==========================================================================
 MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
   inherit = MiroAiBaseProvider,
+  active = list(
+    chatHistory = function(newChatHistory) {
+      if (missing(newChatHistory)) {
+        return(private$.chatHistory)
+      }
+      private$.chatHistory <- lapply(newChatHistory, function(msg) {
+        list(
+          type = if (msg$role == "user") "user_input" else "model_output",
+          content = list(list(type = "text", text = msg$text))
+        )
+      })
+    }
+  ),
   private = list(
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       payload <- list(
@@ -118,6 +134,7 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
       )
       if (!is.null(tools) && length(tools) > 0) payload$tools <- tools
       if (!is.null(self$sessionId)) payload$previous_interaction_id <- self$sessionId
+      if (length(self$chatHistory)) payload$input <- self$chatHistory
       return(payload)
     },
     executeHttpCall = function(payload) {
@@ -170,6 +187,19 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
 #' ==========================================================================
 MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
   inherit = MiroAiBaseProvider,
+  active = list(
+    chatHistory = function(newChatHistory) {
+      if (missing(newChatHistory)) {
+        return(private$.chatHistory)
+      }
+      private$.chatHistory <- lapply(newChatHistory, function(msg) {
+        list(
+          role = if (msg$role == "user") "user" else "assistant",
+          content = msg$text
+        )
+      })
+    }
+  ),
   private = list(
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       payload <- list(
@@ -186,6 +216,7 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
           # need to re-send instructions if context changed (i.e. data changed)
           payload$instructions <- systemInstructions
         }
+        if (length(self$chatHistory)) payload$input <- self$chatHistory
       } else {
         # Only inject the system instruction if it's a brand new thread to save tokens
         payload$instructions <- systemInstructions
@@ -265,6 +296,19 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
 #' ==========================================================================
 MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
   inherit = MiroAiBaseProvider,
+  active = list(
+    chatHistory = function(newChatHistory) {
+      if (missing(newChatHistory)) {
+        return(self$history)
+      }
+      self$history <- lapply(newChatHistory[-length(newChatHistory)], function(msg) {
+        list(
+          role = if (msg$role == "user") "user" else "assistant",
+          content = msg$text
+        )
+      })
+    }
+  ),
   private = list(
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       self$history[[length(self$history) + 1]] <- list(role = "user", content = userInput)

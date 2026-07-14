@@ -565,8 +565,8 @@
     },
     "aiBotDialog": {
       "title": "MIRO AI Assistant",
-      "welcomeMessage": "Hi there! I am your MIRO AI Assistantant. I'm here to help you explore your optimization results, whether you are analyzing a single scenario or comparing multiple.",
-      "welcomeMessageCustomRenderer": "Hi there! I am your MIRO AI Assistantant. I'm here to help you create your custom renderer code. Just let me know how you would like to visualize your data.",
+      "welcomeMessage": "Hi there! I am your MIRO AI Assistant. I'm here to help you explore your optimization results, whether you are analyzing a single scenario or comparing multiple.",
+      "welcomeMessageCustomRenderer": "Hi there! I am your MIRO AI Assistant. I'm here to help you create your custom renderer code. Just let me know how you would like to visualize your data.",
       "currentContextSandbox": "Sandbox scenario: %s",
       "currentContextCompare": "Comparison of %d scenarios",
       "chatBubbleUserHeader": "User:",

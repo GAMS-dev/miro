@@ -2605,6 +2605,9 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
           if (length(history$history)) {
             provider$history <- history$history
           }
+          if (length(history$chatHistory)) {
+            provider$chatHistory <- history$chatHistory
+          }
           result <- provider$sendMessage(
             userInput = userInput,
             systemInstructions = sysPrompt
@@ -2658,11 +2661,15 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
       customUICode, customRendererCode
     )
+    chatHistory <- NULL
     if (!identical(aiAssistantState$model, input$miroAiModel)) {
+      if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
+        # switch from one provider to another -> need to pass state as chat history
+        chatHistory <- aiAssistantState$chatHistory[lapply(aiAssistantState$chatHistory, length) > 1L][-1]
+        aiAssistantState$history <<- list()
+        aiAssistantState$sessionId <<- NULL
+      }
       aiAssistantState$model <<- input$miroAiModel
-      # clear session ID as it can't be persisted across models
-      aiAssistantState$history <<- list()
-      aiAssistantState$sessionId <<- NULL
     }
 
     aiTask$invoke(
@@ -2671,7 +2678,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       sysPrompt = sysPrompt,
       assistantConfig = config$aiAssistant,
       model = aiAssistantState$model,
-      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history)
+      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
     )
   })
   observe({
