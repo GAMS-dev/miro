@@ -28,7 +28,6 @@ import ConfigManager from './components/ConfigManager.js';
 import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
-import { getAppDbPath } from './components/util.js';
 import {
   apiVersion,
   miroVersion,
@@ -44,9 +43,19 @@ log.initialize({ preload: true });
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
-const miroWorkspaceDir = path.join(app.getPath('home'), '.miro');
+const miroWorkspaceDir = path.join(process.env.MIRO_WORKSPACE_DIR ?? app.getPath('home'), '.miro');
 const miroBuildMode = process.env.MIRO_BUILD === 'true';
 const miroDevelopMode = process.env.MIRO_DEV_MODE === 'true' || miroBuildMode;
+
+if (!miroDevelopMode) {
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    // app.exit(0) kills the process immediately, preventing any further
+    // top-level code or file operations from executing in this instance.
+    app.exit(0);
+  }
+}
+
 if (!DEVELOPMENT_MODE) {
   log.transports.console.level = false;
 }
@@ -72,7 +81,7 @@ if (!errMsg) {
     }
     log.transports.file.resolvePathFn = () =>
       path.join(logPath, 'launcher.log');
-    log.info(`MIRO launcher (version ${miroVersion} is being started (execPath: ${appRootDir}, \
+    log.info(`MIRO launcher (version ${miroVersion}) is being started (execPath: ${appRootDir}, \
 pid: ${process.pid}, Log path: ${logPath}, \
 platform: ${process.platform}, arch: ${process.arch}, \
 version: ${process.getSystemVersion()})...`);
@@ -82,7 +91,7 @@ const appDataPath = errMsg
   ? null
   : path.join(configData.getConfigPath(), 'miro_apps');
 const appsData = errMsg ? null : new AppDataStore(configData.getConfigPath());
-const langParser = new LangParser(configData.getSync('language'));
+const langParser = new LangParser(errMsg ? null : configData.getSync('language'));
 
 // Set global variables
 const lang = langParser.get();
@@ -1003,8 +1012,8 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile(path.join(__dirname, 'renderer', 'settings.html'));
 
-  settingsWindow.once('ready-to-show', async () => {
-    log.debug('Settings window ready to show.');
+  settingsWindow.webContents.once('did-finish-load', async () => {
+    log.debug('Settings window finished loading.');
     try {
       settingsWindow.webContents.send(
         'settings-loaded',
@@ -1163,50 +1172,45 @@ if (!miroDevelopMode) {
   } else {
     app.setAsDefaultProtocolClient('com.gams.miro');
   }
-  const gotTheLock = app.requestSingleInstanceLock();
 
-  if (!gotTheLock) {
-    app.quit();
-  } else {
-    app.on('second-instance', async (_, argv) => {
-      log.debug('Second MIRO instance launched.');
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
-        if (
-          process.platform !== 'darwin' &&
-          argv.length >= 2 &&
-          !DEVELOPMENT_MODE &&
-          !miroDevelopMode
-        ) {
-          const associatedFile = argv[argv.length - 1];
-          if (associatedFile.startsWith('--')) {
-            return;
-          }
-          if (associatedFile.toLowerCase().endsWith('.miroscen')) {
-            log.debug(
-              `MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`,
-            );
-            await addMiroscenFile(associatedFile);
-            return;
-          }
-          if (associatedFile.toLowerCase().endsWith('.miroapp')) {
-            log.debug(
-              `MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`,
-            );
-            await addOrUpdateMIROApp(associatedFile);
-          }
-          try {
-            handleDeepLink(associatedFile);
-          } catch (err) {
-            log.warn(
-              `MIRO launcher opened with invalid argument: ${associatedFile}: ${err}`,
-            );
-          }
+  app.on('second-instance', async (_, argv) => {
+    log.debug('Second MIRO instance launched.');
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+      if (
+        process.platform !== 'darwin' &&
+        argv.length >= 2 &&
+        !DEVELOPMENT_MODE &&
+        !miroDevelopMode
+      ) {
+        const associatedFile = argv[argv.length - 1];
+        if (associatedFile.startsWith('--')) {
+          return;
+        }
+        if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+          log.debug(
+            `MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`,
+          );
+          await addMiroscenFile(associatedFile);
+          return;
+        }
+        if (associatedFile.toLowerCase().endsWith('.miroapp')) {
+          log.debug(
+            `MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`,
+          );
+          await addOrUpdateMIROApp(associatedFile);
+        }
+        try {
+          handleDeepLink(associatedFile);
+        } catch (err) {
+          log.warn(
+            `MIRO launcher opened with invalid argument: ${associatedFile}: ${err}`,
+          );
         }
       }
-    });
-  }
+    }
+  });
 }
 
 async function createWhatsNewWindow({ force = false } = {}) {
@@ -2087,7 +2091,7 @@ ipcMain.on('add-app', async (e, newApp) => {
 
     let overwriteData = true;
     const dbPath = path.join(
-      getAppDbPath(appConf.dbpath),
+      configData.getAppDbPath(appConf.dbpath),
       `${appConf.id}.sqlite3`,
     );
     if (fs.existsSync(dbPath)) {

@@ -1,9 +1,5 @@
 observeEvent(input$showJobLog, {
   flog.trace("Show job log button clicked.")
-  if (identical(worker$validateCredentials(), FALSE)) {
-    flog.debug("User is not logged in. Login dialog is opened.")
-    return(showLoginDialog(cred = worker$getCredentials()))
-  }
   asyncLogLoaded[] <<- FALSE
   showJobLogFileDialog(input$showJobLog)
 })
@@ -64,7 +60,7 @@ observeEvent(
       flog.error("Log file type could not be identified. This looks like an attempt to tamper with the app!")
       return()
     }
-    pID <- worker$getPid(jID)
+    pID <- worker$asyncJobManager$getPid(jID)
     if (is.null(pID)) {
       flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
       showHideEl(session, "#fetchJobsError")
@@ -72,7 +68,7 @@ observeEvent(
     }
     logContent <- tryCatch(
       {
-        worker$readTextEntry(fileToFetch,
+        worker$asyncJobManager$readTextEntry(fileToFetch,
           pID,
           getSize = TRUE
         )
@@ -136,8 +132,8 @@ observeEvent(input$loadTextEntryChunk, {
   }
   logContent <- tryCatch(
     {
-      worker$readTextEntry(fileToFetch,
-        worker$getPid(input$loadTextEntryChunk$jID),
+      worker$asyncJobManager$readTextEntry(fileToFetch,
+        worker$asyncJobManager$getPid(input$loadTextEntryChunk$jID),
         chunkNo = input$loadTextEntryChunk$chunkCount
       )
     },
@@ -172,11 +168,7 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if (identical(worker$validateCredentials(), FALSE)) {
-    flog.debug("User is not logged in. Login dialog is opened.")
-    return(showLoginDialog(cred = worker$getCredentials()))
-  }
-  jobStatus <- worker$getStatus(jobImportID)
+  jobStatus <- worker$asyncJobManager$getStatus(jobImportID)
   if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
     flog.error(
       "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
@@ -185,10 +177,10 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  jobMeta <- worker$getInfoFromJobList(jobImportID)
+  jobMeta <- worker$asyncJobManager$getInfoFromJobList(jobImportID)
   if (identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])) {
     hideEl(session, paste0("#btImportJob_", jobImportID))
-    return(importHcJob(worker$getJobResultsPath(jobImportID), jobMeta))
+    return(importHcJob(worker$asyncJobManager$getJobResultsPath(jobImportID), jobMeta))
   }
   if (rv$sandboxUnsaved) {
     showRemoveScenDialog("importJobConfirm")
@@ -202,7 +194,7 @@ observeEvent(
   {
     removeModal()
     errMsg <- NULL
-    jobStatus <- worker$getStatus(jobImportID)
+    jobStatus <- worker$asyncJobManager$getStatus(jobImportID)
     if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
       flog.error(
         "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
@@ -242,7 +234,7 @@ observeEvent(virtualActionButton(
   removeModal()
   hideEl(session, paste0("#btImportJob_", jobImportID))
   on.exit(showEl(session, paste0("#btImportJob_", jobImportID)))
-  jobStatus <- worker$getStatus(jobImportID)
+  jobStatus <- worker$asyncJobManager$getStatus(jobImportID)
   if (!length(jobStatus) || !jobStatus %in% c(JOBSTATUSMAP[["completed"]], JOBSTATUSMAP[["downloaded"]])) {
     flog.error(
       "Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.",
@@ -273,7 +265,7 @@ observeEvent(virtualActionButton(
 
   tryCatch(
     {
-      tmpdir <- worker$getJobResultsPath(jobImportID)
+      tmpdir <- worker$asyncJobManager$getJobResultsPath(jobImportID)
       on.exit(unlink(tmpdir), add = TRUE)
     },
     error = function(e) {
@@ -374,7 +366,7 @@ observeEvent(virtualActionButton(
 
   tryCatch(
     {
-      worker$updateJobStatus(
+      worker$asyncJobManager$updateJobStatus(
         JOBSTATUSMAP[["imported"]],
         jobImportID
       )

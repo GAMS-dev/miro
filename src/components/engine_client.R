@@ -1,9 +1,15 @@
 EngineClient <- R6Class("EngineClient", public = list(
-  initialize = function(url, username, authHeader) {
-    stopifnot(length(url) == 1L, length(username) == 1L, length(authHeader) == 1L)
-    private$url <- url
+  initialize = function(url, username, password, namespace, useBearer = TRUE, appAccessGroups = NULL) {
+    stopifnot(length(url) == 1L, length(username) == 1L, length(password) == 1, length(namespace) == 1L)
+    private$url <- trimws(url, which = "right", whitespace = "/")
     private$username <- username
-    private$authHeader <- authHeader
+    private$namespace <- namespace
+    private$authHeader <- private$buildAuthHeader(password, useBearer)
+    private$appAccessGroups <- appAccessGroups
+    return(self)
+  },
+  getConfig = function() {
+    return(list(url = private$url, authHeader = private$authHeader, username = private$username, namespace = private$namespace))
   },
   populateVolumeInfoCard = function(session, id) {
     if (!is.null(private$observers$quota)) {
@@ -14,10 +20,15 @@ EngineClient <- R6Class("EngineClient", public = list(
     private$observers$quota <- observe({
       tryCatch(
         {
-          if (resolved(private$quotaInfoFuture)) {
-            quotaInfo <- value(private$quotaInfoFuture)
-            if (quotaInfo[["error"]]) {
-              flog.error("Problem fetching quota info. Error message: %s", quotaInfo[["message"]])
+          if (!unresolved(private$mQuotaResp)) {
+            quotaInfo <- private$mQuotaResp$data
+            if (is_error_value(quotaInfo)) {
+              if (is.integer(quotaInfo)) {
+                errMsg <- "Aborted"
+              } else {
+                errMsg <- quotaInfo$message
+              }
+              flog.error("Problem fetching quota info. Error message: %s", errMsg)
               showEl(session, "#settingsDialogUnknownError")
             } else {
               remainingQuota <- calcRemainingQuota(quotaInfo[["quotaInfo"]])
@@ -128,14 +139,22 @@ EngineClient <- R6Class("EngineClient", public = list(
     private$observers$instances <- observe({
       tryCatch(
         {
-          if (is.null(private$instanceInfoFuture)) {
+          if (is.null(private$mInstanceResp)) {
             instanceInfo <- private$instanceInfo
-          } else if (!resolved(private$instanceInfoFuture)) {
+          } else if (unresolved(private$mInstanceResp)) {
             invalidateLater(500L, session)
             return()
+          } else if (is_error_value(private$mInstanceResp)) {
+            if (is.integer(private$mInstanceResp)) {
+              errMsg <- "Aborted"
+            } else {
+              errMsg <- private$mInstanceResp$data
+            }
+            flog.info("Problems fetching instance data. Error message: %s", errMsg)
+            return()
           } else {
-            instanceInfo <- getInstances(value(private$instanceInfoFuture))
-            private$instanceInfoFuture <- NULL
+            instanceInfo <- getInstances(private$mInstanceResp$data)
+            private$mInstanceResp <- NULL
           }
           if (!instanceInfo[["valid"]]) {
             showEl(session, "#settingsDialogUnknownError")
@@ -245,27 +264,79 @@ EngineClient <- R6Class("EngineClient", public = list(
         type = "application/json",
         encoding = "utf-8"
       )
+      errMsg <- if (is.null(errMsg[["message"]])) "Unknown error" else errMsg[["message"]]
       stop(sprintf(
         "Invalid status code: %s. Error message: %s",
-        httr::status_code(updateDefaultInstanceReq), errMsg[["message"]]
+        httr::status_code(updateDefaultInstanceReq), errMsg
       ), call. = FALSE)
     }
     private$instanceInfo$selected <- newDefault
+  },
+  getRemoteAccessGroups = function(userAccessGroups) {
+    getGroupsReq <- GET(
+      url = paste0(
+        private$url,
+        "/namespaces/",
+        private$namespace, "/user-groups"
+      ),
+      add_headers(
+        Authorization = private$authHeader,
+        Timestamp = as.character(Sys.time(), usetz = TRUE)
+      ),
+      timeout(10L)
+    )
+    if (!identical(status_code(getGroupsReq), 200L)) {
+      errMsg <- content(getGroupsReq,
+        type = "application/json",
+        encoding = "utf-8"
+      )
+      stop(sprintf(
+        "Invalid status code: %s. Error message: %s",
+        status_code(getGroupsReq), errMsg[["message"]]
+      ), call. = FALSE)
+    }
+    groupsTmp <- content(getGroupsReq,
+      type = "application/json",
+      encoding = "utf-8"
+    )
+
+    groupsTmp <- unlist(lapply(groupsTmp, function(accessGroup) {
+      if (!identical(accessGroup$label, tolower(accessGroup$label))) {
+        flog.warn("Remote access group: %s ignored as it contains uppercase letters. Currently, MIRO does not support group labels that include uppercase letters.", accessGroup$label)
+        return(NULL)
+      }
+      if (!accessGroup$label %in% private$appAccessGroups) {
+        flog.debug(
+          "Remote access group: %s ignored as it is not part of the app's access groups.",
+          accessGroup$label
+        )
+        return(NULL)
+      }
+      return(c(
+        paste0("#", accessGroup$label),
+        vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)
+      ))
+    }), use.names = FALSE)
+    groupsTmp <- groupsTmp[!groupsTmp %in% c("#admins", "#users")]
+    groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
+    return(c("#users", if ("#admins" %in% userAccessGroups) "#admins", groupsTmp))
   }
 ), private = list(
   url = NULL,
   username = NULL,
+  namespace = NULL,
   authHeader = NULL,
   apiInfo = NULL,
   instanceInfo = NULL,
-  instanceInfoFuture = NULL,
-  quotaInfoFuture = NULL,
+  mInstanceResp = NULL,
+  mQuotaResp = NULL,
+  appAccessGroups = NULL,
   observers = list(quota = NULL, instances = NULL),
   fetchQuotaInfo = function() {
-    if (!is.null(private$quotaInfoFuture) && !resolved(private$quotaInfoFuture)) {
-      cancel(private$quotaInfoFuture)
+    if (is_mirai(private$mQuotaResp) && unresolved(private$mQuotaResp)) {
+      stop_mirai(private$mQuotaResp)
     }
-    private$quotaInfoFuture <- future(
+    private$mQuotaResp <- mirai(
       {
         tryCatch(
           {
@@ -300,17 +371,14 @@ EngineClient <- R6Class("EngineClient", public = list(
           }
         )
       },
-      globals = list(
-        url = private$url, username = private$username, authHeader = private$authHeader
-      ),
-      packages = c("curl", "httr")
+      .args = list(url = private$url, username = private$username, authHeader = private$authHeader)
     )
   },
   fetchInstanceInfo = function() {
-    if (!is.null(private$instanceInfoFuture) && !resolved(private$instanceInfoFuture)) {
-      cancel(private$instanceInfoFuture)
+    if (is_mirai(private$mInstanceResp) && unresolved(private$mInstanceResp)) {
+      stop_mirai(private$mInstanceResp)
     }
-    private$instanceInfoFuture <- future(
+    private$mInstanceResp <- mirai(
       {
         tryCatch(
           {
@@ -384,11 +452,24 @@ EngineClient <- R6Class("EngineClient", public = list(
           }
         )
       },
-      globals = list(
+      .args = list(
         url = private$url, username = private$username, authHeader = private$authHeader,
         apiInfoGlobal = private$apiInfo
-      ),
-      packages = c("curl", "httr", "jsonlite")
+      )
     )
+  },
+  buildAuthHeader = function(password, useTokenAuth = FALSE) {
+    if (useTokenAuth) {
+      return(paste0("Bearer ", password))
+    }
+    return(paste0(
+      "Basic ",
+      base64_encode(charToRaw(
+        paste0(
+          private$username,
+          ":", password
+        )
+      ))
+    ))
   }
 ))

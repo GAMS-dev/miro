@@ -133,7 +133,7 @@ importHcJob <- function(filePath, jobMeta) {
           prog$close()
           tryCatch(
             {
-              worker$updateJobStatus(
+              worker$asyncJobManager$updateJobStatus(
                 JOBSTATUSMAP[["imported"]],
                 jobMeta[["_jid"]][1]
               )

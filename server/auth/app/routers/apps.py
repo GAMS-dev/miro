@@ -1,28 +1,31 @@
+import logging
 from typing import Annotated
 
-from fastapi.param_functions import Query
 from fastapi import (
     APIRouter,
     Depends,
-    HTTPException,
-    Path,
     File,
     Form,
+    HTTPException,
+    Path,
     UploadFile,
     status,
 )
+from fastapi.param_functions import Query
 from pydantic import TypeAdapter, ValidationError
 
-from app.config import logger
+from app.dependencies import Paginator, User, get_current_admin_user, get_current_user
 from app.utils.app_utils import (
-    AppConfigOutput,
     AppConfigInput,
+    AppConfigOutput,
+    add_or_update_app,
     app_is_invisible,
+    delete_app_internal,
     get_apps_internal,
 )
 from app.utils.models import AppEnvironment
-from app.dependencies import User, get_current_admin_user, get_current_user, Paginator
-from app.utils.app_utils import add_or_update_app, delete_app_internal
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/apps",
@@ -130,8 +133,10 @@ async def update_app(
         nonempty_access_groups = []
     invalid_user_groups = list(
         filter(
-            lambda access_group: access_group in ["admins", "users"]
-            or access_group not in admin_user.groups,
+            lambda access_group: (
+                access_group in ["admins", "users"]
+                or access_group not in admin_user.groups
+            ),
             nonempty_access_groups,
         )
     )
@@ -240,8 +245,10 @@ async def add_app(
         nonempty_access_groups = []
     invalid_user_groups = list(
         filter(
-            lambda access_group: access_group in ["admins", "users"]
-            or access_group not in admin_user.groups,
+            lambda access_group: (
+                access_group in ["admins", "users"]
+                or access_group not in admin_user.groups
+            ),
             nonempty_access_groups,
         )
     )
@@ -313,7 +320,7 @@ async def delete_app(
     """
     Remove an existing MIRO app (requires write permissions on namespace).
     """
-    logger.info("%s requested to add remove app with ID: %s", admin_user.name, app_id)
+    logger.info("%s requested to remove app with ID: %s", admin_user.name, app_id)
     app_invisible = await app_is_invisible(admin_user.groups, app_id)
     if app_invisible:
         logger.info("%s is not visible", app_id)

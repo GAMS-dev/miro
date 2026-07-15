@@ -485,9 +485,11 @@ $(() => {
         return;
       }
       btn.prop('disabled', true);
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         btn.prop('disabled', false);
       }, 1500);
+
+      btn.data('disable-timeout', timeoutId);
     },
   ); // hide pivot filter boxes when clicked outside of box
   $(document).on('click', '.change-dd-button', function () {
@@ -681,7 +683,9 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $(id).prop('disabled', false);
   });
   Shiny.addCustomMessageHandler('gms-disableEl', (id) => {
-    $(id).prop('disabled', true);
+    const btn = $(id);
+    clearTimeout(btn.data('disable-timeout'));
+    btn.prop('disabled', true);
   });
   Shiny.addCustomMessageHandler('gms-toggleEl', (id) => {
     if ($(id).is(':visible')) {
@@ -789,11 +793,17 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
         / parseInt(data.progress.noTotal, 10))
         * 100,
     );
+    let progressBarText;
+    if (data.progress.isPercentage === true) {
+      progressBarText = `${percentCompleted}%`;
+    } else {
+      progressBarText = `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`;
+    }
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
       .text(
-        `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`,
+        progressBarText,
       );
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {

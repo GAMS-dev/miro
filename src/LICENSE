@@ -137,6 +137,7 @@ these components are included below):
 - memoise https://github.com/r-lib/memoise or https://cran.r-project.org/web/packages/memoise/index.html
 - cachem https://github.com/r-lib/cachem or https://cran.r-project.org/web/packages/cachem/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
+- mirai https://github.com/r-lib/mirai or https://cran.r-project.org/web/packages/mirai/index.html
 
 - bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
 - cli https://github.com/r-lib/cli or https://cran.r-project.org/web/packages/cli/index.html
@@ -1012,6 +1013,10 @@ Section 8 -- Interpretation.
           Bob Colbert [ctb, cph] (Author of included libxls code),
           David Hoerl [ctb, cph] (Author of included libxls code),
           Evan Miller [ctb, cph] (Author of included libxls code)
+        - mirai, Copyright (c) 2025 mirai authors
+          Charlie Gao ORCID iD [aut, cre], Joe Cheng [ctb], Posit Software, PBC ROR ID [cph, fnd], Hibiki AI Limited [cph],
+          Staysail Systems, Inc. [cph] (NNG library), Capitar IT Group BV [cph] (NNG library), The Mbed TLS Contributors [cph] (Mbed TLS library),
+          Pierre L'Ecuyer [cph] (RngStreams library), sakura authors [cph] (Serialization hooks), R Consortium ROR ID [fnd]
 
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>

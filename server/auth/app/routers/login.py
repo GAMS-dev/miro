@@ -1,13 +1,17 @@
+import logging
+
 from fastapi import APIRouter, HTTPException, status
 
-from app.config import logger, settings
+from app.config import settings
+from app.dependencies import get_authenticated_user, get_bearer_token, login_user_oidc
 from app.utils.models import (
     AuthRequest,
-    OidcAuthRequest,
     AuthResponse,
+    OidcAuthRequest,
     OidcAuthResponse,
 )
-from app.dependencies import get_authenticated_user, get_bearer_token, login_user_oidc
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/login",

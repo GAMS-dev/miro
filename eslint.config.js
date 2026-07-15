@@ -27,7 +27,7 @@ export default defineConfig([
   ]),
   // ---------- Shared base (applies to all JS) ----------
   {
-    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

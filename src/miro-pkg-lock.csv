@@ -1,3 +1,5 @@
+nanonext, 1.10.0
+mirai, 2.7.1
 data.table, 1.18.4
 cpp11, 0.5.5
 xfun, 0.53
@@ -94,8 +96,6 @@ progress, 1.2.3
 lambda.r, 1.2.4
 futile.options, 1.0.1
 zoo, 1.8-15
-globals, 0.18.0
-listenv, 0.9.1
 processx, 3.9.0
 readxl, 1.5.0
 writexl, 1.5.4
@@ -104,8 +104,6 @@ zip, 2.3.3
 leaflet.minicharts, 0.6.2
 xts, 0.14.2
 dygraphs, 1.1.1.6
-parallelly, 1.45.1
-future, 1.67.0
 bit, 4.6.0
 bit64, 4.6.0-1
 tzdb, 0.5.0

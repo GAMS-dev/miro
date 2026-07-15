@@ -1,12 +1,14 @@
 import asyncio
+import logging
 import os
-import subprocess
 from typing import Dict
 
 from fastapi import HTTPException, status
 
+from app.config import settings
 from app.utils.models import User
-from app.config import logger, settings
+
+logger = logging.getLogger(__name__)
 
 
 def get_miro_proc_env(user_info: User) -> Dict[str, str]:

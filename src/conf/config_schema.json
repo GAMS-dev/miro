@@ -2724,10 +2724,9 @@
       "default": false
     },
     "fileExchange": {
-      "description": "Method used to exchange files with GAMS",
+      "description": "DEFUNCT: Do not use this any longer. The only valid value is 'gdx'.",
       "type": "string",
       "enum": [
-        "csv",
         "gdx"
       ],
       "default": "gdx"

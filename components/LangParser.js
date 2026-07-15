@@ -1652,7 +1652,7 @@ log file should be stored is invalid! Please enter only whole numbers!',
     engineJWTLabel: 'JWT',
     engineNsValidation: 'The namespace you entered could not be found.',
     engineNsValidationPerm:
-      "You don't have sufficient permissions to execute models in the namespace.",
+      "Insufficient permissions. At least 'execute' and 'write' permissions are required for this namespace.",
     engineUsernameValidation: 'Invalid username or password.',
     enginePasswordValidation: 'Invalid username or password.',
     engineJWTValidation: 'Invalid or expired token.',
@@ -1795,6 +1795,8 @@ const de = {
   },
   general: {
     title: 'MIRO Bibliothek',
+    welcomeTitle: 'Willkommen bei Ihrer',
+    welcomeText: 'Hier werden Ihre GAMS MIRO Anwendungen angezeigt, sobald sie hinzugefügt wurden. Klicken Sie links auf die Schaltfläche „+“, um loszulegen. Sie können unsere Sammlung von Beispiel-Apps durchsuchen oder Ihre eigene bestehende MIRO-App hinzufügen.',
     btEdit: 'Bearbeiten',
     btEditDone: 'Fertig',
     btAddExamples: 'Beispiel-Apps hinzufügen',
@@ -1974,7 +1976,7 @@ const de = {
     dialogLogLifeErrBtn: 'OK',
     browseFiles: 'Durchsuchen',
     engineUrlLabel: 'Engine URL',
-    engineNsLabel: 'Engine Namensraum',
+    engineNsLabel: 'Engine Namespace',
     engineLoginMethodLabel: 'Anmeldung über',
     engineLoginMethodValidation: 'Anmeldung fehlgeschlagen',
     engineLoginMethodValidationSuccess: 'Anmeldung erfolgreich',
@@ -1983,9 +1985,9 @@ const de = {
     enginePasswordLabel: 'Passwort',
     engineJWTLabel: 'JWT',
     engineNsValidation:
-      'Der von Ihnen eingegebene Namensraum konnte nicht gefunden werden.',
+      'Der von Ihnen eingegebene Namespace konnte nicht gefunden werden.',
     engineNsValidationPerm:
-      'Sie haben nicht genügend Berechtigungen, um Modelle im Namensraum auszuführen.',
+      "Unzureichende Berechtigungen. Für diesen Namespace sind mindestens 'execute'- und 'write'-Rechte erforderlich.",
     engineUsernameValidation: 'Ungültiger Benutzername oder Passwort.',
     enginePasswordValidation: 'Ungültiger Benutzername oder Passwort.',
     engineJWTValidation: 'Ungültiges oder abgelaufenes Token.',
@@ -2107,6 +2109,8 @@ const cn = {
   },
   general: {
     title: 'MIRO库',
+    welcomeTitle: '欢迎使用您的',
+    welcomeText: '一旦添加了 GAMS MIRO 应用程序，它们就会显示在这里。要开始使用，请点击左侧的 “+” 按钮。您可以浏览我们的示例应用程序集，或者添加您自己现有的 MIRO 应用程序。',
     btEdit: '编辑',
     btEditDone: '完成',
     btAddExamples: '添加示例应用程序',
@@ -2279,7 +2283,7 @@ const cn = {
     enginePasswordLabel: '密码',
     engineJWTLabel: 'JWT',
     engineNsValidation: '找不到您输入的命名空间。',
-    engineNsValidationPerm: '您没有足够的权限来执行命名空间中的模型。',
+    engineNsValidationPerm: "权限不足。该命名空间至少需要 'execute' 和 'write' 权限。",
     engineUsernameValidation: '用户名或密码无效。',
     enginePasswordValidation: '用户名或密码无效。',
     engineJWTValidation: '令牌无效或过期。',
@@ -2296,7 +2300,7 @@ class LangParser {
       this.lang = en;
     }
     if (!ajv.validate(schema, this.lang)) {
-      throw new Error(ajv.errors);
+      throw new Error(JSON.stringify(ajv.errors));
     }
   }
 

@@ -2,7 +2,7 @@ import log from 'electron-log/main.js';
 import http from 'axios';
 import { execa } from 'execa';
 import path from 'node:path';
-import { getAppDbPath, isFalse } from './util.js';
+import { isFalse } from './util.js';
 import { randomPort, waitFor, isNull, kill } from './helpers.js';
 
 /*
@@ -134,7 +134,7 @@ class MiroProcessManager {
     const gamspath = this.configData.get('gamspath');
     const pythonpath = this.configData.get('pythonpath');
     const logpath = this.configData.get('logpath');
-    const dbPath = getAppDbPath(appData.dbpath);
+    const dbPath = this.configData.getAppDbPath(appData.dbpath);
 
     const generalConfig = {
       launchExternal: this.configData.get('launchExternal'),
@@ -223,10 +223,10 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_MODEL_PATH: this.inDevelopmentMode
         ? appData.modelPath
         : path.join(
-            this.appDataPath,
-            appData.id,
-            appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName,
-          ),
+          this.appDataPath,
+          appData.id,
+          appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName,
+        ),
       MIRO_APP_ID: appData.id,
     });
     if (process.platform === 'linux') {

@@ -6,7 +6,7 @@ genAccessPermInputs <- function(containerSelector, resetPerm = FALSE) {
   if (tryCatch(
     {
       if (isShinyProxy) {
-        accessGroups <- worker$getRemoteAccessGroups()
+        accessGroups <- engineClient$getRemoteAccessGroups(db$getUserAccessGroups())
         db$setRemoteUsers(accessGroups)
       } else {
         accessGroups <- db$getUserAccessGroups()

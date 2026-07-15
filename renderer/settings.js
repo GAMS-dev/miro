@@ -179,9 +179,11 @@ const fetchEngineLoginMethods = async (url, options) => {
       })
       .map((idp) => idp.name);
   } catch (err) {
-    __electronLog.info(
-      `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
-    );
+    if (err?.name !== 'CanceledError') {
+      __electronLog.info(
+        `Problems fetching auth providers (url: ${url}). Error: ${JSON.stringify(err)}`,
+      );
+    }
     $('#engine-tab').tab('show');
     $('#engineUrl').addClass('is-invalid');
     return;
@@ -538,6 +540,7 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
 ipcRenderer.on(
   'settings-loaded',
   (e, data, defaults, langData, customColorsFileExists) => {
+    __electronLog.info('Settings window config loaded');
     if (langData != null && lang.title == null) {
       lang = langData;
       [
@@ -688,7 +691,7 @@ ipcRenderer.on(
           cbRemoteExecution.attr('disabled', true);
         }
       } else if (key === 'remoteConfig') {
-        if (newValue.url != null) {
+        if (newValue?.url != null) {
           engineConfig.init();
           $('#engineUrl').val(newValue.url);
           $('#engineNs').val(newValue.namespace);
@@ -712,8 +715,8 @@ ipcRenderer.on(
         $(`#${key}`).val(
           Object.keys(optionAliasMap).includes(key)
             ? Object.keys(optionAliasMap[key]).find(
-                (keyp) => optionAliasMap[key][keyp] === newValue,
-              )
+              (keyp) => optionAliasMap[key][keyp] === newValue,
+            )
             : newValue,
         );
         if (isImportant) {

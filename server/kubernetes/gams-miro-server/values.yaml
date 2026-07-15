@@ -71,6 +71,7 @@ proxy:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+    extraEgress: []
   podAnnotations: {}
   config:
     title: GAMS MIRO Server

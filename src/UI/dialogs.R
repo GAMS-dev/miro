@@ -1561,21 +1561,19 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
           } else if (identical(jStatus, JOBSTATUSMAP[["completed"]])) {
             tags$td(
               tags$div(lang$nav$importJobsDialog$status$completed),
-              if (isTRUE(config$activateModules$remoteExecution)) {
+              tags$div(
+                class = "progress",
+                style = "display:none;margin-bottom:0;border:1px solid black;",
+                id = paste0("jobImportDlProgressWrapper_", jID),
                 tags$div(
-                  class = "progress",
-                  style = "display:none;margin-bottom:0;border:1px solid black;",
-                  id = paste0("jobImportDlProgressWrapper_", jID),
-                  tags$div(
-                    class = "progress-bar progress-bar-striped active",
-                    id = paste0("jobImportDlProgress_", jID),
-                    role = "progressbar", `aria-valuenow` = 5L,
-                    `aria-valuemin` = 0, `aria-valuemax` = 100,
-                    style = paste0("width:", 5L, "%;"),
-                    lang$nav$importJobsDialog$status$downloading
-                  )
+                  class = "progress-bar progress-bar-striped active",
+                  id = paste0("jobImportDlProgress_", jID),
+                  role = "progressbar", `aria-valuenow` = 5L,
+                  `aria-valuemin` = 0, `aria-valuemax` = 100,
+                  style = paste0("width:", 5L, "%;"),
+                  lang$nav$importJobsDialog$status$downloading
                 )
-              }
+              )
             )
           } else if (identical(jStatus, JOBSTATUSMAP[["downloaded"]])) {
             tags$td(lang$nav$importJobsDialog$status$downloaded)
@@ -1810,7 +1808,7 @@ showJobProgressDialog <- function(jID, progressStatus) {
         id = paste0("hcubeProgress", jID),
         role = "progressbar", `aria-valuenow` = percentCompleted,
         `aria-valuemin` = 0, `aria-valuemax` = 100,
-        style = paste0("width:", percentCompleted, "%;"),
+        style = paste0("min-width:2em;width:", percentCompleted, "%;"),
         paste0(
           progressStatus$noCompleted, "/", progressStatus$noTotal,
           if (length(progressStatus$noFail)) paste0(" (", progressStatus$noFail, ")")
