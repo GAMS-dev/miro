@@ -485,9 +485,11 @@ $(() => {
         return;
       }
       btn.prop('disabled', true);
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         btn.prop('disabled', false);
       }, 1500);
+
+      btn.data('disable-timeout', timeoutId);
     },
   ); // hide pivot filter boxes when clicked outside of box
   $(document).on('click', '.change-dd-button', function () {
@@ -681,7 +683,9 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $(id).prop('disabled', false);
   });
   Shiny.addCustomMessageHandler('gms-disableEl', (id) => {
-    $(id).prop('disabled', true);
+    const btn = $(id);
+    clearTimeout(btn.data('disable-timeout'));
+    btn.prop('disabled', true);
   });
   Shiny.addCustomMessageHandler('gms-toggleEl', (id) => {
     if ($(id).is(':visible')) {
