@@ -568,7 +568,7 @@ Worker <- R6Class("Worker",
             private$logObs$destroy()
           } else if (private$adapter$processStatus > 0) {
             # did not solve successfully - need to delay parsing until log has been updated
-            private$logParseDelay <- !isFALSE(private$adapter$logComplete)
+            private$logParseDelay <- TRUE
           } else {
             private$logObs$destroy()
           }

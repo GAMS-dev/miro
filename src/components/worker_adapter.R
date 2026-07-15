@@ -5,7 +5,6 @@ WorkerAdapter <- R6Class("WorkerAdapter",
     processId = NULL,
     inputData = NULL,
     quotaWarning = NULL,
-    logComplete = NULL,
     pollInterval = 1000L,
     initialize = function(metadata, workDir) {
       private$metadata <- private$validateMetadata(metadata)
@@ -187,13 +186,18 @@ LocalWorkerAdapter <- R6Class("LocalWorkerAdapter",
     pingLog = function() {
       if (is.null(private$logFileInfo)) {
         self$log <- tryCatch(
-          private$process$read_output(),
+          {
+            if (is.null(self$processStatus)) {
+              private$process$read_output()
+            } else {
+              private$process$read_all_output()
+            }
+          },
           error = function(err) {
             flog.info("Problems reading process output. Error message: %s", conditionMessage(err))
             return("")
           }
         )
-        self$logComplete <- !private$process$is_incomplete_output()
         return(private$updateLog)
       }
       info <- ""
