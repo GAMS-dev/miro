@@ -216,10 +216,8 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
       }
       if (!is.null(self$sessionId)) {
         payload$previous_response_id <- self$sessionId
-        if (length(self$chatHistory)) payload$input <- self$chatHistory
-      } else {
-        # Only inject the system instruction if it's a brand new thread to save tokens
-        payload$instructions <- systemInstructions
+      } else if (length(self$chatHistory)) {
+        payload$input <- self$chatHistory
       }
       return(payload)
     },
