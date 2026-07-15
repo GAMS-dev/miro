@@ -219,7 +219,10 @@ LocalWorkerAdapter <- R6Class("LocalWorkerAdapter",
           }
         },
         error = function(err) {
-          flog.info("Problems reading log file. Error message: %s", conditionMessage(err))
+          errMsg <- conditionMessage(err)
+          if (!grepl("does not exist", errMsg, fixed = TRUE)) {
+            flog.info("Problems reading log file. Error message: %s", conditionMessage(err))
+          }
           return("")
         }
       )
