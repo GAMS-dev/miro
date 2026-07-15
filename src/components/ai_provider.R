@@ -306,20 +306,24 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
     }
   ),
   private = list(
+    systemInstructionsPayload = NULL,
+    toolsPayload = NULL,
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       self$history[[length(self$history) + 1]] <- list(role = "user", content = userInput)
+      private$systemInstructionsPayload <- list(
+        list(type = "text", text = systemInstructions, cache_control = list(type = "ephemeral"))
+      )
       payload <- list(
         model = private$modelName,
         max_tokens = 8192,
         messages = self$history,
-        system = list(
-          list(type = "text", text = systemInstructions, cache_control = list(type = "ephemeral"))
-        )
+        system = private$systemInstructionsPayload
       )
       if (!is.null(tools) && length(tools) > 0) {
-        payload$tools <- lapply(tools, function(f) {
+        private$toolsPayload <- lapply(tools, function(f) {
           list(name = f$name, description = f$description, input_schema = f$parameters)
         })
+        payload$tools <- private$toolsPayload
       }
       return(payload)
     },
@@ -379,8 +383,12 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       payload <- list(
         model = private$modelName,
         max_tokens = 4096,
-        messages = self$history
+        messages = self$history,
+        system = private$systemInstructionsPayload
       )
+      if (is.null(private$toolsPayload)) {
+        payload$tools <- private$toolsPayload
+      }
       return(payload)
     }
   )
