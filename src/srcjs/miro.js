@@ -789,11 +789,17 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
         / parseInt(data.progress.noTotal, 10))
         * 100,
     );
+    let progressBarText;
+    if (data.progress.isPercentage === true) {
+      progressBarText = `${percentCompleted}%`;
+    } else {
+      progressBarText = `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`;
+    }
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
       .text(
-        `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`,
+        progressBarText,
       );
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {

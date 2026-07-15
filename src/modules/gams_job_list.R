@@ -174,7 +174,8 @@ if (isTRUE(config$activateModules$remoteExecution)) {
               id = paste0("#jobImportDlProgress_", dlID),
               progress = list(
                 noCompleted = dlProgress,
-                noTotal = 100L
+                noTotal = 100L,
+                isPercentage = TRUE
               )
             )
           )
