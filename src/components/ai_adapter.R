@@ -377,8 +377,10 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         query <- sprintf("%s ORDER BY %s %s", query, DBI::dbQuoteIdentifier(private$conn, orderBy), sortDir)
       }
 
-      requestedLimit <- if (!is.null(args$limit) && is.numeric(args$limit)) as.integer(args$limit) else 50
-      safeLimit <- min(requestedLimit, 100)
+      safeLimit <- max(1L, min(
+        if (!is.null(args$limit) && is.numeric(args$limit)) as.integer(args$limit) else 50L,
+        100L
+      ))
 
       query <- sprintf("%s LIMIT %d", query, safeLimit + 1L)
 
