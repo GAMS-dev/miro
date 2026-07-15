@@ -87,7 +87,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               )
               direction <- "input"
             } else {
-              flog.error("Database symbol %s not found in either input or output symbols.", sym)
+              futile.logger::flog.error("Database symbol %s not found in either input or output symbols.", sym)
               next
             }
           }
@@ -117,7 +117,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           columns = columns
         )
         widgetConfig <- tryCatch(private$getWidgetConfig(sym), error = function(err) {
-          flog.warn("Could not determine widget config for symbol: %s. Error: %s", sym, conditionMessage(err))
+          futile.logger::flog.warn("Could not determine widget config for symbol: %s. Error: %s", sym, conditionMessage(err))
           return(NULL)
         })
         if (length(widgetConfig)) {
@@ -442,7 +442,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (symType %in% c("dropdown", "set", "date", "daterange", "custom", "hot", "dt", "string")) {
         return("string")
       }
-      if (symType %in% c("slider", "parameter", "numeric", "checkbox")) {
+      if (symType %in% c("slider", "parameter", "numeric", "checkbox", "variable", "equation")) {
         return("numeric")
       }
       stop(sprintf("Unknown type: %s", symType), call. = FALSE)
