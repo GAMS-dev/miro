@@ -5,8 +5,7 @@ observe({
       return()
     }
     newSids <- unique(sort(dialogState$sidsToLoad))
-    aiAssistantState$dataChanged <<- !identical(newSids, aiAssistantState$activeSids)
-    if (aiAssistantState$dataChanged) {
+    if (!identical(newSids, aiAssistantState$activeSids)) {
       aiAssistantState$activeSids <<- newSids
       # append if last history item is not a context item, else overwrite
       historyIdx <- length(aiAssistantState$chatHistory)
@@ -69,7 +68,7 @@ observeEvent(input$btAIOutput, {
 
 mAiTask <- NULL
 aiTask <- ExtendedTask$new(
-  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, dataChanged, scenIdNameMap, history) {
+  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history) {
     mAiTask <<- mirai(
       {
         library(R6)
@@ -158,7 +157,6 @@ If the available data is insufficient, state what is missing and why. Do not spe
         if (length(history$chatHistory)) {
           aiProvider$chatHistory <- history$chatHistory
         }
-        aiProvider$dataChanged <- dataChanged
 
         result <- aiProvider$sendMessage(
           userInput = userInput,
@@ -181,7 +179,6 @@ If the available data is insufficient, state what is missing and why. Do not spe
       assistantConfig = assistantConfig,
       model = model,
       allowedSids = allowedSids,
-      dataChanged = dataChanged,
       scenIdNameMap = scenIdNameMap,
       history = history
     )
@@ -219,7 +216,6 @@ observeEvent(input$miroAiUserText, {
     assistantConfig = config$aiAssistant,
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
-    dataChanged = aiAssistantState$dataChanged,
     scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
   )
