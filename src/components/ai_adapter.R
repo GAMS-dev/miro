@@ -271,7 +271,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         } else {
           colsToSelect <- validCols[validCols != "_sid"]
         }
-        selectExpr <- paste(DBI::dbQuoteIdentifier(private$conn, validCols), collapse = ", ")
+        selectExpr <- paste(DBI::dbQuoteIdentifier(private$conn, colsToSelect), collapse = ", ")
       } else {
         if (!selectCol %in% validCols) {
           return(jsonlite::toJSON(list(error = sprintf("Invalid column '%s' for symbol '%s'.", selectCol, symName)), auto_unbox = TRUE))
