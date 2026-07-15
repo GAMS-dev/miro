@@ -2531,7 +2531,7 @@ if (config$activateModules$aiAssistant) {
     currentCodeSection <- ""
     if (!is.null(currentUiCode) && currentUiCode != "" && !is.null(currentServerCode) && currentServerCode != "") {
       currentCodeSection <- sprintf(
-        "\n### BASELINE CODE (MODIFY/UPDATE THIS INSTEAD OF REWRITING):\n<current_ui_code>\n%s\n</current_ui_code>\n<current_server_code>\n%s\n</current_server_code>\n",
+        "\n### BASELINE CODE (MODIFY, DON'T REWRITE):\n<current_ui_code>\n%s\n</current_ui_code>\n<current_server_code>\n%s\n</current_server_code>\n",
         currentUiCode, currentServerCode
       )
     }
@@ -2541,26 +2541,26 @@ if (config$activateModules$aiAssistant) {
 
 ### CONTEXT
 - Target Symbol: '%s'
-- Currently Selected Additional Symbols: [%s]
+- Additional Symbols Selected: [%s]
 - Database Schema:
 %s
 %s
 ### RULES
-1. DATA: `data` argument is a STATIC object (not a reactive). Do not call `data()`. If add. symbols are active, `data` is a named list of tibbles (`data[['%s']]`). Column names match JSON `headers` keys exactly.
-2. PACKAGES: Prefer shipped packages: [%s]. Always prefix functions with namespaces (e.g., `plotly::plot_ly()`). List new packages in `<additional_packages>`.
+1. DATA: `data` is STATIC, not reactive—never call `data()`. With add. symbols active, `data` is a named list of tibbles (`data[['%s']]`). Column names match JSON `headers` keys exactly.
+2. PACKAGES: Prefer shipped: [%s]. Always namespace calls (e.g. `plotly::plot_ly()`). List any new package in `<additional_packages>`.
 3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`.
 4. NAMESPACING (CRITICAL):
-   - UI FUNCTION: Define `ns <- shiny::NS(id)`. You MUST wrap every element ID in `ns()` (e.g., `plotlyOutput(ns('myChart'))`).
-   - SERVER FUNCTION: Do NOT define `ns` unless required for Rule 8. NEVER use `ns()` when reading `input` or assigning to `output`. The `session` handles this automatically. Use `output[['myChart']] <- ...` (WRONG: `output[[ns('myChart')]] <- ...`).
-5. STYLING: Do NOT use page-level containers (`fluidPage`), custom CSS, or inline styles. Use `tagList()` or `div()`. Inherit global app themes.
-6. SIGNATURES: Use exactly these signatures:
+   - UI: define `ns <- shiny::NS(id)`; wrap every element ID in `ns()` (e.g. `plotlyOutput(ns('myChart'))`).
+   - SERVER: do NOT define `ns` unless needed for Rule 8. NEVER use `ns()` on `input`/`output`—session handles it. Use `output[['myChart']] <- ...` (WRONG: `output[[ns('myChart')]] <- ...`).
+5. STYLING: No page-level containers (`fluidPage`), custom CSS, or inline styles. Use `tagList()`/`div()`; inherit global app theme.
+6. SIGNATURES (exact):
    - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
    - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
 7. ROBUSTNESS: Handle empty data early (`if (nrow(data) == 0) return(NULL)`).
-8. OBSERVERS & CLEANUP: Every `observe()` or `observeEvent()` MUST be assigned to the `rendererEnv` argument wrapped in `ns()` to prevent leaks on re-render. CRITICAL EXAMPLE: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. Never use floating observers.
+8. OBSERVERS & CLEANUP: Every `observe()`/`observeEvent()` MUST be assigned to `rendererEnv`, keyed via `ns()`, to prevent leaks on re-render. Example: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. No floating observers.
 
 ### OUTPUT FORMAT
-Provide a brief 1-2 sentence overview, then output code wrapped in the XML tags below. Do NOT use markdown codeblock ticks (```). Leave packages/symbols tags empty if unneeded.
+1-2 sentence overview, then code in the XML tags below—no markdown codeblock ticks. Leave packages/symbols tags empty if unneeded.
 
 <additional_packages>ggplot2, stringr</additional_packages>
 <additional_symbols>demand_forecast</additional_symbols>
