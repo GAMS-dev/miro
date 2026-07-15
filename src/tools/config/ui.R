@@ -651,7 +651,7 @@ font-size: 12px;
                 ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
-                  height = 400, 
+                  height = 400,
                   graphConfig = list(options = list())
                 )
               ),
@@ -691,7 +691,7 @@ font-size: 12px;
                   id = "preview-content-valuebox", style = "display:none;text-align:left",
                   renderDataUI("preview_output_valuebox",
                     type = "valuebox",
-                    height = 400, 
+                    height = 400,
                     graphConfig = list(
                       options = list(count = modelOut[[scalarsOutName]]$count)
                     )

@@ -574,12 +574,12 @@ resolveColor <- function(val, default) {
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
 getPreviewFilterId <- function(tool) {
   if (tool %in% plotlyChartTools) tool <- "plotly"
-  
+
   switch(tool,
-         plotly = "#preview_output_plotly-miroPlotly-data_filter",
-         dygraphs = "#preview_output_dygraphs-miroDygraphs-data_filter",
-         leaflet = "#preview_output_leaflet-miroLeaflet-data_filter",
-         timevis = "#preview_output_timevis-miroTimevis-data_filter",
-         NULL
+    plotly = "#preview_output_plotly-miroPlotly-data_filter",
+    dygraphs = "#preview_output_dygraphs-miroDygraphs-data_filter",
+    leaflet = "#preview_output_leaflet-miroLeaflet-data_filter",
+    timevis = "#preview_output_timevis-miroTimevis-data_filter",
+    NULL
   )
 }
