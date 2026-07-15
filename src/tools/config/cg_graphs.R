@@ -2592,9 +2592,6 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
           source("global.R")
           source("components/ai_provider.R")
 
-          conn <- dbConnProvider$getConnection()
-          on.exit(DBI::dbDisconnect(conn))
-
           providerAndModel <- strsplit(model, "/", fixed = TRUE)[[1]]
 
           assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
