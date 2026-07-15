@@ -2729,6 +2729,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     )))
     aiAssistantState$history <<- list()
     aiAssistantState$sessionId <<- NULL
+    aiAssistantState$inputTokens <<- 0L
+    aiAssistantState$outputTokens <<- 0L
   })
   observeEvent(input$btMiroAiApplyCode, {
     flog.debug("Button to apply AI code clicked.")

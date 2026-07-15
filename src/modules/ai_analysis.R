@@ -62,7 +62,7 @@ observeEvent(input$btAIOutput, {
   }
   aiAssistantDialogState(list(
     sidsToLoad = sidToLoad, scenIdNameMap = NULL,
-    chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, activeScen$getScenName()), timestamp = Sys.time()
+    chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
 })
 
@@ -277,8 +277,8 @@ observeEvent(input$btMiroAiClearChat, {
   )))
   aiAssistantState$history <<- list()
   aiAssistantState$sessionId <<- NULL
-  aiAssistantState$inputTokens <<- NULL
-  aiAssistantState$outputTokens <<- NULL
+  aiAssistantState$inputTokens <<- 0L
+  aiAssistantState$outputTokens <<- 0L
 })
 observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant dialog closed")
