@@ -1106,7 +1106,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
               # non valid step size selected
               return(-1L)
             }
-            hcRange <- floor((widgetVal[2] - widgetVal[1]) / stepSize) + 1
+            hcRange <- seq(widgetVal[1], widgetVal[2], stepSize)
 
             if (length(scalarConfig$minStep)) {
               if (stepSize < scalarConfig$minStep) {
@@ -1116,8 +1116,8 @@ if (identical(config$activateModules$hcube, TRUE)) {
               return(-1L)
             }
             if (scalarConfig$single) {
-              hcubeBuilder$push(scalarConfig$name, seq(widgetVal[1], widgetVal[2], stepSize))
-              return(as.integer(hcRange))
+              hcubeBuilder$push(scalarConfig$name, hcRange)
+              return(length(hcRange))
             }
             # double slider all combinations
             hcubeBuilder$pushRange(paste0(scalarConfig$name, "_lo"),
@@ -1125,7 +1125,7 @@ if (identical(config$activateModules$hcube, TRUE)) {
               getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
               allCombinations = TRUE
             )
-            return(as.integer(hcRange * (hcRange + 1) / 2))
+            return(as.integer(length(hcRange) * (length(hcRange) + 1) / 2))
           } else {
             hcubeBuilder$push(scalarConfig$name, widgetVal, ddChoices = scalarConfig$choices)
             return(length(widgetVal))
