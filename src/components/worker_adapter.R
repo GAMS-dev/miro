@@ -5,6 +5,7 @@ WorkerAdapter <- R6Class("WorkerAdapter",
     processId = NULL,
     inputData = NULL,
     quotaWarning = NULL,
+    logComplete = NULL,
     pollInterval = 1000L,
     initialize = function(metadata, workDir) {
       private$metadata <- private$validateMetadata(metadata)
@@ -192,6 +193,7 @@ LocalWorkerAdapter <- R6Class("LocalWorkerAdapter",
             return("")
           }
         )
+        self$logComplete <- !private$process$is_incomplete_output()
         return(private$updateLog)
       }
       info <- ""
