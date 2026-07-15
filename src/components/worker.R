@@ -284,9 +284,14 @@ AsyncJobManager <- R6Class("AsyncJobManager",
       pid <- self$getPid(jID)
       if (is_mirai(private$mJobRes[[jIDChar]]) && !unresolved(private$mJobRes[[jIDChar]])) {
         if (is_error_value(private$mJobRes[[jIDChar]]$data)) {
+          if (is.integer(private$mJobRes[[jIDChar]]$data)) {
+            errMsg <- "Aborted"
+          } else {
+            errMsg <- private$mJobRes[[jIDChar]]$data$message
+          }
           stop(sprintf(
             "Problems downloading results of job: '%s' (Hypercube: %s). Error message: '%s'.",
-            jIDChar, isHcJob, private$mJobRes[[jIDChar]]$data$message
+            jIDChar, isHcJob, errMsg
           ), call. = FALSE)
         }
         if (length(private$mJobRes[[jIDChar]]$data$warnings)) {

@@ -22,8 +22,13 @@ EngineClient <- R6Class("EngineClient", public = list(
         {
           if (!unresolved(private$mQuotaResp)) {
             quotaInfo <- private$mQuotaResp$data
-            if (quotaInfo[["error"]]) {
-              flog.error("Problem fetching quota info. Error message: %s", quotaInfo[["message"]])
+            if (is_error_value(quotaInfo)) {
+              if (is.integer(quotaInfo)) {
+                errMsg <- "Aborted"
+              } else {
+                errMsg <- quotaInfo$message
+              }
+              flog.error("Problem fetching quota info. Error message: %s", errMsg)
               showEl(session, "#settingsDialogUnknownError")
             } else {
               remainingQuota <- calcRemainingQuota(quotaInfo[["quotaInfo"]])
@@ -138,6 +143,14 @@ EngineClient <- R6Class("EngineClient", public = list(
             instanceInfo <- private$instanceInfo
           } else if (unresolved(private$mInstanceResp)) {
             invalidateLater(500L, session)
+            return()
+          } else if (is_error_value(private$mInstanceResp)) {
+            if (is.integer(private$mInstanceResp)) {
+              errMsg <- "Aborted"
+            } else {
+              errMsg <- private$mInstanceResp$data
+            }
+            flog.info("Problems fetching instance data. Error message: %s", errMsg)
             return()
           } else {
             instanceInfo <- getInstances(private$mInstanceResp$data)

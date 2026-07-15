@@ -324,13 +324,18 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
       if (!is.null(private$mSubRes) && !unresolved(private$mSubRes)) {
         resData <- private$mSubRes$data
         if (is_error_value(resData)) {
-          flog.warn("Error submitting job: %s", resData$message)
-          if (startsWith(resData$message, "Failed to connect") ||
-            startsWith(resData$message, "Could not") ||
-            startsWith(resData$message, "Timeout was")) {
-            self$processStatus <- -404L
+          if (is.integer(resData)) {
+            # cancelled
+            self$processStatus <- -9L
           } else {
-            self$processStatus <- -500L
+            flog.warn("Error submitting job: %s", resData$message)
+            if (startsWith(resData$message, "Failed to connect") ||
+              startsWith(resData$message, "Could not") ||
+              startsWith(resData$message, "Timeout was")) {
+              self$processStatus <- -404L
+            } else {
+              self$processStatus <- -500L
+            }
           }
         } else if (resData$status_code == 201L) {
           self$processId <- resData$response$token
@@ -363,8 +368,13 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
           return(self$processStatus)
         }
         if (is_error_value(private$mJobRes$data)) {
-          flog.error("Error downloading job results: %s", private$mJobRes$data$message)
-          self$processStatus <- -500L
+          if (is.integer(private$mJobRes$data)) {
+            # cancelled
+            self$processStatus <- -9L
+          } else {
+            flog.error("Error downloading job results: %s", private$mJobRes$data$message)
+            self$processStatus <- -500L
+          }
           return(self$processStatus)
         }
         if (length(private$mJobRes$data$warnings)) {
@@ -466,7 +476,9 @@ RemoteWorkerAdapter <- R6Class("RemoteWorkerAdapter",
         # wait for promise to resolve
       } else {
         if (is_error_value(private$mLogRes$data)) {
-          flog.info("Error fetching MIRO log: %s", private$mLogRes$data$message)
+          if (!is.integer(private$mLogRes$data)) {
+            flog.info("Error fetching MIRO log: %s", private$mLogRes$data$message)
+          }
         } else {
           if (isTRUE(private$mLogRes$data$queue_finished)) {
             flog.debug("Stream entry queue: %s finished.", private$metadata$logFileName)
