@@ -2755,6 +2755,9 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     reqPackages <- parse_csv(extract_tag(aiText, "additional_packages"))
     reqPackages <- reqPackages[!reqPackages %in% aiAssistantState$shippedPackagesVector]
     reqSymbols <- parse_csv(extract_tag(aiText, "additional_symbols"))
+    reqSymbols <- reqSymbols[
+      reqSymbols %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices[-(activeSymbol$id - length(modelIn))])
+    ]
 
     uiCode <- tryCatch(
       {
@@ -2792,8 +2795,9 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     if (!codeApplied) {
       return(showNotification(lang$nav$aiBotDialog$nfApplyErrNoCode, type = "error"))
     }
-    updateSelectInput(session, "customPackages", currentGraphConfig[["packages"]])
-    updateSelectInput(session, "customAdditionalData", currentGraphConfig[["additionalData"]])
+    updateSelectInput(session, "customPackages", reqPackages)
+    rv$graphConfig$additionalData <<- reqSymbols
+    updateSelectInput(session, "customAdditionalData", reqSymbols)
     session$sendCustomMessage("gms-shinySetInputValue", list(
       id = "btUpdateCustomRendererOutput",
       val = 1L,
