@@ -138,7 +138,11 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
     },
     executeHttpCall = function(payload) {
       url <- "https://generativelanguage.googleapis.com/v1beta/interactions"
-      resp <- POST(url, body = toJSON(payload, auto_unbox = TRUE), encode = "json", content_type_json(), add_headers(`x-goog-api-key` = private$apiKey))
+      resp <- POST(url,
+        body = toJSON(payload, auto_unbox = TRUE), encode = "json",
+        content_type_json(), add_headers(`x-goog-api-key` = private$apiKey),
+        timeout(120L)
+      )
       if (status_code(resp) != 200) stop("Gemini API Error: ", content(resp)$error$message, call. = FALSE)
       return(content(resp, type = "application/json", encoding = "utf-8"))
     },
@@ -226,7 +230,8 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         body = toJSON(payload, auto_unbox = TRUE),
         encode = "raw",
         add_headers(Authorization = paste("Bearer", private$apiKey)),
-        content_type_json()
+        content_type_json(),
+        timeout(120L)
       )
       if (status_code(resp) != 200) stop("OpenAI API Error: ", content(resp)$error$message, call. = FALSE)
       return(content(resp, type = "application/json", encoding = "utf-8"))
@@ -337,7 +342,8 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
           `x-api-key` = private$apiKey,
           `anthropic-version` = "2023-06-01"
         ),
-        content_type_json()
+        content_type_json(),
+        timeout(120L)
       )
       if (status_code(resp) != 200) stop("Claude API Error: ", content(resp)$error$message, call. = FALSE)
       return(content(resp, type = "application/json", encoding = "utf-8"))
