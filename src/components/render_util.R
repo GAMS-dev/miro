@@ -772,6 +772,18 @@ getRendererConfig <- function(graphConfig) {
 
   if (identical(tolower(graphConfig$outType), "datatable")) {
     graphOptions <- graphConfig$datatable
+
+    dtOptions <- rendererOptions
+    dtOptions[["_metadata_"]] <- NULL
+
+    if (is.null(graphOptions$options)) {
+      graphOptions$options <- list()
+    }
+
+    graphOptions$options <- modifyList(
+      dtOptions,
+      graphOptions$options
+    )
   } else {
     graphOptions <- graphConfig$graph
   }
