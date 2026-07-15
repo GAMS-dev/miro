@@ -300,8 +300,8 @@ AIToolAdapter <- R6Class("AIToolAdapter",
 
           aggFunc <- if (aggregation %in% c("SUM", "AVG", "MAX", "MIN", "COUNT")) aggregation else "SUM"
 
-          baseExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE 0 END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), baselineSid, escSelect)
-          targExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE 0 END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), targetSid, escSelect)
+          baseExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE NULL END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), baselineSid, escSelect)
+          targExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE NULL END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), targetSid, escSelect)
 
           if (analysisMode == "DIFFERENCE") {
             selectExpr <- sprintf("(%s - %s) AS %s", targExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_delta"))
