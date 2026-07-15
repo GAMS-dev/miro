@@ -525,17 +525,9 @@ output$modelStatus <- renderUI({
   disableEl(session, "#btInterrupt")
   disableEl(session, "#btDetachCurrentJob")
 
-  if (config$activateModules$logFile ||
-    config$activateModules$miroLogFile) {
-    logfile <- NULL
-    if (config$activateModules$miroLogFile) {
-      if (config$activateModules$logFile) {
-        containerId <- "#miroLogContainer"
-      } else {
-        containerId <- "#logStatusContainer"
-      }
-      setContent(session, containerId, renderMiroLogContent())
-    }
+  if (config$activateModules$logFile && config$activateModules$miroLogFile) {
+    setContent(session, "#miroLogContainer", renderMiroLogContent())
+    session$sendCustomMessage("gms-parseLog", list())
   }
 
   showQuotaWarnings(session, worker$getQuotaWarning())
