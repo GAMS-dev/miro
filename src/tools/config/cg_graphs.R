@@ -2498,6 +2498,8 @@ if (config$activateModules$aiAssistant) {
     shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_types = "cc"))[[1]],
     inputTokens = 0,
     outputTokens = 0,
+    dataChanged = TRUE,
+    activeSymbolName = NULL,
     chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessageCustomRenderer))
   )
   session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(aiAssistantState$chatHistory[[1]], lang$nav$aiBotDialog)), role = "model"))
@@ -2583,7 +2585,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   }
   mAiTask <- NULL
   aiTask <- ExtendedTask$new(
-    function(userInput, dbConnProvider, sysPrompt, assistantConfig, model, history) {
+    function(userInput, dbConnProvider, sysPrompt, assistantConfig, model, history, dataChanged) {
       mAiTask <<- mirai(
         {
           library(R6)
@@ -2608,6 +2610,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
           if (length(history$chatHistory)) {
             provider$chatHistory <- history$chatHistory
           }
+          provider$dataChanged <- dataChanged
           result <- provider$sendMessage(
             userInput = userInput,
             systemInstructions = sysPrompt
@@ -2625,7 +2628,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
         sysPrompt = sysPrompt,
         assistantConfig = assistantConfig,
         model = model,
-        history = history
+        history = history,
+        dataChanged = dataChanged
       )
     }
   )
@@ -2661,6 +2665,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
       customUICode, customRendererCode
     )
+    aiAssistantState$dataChanged <<- !identical(aiAssistantState$activeSymbolName, activeSymbolName)
+    aiAssistantState$activeSymbolName <<- activeSymbolName
     chatHistory <- NULL
     if (!identical(aiAssistantState$model, input$miroAiModel)) {
       if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
@@ -2678,7 +2684,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       sysPrompt = sysPrompt,
       assistantConfig = config$aiAssistant,
       model = aiAssistantState$model,
-      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
+      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory),
+      dataChanged = aiAssistantState$dataChanged
     )
   })
   observe({
