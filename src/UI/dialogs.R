@@ -1810,7 +1810,7 @@ showJobProgressDialog <- function(jID, progressStatus) {
         id = paste0("hcubeProgress", jID),
         role = "progressbar", `aria-valuenow` = percentCompleted,
         `aria-valuemin` = 0, `aria-valuemax` = 100,
-        style = paste0("width:", percentCompleted, "%;"),
+        style = paste0("min-width:2em;width:", percentCompleted, "%;"),
         paste0(
           progressStatus$noCompleted, "/", progressStatus$noTotal,
           if (length(progressStatus$noFail)) paste0(" (", progressStatus$noFail, ")")
