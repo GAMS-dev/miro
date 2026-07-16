@@ -2583,7 +2583,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   }
   mAiTask <- NULL
   aiTask <- ExtendedTask$new(
-    function(userInput, dbConnProvider, sysPrompt, assistantConfig, model, history) {
+    function(userInput, sysPrompt, assistantConfig, model, history) {
       mAiTask <<- mirai(
         {
           library(R6)
@@ -2618,7 +2618,6 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
           ))
         },
         userInput = userInput,
-        dbConnProvider = dbConnProvider,
         sysPrompt = sysPrompt,
         assistantConfig = assistantConfig,
         model = model,
@@ -2676,7 +2675,6 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
 
     aiTask$invoke(
       userInput = userText,
-      dbConnProvider = dbConnProvider,
       sysPrompt = sysPrompt,
       assistantConfig = config$aiAssistant,
       model = aiAssistantState$model,
