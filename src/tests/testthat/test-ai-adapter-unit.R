@@ -40,6 +40,15 @@ mockIoConfig <- list(
         year = list(alias = "Year", type = "set"),
         value = list(alias = "Value", type = "numeric")
       )
+    ),
+    capacity = list(
+      alias = "Plant Capacity",
+      type = "parameter",
+      headers = list(
+        region = list(alias = "Region", type = "set"),
+        year = list(alias = "Year", type = "set"),
+        value = list(alias = "Value", type = "numeric")
+      )
     )
   ),
   modelOut = list()
@@ -143,7 +152,6 @@ test_that("queryScenarioDatabase executes basic SELECT correctly and maps names"
 
   res <- adapter$queryScenarioDatabase(query_args)
   res_df <- jsonlite::fromJSON(res)
-  print(res_df)
 
   # Check basic filtering
   expect_equal(nrow(res_df), 2)
@@ -195,6 +203,12 @@ test_that("queryScenarioDatabase calculates DIFFERENCE correctly", {
   adapter$setAllowedSids(c(1, 2, 3))
   adapter$getSystemMetadata()
 
+  # High Demand (sid 2) has no EU row by default; add one so the EU delta
+  # is a real comparison rather than a NULL-propagated aggregate.
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = 2, region = "EU", year = "2024", value = 50
+  ))
+
   query_args <- list(
     symbolName = "demand",
     scenarioNames = c("Base", "High Demand"),
@@ -212,14 +226,16 @@ test_that("queryScenarioDatabase calculates DIFFERENCE correctly", {
   expect_true("_delta" %in% names(res_df))
   expect_true("_target_scenario" %in% names(res_df))
   expect_true("_baseline_scenario" %in% names(res_df))
+  expect_true(all(res_df$`_target_scenario` == "High Demand"))
+  expect_true(all(res_df$`_baseline_scenario` == "Base"))
 
   # NA region: Target(High Demand=200) - Base(Base=100) = 100
-  # EU region: Target(High Demand=0) - Base(Base=150) = -150
+  # EU region: Target(High Demand=50) - Base(Base=150) = -100
   delta_na <- res_df$`_delta`[res_df$region == "NA"]
   delta_eu <- res_df$`_delta`[res_df$region == "EU"]
 
   expect_equal(delta_na, 100)
-  expect_equal(delta_eu, -150)
+  expect_equal(delta_eu, -100)
 
   DBI::dbDisconnect(env$conn)
 })
@@ -250,6 +266,234 @@ test_that("queryScenarioDatabase calculates PERCENT_CHANGE correctly", {
   pct_eu <- res_df$`_pct_change`[res_df$region == "EU"]
 
   expect_equal(round(pct_eu, 2), -66.67)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase calculates DIFFERENCE against multiple target scenarios", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # One row per non-baseline scenario, no rows silently dropped
+  expect_equal(nrow(res_df), 2)
+  expect_setequal(res_df$`_target_scenario`, c("High Demand", "Low Demand"))
+  expect_true(all(res_df$`_baseline_scenario` == "Base"))
+
+  # Base total = 100 + 150 = 250; High Demand total = 200; Low Demand total = 50
+  delta_high <- res_df$`_delta`[res_df$`_target_scenario` == "High Demand"]
+  delta_low <- res_df$`_delta`[res_df$`_target_scenario` == "Low Demand"]
+
+  expect_equal(delta_high, -50)
+  expect_equal(delta_low, -200)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase calculates PERCENT_CHANGE against multiple target scenarios", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "PERCENT_CHANGE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  expect_equal(nrow(res_df), 2)
+  expect_setequal(res_df$`_target_scenario`, c("High Demand", "Low Demand"))
+
+  # Base total = 250; High Demand = 200 -> -20%; Low Demand = 50 -> -80%
+  pct_high <- res_df$`_pct_change`[res_df$`_target_scenario` == "High Demand"]
+  pct_low <- res_df$`_pct_change`[res_df$`_target_scenario` == "Low Demand"]
+
+  expect_equal(round(pct_high, 2), -20)
+  expect_equal(round(pct_low, 2), -80)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase applies groupByColumn per target scenario for multi-target DIFFERENCE", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  # Fill in the missing region rows so every scenario has both a NA and EU
+  # value, keeping the per-group deltas free of NULL propagation.
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = c(2, 3),
+    region = c("EU", "NA"),
+    year = c("2024", "2024"),
+    value = c(30, 40)
+  ))
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # 2 target scenarios x 2 regions = 4 rows
+  expect_equal(nrow(res_df), 4)
+  expect_true("region" %in% names(res_df))
+
+  # Base: NA=100, EU=150. High Demand: NA=200, EU=30. Low Demand: NA=40, EU=50.
+  delta_high_na <- res_df$`_delta`[res_df$`_target_scenario` == "High Demand" & res_df$region == "NA"]
+  delta_high_eu <- res_df$`_delta`[res_df$`_target_scenario` == "High Demand" & res_df$region == "EU"]
+  delta_low_na <- res_df$`_delta`[res_df$`_target_scenario` == "Low Demand" & res_df$region == "NA"]
+  delta_low_eu <- res_df$`_delta`[res_df$`_target_scenario` == "Low Demand" & res_df$region == "EU"]
+
+  expect_equal(delta_high_na, 100)
+  expect_equal(delta_high_eu, -120)
+  expect_equal(delta_low_na, -60)
+  expect_equal(delta_low_eu, -100)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase orders results across multiple target scenarios", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base",
+    orderBy = "_delta",
+    sortDirection = "DESC"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # Base total = 250; High Demand delta = -50; Low Demand delta = -200.
+  # DESC ordering must hold across the unioned per-target branches.
+  expect_equal(res_df$`_delta`, c(-50, -200))
+  expect_equal(res_df$`_target_scenario`, c("High Demand", "Low Demand"))
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects DIFFERENCE/PERCENT_CHANGE without selectColumn", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "selectColumn")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects DIFFERENCE with only one valid scenario", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "at least two valid scenarioNames")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects DIFFERENCE without a baselineScenarioName", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand", "Low Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "DIFFERENCE"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "baselineScenarioName is required")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects an invalid analysisMode", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    analysisMode = "BOGUS_MODE"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "Invalid analysisMode")
 
   DBI::dbDisconnect(env$conn)
 })
@@ -318,6 +562,434 @@ test_that("queryScenarioDatabase handles pagination/truncation warnings", {
   expect_true(!is.null(res_list$`_warning`))
   expect_match(res_list$`_warning`, "truncated to 2 rows")
   expect_equal(nrow(res_list$data), 2)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+setup_multi_target_truncation_env <- function() {
+  conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
+  DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
+    `_sid` = 1:5,
+    `_sname` = c("Base", "T1", "T2", "T3", "T4"),
+    `_stag` = "test"
+  ))
+
+  # Every scenario has 30 region rows; with the default limit of 50, a target
+  # scenario more than ~2 branches deep should be pushed out of the result.
+  regionNames <- sprintf("R%02d", 1:30)
+  rows <- do.call(rbind, lapply(1:5, function(sid) {
+    data.frame(`_sid` = sid, region = regionNames, year = "2024", value = sid * 10 + seq_along(regionNames), check.names = FALSE)
+  }))
+  DBI::dbWriteTable(conn, "data_demand", rows)
+
+  dbSchema <- MockDbSchema$new()
+  adapter <- AIToolAdapter$new(dbSchema = dbSchema, conn = conn, ioConfig = mockIoConfig)
+
+  list(conn = conn, adapter = adapter)
+}
+
+test_that("queryScenarioDatabase reports target scenarios dropped by truncation instead of hiding them", {
+  env <- setup_multi_target_truncation_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(1:5)
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "T1", "T2", "T3", "T4"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$`_warning`))
+  expect_match(res_list$`_warning`, "truncated to 50 rows")
+  expect_true("_missing_target_scenarios" %in% names(res_list))
+  expect_setequal(res_list$`_missing_target_scenarios`, c("T3", "T4"))
+  expect_match(res_list$`_warning`, "T3")
+  expect_match(res_list$`_warning`, "T4")
+
+  # Scenarios that DO still have rows in the truncated output must not be
+  # flagged as missing.
+  expect_false("T1" %in% res_list$`_missing_target_scenarios`)
+  expect_false("T2" %in% res_list$`_missing_target_scenarios`)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase returns a clean error for malformed JSON arguments instead of crashing", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  res <- adapter$queryScenarioDatabase("{not valid json")
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "Invalid JSON argument format")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects a missing symbolName instead of crashing", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  res <- adapter$queryScenarioDatabase(list(scenarioNames = c("Base")))
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "symbolName")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects a missing scenarioNames", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  res <- adapter$queryScenarioDatabase(list(symbolName = "demand"))
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "scenarioNames")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase normalizes a single filter object sent instead of an array", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  argsJson <- jsonlite::toJSON(list(
+    symbolName = "demand",
+    scenarioNames = list("Base"),
+    filters = list(column = "region", operator = "=", value = "EU")
+  ), auto_unbox = TRUE)
+
+  res <- adapter$queryScenarioDatabase(as.character(argsJson))
+  res_df <- jsonlite::fromJSON(res)
+
+  expect_equal(nrow(res_df), 1)
+  expect_equal(res_df$region, "EU")
+  expect_equal(res_df$value, 150)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects a malformed filters shape instead of crashing", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    filters = list("region")
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "filters")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase requires an explicit aggregation for DIFFERENCE/PERCENT_CHANGE", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+    # aggregation omitted -> defaults to "NONE", which must now be rejected
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "valid aggregation")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase returns error messages as scalar strings, not arrays", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  # This validation path previously omitted `auto_unbox = TRUE`, producing
+  # {"error":["msg"]} instead of {"error":"msg"}.
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    filters = data.frame(column = "not_a_real_column", operator = "=", value = "x", stringsAsFactors = FALSE)
+  )
+  res <- adapter$queryScenarioDatabase(query_args)
+
+  expect_match(res, '"error":"Forbidden target filter column configuration\\."')
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects array values for scalar-only arguments instead of crashing", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  cases <- list(
+    list(field = "selectColumn", args = list(symbolName = "demand", scenarioNames = c("Base"), selectColumn = c("region", "value"))),
+    list(field = "orderBy", args = list(symbolName = "demand", scenarioNames = c("Base"), orderBy = c("region", "value"))),
+    list(field = "baselineScenarioName", args = list(symbolName = "demand", scenarioNames = c("Base", "High Demand"), selectColumn = "value", aggregation = "SUM", analysisMode = "DIFFERENCE", baselineScenarioName = c("Base", "High Demand"))),
+    list(field = "analysisMode", args = list(symbolName = "demand", scenarioNames = c("Base"), analysisMode = c("STANDARD", "DIFFERENCE"))),
+    list(field = "sortDirection", args = list(symbolName = "demand", scenarioNames = c("Base"), orderBy = "value", sortDirection = c("ASC", "DESC"))),
+    list(field = "aggregation", args = list(symbolName = "demand", scenarioNames = c("Base"), selectColumn = "value", aggregation = c("SUM", "AVG")))
+  )
+
+  for (testCase in cases) {
+    res <- tryCatch(adapter$queryScenarioDatabase(testCase$args), error = function(e) e)
+
+    expect_false(inherits(res, "error"), info = sprintf("field '%s' crashed instead of returning an error JSON", testCase$field))
+
+    res_list <- jsonlite::fromJSON(res)
+    expect_true(!is.null(res_list$error), info = sprintf("field '%s' did not return an error", testCase$field))
+    expect_match(res_list$error, sprintf("`%s`", testCase$field), fixed = TRUE)
+    expect_match(res_list$error, "single string value")
+  }
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase still accepts these arguments as normal scalars", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base",
+    orderBy = "_delta",
+    sortDirection = "DESC"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  expect_true(is.null(res_df$error))
+  expect_true("_delta" %in% names(res_df))
+  expect_equal(res_df$`_delta`, c(100, NA))
+
+  DBI::dbDisconnect(env$conn)
+})
+
+setup_multi_dim_test_env <- function() {
+  conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
+  DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
+    `_sid` = c(1, 2),
+    `_sname` = c("Base", "High Demand"),
+    `_stag` = c("production", "test")
+  ))
+
+  # region and year both vary independently so grouping by both is
+  # distinguishable from grouping by either one alone.
+  DBI::dbWriteTable(conn, "data_demand", tibble::tibble(
+    `_sid` = c(1, 1, 1, 1, 2, 2, 2, 2),
+    region = c("NA", "NA", "EU", "EU", "NA", "NA", "EU", "EU"),
+    year = c("2024", "2025", "2024", "2025", "2024", "2025", "2024", "2025"),
+    value = c(10, 20, 30, 40, 100, 200, 300, 400)
+  ))
+
+  dbSchema <- MockDbSchema$new()
+  adapter <- AIToolAdapter$new(dbSchema = dbSchema, conn = conn, ioConfig = mockIoConfig)
+
+  list(conn = conn, adapter = adapter)
+}
+
+test_that("queryScenarioDatabase groups by multiple columns in STANDARD mode", {
+  env <- setup_multi_dim_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = c("region", "year")
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # 2 regions x 2 years = 4 distinct groups
+  expect_equal(nrow(res_df), 4)
+  expect_true(all(c("region", "year") %in% names(res_df)))
+
+  na_2024 <- res_df$`_sum`[res_df$region == "NA" & res_df$year == "2024"]
+  eu_2025 <- res_df$`_sum`[res_df$region == "EU" & res_df$year == "2025"]
+
+  expect_equal(na_2024, 10)
+  expect_equal(eu_2025, 40)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase groups DIFFERENCE by multiple columns", {
+  env <- setup_multi_dim_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = c("region", "year"),
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  expect_equal(nrow(res_df), 4)
+  expect_true(all(c("region", "year") %in% names(res_df)))
+
+  delta_na_2024 <- res_df$`_delta`[res_df$region == "NA" & res_df$year == "2024"]
+  delta_eu_2025 <- res_df$`_delta`[res_df$region == "EU" & res_df$year == "2025"]
+
+  expect_equal(delta_na_2024, 100 - 10)
+  expect_equal(delta_eu_2025, 400 - 40)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects more than 3 groupByColumn entries", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = c("region", "year", "value", "_sid")
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "at most 3 columns")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase rejects an invalid column inside groupByColumn", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = c("region", "not_a_real_column")
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_list <- jsonlite::fromJSON(res)
+
+  expect_true(!is.null(res_list$error))
+  expect_match(res_list$error, "not_a_real_column")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase treats an empty groupByColumn array as no grouping", {
+  env <- setup_multi_dim_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = list()
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # No group-by columns -> a single grand-total row for the Base scenario:
+  # 10 + 20 + 30 + 40 = 100
+  expect_equal(nrow(res_df), 1)
+  expect_equal(res_df$`_sum`, 100)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase treats a single-element groupByColumn array like the old scalar form", {
+  env <- setup_multi_dim_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = list("region")
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # Grouped by region alone: NA = 10 + 20 = 30, EU = 30 + 40 = 70
+  expect_equal(nrow(res_df), 2)
+  expect_false("year" %in% names(res_df))
+  expect_equal(res_df$`_sum`[res_df$region == "NA"], 30)
+  expect_equal(res_df$`_sum`[res_df$region == "EU"], 70)
 
   DBI::dbDisconnect(env$conn)
 })
