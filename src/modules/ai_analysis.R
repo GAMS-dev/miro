@@ -40,10 +40,9 @@ observeEvent(input$btAIOutput, {
   if (!is.null(activeScen)) {
     if (isFALSE(rv$sandboxUnsaved)) {
       sidToLoad <- activeScen$getSid()
-    } else {
-      tempScenName <- activeScen$getScenName()
-      tempScenTags <- activeScen$getStags()
     }
+    tempScenName <- activeScen$getScenName()
+    tempScenTags <- activeScen$getStags()
   }
   if (is.null(sidToLoad)) {
     aiAssistantState$tempScen <<- tryCatch(
