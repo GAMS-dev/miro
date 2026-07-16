@@ -1,5 +1,6 @@
 /* global $:false, Shiny:false */
 
+import DOMPurify from 'dompurify';
 import { parseKatex } from './util';
 
 export function copyChatContent(button) {
@@ -74,7 +75,36 @@ function sendUserInputToShiny(userInput) {
   });
 }
 
+// Assistant messages are rendered server-side with their (untrusted, LLM-
+// generated) HTML stashed in a `data-raw-html` attribute rather than as live
+// DOM children -- attribute values are inert text to the browser, so nothing
+// can execute no matter which mechanism inserted the markup (a Shiny modal
+// re-render, our own custom message handler, etc.). This reads that attribute,
+// sanitizes it with DOMPurify, and only then injects it as real HTML.
+function hydrateAiMessageContent(el) {
+  el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml);
+  delete el.dataset.rawHtml;
+}
+export function hydrateAiMessagesIn(root) {
+  root.querySelectorAll('[data-raw-html]').forEach(hydrateAiMessageContent);
+}
+
 export function registerAiHandlers() {
+  $(document).on('shown.bs.modal', '.ai-assistant-modal', function () {
+    $('#miroAiUserText').focus();
+    hydrateAiMessagesIn(this);
+    const chatLog = document.getElementById('miroAiChatLog');
+    if (!chatLog) return;
+    const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
+    if (userBubbles.length > 0) {
+      userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  $(document).on('hidden.bs.modal', '.ai-assistant-modal', () => {
+    Shiny.setInputValue('abortAiCall', 1, {
+      priority: 'event',
+    });
+  });
   $(document).on('keydown', '#miroAiUserText', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       // Prevent newline
@@ -93,6 +123,7 @@ export function registerAiHandlers() {
   });
   Shiny.addCustomMessageHandler('gms-addAiChatBubble', (content) => {
     const $newElement = $(content.html);
+    hydrateAiMessagesIn($newElement.get(0));
     $('#miroAiChatSpinner').before($newElement);
 
     const $chatLog = $('#miroAiChatLog');

@@ -18,12 +18,19 @@ renderAiChatBubble <- function(msg, lang, charLimit = 300) {
       tags$b(class = "miro-ai-chat-author", if (isUser) lang$chatBubbleUserHeader else lang$chatBubbleAssistantHeader),
       tags$div(
         class = paste("miro-ai-chat-content-html miro-markdown", if (isLongUserMsg) "miro-ai-text-collapsed" else ""),
+        # Assistant output is untrusted (LLM-generated, can echo back
+        # user-controlled data such as scenario names) and commonmark has no
+        # safe-HTML mode, so the rendered markup is kept out of the DOM as an
+        # inert `data-raw-html` attribute (htmltools entity-encodes attribute
+        # values) instead of live children. The client sanitizes it with
+        # DOMPurify and only then injects it as HTML -- see ai_assistant.js.
+        `data-raw-html` = if (isUser) {
+          NULL
+        } else {
+          commonmark::markdown_html(msg$text, hardbreaks = FALSE, smart = TRUE, extensions = TRUE)
+        },
         if (isUser) {
           msg$text
-        } else {
-          HTML(commonmark::markdown_html(msg$text,
-            hardbreaks = FALSE, smart = TRUE, extensions = TRUE
-          ))
         }
       ),
       if (isLongUserMsg) {

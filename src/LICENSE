@@ -175,6 +175,7 @@ these components are included below):
 - lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
 - fastmap, https://github.com/r-lib/fastmap or https://cran.r-project.org/web/packages/fastmap/index.html
 - autoNumeric, https://github.com/autoNumeric/autoNumeric
+- DOMPurify, https://github.com/cure53/dompurify
 - showdown, https://github.com/showdownjs/showdown
 - jsonabc, https://github.com/ShivrajRath/jsonabc
 
@@ -2189,6 +2190,7 @@ DEALINGS IN THE SOFTWARE.
        - grisu3, Jukka Jylänki (Modifcations to dtoa_grisu3() referenced mikkelfj Copyright (c) 2016 Mikkel F. Jørgensen, dvide.com)
        - openssl (https://www.openssl.org)
        - better-ajv-errors, Copyright (c) 2018 Atlassian Pty Ltd
+       - DOMPurify
 -----------------------------------------------------------------------------
 
                                  Apache License

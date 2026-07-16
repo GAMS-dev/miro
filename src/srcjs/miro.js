@@ -30,7 +30,7 @@ import {
   deactivateMiroPivotPresentation,
   activateMiroPivotPresentationObservers,
 } from './miro_pivot';
-import { registerAiHandlers } from './ai_assistant';
+import { registerAiHandlers, hydrateAiMessagesIn } from './ai_assistant';
 
 export { parseKatex } from './util';
 export { default as modal } from './modal';
@@ -599,6 +599,9 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
   });
   Shiny.addCustomMessageHandler('gms-setContent', (data) => {
     $(data.selector).html(data.content);
+    if (data.sanitizeHTML) {
+      $(data.selector).get().forEach(hydrateAiMessagesIn);
+    }
   });
   Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
     if (data.keepChildNodes === true) {
@@ -978,20 +981,6 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
         }
       });
     }
-  });
-  $(document).on('shown.bs.modal', '.ai-assistant-modal', () => {
-    $('#miroAiUserText').focus();
-    const chatLog = document.getElementById('miroAiChatLog');
-    if (!chatLog) return;
-    const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
-    if (userBubbles.length > 0) {
-      userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-  $(document).on('hidden.bs.modal', '.ai-assistant-modal', () => {
-    Shiny.setInputValue('abortAiCall', 1, {
-      priority: 'event',
-    });
   });
   registerAiHandlers();
   const autoNumericBinding = new Shiny.InputBinding();

@@ -2729,8 +2729,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1]
     setContent(session, "#miroAiChatLog", as.character(tagList(
       lapply(aiAssistantState$chatHistory, renderAiChatBubble, lang$nav$aiBotDialog),
-      genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1", extraClasses = "gen-spinner-black")
-    )))
+      genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
+    )), sanitizeHTML = TRUE)
     aiAssistantState$history <<- list()
     aiAssistantState$sessionId <<- NULL
     aiAssistantState$inputTokens <<- 0L

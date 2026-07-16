@@ -27,8 +27,8 @@ showElReplaceTxt <- function(session, id, txt, title = NULL) {
   }
   session$sendCustomMessage("gms-showElReplaceTxt", message)
 }
-setContent <- function(session, selector, htmlContent) {
-  session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent))
+setContent <- function(session, selector, htmlContent, sanitizeHTML = FALSE) {
+  session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent, sanitizeHTML = sanitizeHTML))
 }
 setTextContent <- function(session, selector, htmlContent, keepChildNodes = FALSE) {
   session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent, keepChildNodes = keepChildNodes))

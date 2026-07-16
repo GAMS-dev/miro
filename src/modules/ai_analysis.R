@@ -261,8 +261,8 @@ observeEvent(input$btMiroAiClearChat, {
       }
       return(renderAiChatBubble(item, lang$nav$aiBotDialog))
     }),
-    genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, extraClasses = "gen-spinner-black")
-  )))
+    genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
+  )), sanitizeHTML = TRUE)
   aiAssistantState$history <<- list()
   aiAssistantState$sessionId <<- NULL
   aiAssistantState$inputTokens <<- 0L
