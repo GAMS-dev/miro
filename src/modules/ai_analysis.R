@@ -172,6 +172,10 @@ observeEvent(input$miroAiUserText, {
   flog.debug("AI Chat message sent.")
   userText <- input$miroAiUserText
   req(userText)
+  if (unresolved(mAiTask)) {
+    flog.error("User sent new chat message while old response was not complete. Should never happen!")
+    return()
+  }
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
   chatHistory <- NULL
   if (!identical(aiAssistantState$model, input$miroAiModel)) {
@@ -248,6 +252,7 @@ observe({
 })
 observeEvent(input$btMiroAiClearChat, {
   flog.debug("Clear AI chat button clicked.")
+  stop_mirai(mAiTask)
   aiAssistantState$chatHistory <<- list(aiAssistantState$chatHistory[[1]], list(aiAssistantDialogState()$chatContext))
   setContent(session, "#miroAiChatLog", as.character(tagList(
     lapply(aiAssistantState$chatHistory, function(item) {
@@ -262,6 +267,10 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$sessionId <<- NULL
   aiAssistantState$inputTokens <<- 0L
   aiAssistantState$outputTokens <<- 0L
+})
+observeEvent(input$btMiroAiStop, {
+  flog.debug("AI Assistant stop button clicked.")
+  stop_mirai(mAiTask)
 })
 observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant dialog closed")

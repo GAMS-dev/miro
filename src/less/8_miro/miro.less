@@ -3331,6 +3331,37 @@ li.drop-index-item[data-col-hidden="true"] {
   overflow-y: hidden;
   box-sizing: border-box;
 }
+.miro-ai-textarea-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  .miro-ai-textarea-input {
+    flex-grow: 1;
+  }
+}
+.miro-ai-stop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 2px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  .responsiveDark({
+    background-color: @primary-color;
+  }, {
+    background-color: @primary-color-dark;
+  });
+}
+.miro-ai-stop-btn:hover {
+  opacity: 0.85;
+}
 .miro-ai-chat-bubble-wrapper {
   position: relative;
   display: flex;

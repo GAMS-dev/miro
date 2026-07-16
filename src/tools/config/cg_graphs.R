@@ -2631,6 +2631,10 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     userText <- input$miroAiUserText
     req(userText)
     flog.debug("AI Chat message sent.")
+    if (unresolved(mAiTask)) {
+      flog.error("User sent new chat message while old response was not complete. Should never happen!")
+      return()
+    }
     aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
     session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(list(role = "user", text = userText), lang$nav$aiBotDialog)), role = "user"))
 
@@ -2717,8 +2721,13 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       setTextContent(session, "#miroAiOutputTokens", sprintf(lang$nav$aiBotDialog$outputTokensLabel, format(aiAssistantState$outputTokens, big.mark = ",")))
     }
   })
+  observeEvent(input$btMiroAiStop, {
+    flog.debug("AI Assistant stop button clicked.")
+    stop_mirai(mAiTask)
+  })
   observeEvent(input$btMiroAiClearChat, {
     flog.debug("Clear AI chat button clicked.")
+    stop_mirai(mAiTask)
     aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1]
     setContent(session, "#miroAiChatLog", as.character(tagList(
       lapply(aiAssistantState$chatHistory, renderAiChatBubble, lang$nav$aiBotDialog),

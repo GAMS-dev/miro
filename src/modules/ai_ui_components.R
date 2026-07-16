@@ -79,12 +79,22 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
     ),
     tags$div(
       class = "miro-ai-chat-input-wrapper",
-      tags$textarea(
-        id = "miroAiUserText",
-        placeholder = lang$userTextPlaceholder,
-        `data-shiny-no-bind-input` = TRUE,
-        class = "form-control miro-ai-textarea-input",
-        rows = "1"
+      tags$div(
+        class = "miro-ai-textarea-row",
+        tags$textarea(
+          id = "miroAiUserText",
+          placeholder = lang$userTextPlaceholder,
+          `data-shiny-no-bind-input` = TRUE,
+          class = "form-control miro-ai-textarea-input",
+          rows = "1"
+        ),
+        tags$button(
+          id = "btMiroAiStop",
+          type = "button",
+          class = "miro-ai-stop-btn action-button",
+          style = "display: none;",
+          icon("stop")
+        )
       ),
       tags$div(
         class = "miro-ai-chat-controls",

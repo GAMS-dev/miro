@@ -96,9 +96,12 @@ export function registerAiHandlers() {
     $('#miroAiChatSpinner').before($newElement);
 
     const $chatLog = $('#miroAiChatLog');
+    const textarea = document.getElementById('miroAiUserText');
+    const stopButton = document.getElementById('btMiroAiStop');
     if (content.role === 'user') {
-      const textarea = document.getElementById('miroAiUserText');
       textarea.value = '';
+      textarea.disabled = true;
+      stopButton.style.display = 'block';
       adjustTextareaHeight(textarea);
       $('#miroAiChatSpinner').show();
       $chatLog.scrollTop($chatLog[0].scrollHeight);
@@ -115,6 +118,8 @@ export function registerAiHandlers() {
       $('#miroAiChatSpinner').hide();
       const scrollToPosition = $newElement.position().top + $chatLog.scrollTop();
       $chatLog.animate({ scrollTop: scrollToPosition }, 300);
+      stopButton.style.display = 'none';
+      textarea.disabled = false;
     }
   });
 }
