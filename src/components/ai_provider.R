@@ -58,7 +58,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
             } else {
               toJSON(list(error = sprintf("Tool '%s' not found in dispatcher.", toolCall$name)), auto_unbox = TRUE)
             }
-            list(id = toolCall$id, name = toolCall$name, output = fromJSON(dbRes))
+            list(id = toolCall$id, name = toolCall$name, output = dbRes)
           })
           payload <- private$prepareNextIterationPayload(toolResults)
         } else {
@@ -124,14 +124,20 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
     }
   ),
   private = list(
+    systemInstructionsPayload = NULL,
+    toolsPayload = NULL,
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
+      private$systemInstructionsPayload <- systemInstructions
       payload <- list(
         model = private$modelName,
         input = userInput,
-        system_instruction = systemInstructions,
+        system_instruction = private$systemInstructionsPayload,
         store = TRUE
       )
-      if (!is.null(tools) && length(tools) > 0) payload$tools <- tools
+      if (!is.null(tools) && length(tools) > 0) {
+        private$toolsPayload <- tools
+        payload$tools <- private$toolsPayload
+      }
       if (!is.null(self$sessionId)) payload$previous_interaction_id <- self$sessionId
       if (length(self$chatHistory)) payload$input <- self$chatHistory
       return(payload)
@@ -143,7 +149,14 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
         content_type_json(), add_headers(`x-goog-api-key` = private$apiKey),
         timeout(120L)
       )
-      if (status_code(resp) != 200) stop("Gemini API Error: ", content(resp)$error$message, call. = FALSE)
+      if (status_code(resp) != 200) {
+        errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
+        errMsg <- errBody$error$message
+        if (is.null(errMsg)) {
+          errMsg <- sprintf("HTTP %d", status_code(resp))
+        }
+        stop("Gemini API Error: ", errMsg, call. = FALSE)
+      }
       return(content(resp, type = "application/json", encoding = "utf-8"))
     },
     parseApiResponse = function(resContent) {
@@ -175,12 +188,17 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
         list(type = "function_result", call_id = res$id, name = res$name, result = list(output = res$output))
       })
 
-      return(list(
+      payload <- list(
         model = private$modelName,
         input = toolSteps,
         previous_interaction_id = self$sessionId,
-        store = TRUE
-      ))
+        store = TRUE,
+        system_instruction = private$systemInstructionsPayload
+      )
+      if (!is.null(private$toolsPayload)) {
+        payload$tools <- private$toolsPayload
+      }
+      return(payload)
     }
   )
 )
@@ -204,15 +222,19 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
     }
   ),
   private = list(
+    systemInstructionsPayload = NULL,
+    toolsPayload = NULL,
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
+      private$systemInstructionsPayload <- systemInstructions
       payload <- list(
         model = private$modelName,
         input = userInput,
         store = TRUE,
-        instructions = systemInstructions
+        instructions = private$systemInstructionsPayload
       )
       if (!is.null(tools) && length(tools) > 0) {
-        payload$tools <- tools
+        private$toolsPayload <- tools
+        payload$tools <- private$toolsPayload
       }
       if (!is.null(self$sessionId)) {
         payload$previous_response_id <- self$sessionId
@@ -231,7 +253,14 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         content_type_json(),
         timeout(120L)
       )
-      if (status_code(resp) != 200) stop("OpenAI API Error: ", content(resp)$error$message, call. = FALSE)
+      if (status_code(resp) != 200) {
+        errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
+        errMsg <- errBody$error$message
+        if (is.null(errMsg)) {
+          errMsg <- sprintf("HTTP %d", status_code(resp))
+        }
+        stop("OpenAI API Error: ", errMsg, call. = FALSE)
+      }
       return(content(resp, type = "application/json", encoding = "utf-8"))
     },
     parseApiResponse = function(resContent) {
@@ -277,15 +306,20 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         list(
           type = "function_call_output",
           call_id = res$id,
-          output = toJSON(res$output, auto_unbox = TRUE)
+          output = res$output
         )
       })
-      return(list(
+      payload <- list(
         model = private$modelName,
         input = toolOutputs,
         previous_response_id = self$sessionId,
-        store = TRUE
-      ))
+        store = TRUE,
+        instructions = private$systemInstructionsPayload
+      )
+      if (!is.null(private$toolsPayload)) {
+        payload$tools <- private$toolsPayload
+      }
+      return(payload)
     }
   )
 )
@@ -320,7 +354,11 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
         model = private$modelName,
         max_tokens = 8192,
         messages = self$history,
-        system = private$systemInstructionsPayload
+        system = private$systemInstructionsPayload,
+        # Automatic caching: Anthropic places this breakpoint on the last
+        # cacheable message block and moves it forward as the conversation
+        # grows, so the growing history is served from cache.
+        cache_control = list(type = "ephemeral")
       )
       if (!is.null(tools) && length(tools) > 0) {
         private$toolsPayload <- lapply(tools, function(f) {
@@ -343,7 +381,14 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
         content_type_json(),
         timeout(120L)
       )
-      if (status_code(resp) != 200) stop("Claude API Error: ", content(resp)$error$message, call. = FALSE)
+      if (status_code(resp) != 200) {
+        errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
+        errMsg <- errBody$error$message
+        if (is.null(errMsg)) {
+          errMsg <- sprintf("HTTP %d", status_code(resp))
+        }
+        stop("Claude API Error: ", errMsg, call. = FALSE)
+      }
       return(content(resp, type = "application/json", encoding = "utf-8"))
     },
     parseApiResponse = function(resContent) {
@@ -365,6 +410,14 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
           finalText <- paste0(finalText, block$text)
         }
       }
+
+      if (identical(resContent$stop_reason, "max_tokens")) {
+        if (hasToolCalls) {
+          stop("Claude's response was truncated (max_tokens reached) while requesting a tool call; cannot safely continue.", call. = FALSE)
+        }
+        finalText <- paste0(finalText, "\n\n[Note: This response was truncated because it reached the maximum output length.]")
+      }
+
       return(list(
         hasToolCalls = hasToolCalls,
         toolCalls = toolCalls,
@@ -380,17 +433,18 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
         list(
           type = "tool_result",
           tool_use_id = res$id,
-          content = toJSON(res$output, auto_unbox = TRUE)
+          content = res$output
         )
       })
       self$history[[length(self$history) + 1]] <- list(role = "user", content = toolResultBlocks)
       payload <- list(
         model = private$modelName,
-        max_tokens = 4096,
+        max_tokens = 8192,
         messages = self$history,
-        system = private$systemInstructionsPayload
+        system = private$systemInstructionsPayload,
+        cache_control = list(type = "ephemeral")
       )
-      if (is.null(private$toolsPayload)) {
+      if (!is.null(private$toolsPayload)) {
         payload$tools <- private$toolsPayload
       }
       return(payload)

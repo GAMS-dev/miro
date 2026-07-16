@@ -230,3 +230,289 @@ test_that("MiroAiAnthropicProvider formats history correctly across iterations",
   anthropic$clearSession()
   expect_equal(length(anthropic$history), 0)
 })
+
+# A mock that captures every outgoing payload (instead of just returning a
+# canned response), so tests can assert on exactly what would be sent to the
+# real Claude API -- payload shape, cache_control placement, tool_result
+# content, etc.
+MockAnthropicCapture <- R6Class("MockAnthropicCapture",
+  inherit = MiroAiAnthropicProvider,
+  public = list(
+    capturedPayloads = list(),
+    mockResponses = list()
+  ),
+  private = list(
+    callCount = 0,
+    executeHttpCall = function(payload) {
+      private$callCount <- private$callCount + 1
+      self$capturedPayloads[[private$callCount]] <- payload
+      self$mockResponses[[private$callCount]]
+    }
+  )
+)
+
+test_that("MiroAiAnthropicProvider passes tool output through as the original raw JSON string", {
+  # Regression test: the provider used to fromJSON() the adapter's result and
+  # then re-toJSON() it before sending to Claude. That round-trip silently
+  # drops fields whose value is the literal string "NA" (jsonlite's NA
+  # handling), so a scenario using "NA" as a region code would vanish from
+  # what the model actually sees.
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
+      stop_reason = "tool_use",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    ),
+    list(
+      content = list(list(type = "text", text = "done")),
+      stop_reason = "end_turn",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  rawAdapterOutput <- jsonlite::toJSON(
+    data.frame(region = "NA", value = 42, stringsAsFactors = FALSE),
+    dataframe = "rows", auto_unbox = TRUE
+  )
+  dispatcher <- list(getData = function(args) rawAdapterOutput)
+
+  provider$sendMessage(
+    userInput = "query the data",
+    systemInstructions = "system",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = dispatcher
+  )
+
+  toolResultMessage <- provider$capturedPayloads[[2]]$messages[[3]]
+  toolResultContent <- toolResultMessage$content[[1]]$content
+
+  expect_equal(as.character(toolResultContent), as.character(rawAdapterOutput))
+  expect_match(as.character(toolResultContent), '"region":"NA"', fixed = TRUE)
+})
+
+test_that("MiroAiAnthropicProvider surfaces max_tokens truncation instead of hiding it", {
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(list(type = "text", text = "partial answer")),
+      stop_reason = "max_tokens",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  res <- provider$sendMessage("hi", "system")
+
+  expect_match(res$text, "truncated", ignore.case = TRUE)
+})
+
+test_that("MiroAiAnthropicProvider errors instead of continuing when a tool call is truncated", {
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
+      stop_reason = "max_tokens",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  expect_error(
+    provider$sendMessage(
+      "hi", "system",
+      tools = list(list(name = "getData", description = "d", parameters = list())),
+      toolDispatcher = list(getData = function(a) "{}")
+    ),
+    "truncated"
+  )
+})
+
+test_that("MiroAiAnthropicProvider keeps prompt-cache breakpoints bounded across many iterations", {
+  # Anthropic allows at most 4 cache_control breakpoints per request. The
+  # provider relies on a static breakpoint on `system` plus a single
+  # top-level `cache_control` field -- Anthropic's automatic caching moves
+  # that breakpoint to the newest message server-side, so our payload never
+  # accumulates one marker per turn regardless of how long the tool loop runs.
+  countCacheMarkers <- function(payload) {
+    n <- 0
+    for (block in payload$system) if (!is.null(block$cache_control)) n <- n + 1
+    if (!is.null(payload$cache_control)) n <- n + 1
+    n
+  }
+
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  toolTurn <- function(i) {
+    list(
+      content = list(list(type = "tool_use", id = paste0("t", i), name = "getData", input = list())),
+      stop_reason = "tool_use",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  }
+  finalTurn <- list(
+    content = list(list(type = "text", text = "done")),
+    stop_reason = "end_turn",
+    usage = list(input_tokens = 1, output_tokens = 1)
+  )
+  provider$mockResponses <- c(lapply(1:5, toolTurn), list(finalTurn))
+
+  provider$sendMessage(
+    "hi", "system",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(a) jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE)),
+    maxIterations = 10
+  )
+
+  markerCounts <- vapply(provider$capturedPayloads, countCacheMarkers, numeric(1))
+
+  expect_true(all(markerCounts <= 4))
+  expect_true(all(markerCounts == 2))
+
+  # The top-level breakpoint should be present on every payload -- Anthropic
+  # moves it to the newest message server-side, so our code never has to.
+  for (payload in provider$capturedPayloads) {
+    expect_false(is.null(payload$cache_control))
+  }
+})
+
+MockOpenAiCapture <- R6Class("MockOpenAiCapture",
+  inherit = MiroAiOpenAiProvider,
+  public = list(capturedPayloads = list(), mockResponses = list()),
+  private = list(
+    callCount = 0,
+    executeHttpCall = function(payload) {
+      private$callCount <- private$callCount + 1
+      self$capturedPayloads[[private$callCount]] <- payload
+      self$mockResponses[[private$callCount]]
+    }
+  )
+)
+
+MockGoogleCapture <- R6Class("MockGoogleCapture",
+  inherit = MiroAiGoogleProvider,
+  public = list(capturedPayloads = list(), mockResponses = list()),
+  private = list(
+    callCount = 0,
+    executeHttpCall = function(payload) {
+      private$callCount <- private$callCount + 1
+      self$capturedPayloads[[private$callCount]] <- payload
+      self$mockResponses[[private$callCount]]
+    }
+  )
+)
+
+test_that("MiroAiOpenAiProvider keeps tools and instructions on follow-up requests", {
+  provider <- MockOpenAiCapture$new("gpt-5.6", "key")
+  provider$mockResponses <- list(
+    list(
+      id = "r1",
+      output = list(list(type = "function_call", call_id = "c1", name = "getData", arguments = "{}")),
+      usage = list(input_tokens = 1, output_tokens = 1)
+    ),
+    list(
+      id = "r2",
+      output = list(list(type = "message", content = list(list(type = "output_text", text = "done")))),
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  provider$sendMessage(
+    userInput = "hi",
+    systemInstructions = "sys prompt",
+    tools = list(list(name = "getData", type = "function", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(a) jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE))
+  )
+
+  expect_true(!is.null(provider$capturedPayloads[[2]]$tools))
+  expect_equal(provider$capturedPayloads[[2]]$instructions, "sys prompt")
+})
+
+test_that("MiroAiOpenAiProvider passes tool output through as the original raw JSON string", {
+  provider <- MockOpenAiCapture$new("gpt-5.6", "key")
+  provider$mockResponses <- list(
+    list(
+      id = "r1",
+      output = list(list(type = "function_call", call_id = "c1", name = "getData", arguments = "{}")),
+      usage = list(input_tokens = 1, output_tokens = 1)
+    ),
+    list(
+      id = "r2",
+      output = list(list(type = "message", content = list(list(type = "output_text", text = "done")))),
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  rawAdapterOutput <- jsonlite::toJSON(
+    data.frame(region = "NA", value = 42, stringsAsFactors = FALSE),
+    dataframe = "rows", auto_unbox = TRUE
+  )
+
+  provider$sendMessage(
+    userInput = "hi",
+    systemInstructions = "sys prompt",
+    tools = list(list(name = "getData", type = "function", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(a) rawAdapterOutput)
+  )
+
+  sentOutput <- provider$capturedPayloads[[2]]$input[[1]]$output
+
+  expect_equal(as.character(sentOutput), as.character(rawAdapterOutput))
+  expect_match(as.character(sentOutput), '"region":"NA"', fixed = TRUE)
+})
+
+test_that("MiroAiGoogleProvider keeps tools and system_instruction on follow-up requests", {
+  provider <- MockGoogleCapture$new("gemini-3.5-flash", "key")
+  provider$mockResponses <- list(
+    list(
+      id = "r1",
+      steps = list(list(type = "function_call", id = "c1", name = "getData", arguments = list())),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    ),
+    list(
+      id = "r2",
+      steps = list(list(type = "model_output", content = list(list(text = "done")))),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    )
+  )
+
+  provider$sendMessage(
+    userInput = "hi",
+    systemInstructions = "sys prompt",
+    tools = list(list(name = "getData", type = "function", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(a) jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE))
+  )
+
+  expect_true(!is.null(provider$capturedPayloads[[2]]$tools))
+  expect_equal(provider$capturedPayloads[[2]]$system_instruction, "sys prompt")
+})
+
+test_that("MiroAiGoogleProvider passes tool output through as the original raw JSON string", {
+  provider <- MockGoogleCapture$new("gemini-3.5-flash", "key")
+  provider$mockResponses <- list(
+    list(
+      id = "r1",
+      steps = list(list(type = "function_call", id = "c1", name = "getData", arguments = list())),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    ),
+    list(
+      id = "r2",
+      steps = list(list(type = "model_output", content = list(list(text = "done")))),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    )
+  )
+
+  rawAdapterOutput <- jsonlite::toJSON(
+    data.frame(region = "NA", value = 42, stringsAsFactors = FALSE),
+    dataframe = "rows", auto_unbox = TRUE
+  )
+
+  provider$sendMessage(
+    userInput = "hi",
+    systemInstructions = "sys prompt",
+    tools = list(list(name = "getData", type = "function", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(a) rawAdapterOutput)
+  )
+
+  sentOutput <- provider$capturedPayloads[[2]]$input[[1]]$result$output
+
+  expect_equal(as.character(sentOutput), as.character(rawAdapterOutput))
+  expect_match(as.character(sentOutput), '"region":"NA"', fixed = TRUE)
+})
