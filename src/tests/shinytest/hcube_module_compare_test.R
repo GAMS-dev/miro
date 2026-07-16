@@ -53,7 +53,7 @@ Sys.sleep(2L)
 app$run_js("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:first').click();", timeout = 50L)
 Sys.sleep(3L)
 expect_equal(app$get_js("$('#cmpScenTitle_5').text()"), paste0("HC (", substr(scenHashTmp, 1, 8), "...)"))
-graphData <- jsonlite::fromJSON(app$get_values()$output[["tab_5_3-graph"]], simplifyDataFrame = FALSE)$x$data
+graphData <- jsonlite::fromJSON(app$get_values()$output[["tab_5_3-miroDygraphs-graph"]], simplifyDataFrame = FALSE)$x$data
 expect_identical(length(graphData), 756L)
 expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899", "101.703327363261"))
 app$set_inputs(contentScen_5 = "contentScen_5_9")
