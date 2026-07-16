@@ -164,6 +164,31 @@ test_that("queryScenarioDatabase executes basic SELECT correctly and maps names"
   DBI::dbDisconnect(env$conn)
 })
 
+test_that("queryScenarioDatabase renders a NULL cell as an explicit `null`, not a dropped key", {
+  # A dropped key is indistinguishable from a value that just wasn't
+  # selected -- an LLM reading the raw JSON can (and, in production, did)
+  # mistake a neighboring column's value for the missing one. The fix is
+  # `na = "null"` on the toJSON calls in queryScenarioDatabase.
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = 1, region = "APAC", year = "2024", value = NA_real_
+  ))
+
+  res <- adapter$queryScenarioDatabase(list(symbolName = "demand", scenarioNames = c("Base")))
+
+  expect_match(res, '"region":"APAC","year":"2024","value":null', fixed = TRUE)
+
+  res_df <- jsonlite::fromJSON(res)
+  expect_true("value" %in% names(res_df))
+  expect_true(is.na(res_df$value[res_df$region == "APAC"]))
+
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("queryScenarioDatabase handles aggregations and grouping", {
   env <- setup_test_env()
   adapter <- env$adapter

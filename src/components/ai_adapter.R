@@ -202,7 +202,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         list(
           name = "queryScenarioDatabase",
           type = "function",
-          description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows.",
+          description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows. `null` is the actual value -- never substitute a neighboring column's value for it.",
           parameters = list(
             type = "object",
             properties = propertiesList,
@@ -477,7 +477,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       if (!truncated) {
-        return(toJSON(resDf, dataframe = "rows", auto_unbox = TRUE))
+        return(toJSON(resDf, dataframe = "rows", auto_unbox = TRUE, na = "null"))
       }
 
       warningMsg <- sprintf("WARNING: Results truncated to %d rows. Use tighter filters or limit.", safeLimit)
@@ -502,7 +502,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         responseList$`_missing_target_scenarios` <- missingTargets
       }
 
-      return(toJSON(responseList, dataframe = "rows", auto_unbox = TRUE))
+      return(toJSON(responseList, dataframe = "rows", auto_unbox = TRUE, na = "null"))
     }
   ),
   private = list(
