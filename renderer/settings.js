@@ -553,6 +553,8 @@ cbEnableAi.on('change', (event) => {
   } else {
     newConfig.aiAssistantConfig = {};
     $('#aiAssistantForm').hide();
+    $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
+    $('.ai-key-input').val('').removeClass('is-valid', 'is-invalid');
   }
 });
 ipcRenderer.on(
@@ -568,7 +570,6 @@ aiProviders.forEach(provider => {
   const badgeElement = document.getElementById(`status${provider.id}`);
 
   inputElement.addEventListener('blur', async (e) => {
-    saveButton.attr('disabled', false);
     const keyValue = e.target.value.trim();
     inputElement.classList.remove('is-valid', 'is-invalid');
 
@@ -582,12 +583,12 @@ aiProviders.forEach(provider => {
     }
 
     if (!keyValue) {
-      badgeElement.className = 'badge badge-secondary';
+      badgeElement.className = 'ai-key-status badge badge-secondary';
       badgeElement.innerText = lang['ai-key-status-not-configured'];
       return;
     }
 
-    badgeElement.className = 'badge badge-info';
+    badgeElement.className = 'ai-key-status badge badge-info';
     badgeElement.innerText = lang['ai-key-status-validating'];
 
     try {
@@ -597,7 +598,7 @@ aiProviders.forEach(provider => {
       if (isValid) {
         __electronLog.debug(`Valid API key for AI provider: ${provider.name} added!`)
         inputElement.classList.add('is-valid');
-        badgeElement.className = 'badge badge-success';
+        badgeElement.className = 'ai-key-status badge badge-success';
         badgeElement.innerText = lang['ai-key-status-connected'];
         newConfig.aiAssistantConfig ??= {};
         newConfig.aiAssistantConfig.apiKeys ??= [];
@@ -615,14 +616,16 @@ aiProviders.forEach(provider => {
       } else {
         __electronLog.debug(`Invalid API key for AI provider: ${provider.name}`)
         inputElement.classList.add('is-invalid');
-        badgeElement.className = 'badge badge-danger';
+        badgeElement.className = 'ai-key-status badge badge-danger';
         badgeElement.innerText = lang['ai-key-status-invalid'];
       }
     } catch (err) {
       __electronLog.warn(`Failed validating API key for AI provider: ${provider.name}. Error: ${err}`)
       inputElement.classList.add('is-invalid');
-      badgeElement.className = 'badge badge-danger';
+      badgeElement.className = 'ai-key-status badge badge-danger';
       badgeElement.innerText = lang['ai-key-status-error'];
+    } finally {
+      saveButton.attr('disabled', false);
     }
   });
 });
@@ -819,7 +822,7 @@ ipcRenderer.on(
           const badgeElement = document.getElementById(`status${provider.id}`);
           inputElement.value = apiKey.key;
           inputElement.classList.add('is-valid');
-          badgeElement.className = 'badge badge-success';
+          badgeElement.className = 'ai-key-status badge badge-success';
           badgeElement.innerText = lang['ai-key-status-connected'];
         })
         cbEnableAi.prop('checked', aiEnabled);
