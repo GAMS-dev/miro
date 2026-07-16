@@ -282,9 +282,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       # Step B: Secure Session Multi-Tenant Guardrail Intersect
-      cleanSids <- as.integer(scenarioIds)
-      cleanSids <- scenarioIds[!is.na(scenarioIds)]
-      validatedSids <- intersect(cleanSids, private$allowedSids)
+      validatedSids <- intersect(scenarioIds, private$allowedSids)
 
       if (length(validatedSids) == 0) {
         return(jsonlite::toJSON(list(error = "Access Denied: Requested scenarios are not available or loaded in the current active session context."), auto_unbox = TRUE))
@@ -516,10 +514,10 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     scenarioMap = NULL,
     scenarioMapById = NULL,
     getSymbolType = function(symType) {
-      if (symType %in% c("dropdown", "set", "date", "daterange", "custom", "hot", "dt", "string")) {
+      if (symType %in% c("dropdown", "dropdowne", "set", "date", "daterange", "custom", "hot", "dt", "string", "textinput")) {
         return("string")
       }
-      if (symType %in% c("slider", "parameter", "numeric", "checkbox", "variable", "equation")) {
+      if (symType %in% c("slider", "parameter", "numeric", "checkbox", "variable", "equation", "numericinput")) {
         return("numeric")
       }
       stop(sprintf("Unknown type: %s", symType), call. = FALSE)
