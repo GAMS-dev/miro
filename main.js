@@ -994,7 +994,7 @@ function createSettingsWindow() {
   }
   settingsWindow = new BrowserWindow({
     title: lang.settings.title,
-    width: 570,
+    width: 590,
     height: 710,
     resizable: DEVELOPMENT_MODE,
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : null,
