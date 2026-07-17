@@ -156,7 +156,7 @@ body {
 }
 .navbar-handle-wrapper {
   height: 50px;
-  right: 173px;
+  left: 280px;
   position: absolute;
   .responsiveDark({
     color: #333;
@@ -165,8 +165,13 @@ body {
     color: #eee;
   });
 }
+@media screen and (max-width: 767px) {
+  .navbar-handle-wrapper {
+    left: 50px;
+  }
+}
 .navbar-handle {
-  width: 60px;
+  width: 53px;
   height: 100%;
   margin-left: auto;
   font-size: 26px;

@@ -16,6 +16,7 @@ repos:
               src/tests/testthat/_snaps/.*\.md|
               src/www/default_.*\.css.*|
               src/www/miro.*\.js.*|
+              server/proxy/templates/2col/assets/css/styles\.css.*|
               server/admin/www/model_update\.js.*
           )$
       - id: trailing-whitespace
