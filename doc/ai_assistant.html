@@ -306,6 +306,29 @@
                       />
                     </div>
                     <p>
+                      To analyze or compare several database scenarios instead
+                      of just the sandbox scenario:
+                    </p>
+                    <ol>
+                      <li>Open the <i>Load Scenarios</i> section.</li>
+                      <li>Select the scenarios we want to analyze.</li>
+                      <li>
+                        In the dialog that opens, click <i>AI Assistant</i>.
+                      </li>
+                    </ol>
+                    <p>
+                      The selected scenarios are then loaded as context for the
+                      assistant. We can ask questions that compare values
+                      across the scenarios, identify the most important
+                      changes, or explain which inputs could be associated with
+                      changes in the outputs. Only the scenarios we selected
+                      are available to the assistant - it cannot query other
+                      database scenarios that have not been loaded into the
+                      current session (see
+                      <a href="#how-it-works">How the AI Assistant Works</a>
+                      for more on this access control).
+                    </p>
+                    <p>
                       We type a question and press Enter to send it. While the
                       assistant is working, a spinner appears and the input is
                       disabled; a stop button lets us cancel a request that is
@@ -399,12 +422,48 @@
                       >
                       in Configuration Mode. There, instead of answering
                       questions about scenario data, the assistant helps us
-                      write the R code for the renderer itself - we describe
-                      the visualization we want, and it proposes UI and server
-                      code we can review and, if it looks right, apply directly
-                      with the
-                      <i>Apply Code</i> button.
+                      write the R code for the renderer itself. It can help
+                      with tasks such as:
                     </p>
+                    <ul>
+                      <li>Creating an initial custom renderer for a symbol</li>
+                      <li>Explaining existing renderer code</li>
+                      <li>Fixing errors in an existing renderer</li>
+                      <li>Adding filters, controls, labels, or formatting</li>
+                      <li>
+                        Further developing and refining an existing renderer
+                      </li>
+                    </ul>
+                    <p>
+                      We describe the visualization or behavior we want, and
+                      the assistant proposes R code that we can review. If the
+                      proposed changes are suitable, they can be inserted into
+                      the editor using the <i>Apply Code</i> button.
+                    </p>
+                    <p>To open the editor:</p>
+                    <ol>
+                      <li>Open Configuration Mode.</li>
+                      <li>Go to <i>Graphs</i>.</li>
+                      <li>
+                        Select the symbol for which we want to create or modify
+                        a visualization.
+                      </li>
+                      <li>Select <i>Custom Renderer</i>.</li>
+                    </ol>
+                    <div class="section-block" style="text-align: center">
+                      <img
+                        class="img-fluid"
+                        style="
+                          max-height: 300pt;
+                          display: block;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                        src="assets/images/configuration_mode/custom_renderer_editor_ai.png"
+                        alt="Custom renderer editor with AI Assistant"
+                      />
+                    </div>
+                    <p>The AI Assistant can be opened directly from there.</p>
                     <p>
                       It uses the same provider key(s) configured for the app,
                       so nothing extra needs to be set up to use it once the AI
