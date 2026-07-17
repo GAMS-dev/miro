@@ -2802,9 +2802,9 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     if (!codeApplied) {
       return(showNotification(lang$nav$aiBotDialog$nfApplyErrNoCode, type = "error"))
     }
-    updateSelectInput(session, "customPackages", reqPackages)
+    updateSelectInput(session, "customPackages", choices = reqPackages, selected = reqPackages)
     rv$graphConfig$additionalData <<- reqSymbols
-    updateSelectInput(session, "customAdditionalData", reqSymbols)
+    updateSelectInput(session, "customAdditionalData", selected = reqSymbols)
     session$sendCustomMessage("gms-shinySetInputValue", list(
       id = "btUpdateCustomRendererOutput",
       val = 1L,
@@ -5411,6 +5411,14 @@ observeEvent(rv$saveGraphConfirm, {
   # remove all symbols with same name to avoid case sensitivity issues
   configJSON$dataRendering[activeSymbol$name == tolower(names(configJSON$dataRendering))] <<- NULL
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
+  if (!length(configJSON$dataRendering[[activeSymbol$name]]$additionalData)) {
+    # remove empty array as it breaks validation
+    configJSON$dataRendering[[activeSymbol$name]]$additionalData <<- NULL
+  }
+  if (!length(configJSON$dataRendering[[activeSymbol$name]]$packages)) {
+    # remove empty array as it breaks validation
+    configJSON$dataRendering[[activeSymbol$name]]$packages <<- NULL
+  }
   configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
   if (is.null(rv$graphConfig$graph$tool)) {
     flog.error("Problems fetching configuration.")
