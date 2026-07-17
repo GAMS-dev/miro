@@ -69,10 +69,16 @@ function adjustTextareaHeight(el) {
   }
 }
 
-function sendUserInputToShiny(userInput) {
-  Shiny.setInputValue('miroAiUserText', userInput, {
-    priority: 'event',
-  });
+function sendCurrentUserText(textarea) {
+  const content = textarea.value.trim();
+  if (content) {
+    Shiny.setInputValue('miroAiUserText', content, {
+      priority: 'event',
+    });
+  }
+  textarea.value = '';
+  adjustTextareaHeight(textarea);
+  document.getElementById('btMiroAiSend').style.display = 'none';
 }
 
 // Assistant messages are rendered server-side with their (untrusted, LLM-
@@ -111,15 +117,15 @@ export function registerAiHandlers() {
       e.stopPropagation();
       e.stopImmediatePropagation();
       e.preventDefault();
-      const content = this.value.trim();
-      if (content) {
-        sendUserInputToShiny(content);
-      }
-      this.value = '';
+      sendCurrentUserText(this);
     }
   });
   $(document).on('input', '#miroAiUserText', function () {
     adjustTextareaHeight(this);
+    document.getElementById('btMiroAiSend').style.display = this.value.trim() ? 'flex' : 'none';
+  });
+  $(document).on('click', '#btMiroAiSend', () => {
+    sendCurrentUserText(document.getElementById('miroAiUserText'));
   });
   Shiny.addCustomMessageHandler('gms-addAiChatBubble', (content) => {
     const $newElement = $(content.html);

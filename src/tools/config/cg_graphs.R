@@ -4874,15 +4874,6 @@ getCustomOptions <- reactive({
         choices = c("-", externalRendererFiles),
         selected = externalRendererSelected
       ),
-      if (config$activateModules$aiAssistant) {
-        actionButton(
-          "btOpenAiCopilot",
-          "AI Assistant",
-          class = "btn btn-info bt-highlight-1",
-          style = "margin-bottom: 15px; width: 100%;",
-          onclick = "Miro.openMiroAiDrawer()"
-        )
-      },
       tags$div(id = "customOutputBoilerplate", class = "shiny-text-output custom-renderer-boilerplate "),
       aceEditorFullscreenButton(),
       aceEditor(

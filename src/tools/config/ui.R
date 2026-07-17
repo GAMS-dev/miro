@@ -613,6 +613,15 @@ body.drawer-open {
                       )
                     )
                   ),
+                  if (config$activateModules$aiAssistant) {
+                    tags$button(
+                      id = "btOpenAiCopilot",
+                      "AI Assistant",
+                      class = "bt-highlight-1 category-btn category-btn-custom full-width",
+                      style = "margin-bottom: 15px;",
+                      onclick = "Miro.openMiroAiDrawer()"
+                    )
+                  },
                   tags$div(
                     class = "save-delete-wrapper",
                     actionButton("deleteGraph", lang$adminMode$graphs$ui$deleteGraph, icon("trash-can"), class = "save-delete-delete-btn full-width"),
@@ -769,7 +778,7 @@ body.drawer-open {
           ),
           tags$div(
             class = "miro-ai-assistant-drawer-body",
-            renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, chatHistory = NULL, renderApplyCodeBtn = TRUE)
+            renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, chatHistory = NULL, renderApplyCodeBtn = TRUE, userInputPlaceholderKey = "userTextPlaceholderRenderer")
           )
         )
       ),

@@ -87,7 +87,7 @@ renderAiTokenInfoContainer <- function(lang, inputTokens = 0L, outputTokens = 0L
     )
   )
 }
-renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL) {
+renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL, userInputPlaceholderKey = "userTextPlaceholder") {
   tagList(
     tags$div(
       id = "miroAiChatLog",
@@ -109,10 +109,17 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
         class = "miro-ai-textarea-row",
         tags$textarea(
           id = "miroAiUserText",
-          placeholder = lang$userTextPlaceholder,
+          placeholder = lang[[userInputPlaceholderKey]],
           `data-shiny-no-bind-input` = TRUE,
           class = "form-control miro-ai-textarea-input",
           rows = "1"
+        ),
+        tags$button(
+          id = "btMiroAiSend",
+          type = "button",
+          class = "miro-ai-send-btn",
+          style = "display: none;",
+          icon("paper-plane")
         ),
         tags$button(
           id = "btMiroAiStop",

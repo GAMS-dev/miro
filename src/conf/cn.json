@@ -572,6 +572,7 @@
       "chatBubbleUserHeader": "用户：",
       "chatBubbleAssistantHeader": "助手：",
       "userTextPlaceholder": "在此输入关于情景的问题...",
+      "userTextPlaceholderRenderer": "今天构建什么？",
       "inputTokensLabel": "输入 Token 数量：%s",
       "inputTokensTitle": "提示词所消耗的 Token 数量。",
       "outputTokensLabel": "输出 Token 数量：%s",

@@ -2269,6 +2269,10 @@
               "type": "string",
               "minLength": 1
             },
+            "userTextPlaceholderRenderer": {
+              "type": "string",
+              "minLength": 1
+            },
             "btClear": {
               "type": "string",
               "minLength": 1
@@ -2282,7 +2286,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 19
+          "minProperties": 20
         },
         "hcubeMode": {
           "type": "object",

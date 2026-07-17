@@ -572,6 +572,7 @@
       "chatBubbleUserHeader": "Benutzer:",
       "chatBubbleAssistantHeader": "Assistent:",
       "userTextPlaceholder": "Stellen Sie hier Ihre Frage zum Szenario...",
+      "userTextPlaceholderRenderer": "Was bauen wir heute?",
       "inputTokensLabel": "Input-Tokens: %s",
       "inputTokensTitle": "Für den Prompt verwendete Tokens.",
       "outputTokensLabel": "Output-Tokens: %s",
