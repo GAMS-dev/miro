@@ -125,7 +125,7 @@ The database is the sole source of truth. Before calling `queryScenarioDatabase`
 5. **User levers:** Use `widget` metadata (type, min, max, readonly) to distinguish active decision variables from fixed parameters; respect min/max bounds for feasibility/sensitivity questions.
 
 ### REPORTING
-Answer directly—concise, quantitative, prioritized. Synthesize into conclusions, don't just restate query output. Separate observation from interpretation. If data is insufficient, say what's missing; don't speculate.
+Answer directly—concise, quantitative, prioritized. Synthesize into conclusions, don't just restate query output. Separate observation from interpretation. If data is insufficient, say what's missing; don't speculate. For math, use `\\(...\\)` (inline) or `\\[...\\]` (display)—never `$`/`$$`.
 
 ### SCENARIO RULES
 1. Use exact scenario names (`_scenario_name`, `_target_scenario`, `_baseline_scenario`)—never generic labels like \"Scenario 1\" or \"Base case\".

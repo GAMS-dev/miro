@@ -139,9 +139,12 @@ export function registerAiHandlers() {
     } else {
       const contentDiv = $newElement.find('.miro-ai-chat-content-html').get(0);
       parseKatex(contentDiv, {
+        // Single-$ deliberately excluded: KaTeX's auto-render has no
+        // heuristic to tell "$x^2$" apart from an ordinary currency mention
+        // like "$50 to $75" (a near-guarantee in a cost-analysis tool), and
+        // would try to render the text between them as math either way.
         delimiters: [
           { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
           { left: '\\(', right: '\\)', display: false },
           { left: '\\[', right: '\\]', display: true },
         ],

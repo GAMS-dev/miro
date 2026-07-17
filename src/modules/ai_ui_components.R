@@ -1,3 +1,22 @@
+renderMarkdownPreservingKatexDelimiters <- function(text) {
+  wrapped <- stringi::stri_replace_all_fixed(
+    text, c("\\[", "\\("), c("`\\[", "`\\("),
+    vectorize_all = FALSE
+  )
+  wrapped <- stringi::stri_replace_all_fixed(
+    wrapped, c("\\]", "\\)"), c("\\]`", "\\)`"),
+    vectorize_all = FALSE
+  )
+  html <- commonmark::markdown_html(wrapped, hardbreaks = FALSE, smart = TRUE, extensions = TRUE)
+  html <- stringi::stri_replace_all_fixed(
+    html, c("<code>\\[", "<code>\\("), c("\\[", "\\("),
+    vectorize_all = FALSE
+  )
+  stringi::stri_replace_all_fixed(
+    html, c("\\]</code>", "\\)</code>"), c("\\]", "\\)"),
+    vectorize_all = FALSE
+  )
+}
 renderAiChatBubble <- function(msg, lang, charLimit = 300) {
   isUser <- msg$role == "user"
   wrapperClass <- if (isUser) "miro-ai-chat-bubble-wrapper miro-ai-chat-user" else "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant"
@@ -27,7 +46,7 @@ renderAiChatBubble <- function(msg, lang, charLimit = 300) {
         `data-raw-html` = if (isUser) {
           NULL
         } else {
-          commonmark::markdown_html(msg$text, hardbreaks = FALSE, smart = TRUE, extensions = TRUE)
+          renderMarkdownPreservingKatexDelimiters(msg$text)
         },
         if (isUser) {
           msg$text
