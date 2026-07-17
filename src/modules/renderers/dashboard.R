@@ -29,7 +29,7 @@ dashboardOutput <- function(id, height = NULL, options = NULL, path = NULL, ...)
   )
 }
 
-renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, roundPrecision = 2L, ...) {
+renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, ...) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -330,7 +330,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             }
 
             rawData[[view]] <- viewData
-            preparedData <- dashboardPrepareData(currentConfig, viewData)
+            preparedData <- dashboardPrepareData(currentConfig, viewData, zeroTolerance = numericalTolerance)
             dashboardChartData[[view]] <- preparedData$data
             filterWarnings[[view]] <- preparedData$warnings
 

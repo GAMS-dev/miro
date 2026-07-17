@@ -1279,6 +1279,10 @@
         "label": "Number of decimal places used for rounding numerical values (global setting).",
         "tooltip": "Affects all output tables, Big Data input tables and the table in the Batch Load module. - Open documentation."
       },
+      "numericalTolerance":{
+        "label": "Number of decimal places used to treat values close to zero as zero (global setting).",
+        "tooltip": "Affects the baseline comparison in Dashboard and MIRO Pivot: a value is treated as exactly zero if it is smaller than 10 to the power of minus this number, avoiding division-by-zero or inflated percentage/normalized values. - Open documentation."
+      },
       "defaultRenderer":{
         "labelOutput": "Default renderer for output data",
         "choicesOutput": ["Pivot table", "Table"]

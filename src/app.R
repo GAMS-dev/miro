@@ -1982,6 +1982,7 @@ if (!is.null(errMsg)) {
 
       # initially set rounding precision to default
       roundPrecision <- config$roundingDecimals
+      numericalTolerance <- config$numericalTolerance
 
       flog.info(
         "Session started (model: '%s', user: '%s', workdir: '%s').",

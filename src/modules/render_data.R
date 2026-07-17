@@ -82,7 +82,7 @@ renderDataUI <- function(id, type, height = NULL, graphConfig = NULL,
 
 renderData <- function(input, output, session, data, type, graphConfig = NULL,
                        configData = NULL, dtOptions = NULL,
-                       roundPrecision = 2, rendererEnv = NULL,
+                       roundPrecision = 2, numericalTolerance = 1e-6, rendererEnv = NULL,
                        views = NULL, attachments = NULL) {
   renderconfig <- getRendererConfig(graphConfig)
 
@@ -260,6 +260,7 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
     renderMiroPivot("miroPivot", data,
       options = rendererOptions,
       roundPrecision = roundPrecision,
+      numericalTolerance = numericalTolerance,
       rendererEnv = rendererEnv, views = views
     )
   } else if (type == "dashboard") {
@@ -267,7 +268,8 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
       options = rendererOptions,
       rendererEnv = rendererEnv, views = views,
       outputScalarsFull = configData,
-      roundPrecision = roundPrecision
+      roundPrecision = roundPrecision,
+      numericalTolerance = numericalTolerance
     )
   } else {
     tryCatch(
@@ -288,7 +290,8 @@ renderData <- function(input, output, session, data, type, graphConfig = NULL,
           options = rendererOptions,
           path = customRendererDir, rendererEnv = rendererEnv, views = views,
           attachments = attachments, outputScalarsFull = configData,
-          roundPrecision = roundPrecision
+          roundPrecision = roundPrecision,
+          numericalTolerance = numericalTolerance
         )
       },
       error = function(e) {

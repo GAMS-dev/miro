@@ -4974,6 +4974,21 @@
               },
               "minProperties": 2
             },
+            "numericalTolerance": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
             "defaultRenderer": {
               "type": "object",
               "additionalProperties": false,

@@ -149,6 +149,24 @@
                     (2025-09-25)
                   </div>
                   <div class="section-block">
+                    <h5 style="display: inline-block">GAMS MIRO 2.13.6</h5>
+                    <div style="display: inline-block; padding-left: 15px">
+                      (2026-07-17)
+                    </div>
+                    <ul>
+                      <li>
+                        Introduce a global
+                        <a
+                          href="./configuration_general.html#numerical-tolerance"
+                          >Numerical Tolerance</a
+                        >
+                        setting: values within this threshold of zero are now
+                        treated as exactly zero when the Dashboard and MIRO
+                        Pivot renderers compute a baseline comparison, avoiding
+                        division-by-zero or inflated percentage/normalized
+                        results caused by floating-point noise around zero.
+                      </li>
+                    </ul>
                     <h5 style="display: inline-block">GAMS MIRO 2.13.5</h5>
                     <div style="display: inline-block; padding-left: 15px">
                       (2026-06-30)

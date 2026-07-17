@@ -3596,11 +3596,18 @@
       }
     },
     "roundingDecimals": {
-      "description": "Number of decimal places used for rounding output values.",
+      "description": "Number of decimal places used for rounding output values (for displaying purposes).",
       "type": "integer",
       "minimum": 0,
       "maximum": 6,
       "default": 2
+    },
+    "numericalTolerance": {
+      "description": "Numerical accuracy threshold. Values with an absolute value smaller than this threshold are treated as exactly zero to prevent division-by-zero or inflation errors (e.g., in x/y calculations).",
+      "type": "number",
+      "minimum": 1e-15,
+      "maximum": 0.001,
+      "default": 0.000001
     },
     "pivotTruncation": {
       "description": "Thresholds at which MIRO Pivot truncates data before rendering, to keep the browser responsive. Can only be set via JSON, not in Configuration Mode. Warning: raising these limits can significantly impact performance and may cause the app to become unresponsive, especially on less powerful client devices.",

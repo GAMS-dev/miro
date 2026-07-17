@@ -1279,6 +1279,10 @@
         "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
         "tooltip": "Betrifft alle Ausgabetabellen, Big Data-Eingabetabellen und die Tabelle im Batch Load Modul. - Dokumentation öffnen."
       },
+      "numericalTolerance":{
+        "label": "Anzahl der Dezimalstellen, um Werte nahe Null als Null zu behandeln (globale Option).",
+        "tooltip": "Betrifft den Baseline-Vergleich im Dashboard und in MIRO Pivot: Ein Wert wird als exakt Null behandelt, wenn er kleiner ist als 10 hoch minus dieser Zahl. Dies vermeidet Division durch Null oder überhöhte Prozent-/Normalisierungswerte. - Dokumentation öffnen."
+      },
       "defaultRenderer":{
         "labelOutput": "Standard-Renderer für Ausgabedaten",
         "choicesOutput": ["Pivot-Tabelle", "Tabelle"]

@@ -518,6 +518,9 @@ observeEvent(input$general_hiddenCompareSymbols, ignoreNULL = FALSE, {
 observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
 })
+observeEvent(input$general_numericalTolerance, {
+  rv$generalConfig$numericalTolerance <<- 10^(-input$general_numericalTolerance)
+})
 observeEvent(input$general_mirologfile, {
   if (!nchar(input$general_mirologfile)) {
     configJSON$miroLogFile <<- NULL

@@ -1226,6 +1226,22 @@ font-size: 12px;
                         }
                       )
                     ),
+                    tags$div(
+                      class = "option-wrapper",
+                      sliderInput("general_numericalTolerance",
+                        labelTooltip(
+                          label = lang$adminMode$general$numericalTolerance$label,
+                          tooltip = lang$adminMode$general$numericalTolerance$tooltip,
+                          href = "https://gams.com/miro/configuration_general.html#numerical-tolerance"
+                        ),
+                        min = 3, max = 15, step = 1,
+                        value = round(-log10(if (length(configJSON$numericalTolerance)) {
+                          configJSON$numericalTolerance
+                        } else {
+                          config$numericalTolerance
+                        }))
+                      )
+                    ),
                     tags$div(class = "space")
                   )
                 )

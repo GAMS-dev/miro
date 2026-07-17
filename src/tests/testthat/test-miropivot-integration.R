@@ -6,6 +6,7 @@ library(tidyr)
 library(futile.logger)
 library(chartjs)
 library(jsonlite)
+library(stringi)
 
 source("../../components/scenario_extensions.R")
 source("../../components/views.R")
@@ -663,6 +664,82 @@ test_that("MIRO pivot respects a custom maxTableColumns truncation limit", {
         pivotTruncation = list(maxTableColumns = 3L),
         "_metadata_" = list(symtype = "parameter")
       )
+    )
+  )
+})
+
+# ==============================================================================
+# numericalTolerance: baseline values close to zero should not be used as-is
+# ==============================================================================
+
+test_that("MIRO pivot snaps a near-zero baseline to 0 under the default numericalTolerance", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "i", colIndexList = character(),
+        filterIndexList = c("j", "hdr"), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "i",
+        baselineCompRecord = "Base",
+        baselineCompMetrics = c("percentage difference"),
+        updateSettings = 1L
+      )
+      # Baseline (1e-10) is snapped to exactly 0 under the default 1e-6
+      # tolerance, so dividing by it produces Inf rather than a
+      # large-but-finite (and misleading) percentage.
+      expect_true(all(is.infinite(convert_to_df(dataToRender())$value)))
+    },
+    args = list(
+      data = tibble(
+        i = c("Base", "Target"),
+        j = c("X", "X"),
+        hdr = c("shipment"),
+        value = c(1e-10, 50)
+      ),
+      options = list(
+        enablePersistentViews = FALSE,
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom, tighter numericalTolerance", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "i", colIndexList = character(),
+        filterIndexList = c("j", "hdr"), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "i",
+        baselineCompRecord = "Base",
+        baselineCompMetrics = c("percentage difference"),
+        updateSettings = 1L
+      )
+      # With a tolerance tighter than 1e-10, the baseline is no longer
+      # snapped to 0, so the division produces a finite (if inflated)
+      # result instead of Inf.
+      values <- convert_to_df(dataToRender())$value
+      expect_true(all(is.finite(values)))
+      expect_true(any(values > 1e10))
+    },
+    args = list(
+      data = tibble(
+        i = c("Base", "Target"),
+        j = c("X", "X"),
+        hdr = c("shipment"),
+        value = c(1e-10, 50)
+      ),
+      options = list(
+        enablePersistentViews = FALSE,
+        "_metadata_" = list(symtype = "parameter")
+      ),
+      numericalTolerance = 1e-12
     )
   )
 })

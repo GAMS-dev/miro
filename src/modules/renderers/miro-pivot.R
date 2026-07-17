@@ -702,7 +702,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   )
 }
 
-renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL, views = NULL) {
+renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, rendererEnv = NULL, views = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -2947,7 +2947,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
-          zeroTolerance <- 1e-6
+          zeroTolerance <- numericalTolerance
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(

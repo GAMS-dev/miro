@@ -30,7 +30,7 @@ dashboardCompareOutput <- function(id, height = NULL, options = NULL, path = NUL
   )
 }
 
-renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, roundPrecision = 2L, ...) {
+renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, ...) {
   ns <- session$ns
 
   removeTableHeader <- function(viewData) {
@@ -382,7 +382,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         viewData <- combineData(data$get(currentConfig$data), scenarioNames)
 
         rawData[[view]] <- viewData
-        preparedData <- dashboardPrepareData(currentConfig, viewData)
+        preparedData <- dashboardPrepareData(currentConfig, viewData, zeroTolerance = numericalTolerance)
         dashboardChartData[[view]] <- preparedData$data
         filterWarnings[[view]] <- preparedData$warnings
 

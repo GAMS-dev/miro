@@ -647,6 +647,41 @@ putclose;
                       </p>
                     </div>
                   </div>
+                  <div class="section-block">
+                    <div id="numerical-tolerance" class="section-block">
+                      <h3 class="block-title">Numerical Tolerance</h3>
+                      <p>
+                        Numerical accuracy threshold used to treat values close
+                        to zero as exactly zero. This is a global setting used
+                        by the
+                        <a
+                          href="./configuration_general.html#pivot-default-options"
+                          >baseline comparison</a
+                        >
+                        feature in both the Dashboard and MIRO Pivot renderers:
+                        when computing a percentage difference or normalized
+                        value against a baseline, a baseline value that is only
+                        nonzero due to floating-point noise can otherwise blow
+                        up or inflate the result. Values whose absolute value
+                        is smaller than this threshold are treated as exactly
+                        <span class="code">0</span> for that computation.
+                      </p>
+                      <p>
+                        The slider sets the number of decimal places <i>N</i>
+                        of that threshold, i.e. a value is treated as zero if
+                        it is smaller than
+                        <span class="code">10</span><sup>-N</sup>. It ranges
+                        from <span class="code">3</span> to
+                        <span class="code">15</span>; the default is
+                        <span class="code">6</span> (a threshold of
+                        <span class="code">1e-6</span>). Raise this value if
+                        your model legitimately produces baseline values very
+                        close to (but not meant to be treated as) zero; lower
+                        it if you see inflated or division-by-zero-like results
+                        in baseline comparisons.
+                      </p>
+                    </div>
+                  </div>
                 </section>
                 <section id="job-submission" class="doc-section">
                   <h2 class="section-title">Job Submission</h2>
@@ -1191,6 +1226,11 @@ putclose log;
                       class="nav-link scrollto save-space"
                       href="#decimal-places"
                       >Decimal Places</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#numerical-tolerance"
+                      >Numerical Tolerance</a
                     >
                   </nav>
                   <a
