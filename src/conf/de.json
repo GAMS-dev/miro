@@ -1294,6 +1294,8 @@
         "cbEnable": "KI-Assistent aktivieren",
         "btEditContext": "Domänenkontext bearbeiten",
         "btEditInstructions": "Allgemeine Anweisungen bearbeiten",
+        "tooltipContext": "Gibt dem Assistenten Hintergrundwissen über Ihr Modell, z. B. dessen Zweck, Fachbegriffe und Funktionsweise. - Dokumentation öffnen.",
+        "tooltipInstructions": "Legt Formatierung, Tonfall und Verhaltensregeln für die Antworten des Assistenten fest. - Dokumentation öffnen.",
         "dialogEditContext": {
           "title": "KI-Assistent: Domänenkontext bearbeiten",
           "helpText": "**Was es macht:** Gibt der KI Hintergrundwissen über Ihr Optimierungsmodell, damit sie relevante, domänenspezifische Erkenntnisse und Datenanalysen liefern kann.\n\n**Wie man es nutzt:** Beschreiben Sie den Zweck Ihrer App, das zugrunde liegende geschäftliche oder wissenschaftliche Problem, das sie löst, wichtige Fachbegriffe und wie das Modell funktioniert.\n\n**Tipp:** Sie können den Platzhalter `[[README]]` überall in diesem Feld verwenden. MIRO ersetzt ihn automatisch durch den aktuellen Inhalt der README-Datei Ihrer App, sodass Sie Ihre Dokumentation nicht duplizieren müssen.",

@@ -976,25 +976,24 @@ inc/inc2.inc
                       <span class="key">F7</span> (or
                       <span class="key">⌘</span> +
                       <span class="key">,</span> on macOS). You will notice
-                      that there are three categories of settings:
-                      <i>General</i> settings, settings related to
-                      <i>Paths</i> and to the <i>Environment</i>. In the
+                      that settings are grouped into several categories:
+                      <i>General</i>, <i>Paths</i>, <i>GAMS Engine</i>,
+                      <i>AI Assistant</i>, and <i>Environment</i>. In the
                       <i>General</i> category you can specify whether you want
-                      to launch your MIRO apps in a new window of the MIRO
-                      Launcher or in your default browser. You can set the
-                      language, the color theme, specify the level of detail of
-                      information to be logged as well as the number of days
-                      you want your log files to be stored for (-1 being no
-                      limit).
+                      to launch your MIRO apps in a new MIRO Desktop window or
+                      in your default browser. You can set the language, the
+                      color theme, specify the level of detail of information
+                      to be logged as well as the number of days you want your
+                      log files to be stored for (-1 being no limit).
                     </p>
                     <p>
                       In the <i>Paths</i> section, you can control the location
                       where your MIRO apps are stored/loaded from and the
                       location where log files are kept. Additionally, in case
-                      you want to use a specific GAMS version or the MIRO
-                      Launcher was unable to locate GAMS automatically, you can
-                      set the path to GAMS here. On Linux, you can also specify
-                      the path to the required R installation here.
+                      you want to use a specific GAMS version or MIRO Desktop
+                      was unable to locate GAMS automatically, you can set the
+                      path to GAMS here. On Linux, you can also specify the
+                      path to the required R installation here.
                     </p>
                     <div class="table-responsive">
                       <table
@@ -1150,6 +1149,36 @@ inc/inc2.inc
                                 href="https://www.gams.com/engine/administration.html#identity-providers"
                                 >LDAP/OAuth2/OIDC identity provider</a
                               >.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><b>AI Assistant</b></td>
+                            <td>Enable AI Features?</td>
+                            <td>
+                              Makes the
+                              <a href="./ai_assistant.html">AI Assistant</a>
+                              available for MIRO apps installed on this
+                              machine, unless an app has explicitly opted out
+                              of it in its own
+                              <a href="./configuration_general.html"
+                                >Configuration Mode</a
+                              >.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td>API keys</td>
+                            <td>
+                              Once AI Features are enabled, enter an API key
+                              for each provider you want to make available
+                              (OpenAI, Anthropic, Google). MIRO validates each
+                              key against the provider as soon as you enter it.
+                              See
+                              <a
+                                href="./ai_assistant.html#enabling-ai-assistant"
+                                >Enabling the AI Assistant</a
+                              >
+                              for details.
                             </td>
                           </tr>
                         </tbody>

@@ -1510,13 +1510,21 @@ body.drawer-open {
                       tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
                         actionButton(
                           inputId = "btEditAiContext",
-                          label = lang$adminMode$general$aiAssistant$btEditContext
+                          label = labelTooltip(
+                            label = lang$adminMode$general$aiAssistant$btEditContext,
+                            tooltip = lang$adminMode$general$aiAssistant$tooltipContext,
+                            href = "https://gams.com/miro/configuration_general.html#ai-assistant-domain-context"
+                          )
                         )
                       }),
                       tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
                         actionButton(
                           inputId = "btEditAiInstructions",
-                          label = lang$adminMode$general$aiAssistant$btEditInstructions
+                          label = labelTooltip(
+                            label = lang$adminMode$general$aiAssistant$btEditInstructions,
+                            tooltip = lang$adminMode$general$aiAssistant$tooltipInstructions,
+                            href = "https://gams.com/miro/configuration_general.html#ai-assistant-instructions"
+                          )
                         )
                       })
                     )

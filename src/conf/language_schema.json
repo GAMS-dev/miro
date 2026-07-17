@@ -5037,6 +5037,14 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tooltipContext": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltipInstructions": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "dialogEditContext": {
                   "type": "object",
                   "additionalProperties": false,
@@ -5100,7 +5108,7 @@
                   "minProperties": 6
                 }
               },
-              "minProperties": 5
+              "minProperties": 7
             },
             "saveDuration": {
               "type": "object",

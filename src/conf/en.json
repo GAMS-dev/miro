@@ -1294,6 +1294,8 @@
         "cbEnable": "Enable AI Assistant",
         "btEditContext": "Edit Domain Context",
         "btEditInstructions": "Edit General Instructions",
+        "tooltipContext": "Gives the assistant background knowledge about your model, e.g. its purpose, terminology and how it operates. - Open documentation.",
+        "tooltipInstructions": "Sets formatting, tone and behavioral rules for how the assistant responds. - Open documentation.",
         "dialogEditContext": {
           "title": "Edit AI Assistant Domain Context",
           "helpText": "**What it does:** Gives the AI background knowledge about your optimization model so it can provide relevant, domain-aware insights and data analysis.\n\n**How to use it:** Describe the purpose of your app, the underlying business or scientific problem it solves, key terminology, and how the model operates.\n\n**Tip:** You can use the placeholder `[[README]]` anywhere in this field. MIRO will automatically replace it with the current content of your app's README file, saving you from duplicating your documentation.",

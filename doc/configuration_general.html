@@ -1077,6 +1077,83 @@ putclose log;
                   </div>
                 </section>
                 <!--//doc-section-->
+                <section id="ai-assistant-config" class="doc-section">
+                  <h2 class="section-title">AI Assistant</h2>
+                  <div class="section-block">
+                    <p>
+                      With a provider key configured (see the
+                      <a href="./ai_assistant.html#enabling-ai-assistant"
+                        >AI Assistant</a
+                      >
+                      chapter for how to set one up), we can tailor how the
+                      assistant behaves for this specific app.
+                    </p>
+                    <div id="ai-assistant-enable" class="section-block">
+                      <h3 class="block-title">Enable AI Assistant</h3>
+                      <p>
+                        This checkbox turns the assistant on or off for the
+                        current app. It is on by default (existing apps are not
+                        locked out of the feature once a provider key is
+                        configured), so if we want to keep a specific app free
+                        of AI features regardless of the server-wide key, we
+                        switch it off here explicitly.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div
+                      id="ai-assistant-domain-context"
+                      class="section-block"
+                    >
+                      <h3 class="block-title">Domain Context</h3>
+                      <p>
+                        Domain Context gives the assistant background knowledge
+                        about our model: the business or scientific problem it
+                        solves, the terminology we use, and how the model
+                        operates. The more context the assistant has, the more
+                        relevant and specific its analysis will be. We can use
+                        the placeholder
+                        <span class="code">[[README]]</span> anywhere in this
+                        field, and MIRO replaces it with the current content of
+                        our app's README &mdash; so if we already documented
+                        the model there, we do not have to duplicate that work.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="section-block">
+                    <div id="ai-assistant-instructions" class="section-block">
+                      <h3 class="block-title">General Instructions</h3>
+                      <p>
+                        General Instructions let us set concrete rules for how
+                        the assistant should respond &mdash; formatting
+                        preferences (<i
+                          >"Always report monetary values in millions of
+                          dollars"</i
+                        >), tone, or steps it should take when it spots a data
+                        inconsistency (<i
+                          >"Flag negative values in the demand table as an
+                          error"</i
+                        >). Where Domain Context describes our model, General
+                        Instructions describe how we want the assistant to talk
+                        about it.
+                      </p>
+                      <div class="section-block" style="text-align: center">
+                        <img
+                          class="img-fluid"
+                          style="
+                            max-height: 150pt;
+                            display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                          "
+                          src="assets/images/configuration_mode/ai-assistant-config.png"
+                          alt="AI Assistant configuration interface"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -1234,6 +1311,29 @@ putclose log;
                       class="nav-link scrollto save-space"
                       href="#pivot-default-options"
                       >Pivot Compare Mode: Default Options</a
+                    >
+                  </nav>
+                  <a
+                    class="nav-link scrollto"
+                    style="margin-bottom: 0"
+                    href="#ai-assistant-config"
+                    >AI Assistant</a
+                  >
+                  <nav class="doc-sub-menu nav flex-column">
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#ai-assistant-enable"
+                      >Enable AI Assistant</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#ai-assistant-domain-context"
+                      >Domain Context</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#ai-assistant-instructions"
+                      >General Instructions</a
                     >
                   </nav>
                 </nav>
