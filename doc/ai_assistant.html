@@ -377,18 +377,50 @@
                   <div class="section-block">
                     <p>
                       The AI Assistant does not receive a dump of our scenario
-                      data up front. Instead, it is given a description of the
-                      scenario database's structure - which symbols exist,
-                      their columns and types, and which scenarios are
-                      currently loaded - and a single tool it can call:
-                      <span class="code">queryScenarioDatabase</span>. When we
-                      ask a question, the model decides which symbols it needs,
-                      calls the tool with a scoped query (a symbol, optionally
-                      filtered, grouped, or aggregated), reads the result, and
-                      either answers or queries again. This keeps requests
-                      small and cheap, and means the assistant only ever sees
-                      the specific slices of data it asked for, not the
-                      scenario as a whole.
+                      data up front. Its system prompt is built from a fixed
+                      set of context, plus a tool to query MIRO's scenario
+                      database on demand:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>The data contract</b> - all MIRO input and output
+                        symbols with their aliases, and each symbol's columns
+                        with their aliases and types. Where a symbol is
+                        configured as an input widget, its widget configuration
+                        is included too - e.g. a slider's minimum/maximum, a
+                        dropdown's choices, tooltips and labels.
+                      </li>
+                      <li>
+                        <b>Which scenarios are currently loaded</b> - names and
+                        tags.
+                      </li>
+                      <li>
+                        <b>Domain context</b> - by default, our app's full
+                        README. If the
+                        <a
+                          href="configuration_general.html#ai-assistant-domain-context"
+                          >Domain Context</a
+                        >
+                        setting has been customized instead, that text is used,
+                        with the README still available via the
+                        <span class="code">[[README]]</span> placeholder.
+                      </li>
+                      <li>
+                        <b>General instructions</b> - whatever is configured
+                        under
+                        <a
+                          href="configuration_general.html#ai-assistant-instructions"
+                          >General Instructions</a
+                        >, if anything.
+                      </li>
+                    </ul>
+                    <p>
+                      When we ask a question, the model decides which symbols
+                      it needs, queries the database with a scoped request (a
+                      symbol, optionally filtered, grouped, or aggregated),
+                      reads the result, and either answers or queries again -
+                      so it only ever sees the specific slices of data it asked
+                      for, not the scenario as a whole.
                     </p>
                     <p>
                       Every query is checked against the scenarios we currently
@@ -438,7 +470,11 @@
                       We describe the visualization or behavior we want, and
                       the assistant proposes R code that we can review. If the
                       proposed changes are suitable, they can be inserted into
-                      the editor using the <i>Apply Code</i> button.
+                      the editor using the <i>Apply Code</i> button. Its
+                      context here is different from the main chat: it sees the
+                      data contract of our app, plus the renderer's current UI
+                      and server code, so it can build on what is already there
+                      rather than start from scratch.
                     </p>
                     <p>To open the editor:</p>
                     <ol>
