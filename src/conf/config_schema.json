@@ -3093,6 +3093,19 @@
         "minLength": 1
       }
     },
+    "hiddenCompareSymbols": {
+      "description": "Specify input and/or output symbol names that will not be displayed as a tab in the split, tab and pivot scenario comparison modes. Unlike hiddenOutputSymbols/hiddenOutputScalars, symbols listed here are still shown normally outside of scenario comparison mode.",
+      "type": [
+        "array",
+        "string"
+      ],
+      "minLength": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "saveTraceFile": {
       "description": "Boolean which specifies whether trace file should be saved",
       "type": "boolean",

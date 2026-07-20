@@ -1403,6 +1403,28 @@ font-size: 12px;
                     ),
                     tags$div(class = "space"),
                     tags$div(
+                      class = "option-wrapper info-position",
+                      selectInput("general_hiddenCompareSymbols",
+                        tags$div(
+                          lang$adminMode$general$hiddenCompareSymbols$label,
+                          tags$a("",
+                            title = lang$adminMode$general$ui$tooltipDocs,
+                            class = "info-wrapper",
+                            href = "https://gams.com/miro/configuration_general.html#hidden-compare-symbols",
+                            tags$span(
+                              class = "fas fa-circle-info", class = "info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        choices = c(inputSymMultiDimChoices, outputSymMultiDimChoices),
+                        selected = configJSON$hiddenCompareSymbols[configJSON$hiddenCompareSymbols %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices)],
+                        multiple = TRUE
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
                       class = "option-wrapper",
                       tags$h4(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
                       tags$div(lang$adminMode$general$ui$descriptionPivotcompare),

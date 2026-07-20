@@ -4848,6 +4848,17 @@
               },
               "minProperties": 1
             },
+            "hiddenCompareSymbols": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "mirologfile": {
               "type": "object",
               "additionalProperties": false,
@@ -5209,7 +5220,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 40
+          "minProperties": 41
         },
         "tables": {
           "type": "object",

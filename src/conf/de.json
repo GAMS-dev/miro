@@ -1246,6 +1246,9 @@
       "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
       },
+      "hiddenCompareSymbols":{
+        "label": "Input-/Output-Symbole, die im Split-, Tab- und Pivot-Szenarienvergleich nicht als Tab angezeigt werden sollen. Diese Symbole werden außerhalb des Szenarienvergleichs weiterhin normal angezeigt."
+      },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
         "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer.",

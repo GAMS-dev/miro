@@ -54,6 +54,15 @@ getScenTabData <- function(sheetName) {
 generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotCompare = FALSE, maxTabsExpanded = NULL) {
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
+  getCompareSheetName <- function(sheetId, isOutputGroup) {
+    if (isOutputGroup) {
+      names(modelOut)[sheetId]
+    } else if (identical(sheetId, 0L)) {
+      scalarsFileName
+    } else {
+      names(modelIn)[sheetId]
+    }
+  }
   scenTabContent <- lapply(
     seq_len(length(outputTabs) + length(scenInputTabs)),
     function(groupId) {
@@ -69,7 +78,14 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
         tooltip <- lang$nav$scen$tooltips$outputSheet
         isOutputGroup <- TRUE
       }
-      content <- lapply(tabSheetIds, function(sheetId) {
+      visibleSheetIds <- tabSheetIds[!vapply(tabSheetIds, function(sheetId) {
+        getCompareSheetName(sheetId, isOutputGroup) %in% config[["hiddenCompareSymbols"]]
+      }, logical(1L))]
+      if (!length(visibleSheetIds)) {
+        # every symbol in this tab group is hidden in comparison mode
+        return(NULL)
+      }
+      content <- lapply(visibleSheetIds, function(sheetId) {
         if (isOutputGroup) {
           sheetName <- names(modelOut)[sheetId]
           graphConfig <- configGraphsOut[[sheetId]]
@@ -123,7 +139,7 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
             tags$div(class = "space")
           ))
         }
-        if (length(tabSheetIds) > 1L) {
+        if (length(visibleSheetIds) > 1L) {
           return(column(
             width = 6L,
             tabContent
@@ -153,7 +169,7 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
         } else {
           tagList(
             tags$div(class = "space"),
-            if (length(tabSheetIds) > 1L) {
+            if (length(visibleSheetIds) > 1L) {
               fluidRow(content)
             } else {
               content
@@ -164,6 +180,12 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
       ))
     }
   )
+  # tab groups that were entirely hidden in comparison mode returned NULL above
+  survivedOutputGroups <- sum(!vapply(
+    scenTabContent[seq_len(length(outputTabs))],
+    is.null, logical(1L)
+  ))
+  scenTabContent <- Filter(Negate(is.null), scenTabContent)
   if (!pivotCompare && length(config$scripts$base)) {
     scenTabContent <- c(
       scenTabContent,
@@ -192,7 +214,7 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
     )
   }
   scenTabset <- MIROtabBox(
-    id = paste0("contentScen_", scenId), noTabsGrouped = length(outputTabs),
+    id = paste0("contentScen_", scenId), noTabsGrouped = survivedOutputGroups,
     btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
     scenTabContent,
     maxTabsExpanded = if (is.null(maxTabsExpanded)) 5L else maxTabsExpanded

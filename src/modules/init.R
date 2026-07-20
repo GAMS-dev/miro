@@ -1923,6 +1923,17 @@ if (is.null(errMsg)) {
       ), sep = "\n")
     }
   }
+  if (!LAUNCHCONFIGMODE && length(config[["hiddenCompareSymbols"]])) {
+    invalidHiddenCompareSymbols <- match(config[["hiddenCompareSymbols"]], c(names(modelOut), names(modelIn)))
+    if (any(is.na(invalidHiddenCompareSymbols))) {
+      errMsg <- paste(errMsg, sprintf(
+        "The symbols: '%s' you want to be hidden in scenario comparison mode do not exist!",
+        paste0(config[["hiddenCompareSymbols"]][is.na(invalidHiddenCompareSymbols)],
+          collapse = ", "
+        )
+      ), sep = "\n")
+    }
+  }
   modelOutToDisplay <- vapply(seq_along(modelOut), function(i) {
     headers <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers <- lapply(modelOut[[i]]$headers, function(header) {
