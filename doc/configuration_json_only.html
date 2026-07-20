@@ -2313,6 +2313,89 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   <!--//section-block-->
                 </section>
                 <!--//doc-section-->
+                <section id="pivot-truncation" class="doc-section">
+                  <h2 class="section-title">
+                    MIRO Pivot: Truncation Thresholds
+                  </h2>
+                  <div class="section-block">
+                    <p>
+                      To keep the browser responsive,
+                      <a href="./charts.html#pivot-chart">MIRO Pivot</a>
+                      truncates the data it plots or displays once it grows
+                      beyond a threshold, showing a warning instead of silently
+                      dropping data. These thresholds are global (they apply to
+                      every MIRO Pivot instance in the app - output renderer,
+                      input widget, and pivot compare mode alike) and can only
+                      be set via JSON, not in Configuration Mode:
+                    </p>
+                    <div class="code-block">
+                      <pre><code class="language-json">{
+  &#x22;pivotTruncation&#x22;: {
+    &#x22;maxCategories&#x22;: 500,
+    &#x22;maxTimeseriesPoints&#x22;: 20000,
+    &#x22;maxPieSlices&#x22;: 40,
+    &#x22;maxSeries&#x22;: 40,
+    &#x22;maxTableColumns&#x22;: 300
+  }
+}</code></pre>
+                    </div>
+                    <!--//code-block-->
+                    <p>
+                      You can set any subset of these; unset ones keep their
+                      default:
+                    </p>
+                    <ul>
+                      <li>
+                        <span class="code">maxCategories</span> (default:
+                        <span class="code">500</span>) - the maximum number of
+                        categories (data points along the axis) a line,
+                        scatter, area, bar, radar or similar chart can plot.
+                      </li>
+                      <li>
+                        <span class="code">maxTimeseriesPoints</span>
+                        (default: <span class="code">20000</span>) - the same
+                        limit, but for the timeseries chart type, which is
+                        built to handle much larger series.
+                      </li>
+                      <li>
+                        <span class="code">maxPieSlices</span> (default:
+                        <span class="code">40</span>) - the maximum number of
+                        slices a pie or doughnut chart can plot.
+                      </li>
+                      <li>
+                        <span class="code">maxSeries</span> (default:
+                        <span class="code">40</span>) - the maximum number of
+                        data series a chart can display.
+                      </li>
+                      <li>
+                        <span class="code">maxTableColumns</span> (default:
+                        <span class="code">300</span>) - the maximum number of
+                        columns the table/heatmap renderer can display.
+                      </li>
+                    </ul>
+                    <div class="callout-block callout-warning">
+                      <div class="icon-holder">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+                      <!--//icon-holder-->
+                      <div class="content">
+                        <b class="callout-title">Warning:</b>
+                        <p>
+                          Raising these limits can significantly impact
+                          performance and may cause the app to become
+                          unresponsive, especially on less powerful client
+                          devices. Only increase them if you have confirmed
+                          that your users' browsers can handle the additional
+                          load.
+                        </p>
+                      </div>
+                      <!--//content-->
+                    </div>
+                    <!--//callout-block-->
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
               </div>
               <!--//content-inner-->
             </div>
@@ -2348,6 +2431,9 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                   >
                   <a class="nav-link scrollto" href="#hcube-widget-groups"
                     >Hypercube module: Widget groups</a
+                  >
+                  <a class="nav-link scrollto" href="#pivot-truncation"
+                    >MIRO Pivot: Truncation thresholds</a
                   >
                 </nav>
                 <!--//doc-menu-->

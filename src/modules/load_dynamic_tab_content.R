@@ -132,6 +132,7 @@ getPivotCompGraphConfig <- function(sheetName) {
   graphConfig$options$customChartColors <- config$pivotCompSettings$customChartColors
   graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   graphConfig$options$chartFontSize <- config$pivotCompSettings$chartFontSize
+  graphConfig$options$pivotTruncation <- config$pivotTruncation
   return(graphConfig)
 }
 loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {

@@ -11,7 +11,10 @@ source("../../components/scenario_extensions.R")
 source("../../components/views.R")
 source("../../modules/renderers/miro-pivot.R")
 
-lang <<- list()
+lang <<- list(renderers = list(miroPivot = list(
+  rowTruncationWarning = "Data was truncated to the first %s rows.",
+  colTruncationWarning = "Data was truncated to the first %s columns."
+)))
 
 testData <- tibble(
   a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq_len(10)),
@@ -544,6 +547,120 @@ test_that("MIRO pivot compare metrics work", {
       ),
       options = list(
         enablePersistentViews = FALSE,
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxCategories truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "bar")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 3L)
+    },
+    args = list(
+      data = tibble(cat = paste0("cat", 1:5), value = 1:5),
+      options = list(
+        pivotTruncation = list(maxCategories = 3L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxTimeseriesPoints truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "t", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "timeseries")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 4L)
+    },
+    args = list(
+      data = tibble(t = as.character(1:10), value = 1:10),
+      options = list(
+        pivotTruncation = list(maxTimeseriesPoints = 4L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxPieSlices truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "pie")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 2L)
+    },
+    args = list(
+      data = tibble(cat = paste0("cat", 1:5), value = 1:5),
+      options = list(
+        pivotTruncation = list(maxPieSlices = 2L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxSeries truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = "ser",
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "bar")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$datasets, 2L)
+    },
+    args = list(
+      data = tibble(
+        cat = rep(paste0("cat", 1:3), 5),
+        ser = rep(paste0("ser", 1:5), each = 3),
+        value = 1:15
+      ),
+      options = list(
+        pivotTruncation = list(maxSeries = 2L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxTableColumns truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = "ser",
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "table")
+      parsedTable <- fromJSON(output$pivotTable, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      # 1 row-header column ("cat") + 2 remaining series columns after truncation
+      expect_identical(stri_count_fixed(parsedTable$x$container, "<th>"), 3L)
+    },
+    args = list(
+      data = tibble(
+        cat = rep(paste0("cat", 1:3), 5),
+        ser = rep(paste0("ser", 1:5), each = 3),
+        value = 1:15
+      ),
+      options = list(
+        pivotTruncation = list(maxTableColumns = 3L),
         "_metadata_" = list(symtype = "parameter")
       )
     )

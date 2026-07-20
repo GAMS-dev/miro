@@ -643,7 +643,8 @@ if (is.null(errMsg)) {
                 symname = el,
                 headers = modelIn[[i]]$headers,
                 symtype = modelIn[[i]]$symtype
-              )
+              ),
+              pivotTruncation = config$pivotTruncation
             )
           )
           validGraphConfig <- validateGraphConfig(modelIn[[i]], skipOutTypeCheck = TRUE)
@@ -2317,6 +2318,7 @@ if (is.null(errMsg)) {
             configGraphsOut[[i]]$graph <- configGraphsOut[[i]]
             configGraphsOut[[i]]$graph$outType <- NULL
           } else if (identical(configGraphsOut[[i]]$outType, "miroPivot")) {
+            configGraphsOut[[i]]$options$pivotTruncation <- config$pivotTruncation
             validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
@@ -2406,6 +2408,7 @@ if (is.null(errMsg)) {
       )
 
       if (identical(configGraphsIn[[i]]$outType, "miroPivot")) {
+        configGraphsIn[[i]]$options$pivotTruncation <- config$pivotTruncation
         validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
         if (!identical(validGraphConfig, TRUE)) {
           errMsgTmp <- paste0(

@@ -722,6 +722,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       isScalarTable <- FALSE
       resetFilters <- isTRUE(options$resetOnInit)
 
+      pivotTruncation <- modifyList(
+        list(
+          maxCategories = 500L,
+          maxTimeseriesPoints = 20000L,
+          maxPieSlices = 40L,
+          maxSeries = 40L,
+          maxTableColumns = 300L
+        ),
+        if (length(options$pivotTruncation)) options$pivotTruncation else list()
+      )
+
       SERIES_DEFAULT_COLOR <- "#666"
 
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
@@ -3127,27 +3138,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         noSeries <- length(dataTmp) - rowHeaderLen
         noError <- TRUE
         if (identical(pivotRenderer, "timeseries")) {
-          if (nrow(dataTmp) > 2e4) {
-            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "20 000"))
-            dataTmp <- slice(dataTmp, 1:20000L)
+          if (nrow(dataTmp) > pivotTruncation$maxTimeseriesPoints) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxTimeseriesPoints, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxTimeseriesPoints))
             noError <- FALSE
           }
           dataTmp <- dataTmp[stri_order(dataTmp[[1]], numeric = TRUE), ]
         } else if (pivotRenderer %in% c("pie", "doughnut")) {
-          if (nrow(dataTmp) > 40L) {
-            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "40"))
-            dataTmp <- slice(dataTmp, 1:40L)
+          if (nrow(dataTmp) > pivotTruncation$maxPieSlices) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxPieSlices, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxPieSlices))
             noError <- FALSE
           }
         } else {
-          if (nrow(dataTmp) > 500L) {
-            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
-            dataTmp <- slice(dataTmp, 1:500L)
+          if (nrow(dataTmp) > pivotTruncation$maxCategories) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxCategories, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxCategories))
             noError <- FALSE
           }
         }
-        if (noSeries > 40L) {
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "40"))
+        if (noSeries > pivotTruncation$maxSeries) {
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, format(pivotTruncation$maxSeries, big.mark = " ", scientific = FALSE)))
           noError <- FALSE
         }
         setCssEl(
@@ -3206,7 +3217,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(
             noSeries + rowHeaderLen,
-            40L + rowHeaderLen
+            pivotTruncation$maxSeries + rowHeaderLen
           ))]
         }
 
@@ -3447,7 +3458,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           groupElements <- unique(data[[currentView$chartOptions$groupDimension]])
         }
 
-        for (i in seq_len(min(noSeries, 40L))) {
+        for (i in seq_len(min(noSeries, pivotTruncation$maxSeries))) {
           label <- names(dataTmp)[rowHeaderLen + i]
           scaleID <- NULL
           if (length(currentView$chartOptions$y2axis$series)) {
@@ -3713,9 +3724,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               paste0("rgb(255,", ., ",", ., ")")
             }
         }
-        if (length(dataTmp) > 300) {
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
-          dataTmp <- dataTmp[, 1:300]
+        if (length(dataTmp) > pivotTruncation$maxTableColumns) {
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, format(pivotTruncation$maxTableColumns, big.mark = " ", scientific = FALSE)))
+          dataTmp <- dataTmp[, seq_len(pivotTruncation$maxTableColumns)]
         } else {
           hideEl(session, paste0("#", ns("errMsg")))
         }

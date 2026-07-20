@@ -3589,6 +3589,43 @@
       "maximum": 6,
       "default": 2
     },
+    "pivotTruncation": {
+      "description": "Thresholds at which MIRO Pivot truncates data before rendering, to keep the browser responsive. Can only be set via JSON, not in Configuration Mode. Warning: raising these limits can significantly impact performance and may cause the app to become unresponsive, especially on less powerful client devices.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxCategories": {
+          "description": "Maximum number of categories (data points along the axis) a line, scatter, area, bar, radar or similar chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 500
+        },
+        "maxTimeseriesPoints": {
+          "description": "Maximum number of data points a timeseries chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 20000
+        },
+        "maxPieSlices": {
+          "description": "Maximum number of slices a pie or doughnut chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        },
+        "maxSeries": {
+          "description": "Maximum number of data series a chart can display before the series are truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        },
+        "maxTableColumns": {
+          "description": "Maximum number of columns the table/heatmap renderer can display before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 300
+        }
+      }
+    },
     "handsontable": {
       "description": "Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
       "type": "object",
