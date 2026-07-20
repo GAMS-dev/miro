@@ -13,7 +13,7 @@ JSONSorter <- R6Class("JSONSorter",
     },
     write = function(dataToWrite, filePath = NULL) {
       writeLines(
-        self$sort(toJSON(dataToWrite, auto_unbox = TRUE, null = "null")),
+        self$sort(toJSON(dataToWrite, auto_unbox = TRUE, null = "null", na = "null")),
         if (is.null(filePath)) private$filePath else filePath
       )
     }
