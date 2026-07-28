@@ -2546,7 +2546,13 @@ if (config$activateModules$aiAssistant) {
 %s
 %s
 ### RULES
-1. DATA: `data` is STATIC, not reactive—never call `data()`. With add. symbols active, `data` is a named list of tibbles (`data[['%s']]`). Column names match JSON `headers` keys exactly.
+1. DATA HANDLING:
+   - `data` is ALWAYS a static object—NEVER call `data()`.
+   - If additional symbols are ACTIVE:
+     * `data` is a named list of tibbles (`data[['<symbol>']]`).
+     * Column names match JSON `headers` keys exactly.
+   - If additional symbols are INACTIVE:
+     * `data` is a static tibble.
 2. PACKAGES: Prefer shipped: [%s]. Always namespace calls (e.g. `plotly::plot_ly()`). List any new package in `<additional_packages>`.
 3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`.
 4. NAMESPACING (CRITICAL):
@@ -2577,7 +2583,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
 }
 </server_code>",
       currentSymbol, addSymString, allSymbolsMetadataJson, currentCodeSection,
-      currentSymbol, pkgString, currentSymbol, currentSymbol, currentSymbol, currentSymbol
+      pkgString, currentSymbol, currentSymbol, currentSymbol, currentSymbol
     )
     return(sysPrompt)
   }
