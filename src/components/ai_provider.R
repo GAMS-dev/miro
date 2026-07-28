@@ -460,31 +460,26 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     apiKeys = NULL,
     allModels = list(
       OpenAI = c(
-        "GPT-5.6 (Best Overall)" = "openai/gpt-5.6",
-        "GPT-5.6 Pro (Deep Reasoning)" = "openai/gpt-5.6-pro",
-        "GPT-5.6 Terra (Balanced)" = "openai/gpt-5.6-terra",
-        "GPT-5.6 Luna (Fast & Affordable)" = "openai/gpt-5.6-luna",
-        "GPT-5.5 (Previous Flagship)" = "openai/gpt-5.5",
-        "GPT-5.5 Pro" = "openai/gpt-5.5-pro",
-        "GPT-5.4 (Affordable)" = "openai/gpt-5.4",
-        "GPT-5.4 Mini (Fast/Cheap)" = "openai/gpt-5.4-mini"
+        "GPT-5.6 Sol" = "openai/gpt-5.6-sol",
+        "GPT-5.6 Terra" = "openai/gpt-5.6-terra",
+        "GPT-5.6 Luna" = "openai/gpt-5.6-luna",
+        "GPT-5.5" = "openai/gpt-5.5",
+        "GPT-5.4 Mini" = "openai/gpt-5.4-mini"
       ),
       Anthropic = c(
-        "Claude Fable 5 (Long-horizon agents)" = "anthropic/claude-fable-5",
-        "Claude Opus 4.8 (Enterprise Coding)" = "anthropic/claude-opus-4-8",
-        "Claude Sonnet 5 (Balanced Speed/Intelligence)" = "anthropic/claude-sonnet-5",
-        "Claude Haiku 4.5 (Fast/Cheap)" = "anthropic/claude-haiku-4-5-20251001",
-        "Claude Sonnet 4.6 (Proven/Stable)" = "anthropic/claude-sonnet-4-6",
-        "Claude 3.7 Sonnet (Legacy)" = "anthropic/claude-3-7-sonnet",
-        "Claude 3.5 Sonnet (Legacy)" = "anthropic/claude-3-5-sonnet-20241022"
+        "Claude Sonnet 5" = "anthropic/claude-sonnet-5",
+        "Claude Fable 5" = "anthropic/claude-fable-5",
+        "Claude Opus 4.8" = "anthropic/claude-opus-4-8",
+        "Claude Sonnet 4.6" = "anthropic/claude-sonnet-4-6",
+        "Claude Haiku 4.5" = "anthropic/claude-haiku-4-5-20251001"
       ),
       Google = c(
-        "Gemini 3.5 Flash (Frontier Intelligence)" = "google/gemini-3.5-flash",
-        "Gemini 3.1 Pro (Preview)" = "google/gemini-3.1-pro-preview",
-        "Gemini 3.1 Flash-Lite (Fast/Volume)" = "google/gemini-3.1-flash-lite",
-        "Gemini 2.5 Pro (Proven/Stable)" = "google/gemini-2.5-pro",
-        "Gemini 2.5 Flash (High Volume/Cheap)" = "google/gemini-2.5-flash",
-        "Gemini 2.0 Flash (Legacy)" = "google/gemini-2.0-flash"
+        "Gemini 3.6 Flash"      = "google/gemini-3.6-flash",
+        "Gemini 3.5 Flash"      = "google/gemini-3.5-flash",
+        "Gemini 3.5 Flash-Lite" = "google/gemini-3.5-flash-lite",
+        "Gemini 3.1 Flash-Lite" = "google/gemini-3.1-flash-lite",
+        "Gemini 2.5 Pro"        = "google/gemini-2.5-pro",
+        "Gemini 2.5 Flash"      = "google/gemini-2.5-flash"
       )
     ),
     debugFile = NULL,
