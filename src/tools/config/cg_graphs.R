@@ -3086,6 +3086,11 @@ observeEvent(input$gams_symbols, {
     hideEl(session, "#deleteGraph")
   }
 })
+if (config$activateModules$aiAssistant) {
+  observeEvent(input$miroSidebar, {
+    session$sendCustomMessage("gms-closeAiDrawer", 1)
+  })
+}
 observeEvent(
   {
     input$chart_tool
@@ -3130,6 +3135,7 @@ observeEvent(
     }
     removeClassEl(session, ".category-btn", "category-btn-active")
     hideEl(session, ".category-btn")
+    session$sendCustomMessage("gms-closeAiDrawer", 1)
     ydataTmp <- currentGraphConfig[["ydata"]]
     axisOptionsGlobal <<- list(y = 1, y2 = 0)
     if (identical(chartTool, "pie")) {

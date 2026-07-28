@@ -2,6 +2,7 @@ import 'core-js/stable';
 import InputArrayFactory from './input_array';
 import { debounce, colorPickerBinding } from './util';
 import { parseKatex } from './miro';
+import { closeMiroAiDrawer } from './ai_assistant';
 
 export {
   confirmModalShow, slideToggleEl, resetDropdownFilter,
@@ -671,6 +672,10 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-setInputValue', (data) => {
     $(data.id).val(data.value).change();
+  });
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-closeAiDrawer', (data) => {
+    closeMiroAiDrawer();
   });
   $(document).on('input', '.miro-dynamic-input-id', debounce(function () {
     Shiny.setInputValue(
