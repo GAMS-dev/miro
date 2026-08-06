@@ -1924,7 +1924,7 @@ if (is.null(errMsg)) {
     }
   }
   if (!LAUNCHCONFIGMODE && length(config[["hiddenCompareSymbols"]])) {
-    invalidHiddenCompareSymbols <- match(config[["hiddenCompareSymbols"]], c(names(modelOut), names(modelIn)))
+    invalidHiddenCompareSymbols <- match(config[["hiddenCompareSymbols"]], c(names(modelOut), names(modelIn), scalarsFileName))
     if (any(is.na(invalidHiddenCompareSymbols))) {
       errMsg <- paste(errMsg, sprintf(
         "The symbols: '%s' you want to be hidden in scenario comparison mode do not exist!",

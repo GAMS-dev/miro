@@ -1418,8 +1418,8 @@ font-size: 12px;
                             ), target = "_blank"
                           )
                         ),
-                        choices = c(inputSymMultiDimChoices, outputSymMultiDimChoices),
-                        selected = configJSON$hiddenCompareSymbols[configJSON$hiddenCompareSymbols %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices)],
+                        choices = vctrs::vec_unique(c(inputSymMultiDimChoices, setNames(scalarsFileName, paste(scalarsFileName, lang$nav$scalarAliases$scalars, sep = ": ")), outputSymMultiDimChoices)),
+                        selected = configJSON$hiddenCompareSymbols[configJSON$hiddenCompareSymbols %in% c(inputSymMultiDimChoices, scalarsFileName, outputSymMultiDimChoices)],
                         multiple = TRUE
                       )
                     ),
