@@ -81,6 +81,6 @@ expect_equal(app$get_js("$('#contentScen_2 a:contains(\"distance\")').length"), 
 app$stop()
 
 # clean up: restore defaults so later tests in this run see the default config
-# configJSON[["hiddenCompareSymbols"]] <- NULL
-# configJSON[["outputGroups"]] <- NULL
-# writeConfig()
+configJSON[["hiddenCompareSymbols"]] <- NULL
+configJSON[["outputGroups"]] <- NULL
+writeConfig()
