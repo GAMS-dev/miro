@@ -69,7 +69,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
           lapply(seq_along(options$traces), function(j) {
             if (j == 1) {
               p <<- plot_ly(
-                height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                height = options$fixedHeight,
                 width = options$fixedWidth
               ) %>%
                 add_pie(
@@ -114,7 +114,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
             }
             if (j == 1) {
               p <<- plot_ly(dataTmp,
-                height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                height = options$fixedHeight,
                 width = options$fixedWidth
               ) %>%
                 add_trace(
@@ -176,7 +176,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
                 },
                 colors = options$colors, symbols = options$symbols,
                 size = options$ydata[[1]]$size, type = "scatter",
-                height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                height = options$fixedHeight,
                 width = options$fixedWidth,
                 frame = if (!is.null(options$ydata[[1]]$frame)) {
                   try(dataTmp[[options$ydata[[1]]$frame]])
@@ -294,7 +294,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
                 },
                 colors = options$colors, symbols = options$symbols,
                 size = options$ydata[[1]]$size, type = "scatter",
-                height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                height = options$fixedHeight,
                 width = options$fixedWidth,
                 frame = if (!is.null(options$ydata[[1]]$frame)) {
                   try(dataTmp[[options$ydata[[1]]$frame]])
@@ -383,7 +383,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
               if (j == 1) {
                 p <<- plot_ly(dataTmp,
                   type = "histogram", histnorm = options$histnorm,
-                  height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                  height = options$fixedHeight,
                   width = options$fixedWidth,
                   nbinsy = options$nbins,
                   color = if (!is.null(options$color)) {
@@ -417,7 +417,7 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
               if (j == 1) {
                 p <<- plot_ly(dataTmp,
                   type = "histogram", histnorm = options$histnorm,
-                  height = if (!is.null(options$fixedHeight)) options$fixedHeight else height,
+                  height = options$fixedHeight,
                   width = options$fixedWidth,
                   nbinsx = options$nbins,
                   color = if (!is.null(options$color)) {
