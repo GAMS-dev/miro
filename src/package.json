@@ -42,7 +42,7 @@
     "remove-files-webpack-plugin": "^1.5.0",
     "style-loader": "^4.0.0",
     "uglify-js": "^3.19.3",
-    "webpack": "^5.101.3",
+    "webpack": "^5.109.1",
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
