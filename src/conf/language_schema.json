@@ -5235,7 +5235,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 41
+          "minProperties": 42
         },
         "tables": {
           "type": "object",
