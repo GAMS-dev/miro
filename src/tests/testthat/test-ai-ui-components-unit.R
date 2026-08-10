@@ -90,3 +90,34 @@ test_that("renderAiChatBubble does not set data-raw-html for user messages", {
   # commonmark/KaTeX delimiter preservation at all.
   expect_match(bubble, "\\[ 1 + 1 \\]", fixed = TRUE)
 })
+
+test_that("renderAiChatBubble never emits untrusted assistant text as live markup (stored XSS guard)", {
+  # Regression test for 01efd6faa "Fix potential stored XSS": a scenario
+  # named `<img src=x onerror=alert(1)>` and echoed back by the AI is valid
+  # CommonMark input, and commonmark passes raw HTML through unchanged. The
+  # only thing standing between that and script execution is that this
+  # markup must never reach the DOM as live tag children -- it is kept inert
+  # inside the `data-raw-html` attribute (htmltools entity-encodes attribute
+  # values), and the client only ever turns it into real DOM after running it
+  # through DOMPurify (see ai_assistant.js::hydrateAiMessageContent).
+  msg <- list(role = "model", text = "Sandbox scenario: <img src=x onerror=alert(1)>")
+  bubble <- as.character(renderAiChatBubble(msg, mockLang))
+
+  rawHtmlAttr <- regmatches(bubble, regexpr('data-raw-html="[^"]*"', bubble))
+  expect_length(rawHtmlAttr, 1)
+  expect_match(rawHtmlAttr, "&lt;img", fixed = TRUE)
+
+  # the literal, executable tag must not appear anywhere in the server-
+  # rendered markup, i.e. it was never emitted as live tag content
+  expect_false(grepl("<img", bubble, fixed = TRUE))
+})
+
+test_that("renderAiChatBubble never emits a raw <script> tag echoed by the AI as live markup", {
+  msg <- list(role = "model", text = "<script>alert(document.cookie)</script>")
+  bubble <- as.character(renderAiChatBubble(msg, mockLang))
+
+  rawHtmlAttr <- regmatches(bubble, regexpr('data-raw-html="[^"]*"', bubble))
+  expect_length(rawHtmlAttr, 1)
+  expect_false(grepl("<script", rawHtmlAttr, fixed = TRUE))
+  expect_false(grepl("<script", bubble, fixed = TRUE))
+})
