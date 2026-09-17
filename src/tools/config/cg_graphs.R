@@ -14,10 +14,13 @@ customRendererEvalEnv$observe <- function(x, ...) {
       tryCatch(
         eval(x, env),
         error = function(e) {
-          rendererPreviewConsoleRV$render <- isolate(appendPreviewConsoleMsg(
-            rendererPreviewConsoleRV$render,
-            sprintf(lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e))
-          ))
+          # kept in its own slot (rather than appended to $render) so that an observer
+          # that errors on every reactive change replaces its message instead of
+          # growing the console without bound, and so that it doesn't clobber the
+          # console output captured while the render function ran
+          rendererPreviewConsoleRV$observer <- sprintf(
+            lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e)
+          )
         }
       )
     },
@@ -3580,8 +3583,7 @@ observeEvent(
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
       invalidCustomRender <<- FALSE
-      rendererPreviewConsoleRV$output <- ""
-      rendererPreviewConsoleRV$render <- ""
+      clearRendererPreviewConsole()
       insertUI(
         selector = "#tool_options",
         tagList(
@@ -4284,7 +4286,7 @@ getDygraphsOptions <- reactive({
   indices <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   if (!length(scalarIndices)) {
-    rendererPreviewConsoleRV$output <- ""
+    clearRendererPreviewConsole()
     rendererPreviewConsoleRV$render <- lang$adminMode$graphs$dygraphsOptions$previewError
     return()
   }
@@ -5142,9 +5144,19 @@ output$customRenderBoilerplate <- renderText({
     " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){"
   )
 })
-rendererPreviewConsoleRV <- reactiveValues(output = "", render = "")
+rendererPreviewConsoleRV <- reactiveValues(output = "", render = "", observer = "")
+clearRendererPreviewConsole <- function() {
+  rendererPreviewConsoleRV$output <- ""
+  rendererPreviewConsoleRV$render <- ""
+  rendererPreviewConsoleRV$observer <- ""
+  return(invisible(NULL))
+}
 observe({
-  consoleText <- paste(c(rendererPreviewConsoleRV$output, rendererPreviewConsoleRV$render), collapse = "\n")
+  # empty slots are skipped so a missing part doesn't show up as a blank line
+  consoleText <- appendPreviewConsoleMsg(
+    c(rendererPreviewConsoleRV$output, rendererPreviewConsoleRV$render),
+    rendererPreviewConsoleRV$observer
+  )
   if (nchar(trimws(consoleText))) {
     setTextContent(session, "#renderer-preview-console", trimws(consoleText, which = "left"))
     showEl(session, "#renderer-preview-console")
@@ -5154,8 +5166,7 @@ observe({
 })
 observeEvent(input$btUpdateCustomRendererOutput,
   {
-    rendererPreviewConsoleRV$output <- ""
-    rendererPreviewConsoleRV$render <- ""
+    clearRendererPreviewConsole()
   },
   priority = 1000
 )
@@ -5191,6 +5202,12 @@ output[["preview_custom_renderer"]] <- renderUI({
       captured$result
     },
     error = function(e) {
+      if (isSilentError(e)) {
+        # req()/validate() in the user's Output function: hand it back to Shiny so the
+        # output stays empty resp. shows the validation message, rather than reporting
+        # it (with an empty message, in the req() case) as an error
+        stop(e)
+      }
       errMsg <- sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
       rendererPreviewConsoleRV$output <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$output, errMsg))
       NULL
@@ -5462,8 +5479,7 @@ observe(
           hideEl(session, "#preview-content-custom")
         }
         if (!identical(isolate(rv$graphConfig$graph$tool), "custom")) {
-          rendererPreviewConsoleRV$output <- ""
-          rendererPreviewConsoleRV$render <- ""
+          clearRendererPreviewConsole()
         }
       },
       error = function(e) {
@@ -5478,7 +5494,7 @@ observe(
         if (identical(isolate(rv$graphConfig$graph$tool), "custom")) {
           rendererPreviewConsoleRV$render <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$render, errMsg))
         } else {
-          rendererPreviewConsoleRV$output <- ""
+          clearRendererPreviewConsole()
           rendererPreviewConsoleRV$render <- errMsg
         }
       }
