@@ -2525,7 +2525,7 @@ if (config$activateModules$aiAssistant) {
     }
     return(renderAiChatBubble(msg, lang))
   }
-  compileRendererSystemPrompt <- function(currentSymbol, currentAdditionalSymbols, allSymbolsMetadataJson, shippedPackagesVector, currentUiCode = NULL, currentServerCode = NULL) {
+  compileRendererSystemPrompt <- function(currentSymbol, currentAdditionalSymbols, allSymbolsMetadataJson, shippedPackagesVector, isInputSymbol = FALSE, currentUiCode = NULL, currentServerCode = NULL) {
     pkgString <- paste(shippedPackagesVector, collapse = ", ")
     addSymString <- paste(currentAdditionalSymbols, collapse = ", ")
     currentCodeSection <- ""
@@ -2535,26 +2535,44 @@ if (config$activateModules$aiAssistant) {
         currentUiCode, currentServerCode
       )
     }
+    # additional symbols are not supported at all for input-symbol renderers (there's no
+    # UI to even select them in that case - see the customAdditionalData selectizeInput,
+    # only rendered for output symbols)
+    contextSymbolsLine <- if (isInputSymbol) "" else sprintf("- Additional Symbols Selected: [%s]\n", addSymString)
+    dataHandlingRule <- if (isInputSymbol) {
+      "1. DATA HANDLING: `data` is ALWAYS a static tibble—NEVER call `data()`. Additional symbols are NOT supported for input-symbol renderers; ignore `<additional_symbols>` entirely."
+    } else {
+      "1. DATA HANDLING:
+   - `data` is ALWAYS a static object—NEVER call `data()`.
+   - If additional symbols are ACTIVE:
+     * `data` is a named list of tibbles (`data[['<symbol>']]`).
+     * Column names match JSON `headers` keys exactly.
+   - If additional symbols are INACTIVE:
+     * `data` is a static tibble."
+    }
+    addSymRule <- if (isInputSymbol) {
+      "3. ADD. SYMBOLS: not supported for this symbol - leave `<additional_symbols>` empty."
+    } else {
+      "3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`."
+    }
+    robustnessRule <- if (isInputSymbol) {
+      "7. ROBUSTNESS: handle empty data early - check `data` for zero rows and `return(NULL)`."
+    } else {
+      "7. ROBUSTNESS: handle empty data early - check the primary tibble (`data`, or `data[[1]]` when additional symbols are active) for zero rows and `return(NULL)`."
+    }
 
     sysPrompt <- sprintf(
       "You are a GAMS MIRO Shiny developer writing custom renderer modules (UI & Server) to visualize optimization data.
 
 ### CONTEXT
 - Target Symbol: '%s'
-- Additional Symbols Selected: [%s]
-- Database Schema:
+%s- Database Schema:
 %s
 %s
 ### RULES
-1. DATA HANDLING:
-   - `data` is ALWAYS a static object—NEVER call `data()`.
-   - If additional symbols are ACTIVE:
-     * `data` is a named list of tibbles (`data[['<symbol>']]`).
-     * Column names match JSON `headers` keys exactly.
-   - If additional symbols are INACTIVE:
-     * `data` is a static tibble.
+%s
 2. PACKAGES: Prefer shipped: [%s]. Always namespace calls (e.g. `plotly::plot_ly()`). List any new package in `<additional_packages>`.
-3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`.
+%s
 4. NAMESPACING (CRITICAL):
    - UI: define `ns <- shiny::NS(id)`; wrap every element ID in `ns()` (e.g. `plotlyOutput(ns('myChart'))`).
    - SERVER: do NOT define `ns` unless needed for Rule 8. NEVER use `ns()` on `input`/`output`—session handles it. Use `output[['myChart']] <- ...` (WRONG: `output[[ns('myChart')]] <- ...`).
@@ -2562,7 +2580,7 @@ if (config$activateModules$aiAssistant) {
 6. SIGNATURES (exact):
    - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
    - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
-7. ROBUSTNESS: handle empty data early - check the primary tibble (`data`, or `data[[1]]` when additional symbols are active) for zero rows and `return(NULL)`.
+%s
 8. OBSERVERS & CLEANUP: Every `observe()`/`observeEvent()` MUST be assigned to `rendererEnv`, keyed via `ns()`, to prevent leaks on re-render. Example: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. No floating observers.
 
 ### OUTPUT FORMAT
@@ -2582,8 +2600,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   # Assign observers to rendererEnv via ns()
 }
 </server_code>",
-      currentSymbol, addSymString, allSymbolsMetadataJson, currentCodeSection,
-      pkgString, currentSymbol, currentSymbol, currentSymbol, currentSymbol
+      currentSymbol, contextSymbolsLine, allSymbolsMetadataJson, currentCodeSection,
+      dataHandlingRule, pkgString, addSymRule, currentSymbol, currentSymbol, robustnessRule, currentSymbol, currentSymbol
     )
     return(sysPrompt)
   }
@@ -2666,7 +2684,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     )
     sysPrompt <- compileRendererSystemPrompt(
       activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
-      customUICode, customRendererCode
+      activeSymbol$isInput, customUICode, customRendererCode
     )
     modelInput <- userText
     if (length(aiAssistantState$activeSymbolName) &&
@@ -2792,10 +2810,12 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     }
     reqPackages <- parse_csv(extract_tag(aiText, "additional_packages"))
     reqPackages <- reqPackages[!reqPackages %in% aiAssistantState$shippedPackagesVector]
-    reqSymbols <- parse_csv(extract_tag(aiText, "additional_symbols"))
-    reqSymbols <- reqSymbols[
-      reqSymbols %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices[-(activeSymbol$id - length(modelIn))])
-    ]
+    reqSymbols <- if (activeSymbol$isInput) {
+      character(0)
+    } else {
+      reqSymbolsTmp <- parse_csv(extract_tag(aiText, "additional_symbols"))
+      reqSymbolsTmp[reqSymbolsTmp %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices[-(activeSymbol$id - length(modelIn))])]
+    }
 
     uiCode <- tryCatch(
       {
