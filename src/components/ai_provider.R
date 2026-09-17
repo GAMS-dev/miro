@@ -88,6 +88,20 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
     executeHttpCall = function(payload) stop("Abstract"),
     parseApiResponse = function(rawResponse) stop("Abstract"),
     prepareNextIterationPayload = function(toolResults) stop("Abstract"),
+    # Tool arguments must reach the dispatcher in one shape, no matter which provider
+    # produced them. OpenAI sends them as a JSON string that fromJSON() simplifies,
+    # but the Anthropic and Google bodies come out of httr::content(), which parses
+    # with simplifyVector = FALSE (and has to: the raw body is replayed back to the
+    # API as chat history, so its array structure must survive). Their tool arguments
+    # would therefore arrive as deeply nested lists. Round-tripping just the arguments
+    # through jsonlite yields the simplified shape the tools expect: atomic vectors,
+    # and arrays of objects as data frames.
+    simplifyToolArguments = function(arguments) {
+      if (is.null(arguments)) {
+        return(NULL)
+      }
+      return(fromJSON(toJSON(arguments, auto_unbox = TRUE, null = "null")))
+    },
     logToDebugFile = function(title, contentData) {
       timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
       separator <- paste0(rep("=", 80), collapse = "")
@@ -167,7 +181,10 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
       for (step in resContent$steps) {
         if (!is.null(step$type) && step$type == "function_call") {
           hasToolCalls <- TRUE
-          toolCalls[[length(toolCalls) + 1]] <- list(id = step$id, name = step$name, arguments = step$arguments)
+          toolCalls[[length(toolCalls) + 1]] <- list(
+            id = step$id, name = step$name,
+            arguments = private$simplifyToolArguments(step$arguments)
+          )
         }
         if (!is.null(step$type) && step$type == "model_output") {
           finalText <- step$content[[1]]$text
@@ -404,7 +421,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
           toolCalls[[length(toolCalls) + 1]] <- list(
             id = block$id,
             name = block$name,
-            arguments = block$input
+            arguments = private$simplifyToolArguments(block$input)
           )
         } else if (block$type == "text") {
           finalText <- paste0(finalText, block$text)

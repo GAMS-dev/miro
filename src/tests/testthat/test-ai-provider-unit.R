@@ -516,3 +516,84 @@ test_that("MiroAiGoogleProvider passes tool output through as the original raw J
   expect_equal(as.character(sentOutput), as.character(rawAdapterOutput))
   expect_match(as.character(sentOutput), '"region":"NA"', fixed = TRUE)
 })
+
+test_that("MiroAiAnthropicProvider hands tool arguments to the dispatcher simplified", {
+  # Regression test: httr::content() parses the response body with
+  # simplifyVector = FALSE, so `input` arrives with every JSON array as a nested list.
+  # Passing that straight through meant the tools received scenarioNames as
+  # list("Base") and filters as a list of lists, which made queryScenarioDatabase fail
+  # with "invalid subscript type 'list'" and reject every filter -- the tool was
+  # unusable on Anthropic while working fine on OpenAI.
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(list(
+        type = "tool_use", id = "call_1", name = "getData",
+        input = list(
+          symbolName = "demand",
+          scenarioNames = list("Base", "High Demand"),
+          filters = list(list(column = "region", operator = "=", value = "EU"))
+        )
+      )),
+      stop_reason = "tool_use",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    ),
+    list(
+      content = list(list(type = "text", text = "done")),
+      stop_reason = "end_turn",
+      usage = list(input_tokens = 1, output_tokens = 1)
+    )
+  )
+
+  receivedArgs <- NULL
+  dispatcher <- list(getData = function(args) {
+    receivedArgs <<- args
+    jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE)
+  })
+
+  provider$sendMessage(
+    userInput = "query the data",
+    systemInstructions = "system",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = dispatcher
+  )
+
+  expect_identical(receivedArgs$scenarioNames, c("Base", "High Demand"))
+  expect_true(is.data.frame(receivedArgs$filters))
+  expect_identical(receivedArgs$filters$column, "region")
+  expect_identical(receivedArgs$filters$value, "EU")
+  expect_identical(receivedArgs$symbolName, "demand")
+})
+
+test_that("MiroAiGoogleProvider hands tool arguments to the dispatcher simplified", {
+  provider <- MockGoogleCapture$new("gemini-3.6-flash", "key")
+  provider$mockResponses <- list(
+    list(
+      steps = list(list(
+        type = "function_call", id = "call_1", name = "getData",
+        arguments = list(scenarioNames = list("Base"), groupByColumn = list("region", "year"))
+      )),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    ),
+    list(
+      steps = list(list(type = "model_output", content = list(list(text = "done")))),
+      usage = list(total_input_tokens = 1, total_output_tokens = 1)
+    )
+  )
+
+  receivedArgs <- NULL
+  dispatcher <- list(getData = function(args) {
+    receivedArgs <<- args
+    jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE)
+  })
+
+  provider$sendMessage(
+    userInput = "query the data",
+    systemInstructions = "system",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = dispatcher
+  )
+
+  expect_identical(receivedArgs$scenarioNames, "Base")
+  expect_identical(receivedArgs$groupByColumn, c("region", "year"))
+})
