@@ -14,10 +14,10 @@ customRendererEvalEnv$observe <- function(x, ...) {
       tryCatch(
         eval(x, env),
         error = function(e) {
-          showElReplaceTxt(
-            session, "#preview-error",
+          rendererPreviewConsoleRV$render <- isolate(appendPreviewConsoleMsg(
+            rendererPreviewConsoleRV$render,
             sprintf(lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e))
-          )
+          ))
         }
       )
     },
@@ -3543,6 +3543,8 @@ observeEvent(
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
       invalidCustomRender <<- FALSE
+      rendererPreviewConsoleRV$output <- ""
+      rendererPreviewConsoleRV$render <- ""
       insertUI(
         selector = "#tool_options",
         tagList(
@@ -4245,7 +4247,8 @@ getDygraphsOptions <- reactive({
   indices <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   if (!length(scalarIndices)) {
-    showElReplaceTxt(session, "#preview-error", lang$adminMode$graphs$dygraphsOptions$previewError)
+    rendererPreviewConsoleRV$output <- ""
+    rendererPreviewConsoleRV$render <- lang$adminMode$graphs$dygraphsOptions$previewError
     return()
   }
   isolate({
@@ -5102,6 +5105,23 @@ output$customRenderBoilerplate <- renderText({
     " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){"
   )
 })
+rendererPreviewConsoleRV <- reactiveValues(output = "", render = "")
+observe({
+  consoleText <- paste(c(rendererPreviewConsoleRV$output, rendererPreviewConsoleRV$render), collapse = "\n")
+  if (nchar(trimws(consoleText))) {
+    setTextContent(session, "#renderer-preview-console", trimws(consoleText, which = "left"))
+    showEl(session, "#renderer-preview-console")
+  } else {
+    hideEl(session, "#renderer-preview-console")
+  }
+})
+observeEvent(input$btUpdateCustomRendererOutput,
+  {
+    rendererPreviewConsoleRV$output <- ""
+    rendererPreviewConsoleRV$render <- ""
+  },
+  priority = 1000
+)
 output[["preview_custom_renderer"]] <- renderUI({
   req(input$btUpdateCustomRendererOutput)
   outputFunction <- isolate(paste0(
@@ -5110,11 +5130,35 @@ output[["preview_custom_renderer"]] <- renderUI({
     isolate(input$customOutputFunction),
     "}"
   ))
-  eval(parse(text = outputFunction, encoding = "UTF-8"),
-    envir = customRendererEvalEnv
-  )("preview_output_custom", height = 400,
-    options = rv$graphConfig$options,
-    path = customRendererDir)
+  tryCatch(
+    {
+      captured <- runCapturingConsole(function() {
+        uiResult <- eval(parse(text = outputFunction, encoding = "UTF-8"),
+          envir = customRendererEvalEnv
+        )("preview_output_custom", height = 400,
+          options = rv$graphConfig$options,
+          path = customRendererDir)
+        # guards against e.g. an empty function body, where the last expression
+        # (`ns <- NS(id)`) makes the function return the `ns` closure itself
+        # instead of Shiny UI content - Shiny's own error for that ("cannot
+        # coerce type 'closure' to vector of type 'character'") is cryptic
+        if (is.function(uiResult)) {
+          stop(lang$adminMode$graphs$validate$customOutputInvalid, call. = FALSE)
+        }
+        uiResult
+      })
+      rendererPreviewConsoleRV$output <- paste(captured$console, collapse = "\n")
+      if (!is.null(captured$error)) {
+        stop(captured$error)
+      }
+      captured$result
+    },
+    error = function(e) {
+      errMsg <- sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
+      rendererPreviewConsoleRV$output <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$output, errMsg))
+      NULL
+    }
+  )
 })
 
 
@@ -5340,19 +5384,25 @@ observe(
             return()
           }
           local({
-            customRendererFunction <- eval(parse(text = isolate(paste0(
-              customRendererFunctionName(),
-              " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
-              input$customRenderFunction,
-              "\n}"
-            )), encoding = "UTF-8"), envir = customRendererEvalEnv)
-            callModule(customRendererFunction, "preview_output_custom",
-              data,
-              options = rv$graphConfig$options,
-              path = customRendererDir, rendererEnv = customRendererEnv,
-              views = views, attachments = attachments,
-              outputScalarsFull = configScalars
-            )
+            captured <- runCapturingConsole(function() {
+              customRendererFunction <- eval(parse(text = isolate(paste0(
+                customRendererFunctionName(),
+                " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
+                input$customRenderFunction,
+                "\n}"
+              )), encoding = "UTF-8"), envir = customRendererEvalEnv)
+              callModule(customRendererFunction, "preview_output_custom",
+                data,
+                options = rv$graphConfig$options,
+                path = customRendererDir, rendererEnv = customRendererEnv,
+                views = views, attachments = attachments,
+                outputScalarsFull = configScalars
+              )
+            })
+            rendererPreviewConsoleRV$render <- paste(captured$console, collapse = "\n")
+            if (!is.null(captured$error)) {
+              stop(captured$error)
+            }
           })
         } else {
           callModule(renderData, "preview_output_leaflet",
@@ -5374,7 +5424,10 @@ observe(
           hideEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-custom")
         }
-        hideEl(session, "#preview-error")
+        if (!identical(isolate(rv$graphConfig$graph$tool), "custom")) {
+          rendererPreviewConsoleRV$output <- ""
+          rendererPreviewConsoleRV$render <- ""
+        }
       },
       error = function(e) {
         hideEl(session, "#preview-content-dygraphs")
@@ -5384,10 +5437,13 @@ observe(
         hideEl(session, "#preview-content-miropivot")
         hideEl(session, "#preview-content-timevis")
         hideEl(session, "#preview-content-valuebox")
-        showElReplaceTxt(
-          session, "#preview-error",
-          sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
-        )
+        errMsg <- sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
+        if (identical(isolate(rv$graphConfig$graph$tool), "custom")) {
+          rendererPreviewConsoleRV$render <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$render, errMsg))
+        } else {
+          rendererPreviewConsoleRV$output <- ""
+          rendererPreviewConsoleRV$render <- errMsg
+        }
       }
     )
   },

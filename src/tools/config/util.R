@@ -583,3 +583,33 @@ getPreviewFilterId <- function(tool) {
     NULL
   )
 }
+# runs exprFn() while capturing anything it prints to stdout (e.g. print()/cat()
+# calls in a user's Output/render function), so authors can debug their code from
+# the preview instead of having to inspect the R console. Partial console output
+# is preserved even if exprFn() errors. Shared by cg_widgets.R and cg_graphs.R.
+runCapturingConsole <- function(exprFn) {
+  consoleOutputLines <- character(0)
+  con <- textConnection("consoleOutputLines", "w", local = TRUE)
+  sink(con, type = "output")
+  result <- NULL
+  errCaught <- NULL
+  tryCatch(
+    {
+      result <- exprFn()
+    },
+    error = function(e) {
+      errCaught <<- e
+    },
+    finally = {
+      sink(type = "output")
+      close(con)
+    }
+  )
+  return(list(result = result, console = consoleOutputLines, error = errCaught))
+}
+# combines already-captured console text with a fresh message (e.g. an error the user
+# should see in-context), skipping empty parts so no stray blank lines appear
+appendPreviewConsoleMsg <- function(existing, msg) {
+  parts <- c(existing, msg)
+  paste(parts[nzchar(parts)], collapse = "\n")
+}

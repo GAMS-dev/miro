@@ -593,7 +593,6 @@ observe(
         } else if (isolate(rv$tableConfig$tableType) == "piv") {
           return()
         }
-        hideEl(session, "#preview-error")
       },
       error = function(e) {
         hideEl(session, "#preview-content-hot")

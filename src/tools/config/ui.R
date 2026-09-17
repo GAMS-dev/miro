@@ -641,7 +641,10 @@ body.drawer-open {
                 style = "text-align: left;",
                 uiOutput("rendererLabelWrapper")
               ),
-              tags$div(id = "preview-error", class = "err-msg"),
+              tags$pre(
+                id = "renderer-preview-console", class = "miro-preview-console",
+                style = "display:none; text-align:left; white-space:pre-wrap; max-height:200px; overflow:auto;"
+              ),
               tags$div(
                 id = "preview-content-plotly", style = "overflow: auto;",
                 renderDataUI("preview_output_plotly",

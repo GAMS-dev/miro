@@ -1787,7 +1787,8 @@
         "val1": "Could not set range for x axis. Check for correct data format!",
         "custom1": "Could not parse additional options. Please make sure that you use valid JSON syntax!",
         "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
-        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
+        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information).",
+        "customOutputInvalid": "The output function should return Shiny UI content (e.g. wrap your return value in tagList(...)), not a bare function."
       },
       "errMsg":{
         "errTitle1": "No valid data",

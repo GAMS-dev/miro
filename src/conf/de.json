@@ -1786,7 +1786,8 @@
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
         "custom1": "Konnte zusätzliche Optionen nicht parsen. Bitte stellen Sie sicher, dass Sie eine gültige JSON-Syntax verwenden!",
         "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
-        "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
+        "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben).",
+        "customOutputInvalid": "Die Output-Funktion sollte Shiny-UI-Inhalte zurückgeben (z. B. den Rückgabewert in tagList(...) verpacken), keine reine Funktion."
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",
