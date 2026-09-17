@@ -2562,7 +2562,7 @@ if (config$activateModules$aiAssistant) {
 6. SIGNATURES (exact):
    - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
    - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
-7. ROBUSTNESS: Handle empty data early (`if (nrow(data) == 0) return(NULL)`).
+7. ROBUSTNESS: handle empty data early - check the primary tibble (`data`, or `data[[1]]` when additional symbols are active) for zero rows and `return(NULL)`.
 8. OBSERVERS & CLEANUP: Every `observe()`/`observeEvent()` MUST be assigned to `rendererEnv`, keyed via `ns()`, to prevent leaks on re-render. Example: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. No floating observers.
 
 ### OUTPUT FORMAT
