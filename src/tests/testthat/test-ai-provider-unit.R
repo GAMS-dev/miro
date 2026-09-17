@@ -41,14 +41,14 @@ test_that("MiroAiAssistant getProvider returns correct R6 instances", {
   ))
 
   # Valid providers
-  openai_provider <- assistant$getProvider("openai", "gpt-5.5-pro")
-  google_provider <- assistant$getProvider("google", "gemini-3.5-flash")
+  openai_provider <- assistant$getProvider("openai", "gpt-5.6-sol")
+  google_provider <- assistant$getProvider("google", "gemini-3.6-flash")
 
   expect_true(inherits(openai_provider, "MiroAiOpenAiProvider"))
   expect_true(inherits(google_provider, "MiroAiGoogleProvider"))
 
   # Invalid provider/model combos
-  expect_error(assistant$getProvider("anthropic", "claude-fable-5"), "Unknown provider")
+  expect_error(assistant$getProvider("anthropic", "claude-fable-5-1"), "Unknown provider")
   expect_error(assistant$getProvider("openai", "invalid-model"), "Unknown model")
 })
 

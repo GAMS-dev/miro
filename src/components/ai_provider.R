@@ -460,26 +460,22 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     apiKeys = NULL,
     allModels = list(
       OpenAI = c(
+        "GPT-6 Astra" = "openai/gpt-6-astra",
         "GPT-5.6 Sol" = "openai/gpt-5.6-sol",
         "GPT-5.6 Terra" = "openai/gpt-5.6-terra",
-        "GPT-5.6 Luna" = "openai/gpt-5.6-luna",
-        "GPT-5.5" = "openai/gpt-5.5",
-        "GPT-5.4 Mini" = "openai/gpt-5.4-mini"
+        "GPT-5.6 Luna" = "openai/gpt-5.6-luna"
       ),
       Anthropic = c(
+        "Claude Opus 5" = "anthropic/claude-opus-5",
         "Claude Sonnet 5" = "anthropic/claude-sonnet-5",
-        "Claude Fable 5" = "anthropic/claude-fable-5",
-        "Claude Opus 4.8" = "anthropic/claude-opus-4-8",
-        "Claude Sonnet 4.6" = "anthropic/claude-sonnet-4-6",
+        "Claude Fable 5.1" = "anthropic/claude-fable-5-1",
         "Claude Haiku 4.5" = "anthropic/claude-haiku-4-5-20251001"
       ),
       Google = c(
-        "Gemini 3.6 Flash"      = "google/gemini-3.6-flash",
-        "Gemini 3.5 Flash"      = "google/gemini-3.5-flash",
-        "Gemini 3.5 Flash-Lite" = "google/gemini-3.5-flash-lite",
-        "Gemini 3.1 Flash-Lite" = "google/gemini-3.1-flash-lite",
-        "Gemini 2.5 Pro"        = "google/gemini-2.5-pro",
-        "Gemini 2.5 Flash"      = "google/gemini-2.5-flash"
+        "Gemini 3.1 Pro"   = "google/gemini-3.1-pro-preview",
+        "Gemini 3.8 Flash" = "google/gemini-3.8-flash",
+        "Gemini 3.7 Flash" = "google/gemini-3.7-flash",
+        "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
       )
     ),
     debugFile = NULL,
