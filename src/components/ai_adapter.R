@@ -349,7 +349,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
             if (analysisMode == "DIFFERENCE") {
               metricExpr <- sprintf("(%s - %s) AS %s", targExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_delta"))
             } else {
-              metricExpr <- sprintf("CASE WHEN %s = 0 THEN NULL ELSE ((%s - %s) / %s * 100.0) END AS %s", baseExpr, targExpr, baseExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_pct_change"))
+              metricExpr <- sprintf("CASE WHEN %s = 0 THEN NULL ELSE (100.0 * (%s - %s) / %s) END AS %s", baseExpr, targExpr, baseExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_pct_change"))
             }
             sprintf("%d AS %s, %s", tSid, DBI::dbQuoteIdentifier(private$conn, "_target_sid"), metricExpr)
           }, character(1))

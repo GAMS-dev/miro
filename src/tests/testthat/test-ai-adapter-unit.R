@@ -295,6 +295,46 @@ test_that("queryScenarioDatabase calculates PERCENT_CHANGE correctly", {
   DBI::dbDisconnect(env$conn)
 })
 
+test_that("queryScenarioDatabase calculates PERCENT_CHANGE correctly for COUNT aggregation", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  # COUNT() always returns a SQL integer, unlike SUM() on this table's floating-point
+  # `value` column - this regression-tests that PERCENT_CHANGE doesn't truncate via
+  # integer division when both operands are integers (e.g. 11 vs 10 evaluating to 0%
+  # instead of 10%). Base (sid 1) ends up with 10 total NA rows, target (sid 2) with 11.
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = 1, region = "NA", year = "2024", value = seq_len(9)
+  ))
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = 2, region = "NA", year = "2024", value = seq_len(10)
+  ))
+
+  query_args <- list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "COUNT",
+    groupByColumn = "region",
+    analysisMode = "PERCENT_CHANGE",
+    baselineScenarioName = "Base"
+  )
+
+  res <- adapter$queryScenarioDatabase(query_args)
+  res_df <- jsonlite::fromJSON(res)
+
+  # Base (sid 1) NA count: 1 (setup) + 9 appended = 10
+  # Target (sid 2) NA count: 1 (setup) + 10 appended = 11
+  # (11 - 10) / 10 * 100 = 10%
+  pct_na <- res_df$`_pct_change`[res_df$region == "NA"]
+
+  expect_equal(round(pct_na, 2), 10)
+
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("queryScenarioDatabase calculates DIFFERENCE against multiple target scenarios", {
   env <- setup_test_env()
   adapter <- env$adapter
