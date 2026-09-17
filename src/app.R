@@ -419,10 +419,10 @@ if (is.null(errMsg)) {
     flog.info("AI Assistant config found")
     if (!length(config$aiAssistant)) {
       config$aiAssistant <- list()
-      if (length(config$readmeFile)) {
-        # Set default domain context
-        config$aiAssistant$domainContext <- sprintf("This is the app's README file:\n%s", config$readmeFile)
-      }
+    }
+    if (!length(config$aiAssistant$domainContext) && length(config$readmeFile)) {
+      # Set default domain context
+      config$aiAssistant$domainContext <- sprintf("This is the app's README file:\n%s", config$readmeFile)
     }
     config$activateModules$aiAssistant <- tryCatch(
       {
