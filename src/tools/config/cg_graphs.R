@@ -2728,6 +2728,10 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   observeEvent(input$btMiroAiStop, {
     flog.debug("AI Assistant stop button clicked.")
     stop_mirai(mAiTask)
+    session$sendCustomMessage(
+      "gms-resetAiChatRequest",
+      list(dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$requestAbortedMessage)))
+    )
   })
   observeEvent(input$btMiroAiClearChat, {
     flog.debug("Clear AI chat button clicked.")
@@ -2741,6 +2745,10 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     aiAssistantState$sessionId <<- NULL
     aiAssistantState$inputTokens <<- 0L
     aiAssistantState$outputTokens <<- 0L
+    session$sendCustomMessage(
+      "gms-resetAiChatRequest",
+      list()
+    )
   })
   observeEvent(input$btMiroAiApplyCode, {
     flog.debug("Button to apply AI code clicked.")

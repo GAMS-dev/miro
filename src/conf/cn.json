@@ -569,6 +569,7 @@
       "welcomeMessageCustomRenderer": "你好！我是你的 MIRO AI 助手。我来协助你编写自定义渲染器代码。只需告诉我你想如何可视化你的数据即可。",
       "currentContextSandbox": "沙盒情景：%s",
       "currentContextCompare": "对比 %d 个情景",
+      "requestAbortedMessage": "请求已中止。",
       "chatBubbleUserHeader": "用户：",
       "chatBubbleAssistantHeader": "助手：",
       "userTextPlaceholder": "在此输入关于情景的问题...",

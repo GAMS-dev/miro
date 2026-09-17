@@ -2225,6 +2225,10 @@
               "type": "string",
               "minLength": 1
             },
+            "requestAbortedMessage": {
+              "type": "string",
+              "minLength": 1
+            },
             "chatBubbleUserHeader": {
               "type": "string",
               "minLength": 1
@@ -2286,7 +2290,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 20
+          "minProperties": 21
         },
         "hcubeMode": {
           "type": "object",

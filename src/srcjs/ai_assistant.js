@@ -127,6 +127,19 @@ export function registerAiHandlers() {
   $(document).on('click', '#btMiroAiSend', () => {
     sendCurrentUserText(document.getElementById('miroAiUserText'));
   });
+  Shiny.addCustomMessageHandler('gms-resetAiChatRequest', (content) => {
+    const textarea = document.getElementById('miroAiUserText');
+    const stopButton = document.getElementById('btMiroAiStop');
+    stopButton.style.display = 'none';
+    textarea.disabled = false;
+    $('#miroAiChatSpinner').hide();
+    if (content?.dividerHtml) {
+      const $newElement = $(content.dividerHtml);
+      const $chatLog = $('#miroAiChatLog');
+      $('#miroAiChatSpinner').before($newElement);
+      $chatLog.scrollTop($chatLog[0].scrollHeight);
+    }
+  });
   Shiny.addCustomMessageHandler('gms-addAiChatBubble', (content) => {
     const $newElement = $(content.html);
     hydrateAiMessagesIn($newElement.get(0));

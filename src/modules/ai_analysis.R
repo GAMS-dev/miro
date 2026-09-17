@@ -266,10 +266,18 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$sessionId <<- NULL
   aiAssistantState$inputTokens <<- 0L
   aiAssistantState$outputTokens <<- 0L
+  session$sendCustomMessage(
+    "gms-resetAiChatRequest",
+    list()
+  )
 })
 observeEvent(input$btMiroAiStop, {
   flog.debug("AI Assistant stop button clicked.")
   stop_mirai(mAiTask)
+  session$sendCustomMessage(
+    "gms-resetAiChatRequest",
+    list(dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$requestAbortedMessage)))
+  )
 })
 observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant dialog closed")

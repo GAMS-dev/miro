@@ -569,6 +569,7 @@
       "welcomeMessageCustomRenderer": "Hallo! Ich bin Ihr MIRO KI-Assistent. Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
       "currentContextSandbox": "Sandbox-Szenario: %s",
       "currentContextCompare": "Vergleich von %d Szenarien",
+      "requestAbortedMessage": "Anfrage abgebrochen.",
       "chatBubbleUserHeader": "Benutzer:",
       "chatBubbleAssistantHeader": "Assistent:",
       "userTextPlaceholder": "Stellen Sie hier Ihre Frage zum Szenario...",
