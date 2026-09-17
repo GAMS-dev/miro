@@ -6,6 +6,9 @@ observe({
     }
     newSids <- unique(sort(dialogState$sidsToLoad))
     if (!identical(newSids, aiAssistantState$activeSids)) {
+      if (!is.null(aiAssistantState$activeSids)) {
+        aiAssistantState$pendingContextNote <<- dialogState$chatContext
+      }
       aiAssistantState$activeSids <<- newSids
       # append if last history item is not a context item, else overwrite
       historyIdx <- length(aiAssistantState$chatHistory)
@@ -194,8 +197,16 @@ observeEvent(input$miroAiUserText, {
     )), role = "user")
   )
   dialogState <- aiAssistantDialogState()
+  modelInput <- userText
+  if (!is.null(aiAssistantState$pendingContextNote)) {
+    modelInput <- sprintf(
+      "[Context switch: %s. This is now the active data context - treat it as authoritative and don't conflate it with figures or conclusions from earlier in this conversation.]\n\n%s",
+      aiAssistantState$pendingContextNote, userText
+    )
+    aiAssistantState$pendingContextNote <<- NULL
+  }
   aiTask$invoke(
-    userInput = userText,
+    userInput = modelInput,
     dbConnProvider = dbConnProvider,
     dbSchema = dbSchema,
     ioConfig = ioConfig,
@@ -266,6 +277,7 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$sessionId <<- NULL
   aiAssistantState$inputTokens <<- 0L
   aiAssistantState$outputTokens <<- 0L
+  aiAssistantState$pendingContextNote <<- NULL
   session$sendCustomMessage(
     "gms-resetAiChatRequest",
     list()

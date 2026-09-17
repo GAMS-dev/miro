@@ -2651,6 +2651,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       return(list(name = symName, alias = obj$alias, direction = if (symName %in% inputSymMultiDimChoices) "input" else "output", headers = obj$headers))
     })
     allSymbolsMetadataJson <- toJSON(allSymbolsMetadata, dataframe = "rows", auto_unbox = TRUE)
+    activeAiSymbolName <- activeSymbolName
     customUICode <- paste0(
       customOutputFunctionName(),
       " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
@@ -2667,7 +2668,20 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
       customUICode, customRendererCode
     )
-    aiAssistantState$activeSymbolName <<- activeSymbolName
+    modelInput <- userText
+    if (length(aiAssistantState$activeSymbolName) &&
+      !identical(aiAssistantState$activeSymbolName, activeAiSymbolName)) {
+      # the chat session/history keeps going across a symbol switch (on purpose, so the
+      # user can keep chatting), but the model itself has no other signal that the
+      # ground truth changed underneath it - without this, it can go on reasoning about
+      # the previous symbol's code/data as if it still applied
+      modelInput <- sprintf(
+        "[Context switch: you are now working on the '%s' symbol's custom renderer. Treat this as the current subject for everything below; don't conflate it with earlier turns in this conversation, which were about a different symbol.]\n\n%s",
+        activeAiSymbolName,
+        userText
+      )
+    }
+    aiAssistantState$activeSymbolName <<- activeAiSymbolName
     chatHistory <- NULL
     if (!identical(aiAssistantState$model, input$miroAiModel)) {
       if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
@@ -2680,7 +2694,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     }
 
     aiTask$invoke(
-      userInput = userText,
+      userInput = modelInput,
       sysPrompt = sysPrompt,
       assistantConfig = config$aiAssistant,
       model = aiAssistantState$model,
@@ -2745,6 +2759,9 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     aiAssistantState$sessionId <<- NULL
     aiAssistantState$inputTokens <<- 0L
     aiAssistantState$outputTokens <<- 0L
+    # the chat itself was just reset above, so there's nothing left to warn the model
+    # about
+    aiAssistantState$activeSymbolName <<- NULL
     session$sendCustomMessage(
       "gms-resetAiChatRequest",
       list()
