@@ -598,6 +598,36 @@ test_that("MiroAiGoogleProvider hands tool arguments to the dispatcher simplifie
   expect_identical(receivedArgs$groupByColumn, c("region", "year"))
 })
 
+test_that("MiroAiBaseProvider keeps counting tokens after a response without usage", {
+  # Regression test: `0L + NULL` is a zero-length vector, and it stays zero-length
+  # however much is added to it afterwards. One turn whose response carried no usage
+  # block therefore blanked the session's token counters permanently.
+  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
+      stop_reason = "tool_use"
+      # no usage block at all
+    ),
+    list(
+      content = list(list(type = "text", text = "done")),
+      stop_reason = "end_turn",
+      usage = list(input_tokens = 7, output_tokens = 3)
+    )
+  )
+  dispatcher <- list(getData = function(args) jsonlite::toJSON(list(ok = TRUE), auto_unbox = TRUE))
+
+  res <- provider$sendMessage(
+    userInput = "query the data",
+    systemInstructions = "system",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = dispatcher
+  )
+
+  expect_equal(res$inputTokens, 7)
+  expect_equal(res$outputTokens, 3)
+})
+
 test_that("MiroAiAssistant accepts a provider name whose case differs from the model list", {
   assistant <- MiroAiAssistant$new(config = list(
     apiKeys = list(list(provider = "Anthropic", key = "test-key"))

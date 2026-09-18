@@ -554,7 +554,7 @@ cbEnableAi.on('change', (event) => {
     newConfig.aiAssistantConfig = {};
     $('#aiAssistantForm').hide();
     $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
-    $('.ai-key-input').val('').removeClass('is-valid', 'is-invalid');
+    $('.ai-key-input').val('').removeClass('is-valid is-invalid');
   }
 });
 ipcRenderer.on(
@@ -585,6 +585,7 @@ aiProviders.forEach(provider => {
     if (!keyValue) {
       badgeElement.className = 'ai-key-status badge badge-secondary';
       badgeElement.innerText = lang['ai-key-status-not-configured'];
+      saveButton.attr('disabled', false);
       return;
     }
 

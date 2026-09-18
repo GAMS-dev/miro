@@ -37,8 +37,8 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
         }
 
         parsedTurn <- private$parseApiResponse(rawResponse)
-        totalTokenUsage$input <- totalTokenUsage$input + parsedTurn$tokens$input
-        totalTokenUsage$output <- totalTokenUsage$output + parsedTurn$tokens$output
+        totalTokenUsage$input <- totalTokenUsage$input + (parsedTurn$tokens$input %||% 0L)
+        totalTokenUsage$output <- totalTokenUsage$output + (parsedTurn$tokens$output %||% 0L)
 
         if (parsedTurn$hasToolCalls) {
           if (is.null(toolDispatcher)) {
