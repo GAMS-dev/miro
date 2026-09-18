@@ -1,0 +1,7 @@
+# Tested documentation-only dependencies; Python 3.11 or newer.
+# The supplied gamspy_docs snapshot does not include dependency pins.
+Sphinx==8.2.3
+pydata-sphinx-theme==0.16.1
+sphinx-design==0.6.1
+sphinx-copybutton==0.5.2
+sphinx-tabs==3.4.7

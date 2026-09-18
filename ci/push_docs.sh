@@ -3,10 +3,6 @@
 set -e
 
 MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\"")
-pushd src > /dev/null
-    MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' app.R | cut -f2 -d'"' | xargs -0 date +%Y-%m-%d -d )
-popd > /dev/null
-./scripts/fix_docs.sh
 
 # update MIRO Server API OpenAPI schema
 pushd server > /dev/null
@@ -17,9 +13,15 @@ pushd server > /dev/null
     rm -rf data models
 popd > /dev/null
 
-rsync -rlptvz doc/* ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro
+python3 -m venv doc/sphinx/.venv
+doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
+doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check -r doc/sphinx/requirements.txt
 
-git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json ./server/image-docs/*
+./scripts/fix_docs.sh
+
+rsync -rlptvz doc/sphinx/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
+
+git add ./doc/miro_server_api.json ./server/image-docs/*
 
 git commit -m "[CI skip] Update documentation" || true
 

@@ -1280,8 +1280,8 @@ update_doc_job_release:
     - docker pull ${CI_REGISTRY_IMAGE}/miro-auth:latest && docker tag ${CI_REGISTRY_IMAGE}/miro-auth:latest miro-auth || exit 1
     - ./ci/push_docs.sh
     - ./ci/update_website.sh
-  dependencies: [upload_cloudfront]
-  needs: [upload_cloudfront, upload_dockerhub]
+  dependencies: [upload_cloudfront, create_vulnerability_report]
+  needs: [upload_cloudfront, upload_dockerhub, create_vulnerability_report]
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
@@ -1301,7 +1301,11 @@ update_doc_job:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_GAMSCOM_STAGING" | tr -d '\r' | DISPLAY=":0.0" SSH_ASKPASS=~/.ssh/.print_ssh_password setsid ssh-add - > /dev/null
   script:
-    - rsync -Orlptvz doc/* staging@gams.com:/var/www/html/staging.gams.com/public_html/miro
+    - python3 -m venv doc/sphinx/.venv
+    - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
+    - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check -r doc/sphinx/requirements.txt
+    - doc/sphinx/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/sphinx/source doc/sphinx/_build/html
+    - rsync -Orlptvz doc/sphinx/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always

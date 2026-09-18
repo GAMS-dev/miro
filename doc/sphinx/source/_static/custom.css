@@ -1,0 +1,380 @@
+/* ==========================================================================
+   MIRO / GAMS semantic colors
+   ========================================================================== */
+
+/* Light mode */
+html:not([data-theme]),
+html[data-theme="light"] {
+    /* Brand / primary */
+    --pst-color-primary: #f4961a;
+    --pst-color-secondary: #f4961a;
+    --pst-color-primary-highlight: #d97f00;
+    --pst-color-secondary-highlight: #d97f00;
+    --pst-color-primary-bg: #fff2df;
+    --pst-color-secondary-bg: #fff2df;
+
+    /* Warning / Attention -> orange */
+    --pst-color-warning: #f4961a;
+    --pst-color-warning-highlight: #d97f00;
+    --pst-color-warning-bg: #fff2df;
+
+    /* Info -> green */
+    --pst-color-info: #75c181;
+    --pst-color-info-highlight: #58a966;
+    --pst-color-info-bg: #e8f5ea;
+
+    /* Tip / Success -> same green */
+    --pst-color-success: #75c181;
+    --pst-color-success-highlight: #58a966;
+    --pst-color-success-bg: #e8f5ea;
+
+    /* Sphinx Design */
+    --sd-color-primary: #f4961a;
+    --sd-color-secondary: #f4961a;
+
+    --sd-color-warning: #f4961a;
+    --sd-color-info: #75c181;
+    --sd-color-success: #75c181;
+
+    --sd-color-primary-highlight: #d97f00;
+    --sd-color-secondary-highlight: #d97f00;
+    --sd-color-warning-highlight: #d97f00;
+    --sd-color-info-highlight: #58a966;
+    --sd-color-success-highlight: #58a966;
+}
+
+
+/* Dark mode */
+html[data-theme="dark"] {
+    /* Brand / primary */
+    --pst-color-primary: #f4961a;
+    --pst-color-secondary: #f4961a;
+    --pst-color-primary-highlight: #ffb14d;
+    --pst-color-secondary-highlight: #ffb14d;
+    --pst-color-primary-bg: #3a2608;
+    --pst-color-secondary-bg: #3a2608;
+
+    /* Warning / Attention -> orange */
+    --pst-color-warning: #f6a63b;
+    --pst-color-warning-highlight: #ffbd66;
+    --pst-color-warning-bg: #442b08;
+
+    /* Info -> green */
+    --pst-color-info: #8fd09a;
+    --pst-color-info-highlight: #a8ddaf;
+    --pst-color-info-bg: #183f20;
+
+    /* Tip / Success -> same green */
+    --pst-color-success: #8fd09a;
+    --pst-color-success-highlight: #a8ddaf;
+    --pst-color-success-bg: #183f20;
+
+    /* Sphinx Design */
+    --sd-color-primary: #f4961a;
+    --sd-color-secondary: #f4961a;
+
+    --sd-color-warning: #f6a63b;
+    --sd-color-info: #8fd09a;
+    --sd-color-success: #8fd09a;
+
+    --sd-color-primary-highlight: #ffb14d;
+    --sd-color-secondary-highlight: #ffb14d;
+    --sd-color-warning-highlight: #ffbd66;
+    --sd-color-info-highlight: #a8ddaf;
+    --sd-color-success-highlight: #a8ddaf;
+}
+
+/* Cleaner Sphinx Design tabs */
+.bd-content .sd-tab-set > .sd-tab-content {
+    border: 0;
+    border-top: 0.125rem solid var(--pst-color-primary);
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.75rem 0 0;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.bd-content .sd-tab-set>input:checked+label {
+    border-color: #dee2e6 #dee2e6 #fff;
+    color: var(--pst-color-on-surface);
+}
+
+/* Generic presentation rules adapted from gamspy_docs/_static/custom.css. */
+.navbar-icon-links img.icon-link-image {
+    height: 1.25em;
+}
+
+.icon-link-table {
+    width: 14px;
+    height: auto;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.admonition-information {
+    background-color: #e0f7fa;
+    border-left: 3px solid #007acc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.admonition-information .admonition-title {
+    color: #007acc;
+    font-weight: bold;
+}
+
+.sd-card .sd-card-img-top {
+    height: 60px;
+    width: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+html[data-theme=dark] .sd-card img[src*='.svg'] {
+    filter: invert(0.82) brightness(0.8) contrast(1.2);
+}
+
+.sphinx-tabs-panel,
+.sphinx-tabs-tab[aria-selected="true"] {
+    background: none;
+}
+
+/* Preserve legacy maximum-height sizing without stretching screenshots. */
+img.miro-image-max-height-400pt {
+    max-height: 400pt;
+    max-width: 100%;
+    height: auto;
+    width: auto;
+}
+
+img.miro-image-max-height-150pt,
+img.miro-image-max-height-175pt,
+img.miro-image-max-height-200pt,
+img.miro-image-max-height-300pt,
+img.miro-image-max-height-320pt,
+img.miro-image-max-height-325pt,
+img.miro-image-max-height-330pt,
+img.miro-image-max-height-100pt,
+img.miro-image-max-height-125pt,
+img.miro-image-max-height-140pt,
+img.miro-image-max-height-250pt,
+img.miro-image-max-height-350pt,
+img.miro-image-max-height-360pt,
+img.miro-image-max-height-370pt,
+img.miro-image-max-height-425pt,
+img.miro-image-max-height-530pt,
+img.miro-image-responsive {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+}
+
+img.miro-image-max-height-40pt {
+    max-height: 40pt;
+}
+
+img.miro-image-max-height-100pt {
+    max-height: 100pt;
+}
+
+img.miro-image-max-height-125pt {
+    max-height: 125pt;
+}
+
+img.miro-image-max-height-140pt {
+    max-height: 140pt;
+}
+
+img.miro-image-max-height-150pt {
+    max-height: 150pt;
+}
+
+img.miro-image-max-height-175pt {
+    max-height: 175pt;
+}
+
+img.miro-image-max-height-200pt {
+    max-height: 200pt;
+}
+
+img.miro-image-max-height-250pt {
+    max-height: 250pt;
+}
+
+img.miro-image-max-height-300pt {
+    max-height: 300pt;
+}
+
+img.miro-image-max-height-320pt {
+    max-height: 320pt;
+}
+
+img.miro-image-max-height-325pt {
+    max-height: 325pt;
+}
+
+img.miro-image-max-height-330pt {
+    max-height: 330pt;
+}
+
+img.miro-image-max-height-370pt {
+    max-height: 370pt;
+}
+
+img.miro-image-max-height-350pt {
+    max-height: 350pt;
+}
+
+img.miro-image-max-height-360pt {
+    max-height: 360pt;
+}
+
+img.miro-image-max-height-425pt {
+    max-height: 425pt;
+}
+
+img.miro-image-max-height-530pt {
+    max-height: 530pt;
+}
+
+video.miro-video-responsive {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding-bottom: 15px;
+}
+
+img.miro-inline-icon {
+    width: 25px;
+    height: 25px;
+    max-width: 100%;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
+img.miro-image-padding-bottom-25pt {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    padding-bottom: 25pt;
+}
+
+img.miro-image-margin-bottom-15px {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    margin-bottom: 15px;
+}
+
+.miro-code-max-height-300px pre {
+    max-height: 300px;
+    overflow: auto;
+}
+
+/* Keep paths containing spaces together when shown inline. */
+.miro-path {
+    white-space: nowrap;
+}
+
+
+/* Enable native lightbox affordance for screenshot images. */
+img.miro-zoomable-image { cursor: zoom-in; }
+.miro-image-lightbox { border: 0; border-radius: 0.25rem; padding: 0; max-width: min(96vw, 1600px); max-height: 96vh; background: transparent; }
+.miro-image-lightbox::backdrop { background: rgb(0 0 0 / 0.78); }
+.miro-image-lightbox img { display: block; max-width: 96vw; max-height: 96vh; width: auto; height: auto; }
+.miro-image-lightbox-close { position: absolute; top: 0.5rem; right: 0.5rem; border: 0; border-radius: 50%; width: 2rem; height: 2rem; font-size: 1.25rem; line-height: 1; cursor: pointer; }
+
+/* Index landing-page intro layout. */
+
+.miro-hero-logo {
+    display: block;
+    margin: 0 auto 0.35rem;
+}
+
+.miro-documentation-center {
+    margin: 0 auto 1.25rem;
+    text-align: center;
+}
+
+.miro-documentation-center > .rubric {
+    display: block;
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.65rem, 3vw, 2.15rem);
+    border: 0;
+    text-decoration: none;
+}
+
+.miro-documentation-center > p:not(.rubric) {
+    display: inline-flex;
+    margin: 0.2rem 0.3rem;
+}
+
+section#welcome {
+    max-width: 780px;
+    margin: 0 auto 1.75rem;
+}
+
+section#welcome > h1 {
+    margin-top: 0;
+    font-size: 1.45rem;
+}
+
+.miro-welcome-text {
+    text-align: left;
+}
+
+/* Give the lower index-page sections clear separation without enlarging their headings. */
+section#gams-miro-gallery,
+section#why-gams-miro,
+section#learn-more,
+section#fact-sheets {
+    margin-top: 2.5rem;
+}
+
+section#gams-miro-gallery > h1,
+section#why-gams-miro > h1,
+section#learn-more > h1,
+section#fact-sheets > h1 {
+    font-size: 1.55rem;
+}
+
+/* Center navigation-card content and legacy card icons. */
+
+.miro-card-icon {
+    display: block;
+    margin: 0.15rem auto 0.75rem;
+    color: var(--pst-color-primary);
+    font-size: 2rem;
+    line-height: 1;
+}
+
+#cards-wrapper .sd-card-text {
+    text-align: center;
+}
+
+#cards-wrapper .sd-card-header .sd-card-text,
+.sd-card-header .sd-card-text {
+    font-weight: 700;
+}
+
+/* Add breathing room below documentation images */
+.bd-content img[class*="miro-image-"],
+.bd-content img.miro-zoomable-image {
+    margin-bottom: 1rem;
+}
+
+.miro-download-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.miro-download-buttons > p {
+    margin: 0;
+}
+
+.miro-inline-icon-link {
+    pointer-events: none;
+}
