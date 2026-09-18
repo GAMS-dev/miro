@@ -145,6 +145,7 @@ renderInputGraph <- function(i) {
         graphConfig = configGraphsIn[[i]],
         dtOptions = config$datatable,
         roundPrecision = roundPrecision,
+        numericalTolerance = numericalTolerance,
         rendererEnv = rendererEnv[[paste0("in_", i)]],
         views = views, attachments = attachments
       )

@@ -4936,6 +4936,17 @@
               },
               "minProperties": 1
             },
+            "hiddenCompareSymbols": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "mirologfile": {
               "type": "object",
               "additionalProperties": false,
@@ -5126,6 +5137,21 @@
               "minProperties": 1
             },
             "decimal": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
+            "numericalTolerance": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
@@ -5386,7 +5412,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 41
+          "minProperties": 43
         },
         "tables": {
           "type": "object",

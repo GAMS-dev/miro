@@ -103,7 +103,7 @@ dashboardGetSelectedValues <- function(choices, selected, multiple) {
   if (!isTRUE(multiple) && length(vals) > 1) vals <- vals[1]
   if (length(vals) == 0) NULL else vals
 }
-dashboardPrepareData <- function(config, viewData) {
+dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6) {
   if (is.null(viewData)) {
     return(NULL)
   }
@@ -241,7 +241,8 @@ dashboardPrepareData <- function(config, viewData) {
         c(rowIndexList, colFilterIndexList, valueColName),
         baselineCompConfig$domain
       ))) %>%
-      rename(.baseline = value)
+      rename(.baseline = value) %>%
+      mutate(.baseline = if_else(abs(.baseline) < zeroTolerance, 0, .baseline))
     if (length(baselineCompConfig$filterIndex)) {
       filterVal <- baselineCompConfig$filterVal
       customFilterValIds <- match(filterVal, names(config$chartOptions$customLabels))

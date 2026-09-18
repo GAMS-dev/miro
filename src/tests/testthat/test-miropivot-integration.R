@@ -6,12 +6,16 @@ library(tidyr)
 library(futile.logger)
 library(chartjs)
 library(jsonlite)
+library(stringi)
 
 source("../../components/scenario_extensions.R")
 source("../../components/views.R")
 source("../../modules/renderers/miro-pivot.R")
 
-lang <<- list()
+lang <<- list(renderers = list(miroPivot = list(
+  rowTruncationWarning = "Data was truncated to the first %s rows.",
+  colTruncationWarning = "Data was truncated to the first %s columns."
+)))
 
 testData <- tibble(
   a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq_len(10)),
@@ -546,6 +550,196 @@ test_that("MIRO pivot compare metrics work", {
         enablePersistentViews = FALSE,
         "_metadata_" = list(symtype = "parameter")
       )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxCategories truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "bar")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 3L)
+    },
+    args = list(
+      data = tibble(cat = paste0("cat", 1:5), value = 1:5),
+      options = list(
+        pivotTruncation = list(maxCategories = 3L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxTimeseriesPoints truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "t", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "timeseries")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 4L)
+    },
+    args = list(
+      data = tibble(t = as.character(1:10), value = 1:10),
+      options = list(
+        pivotTruncation = list(maxTimeseriesPoints = 4L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxPieSlices truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "pie")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$labels, 2L)
+    },
+    args = list(
+      data = tibble(cat = paste0("cat", 1:5), value = 1:5),
+      options = list(
+        pivotTruncation = list(maxPieSlices = 2L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxSeries truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = "ser",
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "bar")
+      parsedChart <- fromJSON(output$pivotChart, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      expect_length(parsedChart$x$data$datasets, 2L)
+    },
+    args = list(
+      data = tibble(
+        cat = rep(paste0("cat", 1:3), 5),
+        ser = rep(paste0("ser", 1:5), each = 3),
+        value = 1:15
+      ),
+      options = list(
+        pivotTruncation = list(maxSeries = 2L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom maxTableColumns truncation limit", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "cat", colIndexList = "ser",
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(pivotRenderer = "table")
+      parsedTable <- fromJSON(output$pivotTable, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+      # 1 row-header column ("cat") + 2 remaining series columns after truncation
+      expect_identical(stri_count_fixed(parsedTable$x$container, "<th>"), 3L)
+    },
+    args = list(
+      data = tibble(
+        cat = rep(paste0("cat", 1:3), 5),
+        ser = rep(paste0("ser", 1:5), each = 3),
+        value = 1:15
+      ),
+      options = list(
+        pivotTruncation = list(maxTableColumns = 3L),
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+
+# ==============================================================================
+# numericalTolerance: baseline values close to zero should not be used as-is
+# ==============================================================================
+
+test_that("MIRO pivot snaps a near-zero baseline to 0 under the default numericalTolerance", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "i", colIndexList = character(),
+        filterIndexList = c("j", "hdr"), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "i",
+        baselineCompRecord = "Base",
+        baselineCompMetrics = c("percentage difference"),
+        updateSettings = 1L
+      )
+      # Baseline (1e-10) is snapped to exactly 0 under the default 1e-6
+      # tolerance, so dividing by it produces Inf rather than a
+      # large-but-finite (and misleading) percentage.
+      expect_true(all(is.infinite(convert_to_df(dataToRender())$value)))
+    },
+    args = list(
+      data = tibble(
+        i = c("Base", "Target"),
+        j = c("X", "X"),
+        hdr = c("shipment"),
+        value = c(1e-10, 50)
+      ),
+      options = list(
+        enablePersistentViews = FALSE,
+        "_metadata_" = list(symtype = "parameter")
+      )
+    )
+  )
+})
+test_that("MIRO pivot respects a custom, tighter numericalTolerance", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = "i", colIndexList = character(),
+        filterIndexList = c("j", "hdr"), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "i",
+        baselineCompRecord = "Base",
+        baselineCompMetrics = c("percentage difference"),
+        updateSettings = 1L
+      )
+      # With a tolerance tighter than 1e-10, the baseline is no longer
+      # snapped to 0, so the division produces a finite (if inflated)
+      # result instead of Inf.
+      values <- convert_to_df(dataToRender())$value
+      expect_true(all(is.finite(values)))
+      expect_true(any(values > 1e10))
+    },
+    args = list(
+      data = tibble(
+        i = c("Base", "Target"),
+        j = c("X", "X"),
+        hdr = c("shipment"),
+        value = c(1e-10, 50)
+      ),
+      options = list(
+        enablePersistentViews = FALSE,
+        "_metadata_" = list(symtype = "parameter")
+      ),
+      numericalTolerance = 1e-12
     )
   )
 })

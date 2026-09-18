@@ -70,6 +70,14 @@ expect_identical(configRaw$storeLogFilesDuration, configNew$storeLogFilesDuratio
 # Scenario comparison
 expect_identical(configRaw$defCompMode, configNew$defCompMode)
 expect_identical(configRaw$pivotCompSettings, list(emptyUEL = "&", fixedColumns = TRUE))
+expect_identical(configNew$hiddenCompareSymbols, NULL)
+app$set_inputs(general_hiddenCompareSymbols = "price")
+Sys.sleep(0.5)
+configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
+  simplifyDataFrame = FALSE,
+  simplifyMatrix = FALSE
+))
+expect_identical(configNew$hiddenCompareSymbols, "price")
 
 
 # Symbol configuration: Symbol and Column Names

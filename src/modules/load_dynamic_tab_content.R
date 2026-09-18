@@ -132,6 +132,7 @@ getPivotCompGraphConfig <- function(sheetName) {
   graphConfig$options$customChartColors <- config$pivotCompSettings$customChartColors
   graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   graphConfig$options$chartFontSize <- config$pivotCompSettings$chartFontSize
+  graphConfig$options$pivotTruncation <- config$pivotTruncation
   return(graphConfig)
 }
 loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {
@@ -200,7 +201,8 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
           rendererEnv = rendererEnv[[refId]],
           views = views,
           resetOninit = isFALSE(isInRefreshMode$get(refId)),
-          roundPrecision = roundPrecision
+          roundPrecision = roundPrecision,
+          numericalTolerance = numericalTolerance
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {
@@ -375,6 +377,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               data = dataToRender,
               graphConfig = graphConfig,
               roundPrecision = roundPrecision,
+              numericalTolerance = numericalTolerance,
               rendererEnv = rendererEnv[[refId]],
               views = views, attachments = attachments
             )
@@ -403,6 +406,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               graphConfig = graphConfig,
               configData = scenData$getScalars(refId),
               roundPrecision = roundPrecision,
+              numericalTolerance = numericalTolerance,
               rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments
             )
             callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),

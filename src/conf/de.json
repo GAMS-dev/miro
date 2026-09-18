@@ -1268,6 +1268,9 @@
       "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
       },
+      "hiddenCompareSymbols":{
+        "label": "Input-/Output-Symbole, die im Split-, Tab- und Pivot-Szenarienvergleich nicht als Tab angezeigt werden sollen. Diese Symbole werden außerhalb des Szenarienvergleichs weiterhin normal angezeigt."
+      },
       "mirologfile":{
         "label": "Benutzerdefinierte Log-Datei einbinden?",
         "tooltip": "Geben Sie den Namen der Log-Datei ein (mindestens 3 Zeichen). Ansonsten lassen Sie dieses Feld leer.",
@@ -1320,6 +1323,10 @@
       "decimal":{
         "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
         "tooltip": "Betrifft alle Ausgabetabellen, Big Data-Eingabetabellen und die Tabelle im Batch Load Modul. - Dokumentation öffnen."
+      },
+      "numericalTolerance":{
+        "label": "Anzahl der Dezimalstellen, um Werte nahe Null als Null zu behandeln (globale Option).",
+        "tooltip": "Betrifft den Baseline-Vergleich im Dashboard und in MIRO Pivot: Ein Wert wird als exakt Null behandelt, wenn er kleiner ist als 10 hoch minus dieser Zahl. Dies vermeidet Division durch Null oder überhöhte Prozent-/Normalisierungswerte. - Dokumentation öffnen."
       },
       "defaultRenderer":{
         "labelOutput": "Standard-Renderer für Ausgabedaten",

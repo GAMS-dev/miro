@@ -1047,7 +1047,7 @@ body.drawer-open {
                           ), class = "info-header",
                           href = "https://gams.com/miro/configuration_general.html#app-readme",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1225,7 +1225,7 @@ body.drawer-open {
                           class = "info-wrapper",
                           href = "https://gams.com/miro/configuration_general.html#general-output-attach",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1296,7 +1296,7 @@ body.drawer-open {
                             title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
                             href = "https://www.gams.com/miro/configuration_general.html#decimal-places",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1307,6 +1307,22 @@ body.drawer-open {
                         } else {
                           config$roundingDecimals
                         }
+                      )
+                    ),
+                    tags$div(
+                      class = "option-wrapper",
+                      sliderInput("general_numericalTolerance",
+                        labelTooltip(
+                          label = lang$adminMode$general$numericalTolerance$label,
+                          tooltip = lang$adminMode$general$numericalTolerance$tooltip,
+                          href = "https://gams.com/miro/configuration_general.html#numerical-tolerance"
+                        ),
+                        min = 3, max = 15, step = 1,
+                        value = round(-log10(if (length(configJSON$numericalTolerance)) {
+                          configJSON$numericalTolerance
+                        } else {
+                          config$numericalTolerance
+                        }))
                       )
                     ),
                     tags$div(class = "space")
@@ -1348,7 +1364,7 @@ body.drawer-open {
                               class = "info-wrapper",
                               href = "https://gams.com/miro/configuration_general.html#command-line-args",
                               tags$span(
-                                class = "fas fa-circle-info", class = "info-icon",
+                                class = "fas fa-circle-info info-icon",
                                 role = "presentation",
                                 `aria-label` = "More information"
                               ), target = "_blank"
@@ -1428,7 +1444,7 @@ body.drawer-open {
                             class = "info-wrapper",
                             href = "https://gams.com/miro/configuration_general.html#general-duration",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1461,7 +1477,7 @@ body.drawer-open {
                           class = "info-wrapper",
                           href = "https://gams.com/miro/start.html#scenario-comparison",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1482,6 +1498,28 @@ body.drawer-open {
                         )
                       ),
                       selected = if (length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
+                      class = "option-wrapper info-position",
+                      selectInput("general_hiddenCompareSymbols",
+                        tags$div(
+                          lang$adminMode$general$hiddenCompareSymbols$label,
+                          tags$a("",
+                            title = lang$adminMode$general$ui$tooltipDocs,
+                            class = "info-wrapper",
+                            href = "https://gams.com/miro/configuration_general.html#hidden-compare-symbols",
+                            tags$span(
+                              class = "fas fa-circle-info info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        choices = vctrs::vec_unique(c(inputSymMultiDimChoices, setNames(scalarsFileName, paste(scalarsFileName, lang$nav$scalarAliases$scalars, sep = ": ")), outputSymMultiDimChoices)),
+                        selected = configJSON$hiddenCompareSymbols[configJSON$hiddenCompareSymbols %in% c(inputSymMultiDimChoices, scalarsFileName, outputSymMultiDimChoices)],
+                        multiple = TRUE
                       )
                     ),
                     tags$div(class = "space"),
@@ -1556,7 +1594,7 @@ body.drawer-open {
                       tags$a(
                         title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#naming",
                         tags$span(
-                          class = "fas fa-circle-info", class = "info-icon",
+                          class = "fas fa-circle-info info-icon",
                           role = "presentation",
                           `aria-label` = "More information"
                         ), target = "_blank"
@@ -1731,7 +1769,7 @@ body.drawer-open {
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1795,7 +1833,7 @@ body.drawer-open {
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1833,7 +1871,7 @@ body.drawer-open {
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-symbols",
                                   tags$span(
-                                    class = "fas fa-circle-info", class = "info-icon",
+                                    class = "fas fa-circle-info info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ),
@@ -1858,7 +1896,7 @@ body.drawer-open {
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-scalars",
                                   tags$span(
-                                    class = "fas fa-circle-info", class = "info-icon",
+                                    class = "fas fa-circle-info info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ), target = "_blank"
@@ -1878,7 +1916,7 @@ body.drawer-open {
                           tags$a(
                             class = "info-header", href = "https://gams.com/miro/configuration_symbols.html#symbol-links",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"

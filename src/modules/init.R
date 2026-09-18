@@ -643,7 +643,8 @@ if (is.null(errMsg)) {
                 symname = el,
                 headers = modelIn[[i]]$headers,
                 symtype = modelIn[[i]]$symtype
-              )
+              ),
+              pivotTruncation = config$pivotTruncation
             )
           )
           validGraphConfig <- validateGraphConfig(modelIn[[i]], skipOutTypeCheck = TRUE)
@@ -1922,6 +1923,17 @@ if (is.null(errMsg)) {
       ), sep = "\n")
     }
   }
+  if (!LAUNCHCONFIGMODE && length(config[["hiddenCompareSymbols"]])) {
+    invalidHiddenCompareSymbols <- match(config[["hiddenCompareSymbols"]], c(names(modelOut), names(modelIn), scalarsFileName))
+    if (any(is.na(invalidHiddenCompareSymbols))) {
+      errMsg <- paste(errMsg, sprintf(
+        "The symbols: '%s' you want to be hidden in scenario comparison mode do not exist!",
+        paste0(config[["hiddenCompareSymbols"]][is.na(invalidHiddenCompareSymbols)],
+          collapse = ", "
+        )
+      ), sep = "\n")
+    }
+  }
   modelOutToDisplay <- vapply(seq_along(modelOut), function(i) {
     headers <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers <- lapply(modelOut[[i]]$headers, function(header) {
@@ -2317,6 +2329,7 @@ if (is.null(errMsg)) {
             configGraphsOut[[i]]$graph <- configGraphsOut[[i]]
             configGraphsOut[[i]]$graph$outType <- NULL
           } else if (identical(configGraphsOut[[i]]$outType, "miroPivot")) {
+            configGraphsOut[[i]]$options$pivotTruncation <- config$pivotTruncation
             validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
@@ -2406,6 +2419,7 @@ if (is.null(errMsg)) {
       )
 
       if (identical(configGraphsIn[[i]]$outType, "miroPivot")) {
+        configGraphsIn[[i]]$options$pivotTruncation <- config$pivotTruncation
         validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
         if (!identical(validGraphConfig, TRUE)) {
           errMsgTmp <- paste0(
