@@ -2910,7 +2910,7 @@ In a real scenario with database queries, you’ll likely store credentials in a
 
    {
        "DB_USERNAME": "User1",
-       "DB_PASSWORD": "example-password"
+       "DB_PASSWORD": "<your-password>"
    }
 
 Now in MIRO Desktop go to *File* and then to *Preferences*. Under *Environment* you can now upload the json file. You can access these credentials via ``Sys.getenv()`` inside your importer, for example:
