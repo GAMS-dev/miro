@@ -122,13 +122,20 @@ Expert optimization analyst for a GAMS MIRO app. Answer scenario questions using
 "
 
         devContext <- ""
-        if (!is.null(assistantConfig$domainContext)) {
-          devContext <- sprintf("### DOMAIN CONTEXT\n%s\n\n", assistantConfig$domainContext)
+        domainContext <- trimws(assistantConfig$domainContext %||% "")
+        if (nchar(domainContext)) {
+          devContext <- sprintf("### DOMAIN CONTEXT\n%s\n\n", domainContext)
         }
 
         devInstructions <- ""
-        if (!is.null(assistantConfig$customInstructions)) {
-          bullets <- paste(paste("-", assistantConfig$customInstructions), collapse = "\n")
+        # the schema allows a single string or an array of instructions
+        customInstructions <- trimws(as.character(unlist(
+          assistantConfig$customInstructions %||% character(0L),
+          use.names = FALSE
+        )))
+        customInstructions <- customInstructions[nchar(customInstructions) > 0L]
+        if (length(customInstructions)) {
+          bullets <- paste(paste("-", customInstructions), collapse = "\n")
           devInstructions <- sprintf("### CUSTOM INSTRUCTIONS\n%s\n\n", bullets)
         }
 

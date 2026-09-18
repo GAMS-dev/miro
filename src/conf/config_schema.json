@@ -4797,9 +4797,8 @@
           "default": true
         },
         "domainContext": {
-          "description": "Domain context to give the AI agent (e.g. description of the app, the model, equations etc.). You can use the `[[README]]` placeholder in this string, which MIRO will automatically replace with the content of your README file.",
-          "type": "string",
-          "minLength": 1
+          "description": "Domain context to give the AI agent (e.g. description of the app, the model, equations etc.). You can use the `[[README]]` placeholder in this string, which MIRO will automatically replace with the content of your README file. An empty string disables the domain context.",
+          "type": "string"
         },
         "customInstructions": {
           "description": "Custom instructions to give to the AI agent (e.g. `Assume the user is an economist; use technical CGE terminology.` or `Always format monetary values in Billions of USD ($B).`).",
@@ -4808,11 +4807,9 @@
             "string",
             "null"
           ],
-          "minLength": 1,
           "minItems": 0,
           "items": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           }
         }
       }
