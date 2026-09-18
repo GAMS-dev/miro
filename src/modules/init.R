@@ -2621,7 +2621,7 @@ if (is.null(errMsg)) {
       config$aiAssistant$domainContext <- stri_replace_all_fixed(
         config$aiAssistant$domainContext,
         pattern = "[[README]]",
-        replacement = config$readmeFile
+        replacement = if (length(config$readmeFile)) config$readmeFile else ""
       )
     }
   }
