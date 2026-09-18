@@ -515,6 +515,12 @@ Object.keys(pathConfig).forEach((id) => {
       $this.hide();
     });
 });
+const disableAiAssistant = () => {
+  newConfig.aiAssistantConfig = {};
+  $('#aiAssistantForm').hide();
+  $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
+  $('.ai-key-input').val('').removeClass('is-valid is-invalid');
+};
 $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   saveButton.attr('disabled', false);
   const elKey = this.dataset.key;
@@ -545,6 +551,12 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
     );
   } else if (elKey === 'logLevel') {
     inputLogLevel.val(defaultValues[elKey]);
+  } else if (elKey === 'enableAiAssistant') {
+    // not a config key of its own: the checkbox reflects whether any API key is
+    // configured, so resetting it means dropping the whole AI config
+    delete newConfig[elKey];
+    cbEnableAi.prop('checked', false);
+    disableAiAssistant();
   }
   $(this).hide();
 });
@@ -554,10 +566,7 @@ cbEnableAi.on('change', (event) => {
   if (event.currentTarget.checked) {
     ipcRenderer.send('show-confirm-enable-ai-dialog');
   } else {
-    newConfig.aiAssistantConfig = {};
-    $('#aiAssistantForm').hide();
-    $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
-    $('.ai-key-input').val('').removeClass('is-valid is-invalid');
+    disableAiAssistant();
   }
 });
 ipcRenderer.on(
