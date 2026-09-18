@@ -503,7 +503,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       }
       if (length(apiKeys)) {
         # short circuit if API keys are already parsed from config
-        self$apiKeys <- apiKeys
+        self$apiKeys <- setNames(apiKeys, tolower(names(apiKeys)))
         return(self)
       }
       self$apiKeys <- list()
@@ -556,7 +556,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         if (!length(apiKey$key) || nchar(apiKey$key) < 1L) {
           stop(sprintf("Invalid API key for provider: %s", apiKey$provider), call. = FALSE)
         }
-        self$apiKeys[[apiKey$provider]] <- apiKey$key
+        self$apiKeys[[tolower(apiKey$provider)]] <- apiKey$key
       }
       return(self)
     }

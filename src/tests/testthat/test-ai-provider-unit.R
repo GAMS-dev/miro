@@ -597,3 +597,16 @@ test_that("MiroAiGoogleProvider hands tool arguments to the dispatcher simplifie
   expect_identical(receivedArgs$scenarioNames, "Base")
   expect_identical(receivedArgs$groupByColumn, c("region", "year"))
 })
+
+test_that("MiroAiAssistant accepts a provider name whose case differs from the model list", {
+  assistant <- MiroAiAssistant$new(config = list(
+    apiKeys = list(list(provider = "Anthropic", key = "test-key"))
+  ))
+
+  expect_true("anthropic" %in% tolower(names(assistant$supportedModels)))
+  expect_length(assistant$supportedModels, 1L)
+
+  modelId <- sub("^anthropic/", "", assistant$supportedModels[[1L]][[1L]])
+  provider <- assistant$getProvider("anthropic", modelId)
+  expect_s3_class(provider, "MiroAiAnthropicProvider")
+})
