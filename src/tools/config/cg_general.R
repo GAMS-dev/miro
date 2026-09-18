@@ -1085,6 +1085,9 @@ observeEvent(input$btAiContextSave, {
 observeEvent(input$btEditAiInstructions, {
   instructionsContent <- rv$generalConfig$aiAssistant$customInstructions
   if (length(instructionsContent)) {
+    # the schema allows an array of instructions, but the editor and the markdown
+    # parser both work on a single string (parse() requires length 1)
+    instructionsContent <- paste(instructionsContent, collapse = "\n")
     instructionsContentParsed <- HTML(markdownParser$parse(instructionsContent))
   } else {
     instructionsContent <- character(0L)
