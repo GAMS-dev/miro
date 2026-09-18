@@ -2498,7 +2498,7 @@ if (config$activateModules$aiAssistant) {
     history = list(),
     sessionId = NULL,
     model = NULL,
-    shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_types = "cc"))[[1]],
+    shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_names = FALSE, col_types = "cc"))[[1]],
     inputTokens = 0,
     outputTokens = 0,
     chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessageCustomRenderer))
