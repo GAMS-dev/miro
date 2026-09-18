@@ -149,8 +149,6 @@ Note that unlike the title and description, the app id cannot be changed after t
 
    The app id can be used to register multiple MIRO apps based on the same model by assigning an individual ID for each app.
 
-.. _app-environment:
-
 App Environment
 ~~~~~~~~~~~~~~~~
 

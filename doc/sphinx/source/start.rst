@@ -1,7 +1,9 @@
 Working with GAMS MIRO
 ======================
 
-.. _introduction-section:
+.. raw:: html
+
+   <span id="introduction-section"></span>
 
 Introduction
 ------------

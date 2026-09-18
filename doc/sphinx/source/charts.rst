@@ -1425,8 +1425,6 @@ For a value box, the descriptive text (default: explanatory text of the symbol),
      }
    }
 
-.. _dashboard:
-
 Dashboard
 ---------
 

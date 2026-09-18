@@ -3,7 +3,9 @@ Model preparation
 
 
 
-.. _introduction-section:
+.. raw:: html
+
+   <span id="introduction-section"></span>
 
 
 .. _introduction:

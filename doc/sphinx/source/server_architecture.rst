@@ -40,7 +40,9 @@ Socket proxy
 
 The socket proxy is used to deny requests to any Docker API endpoints that ShinyProxy does not need access to (e.g. the volumes API). The socket proxy is only accessible from the ShinyProxy container (ensured by an internal Docker network).
 
-.. _admin-panel:
+.. raw:: html
+
+   <span id="admin-panel"></span>
 
 MIRO Admin Panel
 ----------------

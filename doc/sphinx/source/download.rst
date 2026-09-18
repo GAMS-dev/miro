@@ -159,7 +159,9 @@ We provide some GAMS MIRO demo applications. You can use these to get to know so
 
       Download GAMSPy Demo apps
 
-.. _miro-server:
+.. raw:: html
+
+   <span id="miro-server"></span>
 
 GAMS MIRO Server
 ----------------

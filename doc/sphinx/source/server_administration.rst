@@ -60,7 +60,9 @@ Engine user, the apps can be launched but not
 solved/submitted to Engine.
 
 
-.. _admin-panel:
+  .. raw:: html
+
+     <span id="admin-panel"></span>
 
 The admin panel
 ---------------
@@ -156,7 +158,9 @@ Further settings that can be made before adding the app:
 
 - **Advanced Settings (optional):**
 
-  .. _app-environment:
+  .. raw:: html
+
+     <span id="app-environment"></span>
 
   Clicking this button opens a dialog where you can configure
   advanced options, such as environment variables or default

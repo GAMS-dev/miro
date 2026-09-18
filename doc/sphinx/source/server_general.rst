@@ -2,7 +2,9 @@ Moving to the cloud
 ====================
 
 
-.. _miro-server:
+.. raw:: html
+
+   <span id="miro-server"></span>
 
 GAMS MIRO Server
 ----------------

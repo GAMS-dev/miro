@@ -1407,9 +1407,6 @@ Key Takeaways
 - **Simple Customization**: Change chart defaults, rename symbols, and customize input widgets all from a single interface.
 - **Presentation-Ready**: Save preferred views so end users see the best visualizations right away.
 
-.. _dashboard:
-
-
 Dashboard
 ---------
 
@@ -2913,7 +2910,7 @@ In a real scenario with database queries, you’ll likely store credentials in a
 
    {
        "DB_USERNAME": "User1",
-       "DB_PASSWORD": "mySuperSecretPassword!"
+       "DB_PASSWORD": "example-password"
    }
 
 Now in MIRO Desktop go to *File* and then to *Preferences*. Under *Environment* you can now upload the json file. You can access these credentials via ``Sys.getenv()`` inside your importer, for example:
