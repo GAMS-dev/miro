@@ -74,9 +74,15 @@ export const AI_PROVIDERS = [
   },
 ];
 
+// Callers must be able to tell "the provider rejected this key" apart from "we could
+// not reach the provider", so that a network failure is not reported as a bad key.
+const KEY_VALID = 'valid';
+const KEY_INVALID = 'invalid';
+const KEY_UNREACHABLE = 'unreachable';
+
 const testAiProviderApiKey = async (provider, apiKey) => {
   if (apiKey.length < 10) {
-    return false;
+    return KEY_INVALID;
   }
   let url = '';
   let headers = {};
@@ -99,7 +105,7 @@ const testAiProviderApiKey = async (provider, apiKey) => {
       headers = { 'x-goog-api-key': apiKey };
       break;
     default:
-      return false;
+      return KEY_INVALID;
   }
 
   try {
@@ -113,13 +119,13 @@ const testAiProviderApiKey = async (provider, apiKey) => {
     });
 
     clearTimeout(timeoutId);
-    return response.status === 200;
+    return response.status === 200 ? KEY_VALID : KEY_INVALID;
   } catch (error) {
     console.error(
       `Network or configuration error for ${provider}:`,
       error.message,
     );
-    return false;
+    return KEY_UNREACHABLE;
   }
 };
 
@@ -448,20 +454,27 @@ export function openAdvancedSettingsDialog() {
 
       try {
         console.debug(`Validating API key for AI provider: ${provider.name}`);
-        const isValid = await testAiProviderApiKey(provider.name, keyValue);
+        const keyStatus = await testAiProviderApiKey(provider.name, keyValue);
 
-        if (isValid) {
+        if (keyStatus === KEY_VALID) {
           console.debug(
             `Valid API key for AI provider: ${provider.name} added!`,
           );
           inputElement.classList.add('is-valid');
           badgeElement.className = 'badge badge-success';
           badgeElement.innerText = 'Connected';
-        } else {
+        } else if (keyStatus === KEY_INVALID) {
           console.debug(`Invalid API key for AI provider: ${provider.name}`);
           inputElement.classList.add('is-invalid');
           badgeElement.className = 'badge badge-danger';
           badgeElement.innerText = 'Invalid Key';
+        } else {
+          console.warn(
+            `Could not reach AI provider to validate key: ${provider.name}`,
+          );
+          inputElement.classList.add('is-invalid');
+          badgeElement.className = 'badge badge-danger';
+          badgeElement.innerText = 'Connection Error';
         }
       } catch (err) {
         console.warn(

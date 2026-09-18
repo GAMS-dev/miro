@@ -10,7 +10,9 @@ const {
   getEngineJwt,
   EngineError,
 } = require('../components/engine.cjs');
-const { testAiProviderApiKey } = require('../components/ai-assistant.cjs');
+const {
+  testAiProviderApiKey, KEY_VALID, KEY_INVALID,
+} = require('../components/ai-assistant.cjs');
 
 log.errorHandler.startCatching();
 
@@ -621,9 +623,9 @@ aiProviders.forEach(provider => {
 
     try {
       __electronLog.debug(`Validating API key for AI provider: ${provider.name}`)
-      const isValid = await testAiProviderApiKey(provider.name, keyValue);
+      const keyStatus = await testAiProviderApiKey(provider.name, keyValue);
 
-      if (isValid) {
+      if (keyStatus === KEY_VALID) {
         __electronLog.debug(`Valid API key for AI provider: ${provider.name} added!`)
         inputElement.classList.add('is-valid');
         badgeElement.className = 'ai-key-status badge badge-success';
@@ -641,16 +643,22 @@ aiProviders.forEach(provider => {
             provider: provider.name
           });
         }
-      } else {
+      } else if (keyStatus === KEY_INVALID) {
+        // the provider rejected it, so it must not end up in the config
         __electronLog.debug(`Invalid API key for AI provider: ${provider.name}`)
         dropStoredKey();
         inputElement.classList.add('is-invalid');
         badgeElement.className = 'ai-key-status badge badge-danger';
         badgeElement.innerText = lang['ai-key-status-invalid'];
+      } else {
+        // we could not reach the provider, so we know nothing about the key; leave
+        // whatever is stored alone rather than discarding a working one
+        __electronLog.warn(`Could not reach AI provider to validate key: ${provider.name}`)
+        inputElement.classList.add('is-invalid');
+        badgeElement.className = 'ai-key-status badge badge-danger';
+        badgeElement.innerText = lang['ai-key-status-error'];
       }
     } catch (err) {
-      // we could not reach the provider, so we do not know whether the key is good;
-      // leave whatever is stored alone rather than discarding a working key
       __electronLog.warn(`Failed validating API key for AI provider: ${provider.name}. Error: ${err}`)
       inputElement.classList.add('is-invalid');
       badgeElement.className = 'ai-key-status badge badge-danger';

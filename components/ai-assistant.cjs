@@ -2,9 +2,16 @@ const axios = require('axios');
 
 const REQUEST_TIMEOUT = 10000;
 
+// Callers must be able to tell "the provider rejected this key" apart from "we could
+// not reach the provider": the first means the key is bad and must not be stored, the
+// second says nothing about the key, so an already stored one has to be left alone.
+const KEY_VALID = 'valid';
+const KEY_INVALID = 'invalid';
+const KEY_UNREACHABLE = 'unreachable';
+
 const testAiProviderApiKey = async (provider, apiKey) => {
   if (apiKey.length < 10) {
-    return false;
+    return KEY_INVALID;
   }
   let url = '';
   let headers = {};
@@ -26,24 +33,27 @@ const testAiProviderApiKey = async (provider, apiKey) => {
       headers = { 'x-goog-api-key': apiKey };
       break;
     default:
-      return false;
+      return KEY_INVALID;
   }
   try {
     const response = await axios.get(url, {
       headers,
       timeout: REQUEST_TIMEOUT
     });
-    return response.status === 200;
+    return response.status === 200 ? KEY_VALID : KEY_INVALID;
   } catch (error) {
     if (error.response) {
       __electronLog.warn(`API rejected key for ${provider}. Status: ${error.response.status}`);
-    } else {
-      __electronLog.error(`Network or configuration error for ${provider}:`, error.message);
+      return KEY_INVALID;
     }
-    return false;
+    __electronLog.error(`Network or configuration error for ${provider}:`, error.message);
+    return KEY_UNREACHABLE;
   }
 }
 
 module.exports = {
   testAiProviderApiKey,
+  KEY_VALID,
+  KEY_INVALID,
+  KEY_UNREACHABLE,
 };
