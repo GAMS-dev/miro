@@ -2,6 +2,23 @@
 DbConnectionProvider <- R6Class("DbConnectionProvider",
   public = list(
     initialize = function(dbConf) {
+      # BEGIN error checks
+      stopifnot(is.character(dbConf$type), length(dbConf$type) == 1L)
+      if (!identical(dbConf$type, "sqlite")) {
+        # any non-sqlite backend is postgres
+        dbConf$type <- "postgres"
+        stopifnot(
+          is.character(dbConf$host), length(dbConf$host) == 1L,
+          is.character(dbConf$username), length(dbConf$username) == 1L,
+          is.character(dbConf$password), length(dbConf$password) == 1L
+        )
+        if (!is.null(dbConf$port)) {
+          stopifnot(is.numeric(dbConf$port), length(dbConf$port) == 1L)
+        }
+      }
+      stopifnot(is.character(dbConf$name), length(dbConf$name) == 1L)
+      # END error checks
+
       private$dbConf <- dbConf
       return(self)
     },
@@ -47,8 +64,6 @@ DbConnectionProvider <- R6Class("DbConnectionProvider",
             stop(sprintf("SQLite connection failed: %s", conditionMessage(e)), call. = FALSE)
           }
         )
-      } else {
-        stop(sprintf("Unsupported database type: %s", conf$type), call. = FALSE)
       }
       return(conn)
     },
