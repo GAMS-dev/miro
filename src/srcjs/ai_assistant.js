@@ -81,6 +81,16 @@ function sendCurrentUserText(textarea) {
   document.getElementById('btMiroAiSend').style.display = 'none';
 }
 
+// Single-$ deliberately excluded: KaTeX's auto-render has no heuristic to tell
+// "$x^2$" apart from an ordinary currency mention like "$50 to $75" (a
+// near-guarantee in a cost-analysis tool), and would try to render the text
+// between them as math either way.
+const AI_KATEX_DELIMITERS = [
+  { left: '$$', right: '$$', display: true },
+  { left: '\\(', right: '\\)', display: false },
+  { left: '\\[', right: '\\]', display: true },
+];
+
 // Assistant messages are rendered server-side with their (untrusted, LLM-
 // generated) HTML stashed in a `data-raw-html` attribute rather than as live
 // DOM children -- attribute values are inert text to the browser, so nothing
@@ -90,6 +100,7 @@ function sendCurrentUserText(textarea) {
 function hydrateAiMessageContent(el) {
   el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml);
   delete el.dataset.rawHtml;
+  parseKatex(el, { delimiters: AI_KATEX_DELIMITERS });
 }
 export function hydrateAiMessagesIn(root) {
   root.querySelectorAll('[data-raw-html]').forEach(hydrateAiMessageContent);
@@ -156,18 +167,6 @@ export function registerAiHandlers() {
       $('#miroAiChatSpinner').show();
       $chatLog.scrollTop($chatLog[0].scrollHeight);
     } else {
-      const contentDiv = $newElement.find('.miro-ai-chat-content-html').get(0);
-      parseKatex(contentDiv, {
-        // Single-$ deliberately excluded: KaTeX's auto-render has no
-        // heuristic to tell "$x^2$" apart from an ordinary currency mention
-        // like "$50 to $75" (a near-guarantee in a cost-analysis tool), and
-        // would try to render the text between them as math either way.
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '\\[', right: '\\]', display: true },
-        ],
-      });
       $('#miroAiChatSpinner').hide();
       const scrollToPosition = $newElement.position().top + $chatLog.scrollTop();
       $chatLog.animate({ scrollTop: scrollToPosition }, 300);

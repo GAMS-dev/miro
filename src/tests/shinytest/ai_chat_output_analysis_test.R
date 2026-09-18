@@ -104,36 +104,31 @@ expect_equal(app$get_js("document.querySelectorAll('#miroAiChatLog img[onerror]'
 # (`\(...\)`, `\[...\]`, `$$...$$`) preserved through
 # renderMarkdownPreservingKatexDelimiters (see test-ai-ui-components-unit.R),
 # and is expected to render as real math once hydrated -- see
-# ai_assistant.js's `gms-addAiChatBubble` handler, which calls the exported
-# `Miro.parseKatex` with this exact delimiter set right after hydration (a
-# bare `$...$` is deliberately excluded there, since it is ambiguous with a
-# plain currency mention in a cost-analysis tool). We cannot make the
-# (fake-keyed) provider return real LaTeX, so this simulates a bubble
-# reaching the chat log the same way the stored-XSS check above does, then
-# exercises the real, already-wired hydrate -> Miro.parseKatex pipeline
-# instead of a re-implementation of it.
+# ai_assistant.js::hydrateAiMessageContent, which runs KaTeX over every
+# message it injects (a bare `$...$` is deliberately excluded there, since it
+# is ambiguous with a plain currency mention in a cost-analysis tool). We
+# cannot make the (fake-keyed) provider return real LaTeX, so this simulates a
+# bubble reaching the chat log the same way the stored-XSS check above does.
+# Nothing here renders the math itself: hydration has to do it, which is what
+# keeps math alive when a stored message is put back into the DOM.
 # ==========================================================================
 app$run_js(
-  "var $bubble = $(
-    '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
-    '<div class=\"miro-ai-chat-bubble\">' +
-    '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
-    '</div></div>'
-  );
-  var payload = '<p>Inline \\\\(x^2 + y^2 = z^2\\\\) inline math.</p>' +
-    '<p>\\\\[ 300 \\\\times 90 = 27{,}000 \\\\]</p>' +
-    '<p>Display via dollars: $$a + b = c$$</p>' +
-    '<p>Not math: $50 to $75.</p>';
-  $bubble.find('.miro-ai-chat-content-html').attr('data-raw-html', payload);
-  $('#miroAiChatLog').prepend($bubble);
-  $('.ai-assistant-modal').trigger('shown.bs.modal');
-  Miro.parseKatex($bubble.find('.miro-ai-chat-content-html').get(0), {
-    delimiters: [
-      { left: '$$', right: '$$', display: true },
-      { left: '\\\\(', right: '\\\\)', display: false },
-      { left: '\\\\[', right: '\\\\]', display: true }
-    ]
-  });"
+  "window.__miroAddMathBubble = function () {
+    var $bubble = $(
+      '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
+      '<div class=\"miro-ai-chat-bubble\">' +
+      '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
+      '</div></div>'
+    );
+    var payload = '<p>Inline \\\\(x^2 + y^2 = z^2\\\\) inline math.</p>' +
+      '<p>\\\\[ 300 \\\\times 90 = 27{,}000 \\\\]</p>' +
+      '<p>Display via dollars: $$a + b = c$$</p>' +
+      '<p>Not math: $50 to $75.</p>';
+    $bubble.find('.miro-ai-chat-content-html').attr('data-raw-html', payload);
+    $('#miroAiChatLog').prepend($bubble);
+  };
+  window.__miroAddMathBubble();
+  $('.ai-assistant-modal').trigger('shown.bs.modal');"
 )
 Sys.sleep(0.5)
 
@@ -148,6 +143,20 @@ expect_false(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().tex
 # ... but a plain currency mention outside any math delimiter is left
 # untouched, since a bare `$` is deliberately not treated as a delimiter
 expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().text().includes('$50 to $75');"))
+
+# Re-rendering the chat log (re-opening the dialog, clearing the chat) replays
+# the stored messages as fresh `data-raw-html` payloads. Hydration has to
+# render their math again -- it used to only happen for a message arriving as
+# a live reply, so the math vanished as soon as the dialog was re-opened.
+app$run_js(
+  "$('#miroAiChatLog').empty();
+  window.__miroAddMathBubble();
+  $('.ai-assistant-modal').trigger('shown.bs.modal');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("$('#miroAiChatLog [data-raw-html]').length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex').length;"), 3)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex-error').length;"), 0)
 
 # closing the dialog does not error out
 app$click(selector = 'button[data-dismiss="modal"]')
