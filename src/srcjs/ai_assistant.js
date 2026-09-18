@@ -38,6 +38,20 @@ export function toggleChatCollapse(btn) {
     icon.classList.add('fa-chevron-down');
   }
 }
+export function resolveAiInputChange(button, apply) {
+  const card = button.closest('.miro-ai-change-proposal');
+  if (!card) return;
+  card.querySelectorAll('button').forEach((el) => {
+    // eslint-disable-next-line no-param-reassign
+    el.disabled = true;
+  });
+  Shiny.setInputValue('miroAiInputChangeAction', {
+    id: card.dataset.changeId,
+    apply,
+  }, {
+    priority: 'event',
+  });
+}
 export function openMiroAiDrawer() {
   document.getElementById('miroAiDrawer').classList.add('open');
   document.body.classList.add('drawer-open');
@@ -150,6 +164,18 @@ export function registerAiHandlers() {
       $('#miroAiChatSpinner').before($newElement);
       $chatLog.scrollTop($chatLog[0].scrollHeight);
     }
+  });
+  // Input-data change proposals are plain server-rendered markup (no
+  // `data-raw-html` payload), so they are appended as-is rather than hydrated.
+  Shiny.addCustomMessageHandler('gms-addAiChatCard', (content) => {
+    const $chatLog = $('#miroAiChatLog');
+    $('#miroAiChatSpinner').before($(content.html));
+    $chatLog.animate({ scrollTop: $chatLog[0].scrollHeight }, 300);
+  });
+  Shiny.addCustomMessageHandler('gms-updateAiChatCard', (content) => {
+    const card = document.querySelector(`.miro-ai-change-proposal[data-change-id="${content.id}"]`);
+    if (!card) return;
+    card.outerHTML = content.html;
   });
   Shiny.addCustomMessageHandler('gms-addAiChatBubble', (content) => {
     const $newElement = $(content.html);

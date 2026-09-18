@@ -1819,7 +1819,10 @@ if (!is.null(errMsg)) {
       modelStatus <- NULL
 
       if (config$activateModules$aiAssistant) {
-        aiAssistantDialogState <- reactiveVal(list(sidsToLoad = NULL, scenIdNameMap = NULL, chatContext = NULL, timestamp = Sys.time()))
+        aiAssistantDialogState <- reactiveVal(list(
+          sidsToLoad = NULL, scenIdNameMap = NULL, isSandbox = FALSE,
+          chatContext = NULL, timestamp = Sys.time()
+        ))
         aiAssistantState <- list(
           history = list(),
           sessionId = NULL,
@@ -1828,6 +1831,11 @@ if (!is.null(errMsg)) {
           outputTokens = 0L,
           tempScen = NULL,
           activeSids = NULL,
+          contextIsSandbox = FALSE,
+          # proposed input data changes: changeId -> index in chatHistory
+          changeIndex = list(),
+          # what the user did with them, relayed to the model on the next message
+          changeNotes = character(0L),
           chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
         )
       } else {

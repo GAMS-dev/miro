@@ -72,6 +72,142 @@ renderAiChatDivider <- function(contextText) {
     contextText
   )
 }
+aiInputChangeOperationLabel <- function(change, lang) {
+  labelKey <- switch(change$operation,
+    MULTIPLY = "changeOpMultiply",
+    DIVIDE = "changeOpDivide",
+    ADD = "changeOpAdd",
+    SUBTRACT = "changeOpSubtract",
+    SET = "changeOpSet"
+  )
+  return(sprintf(lang[[labelKey]], formatAiInputValue(change$value)))
+}
+aiInputChangeFilterLabel <- function(change) {
+  if (!length(change$filters)) {
+    return(NULL)
+  }
+  return(paste(vapply(change$filters, function(filterSpec) {
+    return(sprintf("%s %s %s", filterSpec$columnAlias, filterSpec$operator, filterSpec$value))
+  }, character(1L), USE.NAMES = FALSE), collapse = " & "))
+}
+renderAiInputChangePreviewTable <- function(change, lang) {
+  preview <- change$preview
+  if (change$isScalar) {
+    beforeHeader <- lang$changeProposalBefore
+    afterHeader <- lang$changeProposalAfter
+  } else {
+    beforeHeader <- sprintf("%s (%s)", change$targetColumnAlias, lang$changeProposalBefore)
+    afterHeader <- sprintf("%s (%s)", change$targetColumnAlias, lang$changeProposalAfter)
+  }
+  return(tags$div(
+    class = "miro-ai-change-preview",
+    tags$table(
+      class = "miro-ai-change-table",
+      tags$thead(tags$tr(
+        lapply(names(preview$labels), function(colName) tags$th(colName)),
+        tags$th(class = "miro-ai-change-col-before", beforeHeader),
+        tags$th(class = "miro-ai-change-col-after", afterHeader)
+      )),
+      tags$tbody(lapply(seq_along(preview$before), function(rowId) {
+        tags$tr(
+          lapply(preview$labels, function(labelCol) tags$td(labelCol[[rowId]])),
+          tags$td(class = "miro-ai-change-cell-before", preview$before[[rowId]]),
+          tags$td(class = "miro-ai-change-cell-after", preview$after[[rowId]])
+        )
+      }))
+    )
+  ))
+}
+renderAiInputChangeStatus <- function(change, lang) {
+  if (identical(change$status, "applied")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-applied",
+      icon("circle-check"), lang$changeStatusApplied
+    ))
+  }
+  if (identical(change$status, "discarded")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-discarded",
+      icon("circle-xmark"), lang$changeStatusDiscarded
+    ))
+  }
+  if (identical(change$status, "outdated")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-outdated",
+      icon("triangle-exclamation"), lang$changeStatusOutdated
+    ))
+  }
+  if (identical(change$status, "failed")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-failed",
+      icon("triangle-exclamation"), sprintf(lang$changeStatusFailed, change$statusDetail %||% "")
+    ))
+  }
+  return(tags$div(
+    class = "miro-ai-change-actions",
+    tags$button(
+      type = "button", class = "btn btn-primary btn-sm miro-ai-change-apply",
+      onclick = "Miro.resolveAiInputChange(this, true)",
+      icon("check"), lang$btApplyChange
+    ),
+    tags$button(
+      type = "button", class = "btn btn-default btn-sm miro-ai-change-discard",
+      onclick = "Miro.resolveAiInputChange(this, false)",
+      icon("xmark"), lang$btDiscardChange
+    )
+  ))
+}
+renderAiInputChangeProposal <- function(change, lang) {
+  filterLabel <- aiInputChangeFilterLabel(change)
+  return(tags$div(
+    class = "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant miro-ai-change-proposal",
+    `data-change-id` = change$changeId,
+    tags$div(
+      class = "miro-ai-chat-bubble miro-ai-change-card",
+      tags$b(
+        class = "miro-ai-chat-author",
+        icon("pen-to-square"), lang$changeProposalHeader
+      ),
+      if (length(change$reason)) {
+        tags$div(class = "miro-ai-change-reason", change$reason)
+      },
+      tags$dl(
+        class = "miro-ai-change-facts",
+        tags$dt(lang$changeProposalSymbol), tags$dd(change$symbolAlias),
+        if (!change$isScalar) tags$dt(lang$changeProposalColumn),
+        if (!change$isScalar) tags$dd(change$targetColumnAlias),
+        tags$dt(lang$changeProposalOperation),
+        tags$dd(aiInputChangeOperationLabel(change, lang)),
+        if (!is.null(filterLabel)) tags$dt(lang$changeProposalFilter),
+        if (!is.null(filterLabel)) tags$dd(filterLabel),
+        if (!change$isScalar && change$preview$noRows > 0L) tags$dt(lang$changeProposalAffected),
+        if (!change$isScalar && change$preview$noRows > 0L) {
+          tags$dd(format(change$preview$noRows, big.mark = ","))
+        }
+      ),
+      if (change$preview$noRowsShown > 0L) {
+        renderAiInputChangePreviewTable(change, lang)
+      },
+      if (change$preview$noRowsShown < change$preview$noRows) {
+        tags$div(class = "miro-ai-change-truncated", sprintf(
+          lang$changeProposalTruncated,
+          format(change$preview$noRowsShown, big.mark = ","),
+          format(change$preview$noRows, big.mark = ",")
+        ))
+      },
+      renderAiInputChangeStatus(change, lang)
+    )
+  ))
+}
+renderAiChatItem <- function(item, lang) {
+  if (identical(item$role, "inputChange")) {
+    return(renderAiInputChangeProposal(item$change, lang))
+  }
+  if (is.null(item$role)) {
+    return(renderAiChatDivider(item))
+  }
+  return(renderAiChatBubble(item, lang))
+}
 renderAiTokenInfoContainer <- function(lang, inputTokens = 0L, outputTokens = 0L) {
   tags$div(
     class = "miro-ai-token-info-wrapper",
@@ -92,12 +228,7 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
     tags$div(
       id = "miroAiChatLog",
       class = "miro-ai-chat-log",
-      lapply(chatHistory, function(item) {
-        if (is.null(item$role)) {
-          return(renderAiChatDivider(item))
-        }
-        return(renderAiChatBubble(item, lang))
-      }),
+      lapply(chatHistory, function(item) renderAiChatItem(item, lang)),
       genSpinner("miroAiChatSpinner",
         hidden = TRUE, absolute = FALSE,
         externalStyle = "z-index: 1"

@@ -3,6 +3,8 @@ library(shiny)
 library(htmltools)
 
 source("../../modules/ai_ui_components.R")
+# the change proposal card formats values with the helpers the AI worker uses
+source("../../components/ai_adapter.R")
 
 mockLang <- list(
   btCopy = "Copy",
@@ -120,4 +122,154 @@ test_that("renderAiChatBubble never emits a raw <script> tag echoed by the AI as
   expect_length(rawHtmlAttr, 1)
   expect_false(grepl("<script", rawHtmlAttr, fixed = TRUE))
   expect_false(grepl("<script", bubble, fixed = TRUE))
+})
+
+# ==============================================================================
+# 4. renderAiInputChangeProposal (confirmation card for an input data change)
+# ==============================================================================
+
+mockChangeLang <- list(
+  changeProposalHeader = "Proposed input data change",
+  changeProposalSymbol = "Symbol",
+  changeProposalColumn = "Column",
+  changeProposalOperation = "Operation",
+  changeProposalFilter = "Rows",
+  changeProposalAffected = "Affected values",
+  changeProposalBefore = "before",
+  changeProposalAfter = "after",
+  changeProposalTruncated = "Showing the first %s of %s changed values.",
+  changeOpMultiply = "multiply by %s",
+  changeOpSet = "set to %s",
+  changeStatusApplied = "Applied to the sandbox scenario.",
+  changeStatusDiscarded = "Discarded.",
+  changeStatusOutdated = "Outdated.",
+  changeStatusFailed = "Could not be applied: %s",
+  btApplyChange = "Apply",
+  btDiscardChange = "Discard"
+)
+
+mockTableChange <- function(status = "pending", ...) {
+  modifyList(list(
+    changeId = "aichg_test",
+    symbolName = "demand", symbolAlias = "Customer Demand",
+    isScalar = FALSE, operation = "MULTIPLY", value = 1.1,
+    targetColumn = "value", targetColumnIdx = 3L, targetColumnAlias = "Value",
+    columnAliases = c("Region", "Year", "Value"),
+    filters = list(list(column = "region", columnAlias = "Region", columnIdx = 1L, operator = "=", value = "EU")),
+    reason = "User asked for 10% more European demand.",
+    status = status,
+    preview = list(
+      labels = data.frame(Region = c("EU", "EU"), Year = c("2024", "2025"), stringsAsFactors = FALSE),
+      before = c("150", "200"), after = c("165", "220"),
+      noRows = 2L, noRowsShown = 2L
+    )
+  ), list(...))
+}
+
+test_that("renderAiInputChangeProposal shows the facts, the before/after values and both buttons", {
+  html <- as.character(renderAiInputChangeProposal(mockTableChange(), mockChangeLang))
+
+  expect_match(html, 'data-change-id="aichg_test"', fixed = TRUE)
+  expect_match(html, "Customer Demand", fixed = TRUE)
+  expect_match(html, "multiply by 1.1", fixed = TRUE)
+  expect_match(html, "Region = EU", fixed = TRUE)
+  expect_match(html, "Value (before)", fixed = TRUE)
+  expect_match(html, "Value (after)", fixed = TRUE)
+  expect_match(html, ">165<", fixed = TRUE)
+  expect_match(html, ">220<", fixed = TRUE)
+  expect_match(html, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
+  expect_match(html, "Miro.resolveAiInputChange(this, false)", fixed = TRUE)
+})
+
+test_that("renderAiInputChangeProposal replaces the buttons once the change was resolved", {
+  for (status in c("applied", "discarded", "outdated")) {
+    html <- as.character(renderAiInputChangeProposal(mockTableChange(status = status), mockChangeLang))
+    expect_false(grepl("Miro.resolveAiInputChange", html, fixed = TRUE))
+  }
+  applied <- as.character(renderAiInputChangeProposal(mockTableChange(status = "applied"), mockChangeLang))
+  expect_match(applied, "Applied to the sandbox scenario.", fixed = TRUE)
+
+  failed <- as.character(renderAiInputChangeProposal(
+    mockTableChange(status = "failed", statusDetail = "boom"), mockChangeLang
+  ))
+  expect_match(failed, "Could not be applied: boom", fixed = TRUE)
+})
+
+test_that("renderAiInputChangeProposal reports a truncated preview", {
+  change <- mockTableChange()
+  change$preview$noRows <- 4096L
+  html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
+
+  expect_match(html, "Showing the first 2 of 4,096 changed values.", fixed = TRUE)
+})
+
+test_that("renderAiInputChangeProposal drops the column/row facts for a scalar widget", {
+  change <- list(
+    changeId = "aichg_scalar", symbolName = "maxstock", symbolAlias = "Maximum stock",
+    isScalar = TRUE, operation = "SET", value = 8, targetColumnAlias = "Maximum stock",
+    filters = list(), reason = NULL, status = "pending",
+    preview = list(labels = NULL, before = "4", after = "8", noRows = 1L, noRowsShown = 1L)
+  )
+  html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
+
+  expect_match(html, "set to 8", fixed = TRUE)
+  expect_match(html, ">before<", fixed = TRUE)
+  expect_false(grepl("Affected values", html, fixed = TRUE))
+  expect_false(grepl("Column", html, fixed = TRUE))
+})
+
+test_that("renderAiInputChangeProposal escapes assistant supplied text", {
+  change <- mockTableChange(reason = "<img src=x onerror=alert(1)>")
+  html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
+
+  # the card is injected as-is on the client, so nothing the model wrote may
+  # survive as markup
+  expect_false(grepl("<img", html, fixed = TRUE))
+  expect_match(html, "&lt;img", fixed = TRUE)
+  expect_false(grepl("data-raw-html", html, fixed = TRUE))
+})
+
+test_that("renderAiChatItem dispatches on the chat log item type", {
+  proposal <- as.character(renderAiChatItem(
+    list(role = "inputChange", change = mockTableChange()), mockChangeLang
+  ))
+  expect_match(proposal, "miro-ai-change-proposal", fixed = TRUE)
+
+  divider <- as.character(renderAiChatItem(list("Sandbox scenario: foo"), mockChangeLang))
+  expect_match(divider, "miro-ai-chat-context-divider", fixed = TRUE)
+
+  bubble <- as.character(renderAiChatItem(list(role = "user", text = "hi"), mockLang))
+  expect_match(bubble, "miro-ai-chat-user", fixed = TRUE)
+})
+
+test_that("renderAiInputChangeProposal leaves out an empty preview table", {
+  change <- mockTableChange(status = "failed", statusDetail = "no matching row")
+  change$preview <- list(
+    labels = NULL, before = character(0L), after = character(0L),
+    noRows = 0L, noRowsShown = 0L
+  )
+  html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
+
+  expect_false(grepl("miro-ai-change-table", html, fixed = TRUE))
+  expect_false(grepl("Affected values", html, fixed = TRUE))
+  expect_match(html, "Could not be applied: no matching row", fixed = TRUE)
+})
+
+test_that("renderAiInputChangeProposal renders a dropdown selection change", {
+  change <- list(
+    changeId = "aichg_choice", symbolName = "modeltype", symbolAlias = "Model type",
+    isScalar = TRUE, isChoice = TRUE, operation = "SET", value = "mip",
+    targetColumnAlias = "Model type", filters = list(),
+    reason = "User asked to solve it as a MIP.", status = "pending",
+    preview = list(labels = NULL, before = "lp", after = "mip", noRows = 1L, noRowsShown = 1L)
+  )
+  html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
+
+  expect_match(html, "Model type", fixed = TRUE)
+  expect_match(html, "set to mip", fixed = TRUE)
+  expect_match(html, ">lp<", fixed = TRUE)
+  expect_match(html, ">mip<", fixed = TRUE)
+  # a single choice has no column or row facts
+  expect_false(grepl("Affected values", html, fixed = TRUE))
+  expect_match(html, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
 })

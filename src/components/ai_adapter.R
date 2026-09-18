@@ -1,10 +1,206 @@
+#' ==========================================================================
+#' Sandbox input data changes
+#'
+#' The AI assistant runs in a background `mirai` process that only has a
+#' database connection, so it can never write to the sandbox itself. Instead it
+#' *proposes* a change: `AIToolAdapter$modifySandboxInputData()` validates the
+#' request, resolves it into the column/row indices of the symbol it targets and
+#' queues it. The Shiny session then renders the proposal with a before/after
+#' preview and, once the user confirms it, re-applies the very same resolved
+#' change to the live sandbox data.
+#'
+#' The helpers below are what both sides run, so the preview the user confirms
+#' and the data that ends up in the sandbox cannot drift apart.
+#' ==========================================================================
+AI_INPUT_CHANGE_OPERATIONS <- c("MULTIPLY", "DIVIDE", "ADD", "SUBTRACT", "SET")
+AI_INPUT_CHANGE_FILTER_OPERATORS <- c("=", "!=", ">", ">=", "<", "<=", "IN")
+AI_INPUT_CHANGE_PREVIEW_ROWS <- 50L
+AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS <- 10L
+AI_MAX_LISTED_CHOICES <- 50L
+
+deriveAiInputChangeSummary <- function(before, matchedRows, operation, value) {
+  if (identical(operation, "SET")) {
+    # SET also fills in rows whose value was missing
+    return(list(count = matchedRows, sum = matchedRows * value, min = value, max = value))
+  }
+  if (!before$count) {
+    return(list(count = 0L))
+  }
+  newBounds <- computeAiInputChangeValues(c(before$min, before$max), operation, value)
+  return(list(
+    count = before$count,
+    sum = switch(operation,
+      MULTIPLY = before$sum * value,
+      DIVIDE = before$sum / value,
+      ADD = before$sum + before$count * value,
+      SUBTRACT = before$sum - before$count * value
+    ),
+    # a negative operand flips the order of the bounds
+    min = min(newBounds), max = max(newBounds)
+  ))
+}
+
+formatAiInputValue <- function(values) {
+  if (!length(values)) {
+    return(character(0L))
+  }
+  if (is.numeric(values)) {
+    return(vapply(values, function(value) {
+      if (is.na(value)) {
+        return("NA")
+      }
+      return(format(value, trim = TRUE, digits = 10L))
+    }, character(1L), USE.NAMES = FALSE))
+  }
+  formatted <- as.character(values)
+  formatted[is.na(formatted)] <- "NA"
+  return(formatted)
+}
+
+computeAiInputChangeValues <- function(values, operation, value) {
+  return(switch(operation,
+    MULTIPLY = values * value,
+    DIVIDE = values / value,
+    ADD = values + value,
+    SUBTRACT = values - value,
+    SET = rep(as.numeric(value), length(values)),
+    stop(sprintf("Unsupported operation: '%s'.", operation), call. = FALSE)
+  ))
+}
+
+#' Rows a resolved change applies to. An unevaluable comparison (a missing value,
+#' a non-numeric entry in a `>`/`<` filter) never matches, so rows we cannot
+#' reason about are left untouched rather than silently overwritten.
+matchAiInputChangeRows <- function(data, filters) {
+  noRows <- nrow(data)
+  if (is.null(noRows)) {
+    noRows <- length(data)
+  }
+  rowMask <- rep(TRUE, noRows)
+  for (filterSpec in filters) {
+    colValues <- data[[filterSpec$columnIdx]]
+    if (identical(filterSpec$operator, "IN")) {
+      targets <- trimws(strsplit(filterSpec$value, ",", fixed = TRUE)[[1L]])
+      comparison <- as.character(colValues) %in% targets
+    } else if (filterSpec$operator %in% c("=", "!=")) {
+      numericTarget <- suppressWarnings(as.numeric(filterSpec$value))
+      if (is.numeric(colValues) && !is.na(numericTarget)) {
+        comparison <- colValues == numericTarget
+      } else {
+        comparison <- as.character(colValues) == filterSpec$value
+      }
+      if (identical(filterSpec$operator, "!=")) {
+        comparison <- !comparison
+      }
+    } else {
+      numericTarget <- suppressWarnings(as.numeric(filterSpec$value))
+      numericValues <- suppressWarnings(as.numeric(colValues))
+      comparison <- switch(filterSpec$operator,
+        ">" = numericValues > numericTarget,
+        ">=" = numericValues >= numericTarget,
+        "<" = numericValues < numericTarget,
+        "<=" = numericValues <= numericTarget
+      )
+    }
+    comparison[is.na(comparison)] <- FALSE
+    rowMask <- rowMask & comparison
+  }
+  return(rowMask)
+}
+
+applyAiInputChange <- function(data, change) {
+  if (isTRUE(change$isChoice)) {
+    oldValue <- NA_character_
+    if (length(data)) {
+      oldValue <- as.character(data)[[1L]]
+    }
+    return(list(
+      data = change$value, rowMask = TRUE,
+      oldValues = oldValue, newValues = change$value
+    ))
+  }
+  if (isTRUE(change$isScalar)) {
+    oldValues <- suppressWarnings(as.numeric(data))
+    if (!length(oldValues)) {
+      oldValues <- NA_real_
+    }
+    oldValues <- oldValues[[1L]]
+    newValues <- computeAiInputChangeValues(oldValues, change$operation, change$value)
+    return(list(
+      data = newValues, rowMask = TRUE,
+      oldValues = oldValues, newValues = newValues
+    ))
+  }
+  colIdx <- change$targetColumnIdx
+  if (is.null(nrow(data)) || colIdx > length(data)) {
+    stop(sprintf(
+      "Data of symbol '%s' does not have the expected %d columns.",
+      change$symbolName, colIdx
+    ), call. = FALSE)
+  }
+  rowMask <- matchAiInputChangeRows(data, change$filters)
+  colValues <- suppressWarnings(as.numeric(data[[colIdx]]))
+  oldValues <- colValues[rowMask]
+  newValues <- computeAiInputChangeValues(oldValues, change$operation, change$value)
+  colValues[rowMask] <- newValues
+  data[[colIdx]] <- colValues
+  return(list(
+    data = data, rowMask = rowMask,
+    oldValues = oldValues, newValues = newValues
+  ))
+}
+
+buildAiInputChangePreview <- function(data, change, changeResult,
+                                      maxRows = AI_INPUT_CHANGE_PREVIEW_ROWS) {
+  if (isTRUE(change$isScalar) || isTRUE(change$isChoice)) {
+    return(list(
+      labels = NULL,
+      before = formatAiInputValue(changeResult$oldValues),
+      after = formatAiInputValue(changeResult$newValues),
+      noRows = 1L, noRowsShown = 1L
+    ))
+  }
+  affectedRows <- which(changeResult$rowMask)
+  shownRows <- utils::head(affectedRows, maxRows)
+  labelCols <- setdiff(seq_along(change$columnAliases), change$targetColumnIdx)
+  labels <- NULL
+  if (length(labelCols)) {
+    labels <- as.data.frame(
+      lapply(labelCols, function(colIdx) formatAiInputValue(data[[colIdx]][shownRows])),
+      stringsAsFactors = FALSE, optional = TRUE
+    )
+    names(labels) <- change$columnAliases[labelCols]
+  }
+  return(list(
+    labels = labels,
+    before = formatAiInputValue(data[[change$targetColumnIdx]][shownRows]),
+    after = formatAiInputValue(changeResult$data[[change$targetColumnIdx]][shownRows]),
+    noRows = length(affectedRows), noRowsShown = length(shownRows)
+  ))
+}
+
 AIToolAdapter <- R6Class("AIToolAdapter",
   public = list(
-    initialize = function(dbSchema, conn, ioConfig) {
+    initialize = function(dbSchema, conn, ioConfig, inputModificationEnabled = FALSE) {
       private$dbSchema <- dbSchema
       private$conn <- conn
       private$ioConfig <- ioConfig
+      private$inputModificationEnabled <- isTRUE(inputModificationEnabled)
+      # every symbol's description follows from the configuration alone, so it
+      # is resolved once here instead of on each request and each lookup
+      private$symbols <- private$describeSymbols()
+      if (private$inputModificationEnabled) {
+        # what may be changed follows from the columns, so it needs them resolved
+        for (sym in names(private$symbols)) {
+          if (identical(private$symbols[[sym]]$direction, "input")) {
+            private$symbols[[sym]]$modifiable <- private$getModifiableInfo(sym)
+          }
+        }
+      }
       return(self)
+    },
+    getPendingInputChanges = function() {
+      return(private$pendingInputChanges)
     },
     setAllowedSids = function(allowedSids) {
       private$allowedSids <- as.integer(allowedSids)[!is.na(as.integer(allowedSids))]
@@ -48,82 +244,37 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       private$scenarioMap <- setNames(as.character(activeScenariosDf$sid), activeScenariosDf$name)
       private$scenarioMapById <- setNames(activeScenariosDf$name, as.character(activeScenariosDf$sid))
 
-      allSymbols <- private$dbSchema$getDbTableNames()
-      databaseSymbols <- list()
-      if (scalarsOutName %in% names(private$ioConfig$modelOut)) {
-        outputScalars <- private$ioConfig$modelOut[[scalarsOutName]]
-      } else {
-        outputScalars <- NULL
-      }
-      if (scalarsFileName %in% names(private$ioConfig$modelIn)) {
-        inputScalars <- private$ioConfig$modelIn[[scalarsFileName]]
-      } else {
-        inputScalars <- NULL
-      }
-
-      for (sym in allSymbols) {
-        cfg <- private$ioConfig$modelIn[[sym]]
-        direction <- "input"
-        if (is.null(cfg)) {
-          cfg <- private$ioConfig$modelOut[[sym]]
-          direction <- "output"
-        }
-        if (is.null(cfg)) {
-          scalarId <- match(sym, outputScalars$symnames)
-          if (!is.na(scalarId)) {
-            cfg <- list(
-              alias = outputScalars$symtext[[scalarId]],
-              symtype = outputScalars$symtypes[[scalarId]],
-              isScalarDs = TRUE
-            )
-            direction <- "output"
-          } else {
-            scalarId <- match(sym, inputScalars$symnames)
-            if (!is.na(scalarId)) {
-              cfg <- list(
-                alias = inputScalars$symtext[[scalarId]],
-                symtype = inputScalars$symtypes[[scalarId]],
-                isScalarDs = TRUE
+      databaseSymbols <- setNames(lapply(names(private$symbols), function(sym) {
+        symInfo <- private$symbols[[sym]]
+        databaseSymbol <- list(
+          alias = symInfo$alias,
+          isScalar = symInfo$isScalar,
+          direction = symInfo$direction,
+          columns = setNames(
+            lapply(seq_along(symInfo$columns$names), function(colId) {
+              column <- list(
+                alias = symInfo$columns$aliases[[colId]],
+                type = symInfo$columns$types[[colId]]
               )
-              direction <- "input"
-            } else {
-              futile.logger::flog.error("Database symbol '%s' not found in either input or output symbols.", sym)
-              next
-            }
-          }
-        }
-
-        symType <- private$getSymbolType(cfg$symtype %||% cfg$type %||% "unknown")
-
-        columns <- list()
-        if (is.null(cfg$headers)) {
-          columns[[sym]] <- list(
-            alias = cfg$alias,
-            type = symType
+              if (isTRUE(symInfo$columns$readonly[[colId]])) {
+                column$readonly <- TRUE
+              }
+              return(column)
+            }),
+            symInfo$columns$names
           )
-        } else {
-          for (colName in names(cfg$headers)) {
-            columns[[colName]] <- list(
-              alias = cfg$headers[[colName]]$alias,
-              type = cfg$headers[[colName]]$type
-            )
+        )
+        if (length(symInfo$widget)) {
+          databaseSymbol$widget <- symInfo$widget
+          if (length(symInfo$widget$choicesFrom)) {
+            databaseSymbol$widget$choices <- private$listDependentChoices(sym)
           }
         }
-
-        databaseSymbols[[sym]] <- list(
-          alias = cfg$alias,
-          isScalar = isTRUE(cfg$isScalarDs),
-          direction = direction,
-          columns = columns
-        )
-        widgetConfig <- tryCatch(private$getWidgetConfig(sym), error = function(err) {
-          futile.logger::flog.warn("Could not determine widget config for symbol: %s. Error: %s", sym, conditionMessage(err))
-          return(NULL)
-        })
-        if (length(widgetConfig)) {
-          databaseSymbols[[sym]]$widget <- widgetConfig
+        if (length(symInfo$modifiable)) {
+          databaseSymbol$modifiable <- symInfo$modifiable
         }
-      }
+        return(databaseSymbol)
+      }), names(private$symbols))
       combinedContext <- list(
         activeScenarios = activeScenariosDf[, c("name", "tags"), drop = FALSE],
         databaseSymbols = databaseSymbols
@@ -198,7 +349,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         propertiesList$orderBy$description <- "Optional. The column to sort results by. For aggregation, use the alias with a leading underscore (e.g., '_sum'). Otherwise, use the target column name."
       }
 
-      return(list(
+      toolSchema <- list(
         list(
           name = "queryScenarioDatabase",
           type = "function",
@@ -209,7 +360,178 @@ AIToolAdapter <- R6Class("AIToolAdapter",
             required = requiredList
           )
         )
-      ))
+      )
+      if (private$inputModificationEnabled) {
+        toolSchema[[length(toolSchema) + 1L]] <- private$getModifyInputToolSchema()
+      }
+      return(toolSchema)
+    },
+    modifySandboxInputData = function(argumentsJson) {
+      if (!private$inputModificationEnabled) {
+        return(private$toolError("Input data cannot be modified in the current context."))
+      }
+      if (length(private$allowedSids) != 1L) {
+        return(private$toolError("Input data can only be modified when a single sandbox scenario is in context."))
+      }
+      args <- tryCatch(
+        {
+          parsed <- if (is.character(argumentsJson)) jsonlite::fromJSON(argumentsJson) else argumentsJson
+          if (!is.list(parsed)) stop("Parsed arguments are not a JSON object.", call. = FALSE)
+          parsed
+        },
+        error = function(e) NULL
+      )
+      if (is.null(args)) {
+        return(private$toolError("Invalid JSON argument format."))
+      }
+
+      symName <- args$symbolName
+      if (length(symName) != 1L || !is.character(symName) || !nzchar(symName)) {
+        return(private$toolError("`symbolName` is required and must be a non-empty string."))
+      }
+      if (is.null(private$ioConfig$modelIn[[symName]])) {
+        return(private$toolError(sprintf("'%s' is not an input symbol, so it cannot be modified.", symName)))
+      }
+      modifiableInfo <- private$getModifiableInfo(symName)
+      if (is.null(modifiableInfo)) {
+        return(private$toolError(sprintf(
+          "Input symbol '%s' cannot be modified (it is readonly, its numeric columns are all readonly, it holds no numeric or single-choice value, or it is a widget type that does not support being changed). Only symbols with a `modifiable` entry in the database schema can be changed.",
+          symName
+        )))
+      }
+      isChoice <- identical(modifiableInfo$kind, "choice")
+      operation <- if (length(args$operation) == 1L) toupper(as.character(args$operation)) else ""
+      if (!operation %in% AI_INPUT_CHANGE_OPERATIONS) {
+        return(private$toolError(sprintf(
+          "`operation` is required and must be one of: %s.",
+          paste(AI_INPUT_CHANGE_OPERATIONS, collapse = ", ")
+        )))
+      }
+      symConfig <- private$ioConfig$modelIn[[symName]]
+      symColumns <- private$getInputSymbolColumns(symName)
+      isScalar <- !length(symConfig$headers)
+
+      if (isChoice) {
+        return(private$proposeInputChoiceChange(args, symName, symConfig, symColumns, operation))
+      }
+
+      value <- suppressWarnings(as.numeric(args$value))
+      if (length(value) != 1L || is.na(value) || !is.finite(value)) {
+        return(private$toolError("`value` is required and must be a single finite number."))
+      }
+      if (identical(operation, "DIVIDE") && identical(value, 0)) {
+        return(private$toolError("Cannot divide by zero."))
+      }
+
+      if (isScalar) {
+        if (length(args$filters)) {
+          return(private$toolError(sprintf("'%s' holds a single value, so `filters` cannot be used.", symName)))
+        }
+        targetColumnIdx <- 1L
+      } else {
+        modifiableColumns <- paste(modifiableInfo$columns, collapse = ", ")
+        targetColumn <- args$targetColumn
+        if (length(targetColumn) != 1L || !is.character(targetColumn) || !nzchar(targetColumn)) {
+          return(private$toolError(sprintf(
+            "`targetColumn` is required for table symbol '%s'. Modifiable columns: %s.",
+            symName, modifiableColumns
+          )))
+        }
+        targetColumnIdx <- match(targetColumn, symColumns$names)
+        if (is.na(targetColumnIdx)) {
+          return(private$toolError(sprintf("Invalid `targetColumn` '%s' for symbol '%s'.", targetColumn, symName)))
+        }
+        if (isTRUE(symColumns$readonly[[targetColumnIdx]])) {
+          return(private$toolError(sprintf(
+            "Column '%s' of symbol '%s' is readonly and cannot be changed. Modifiable columns: %s.",
+            targetColumn, symName, modifiableColumns
+          )))
+        }
+        if (!identical(symColumns$types[[targetColumnIdx]], "numeric")) {
+          return(private$toolError(sprintf(
+            "Column '%s' of symbol '%s' is not numeric. Modifiable columns: %s.",
+            targetColumn, symName, modifiableColumns
+          )))
+        }
+      }
+
+      filters <- private$resolveInputChangeFilters(args$filters, symColumns)
+      if (is.character(filters)) {
+        return(private$toolError(filters))
+      }
+
+      change <- list(
+        changeId = private$generateChangeId(),
+        symbolName = symName,
+        symbolAlias = if (length(symConfig$alias)) symConfig$alias else symName,
+        isScalar = isScalar,
+        operation = operation,
+        value = value,
+        targetColumn = symColumns$names[[targetColumnIdx]],
+        targetColumnIdx = targetColumnIdx,
+        targetColumnAlias = symColumns$aliases[[targetColumnIdx]],
+        columnAliases = symColumns$aliases,
+        filters = filters,
+        reason = if (length(args$reason) == 1L && is.character(args$reason)) args$reason else NULL
+      )
+
+      changeStats <- tryCatch(private$summarizeInputChangeInDb(symName, symColumns$names, change),
+        error = function(err) {
+          return(conditionMessage(err))
+        }
+      )
+      if (is.character(changeStats)) {
+        return(private$toolError(sprintf("Could not read current data of symbol '%s': %s", symName, changeStats)))
+      }
+      if (changeStats$matchedRows == 0L) {
+        return(private$toolError(sprintf(
+          "No row of symbol '%s' matches the given filters, so there is nothing to change. Query the symbol first to find out which values its index columns actually take.",
+          symName
+        )))
+      }
+      afterSummary <- deriveAiInputChangeSummary(
+        changeStats$before, changeStats$matchedRows, operation, value
+      )
+      boundsError <- private$checkInputChangeBounds(symName, c(afterSummary$min, afterSummary$max))
+      if (!is.null(boundsError)) {
+        return(private$toolError(boundsError))
+      }
+
+      private$pendingInputChanges[[length(private$pendingInputChanges) + 1L]] <- change
+
+      sampleBefore <- suppressWarnings(as.numeric(changeStats$sample[[targetColumnIdx]]))
+      modelPreview <- data.frame(
+        `_before` = formatAiInputValue(sampleBefore),
+        `_after` = formatAiInputValue(computeAiInputChangeValues(sampleBefore, operation, value)),
+        check.names = FALSE, stringsAsFactors = FALSE
+      )
+      labelCols <- setdiff(seq_along(symColumns$names), targetColumnIdx)
+      if (length(labelCols)) {
+        labels <- as.data.frame(
+          lapply(labelCols, function(colIdx) formatAiInputValue(changeStats$sample[[colIdx]])),
+          stringsAsFactors = FALSE, optional = TRUE
+        )
+        names(labels) <- symColumns$aliases[labelCols]
+        modelPreview <- cbind(labels, modelPreview)
+      }
+      return(toJSON(list(
+        status = "AWAITING_USER_CONFIRMATION",
+        symbolName = symName,
+        operation = operation,
+        value = value,
+        targetColumn = change$targetColumn,
+        valuesAffected = changeStats$matchedRows,
+        before = changeStats$before,
+        after = afterSummary,
+        preview = modelPreview,
+        previewNote = if (changeStats$matchedRows > nrow(modelPreview)) {
+          sprintf(
+            "Only the first %d of %d affected rows are shown here.",
+            nrow(modelPreview), changeStats$matchedRows
+          )
+        },
+        note = "The change has NOT been applied. It is queued as a proposal that the user must confirm in the chat. Do not query the database to verify it and do not state that the data has changed; tell the user in one or two sentences what you proposed and that they need to confirm or discard it."
+      ), dataframe = "rows", auto_unbox = TRUE, na = "null"))
     },
     queryScenarioDatabase = function(argumentsJson) {
       args <- tryCatch(
@@ -517,10 +839,498 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     dbSchema = NULL,
     conn = NULL,
     ioConfig = NULL,
+    symbols = NULL,
+    inputModificationEnabled = FALSE,
+    pendingInputChanges = list(),
     allowedSids = NULL,
     customscenIdNameMap = character(),
     scenarioMap = NULL,
     scenarioMapById = NULL,
+    toolError = function(message) {
+      return(jsonlite::toJSON(list(error = message), auto_unbox = TRUE))
+    },
+    generateChangeId = function() {
+      return(paste0("aichg_", paste(sample(c(letters, 0:9), 12L, replace = TRUE), collapse = "")))
+    },
+    describeSymbols = function() {
+      outputScalars <- private$ioConfig$modelOut[[scalarsOutName]]
+      inputScalars <- private$ioConfig$modelIn[[scalarsFileName]]
+      symbols <- list()
+      for (sym in private$dbSchema$getDbTableNames()) {
+        symConfig <- private$ioConfig$modelIn[[sym]]
+        direction <- "input"
+        if (is.null(symConfig)) {
+          symConfig <- private$ioConfig$modelOut[[sym]]
+          direction <- "output"
+        }
+        if (is.null(symConfig)) {
+          # a scalar has no entry of its own; it is described by the scalars sheet
+          scalarId <- match(sym, outputScalars$symnames)
+          if (!is.na(scalarId)) {
+            symConfig <- list(
+              alias = outputScalars$symtext[[scalarId]],
+              symtype = outputScalars$symtypes[[scalarId]], isScalarDs = TRUE
+            )
+            direction <- "output"
+          } else {
+            scalarId <- match(sym, inputScalars$symnames)
+            if (is.na(scalarId)) {
+              futile.logger::flog.error("Database symbol '%s' not found in either input or output symbols.", sym)
+              next
+            }
+            symConfig <- list(
+              alias = inputScalars$symtext[[scalarId]],
+              symtype = inputScalars$symtypes[[scalarId]], isScalarDs = TRUE
+            )
+            direction <- "input"
+          }
+        }
+        symbols[[sym]] <- list(
+          alias = symConfig$alias,
+          direction = direction,
+          isScalar = isTRUE(symConfig$isScalarDs),
+          columns = private$describeSymbolColumns(sym, symConfig),
+          widget = tryCatch(private$getWidgetConfig(sym), error = function(err) {
+            futile.logger::flog.warn(
+              "Could not determine widget config for symbol: %s. Error: %s",
+              sym, conditionMessage(err)
+            )
+            return(NULL)
+          })
+        )
+      }
+      return(symbols)
+    },
+    describeSymbolColumns = function(symName, symConfig) {
+      symbolType <- function(type) {
+        return(tryCatch(private$getSymbolType(type),
+          error = function(err) {
+            futile.logger::flog.warn("Unknown type: '%s' for symbol: %s.", type, symName)
+            return("unknown")
+          }
+        ))
+      }
+      if (!length(symConfig$headers)) {
+        return(list(
+          names = symName,
+          aliases = if (length(symConfig$alias)) symConfig$alias else symName,
+          types = symbolType(symConfig$symtype %||% symConfig$type %||% "unknown"),
+          readonly = isTRUE(symConfig$readonly) || isTRUE(symConfig$options$readonly)
+        ))
+      }
+      colNames <- names(symConfig$headers)
+      return(list(
+        names = colNames,
+        aliases = vapply(colNames, function(colName) {
+          alias <- symConfig$headers[[colName]]$alias
+          if (length(alias) == 1L && nzchar(alias)) {
+            return(alias)
+          }
+          return(colName)
+        }, character(1L), USE.NAMES = FALSE),
+        types = vapply(colNames, function(colName) {
+          return(symbolType(symConfig$headers[[colName]]$type %||% "string"))
+        }, character(1L), USE.NAMES = FALSE),
+        # a table's `readonlyCols` are resolved into the headers during init
+        readonly = vapply(colNames, function(colName) {
+          return(isTRUE(symConfig$headers[[colName]]$readonly))
+        }, logical(1L), USE.NAMES = FALSE)
+      ))
+    },
+    getInputSymbolColumns = function(symName) {
+      return(private$symbols[[symName]]$columns)
+    },
+    isModifiableInputSymbol = function(symName) {
+      if (identical(symName, scalarsFileName)) {
+        # the scalars sheet is exposed as one symbol per scalar widget
+        return(FALSE)
+      }
+      symConfig <- private$ioConfig$modelIn[[symName]]
+      if (is.null(symConfig) || length(symConfig$definedByExternalSymbol)) {
+        return(FALSE)
+      }
+      if (isTRUE(symConfig$readonly) || isTRUE(symConfig$options$readonly)) {
+        return(FALSE)
+      }
+      widgetType <- symConfig$type
+      if (length(widgetType) != 1L) {
+        return(FALSE)
+      }
+      if (widgetType %in% c("hot", "dt", "custom")) {
+        return(length(private$modifiableColumnsOf(symName)) > 0L)
+      }
+      if (widgetType %in% c("slider", "numericinput")) {
+        # a range slider is stored as two separate `<sym>_lo`/`<sym>_up` scalars
+        return(length(symConfig[[widgetType]]$default) < 2L)
+      }
+      if (identical(widgetType, "dropdown")) {
+        # a multi-select dropdown holds a list of values rather than one choice.
+        # A single-select one is one value, whether it is stored as a scalar or
+        # (when it is backed by a GAMS set) as a one-column table.
+        return(!isTRUE(symConfig$dropdown$multiple) &&
+          length(private$getInputSymbolColumns(symName)$names) == 1L)
+      }
+      return(FALSE)
+    },
+    getModifiableInfo = function(symName) {
+      if (!private$isModifiableInputSymbol(symName)) {
+        return(NULL)
+      }
+      if (identical(private$ioConfig$modelIn[[symName]]$type, "dropdown")) {
+        return(list(kind = "choice"))
+      }
+      # I() keeps a single column an array rather than a bare string
+      return(list(kind = "numeric", columns = I(private$modifiableColumnsOf(symName))))
+    },
+    modifiableColumnsOf = function(symName) {
+      symColumns <- private$getInputSymbolColumns(symName)
+      if (!length(symColumns$names)) {
+        return(character(0L))
+      }
+      return(symColumns$names[symColumns$types == "numeric" & !symColumns$readonly])
+    },
+    listDependentChoices = function(symName) {
+      symChoices <- tryCatch(private$getInputSymbolChoices(symName)$choices,
+        error = function(err) {
+          futile.logger::flog.warn(
+            "Could not resolve choices of symbol: '%s'. Error message: %s",
+            symName, conditionMessage(err)
+          )
+          return(character(0L))
+        }
+      )
+      if (!length(symChoices) || length(symChoices) > AI_MAX_LISTED_CHOICES) {
+        return(NULL)
+      }
+      # I() keeps a single choice an array rather than a bare string
+      return(I(symChoices))
+    },
+    getInputSymbolChoices = function(symName) {
+      dropdownConfig <- private$ioConfig$modelIn[[symName]]$dropdown
+      choices <- as.character(dropdownConfig$choices)
+      aliases <- as.character(dropdownConfig$aliases)
+      dependencies <- dropdownConfig$dependencyConfig$fw
+      if (length(dependencies)) {
+        choices <- as.character(dropdownConfig$dependencyConfig$staticChoices)
+        aliases <- as.character(dropdownConfig$dependencyConfig$staticAliases)
+        for (depSymName in names(dependencies)) {
+          depColName <- dependencies[[depSymName]][[1L]]
+          depColumns <- private$getInputSymbolColumns(depSymName)
+          depColIdx <- match(depColName, depColumns$names)
+          if (is.na(depColIdx)) {
+            next
+          }
+          dbColNames <- setdiff(unname(private$dbSchema$getDbSchema(depSymName)$colNames), "_sid")
+          if (length(dbColNames) != length(depColumns$names)) {
+            next
+          }
+          depValues <- DBI::dbGetQuery(private$conn, sprintf(
+            "SELECT DISTINCT %s FROM %s WHERE %s = %d",
+            DBI::dbQuoteIdentifier(private$conn, dbColNames[[depColIdx]]),
+            DBI::dbQuoteIdentifier(private$conn, private$dbSchema$getDbTableName(depSymName)),
+            DBI::dbQuoteIdentifier(private$conn, "_sid"), private$allowedSids[[1L]]
+          ))
+          choices <- c(choices, as.character(depValues[[1L]]))
+        }
+        aliases <- character(0L)
+      }
+      choices <- unique(choices[!is.na(choices)])
+      return(list(choices = choices, aliases = aliases))
+    },
+    proposeInputChoiceChange = function(args, symName, symConfig, symColumns, operation) {
+      if (!identical(operation, "SET")) {
+        return(private$toolError(sprintf(
+          "'%s' holds a single choice, so only the SET operation is supported (arithmetic does not apply to it).",
+          symName
+        )))
+      }
+      newValue <- args$textValue
+      if (length(newValue) != 1L || !is.character(newValue) || !nzchar(newValue)) {
+        return(private$toolError(sprintf(
+          "`textValue` is required for '%s' and must be the new selection as a single string (`value` is only used for numeric symbols).",
+          symName
+        )))
+      }
+      symChoices <- tryCatch(private$getInputSymbolChoices(symName),
+        error = function(err) {
+          return(conditionMessage(err))
+        }
+      )
+      if (is.character(symChoices)) {
+        return(private$toolError(sprintf("Could not determine the choices of '%s': %s", symName, symChoices)))
+      }
+      if (!newValue %in% symChoices$choices) {
+        # a model that only saw the labels should not have to guess the values
+        aliasIdx <- match(newValue, symChoices$aliases)
+        if (!is.na(aliasIdx) && aliasIdx <= length(symChoices$choices)) {
+          newValue <- symChoices$choices[[aliasIdx]]
+        } else {
+          return(private$toolError(sprintf(
+            "'%s' is not one of the values '%s' accepts. Valid values: %s.",
+            newValue, symName, paste(symChoices$choices, collapse = ", ")
+          )))
+        }
+      }
+
+      change <- list(
+        changeId = private$generateChangeId(),
+        symbolName = symName,
+        symbolAlias = if (length(symConfig$alias)) symConfig$alias else symName,
+        isScalar = TRUE, isChoice = TRUE,
+        operation = "SET",
+        value = newValue,
+        targetColumn = symColumns$names[[1L]],
+        targetColumnIdx = 1L,
+        targetColumnAlias = symColumns$aliases[[1L]],
+        columnAliases = symColumns$aliases,
+        filters = list(),
+        reason = if (length(args$reason) == 1L && is.character(args$reason)) args$reason else NULL
+      )
+
+      currentValue <- tryCatch(
+        list(value = private$readInputChangeCurrentValue(symName, symColumns$names, change)),
+        error = function(err) list(error = conditionMessage(err))
+      )
+      if (!is.null(currentValue$error)) {
+        return(private$toolError(sprintf(
+          "Could not read the current value of symbol '%s': %s", symName, currentValue$error
+        )))
+      }
+      currentValue <- currentValue$value
+      if (identical(currentValue, newValue)) {
+        return(private$toolError(sprintf(
+          "'%s' is already set to '%s', so there is nothing to change.", symName, newValue
+        )))
+      }
+      private$pendingInputChanges[[length(private$pendingInputChanges) + 1L]] <- change
+
+      return(toJSON(list(
+        status = "AWAITING_USER_CONFIRMATION",
+        symbolName = symName,
+        operation = "SET",
+        currentValue = currentValue,
+        newValue = newValue,
+        note = "The change has NOT been applied. It is queued as a proposal that the user must confirm in the chat. Do not query the database to verify it and do not state that the data has changed; tell the user in one or two sentences what you proposed and that they need to confirm or discard it."
+      ), auto_unbox = TRUE, na = "null"))
+    },
+    readInputChangeCurrentValue = function(symName, colNames, change) {
+      dbColNames <- setdiff(unname(private$dbSchema$getDbSchema(symName)$colNames), "_sid")
+      if (length(dbColNames) != length(colNames)) {
+        stop(sprintf(
+          "database layout of symbol '%s' (%d columns) does not match its configuration (%d columns)",
+          symName, length(dbColNames), length(colNames)
+        ), call. = FALSE)
+      }
+      currentValue <- DBI::dbGetQuery(private$conn, sprintf(
+        "SELECT %s FROM %s WHERE %s = %d LIMIT 1",
+        DBI::dbQuoteIdentifier(private$conn, dbColNames[[change$targetColumnIdx]]),
+        DBI::dbQuoteIdentifier(private$conn, private$dbSchema$getDbTableName(symName)),
+        DBI::dbQuoteIdentifier(private$conn, "_sid"), private$allowedSids[[1L]]
+      ))
+      if (!nrow(currentValue)) {
+        return(NA_character_)
+      }
+      return(as.character(currentValue[[1L]][[1L]]))
+    },
+    #' Keep proposals inside the bounds the widget enforces: a slider would
+    #' silently clamp an out-of-range value, so the data the user confirmed and
+    #' the data that ends up in the sandbox would differ.
+    checkInputChangeBounds = function(symName, newValues) {
+      symConfig <- private$ioConfig$modelIn[[symName]]
+      widgetConfig <- symConfig[[symConfig$type]]
+      newValues <- newValues[!is.na(newValues)]
+      if (!length(newValues)) {
+        return(NULL)
+      }
+      minValue <- widgetConfig$min
+      maxValue <- widgetConfig$max
+      if (is.numeric(minValue) && length(minValue) == 1L && min(newValues) < minValue) {
+        return(sprintf(
+          "The resulting value (%s) is below the minimum (%s) allowed for '%s'.",
+          formatAiInputValue(min(newValues)), formatAiInputValue(minValue), symName
+        ))
+      }
+      if (is.numeric(maxValue) && length(maxValue) == 1L && max(newValues) > maxValue) {
+        return(sprintf(
+          "The resulting value (%s) exceeds the maximum (%s) allowed for '%s'.",
+          formatAiInputValue(max(newValues)), formatAiInputValue(maxValue), symName
+        ))
+      }
+      return(NULL)
+    },
+    resolveInputChangeFilters = function(filters, symColumns) {
+      if (is.null(filters) || length(filters) == 0L) {
+        return(list())
+      }
+      if (!is.data.frame(filters) && is.list(filters) &&
+        all(c("column", "operator", "value") %in% names(filters))) {
+        # a single filter object was sent instead of a one-element array; normalize it
+        filters <- as.data.frame(filters, stringsAsFactors = FALSE)
+      }
+      if (!is.data.frame(filters)) {
+        return("`filters` must be an array of {column, operator, value} objects.")
+      }
+      resolved <- vector("list", nrow(filters))
+      for (i in seq_len(nrow(filters))) {
+        colIdx <- match(as.character(filters$column[i]), symColumns$names)
+        if (is.na(colIdx)) {
+          return(sprintf("Invalid filter column '%s'.", filters$column[i]))
+        }
+        operator <- as.character(filters$operator[i])
+        if (!operator %in% AI_INPUT_CHANGE_FILTER_OPERATORS) {
+          return(sprintf(
+            "Invalid filter operator '%s'. Must be one of: %s.",
+            operator, paste(AI_INPUT_CHANGE_FILTER_OPERATORS, collapse = ", ")
+          ))
+        }
+        filterValue <- as.character(filters$value[i])
+        isNumericCol <- identical(symColumns$types[[colIdx]], "numeric")
+        if (operator %in% c(">", ">=", "<", "<=") && !isNumericCol) {
+          return(sprintf("Operator '%s' requires a numeric filter column, but '%s' is not numeric.", operator, symColumns$names[[colIdx]]))
+        }
+        if (isNumericCol) {
+          # comparing a numeric column against text matches nothing in R and is
+          # a type error in some databases, so it is rejected up front
+          numericValues <- suppressWarnings(as.numeric(
+            if (identical(operator, "IN")) trimws(strsplit(filterValue, ",", fixed = TRUE)[[1L]]) else filterValue
+          ))
+          if (!length(numericValues) || anyNA(numericValues)) {
+            return(sprintf(
+              "Filter value '%s' is not a number, but column '%s' is numeric.",
+              filterValue, symColumns$names[[colIdx]]
+            ))
+          }
+        }
+        resolved[[i]] <- list(
+          column = symColumns$names[[colIdx]],
+          columnAlias = symColumns$aliases[[colIdx]],
+          isNumericColumn = isNumericCol,
+          columnIdx = colIdx,
+          operator = operator,
+          value = filterValue
+        )
+      }
+      return(resolved)
+    },
+    buildInputChangeWhereClause = function(change, dbColNames) {
+      whereClause <- sprintf(
+        "%s = %d",
+        DBI::dbQuoteIdentifier(private$conn, "_sid"), private$allowedSids[[1L]]
+      )
+      for (filterSpec in change$filters) {
+        escCol <- DBI::dbQuoteIdentifier(private$conn, dbColNames[[filterSpec$columnIdx]])
+        quoteValue <- function(value) {
+          if (isTRUE(filterSpec$isNumericColumn)) {
+            return(DBI::dbQuoteLiteral(private$conn, as.numeric(value)))
+          }
+          return(DBI::dbQuoteLiteral(private$conn, value))
+        }
+        if (identical(filterSpec$operator, "IN")) {
+          targets <- trimws(strsplit(filterSpec$value, ",", fixed = TRUE)[[1L]])
+          whereClause <- sprintf(
+            "%s AND %s IN (%s)", whereClause, escCol,
+            paste(vapply(targets, quoteValue, character(1L), USE.NAMES = FALSE), collapse = ", ")
+          )
+        } else {
+          whereClause <- sprintf(
+            "%s AND %s %s %s", whereClause, escCol,
+            filterSpec$operator, quoteValue(filterSpec$value)
+          )
+        }
+      }
+      return(whereClause)
+    },
+    summarizeInputChangeInDb = function(symName, colNames, change) {
+      dbColNames <- setdiff(unname(private$dbSchema$getDbSchema(symName)$colNames), "_sid")
+      if (length(dbColNames) != length(colNames)) {
+        stop(sprintf(
+          "database layout of symbol '%s' (%d columns) does not match its configuration (%d columns)",
+          symName, length(dbColNames), length(colNames)
+        ), call. = FALSE)
+      }
+      escTable <- DBI::dbQuoteIdentifier(private$conn, private$dbSchema$getDbTableName(symName))
+      escTarget <- DBI::dbQuoteIdentifier(private$conn, dbColNames[[change$targetColumnIdx]])
+      whereClause <- private$buildInputChangeWhereClause(change, dbColNames)
+
+      stats <- DBI::dbGetQuery(private$conn, sprintf(
+        "SELECT COUNT(*) AS matched_rows, COUNT(%1$s) AS value_count, SUM(%1$s) AS value_sum, MIN(%1$s) AS value_min, MAX(%1$s) AS value_max FROM %2$s WHERE %3$s",
+        escTarget, escTable, whereClause
+      ))
+      sample <- DBI::dbGetQuery(private$conn, sprintf(
+        "SELECT %s FROM %s WHERE %s LIMIT %d",
+        paste(DBI::dbQuoteIdentifier(private$conn, dbColNames), collapse = ", "),
+        escTable, whereClause, AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS
+      ))
+      names(sample) <- colNames
+
+      valueCount <- as.integer(stats$value_count[[1L]])
+      before <- list(count = valueCount)
+      if (valueCount > 0L) {
+        before <- list(
+          count = valueCount, sum = as.numeric(stats$value_sum[[1L]]),
+          min = as.numeric(stats$value_min[[1L]]), max = as.numeric(stats$value_max[[1L]])
+        )
+      }
+      return(list(
+        matchedRows = as.integer(stats$matched_rows[[1L]]),
+        before = before, sample = sample
+      ))
+    },
+    getModifyInputToolSchema = function() {
+      return(list(
+        name = "modifySandboxInputData",
+        type = "function",
+        description = "Proposes a change to the sandbox scenario's INPUT data: arithmetic on a numeric column, or a new selection for a symbol holding one choice (a dropdown). The change is NOT applied; it is queued as a proposal the user confirms in the chat, seeing exact before/after values first. Only symbols with a `modifiable` entry in the database schema can be changed. One call per column.",
+        parameters = list(
+          type = "object",
+          properties = list(
+            symbolName = list(
+              type = "string",
+              description = "Technical identifier of the input symbol. Must have a `modifiable` entry in the database schema."
+            ),
+            targetColumn = list(
+              type = "string",
+              description = "The numeric column to change; must be listed in that symbol's `modifiable.columns`. Omit for symbols holding a single value (sliders, numeric inputs, dropdowns)."
+            ),
+            operation = list(
+              type = "string",
+              enum = AI_INPUT_CHANGE_OPERATIONS,
+              description = "MULTIPLY/DIVIDE/ADD/SUBTRACT combine `value` with the cell's current value; SET replaces it. Prefer the relative operations to preserve the user's numbers; use SET only when the user asked for an absolute value. `modifiable.kind: \"choice\"` supports SET only."
+            ),
+            value = list(
+              type = "number",
+              description = "The numeric operand, e.g. 1.1 with MULTIPLY for a 10% increase. Required for `modifiable.kind: \"numeric\"`."
+            ),
+            textValue = list(
+              type = "string",
+              description = "New selection for `modifiable.kind: \"choice\"` symbols (instead of `value`, always with SET). Must be one of that symbol's `widget.choices`. If the schema lists none, `widget.choicesFrom` names the symbol and column the valid values come from -- query that column for them."
+            ),
+            filters = list(
+              type = "array",
+              description = "Optional. Restricts the change to matching rows; WITHOUT filters EVERY row of the column is changed. Not allowed for symbols holding a single value. Rows whose filter column is empty never match.",
+              items = list(
+                type = "object",
+                properties = list(
+                  column = list(type = "string", description = "Column to filter on."),
+                  operator = list(
+                    type = "string",
+                    enum = AI_INPUT_CHANGE_FILTER_OPERATORS,
+                    description = "`IN` takes a comma-separated list of values. The ordering operators require a numeric column."
+                  ),
+                  value = list(type = "string", description = "Value to compare against.")
+                ),
+                required = c("column", "operator", "value")
+              )
+            ),
+            reason = list(
+              type = "string",
+              description = "One short sentence, shown on the confirmation card, saying why the change is proposed."
+            )
+          ),
+          required = c("symbolName", "operation")
+        )
+      ))
+    },
     getSymbolType = function(symType) {
       if (symType %in% c("dropdown", "dropdowne", "set", "date", "daterange", "custom", "hot", "dt", "string", "textinput")) {
         return("string")
@@ -549,8 +1359,14 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
       if (identical(widgetType, "dropdown")) {
         cleanedWidgetConfig$multiple <- isTRUE(widgetConfig$multiple)
-        if (!is.null(widgetConfig$dependencyConfig$fw)) {
+        dependencies <- widgetConfig$dependencyConfig$fw
+        if (length(dependencies)) {
+          # the configured choices are only the static ones; the rest follow
+          # another symbol's data, so name the symbol and column they come from
           cleanedWidgetConfig$choices <- NULL
+          cleanedWidgetConfig$choicesFrom <- unname(lapply(names(dependencies), function(depSymName) {
+            return(list(symbol = depSymName, column = dependencies[[depSymName]][[1L]]))
+          }))
         }
       } else if (identical(widgetType, "slider")) {
         for (key in c("min", "max", "step")) {

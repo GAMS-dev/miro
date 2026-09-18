@@ -372,14 +372,87 @@
                 </section>
                 <!--//doc-section-->
 
+                <section id="changing-input-data" class="doc-section">
+                  <h2 class="section-title">Changing Input Data</h2>
+                  <div class="section-block">
+                    <p>
+                      Analysis usually ends in a question of the form "what if
+                      we changed this?". Instead of leaving the chat, finding
+                      the right table and editing it by hand, we can ask the
+                      assistant to prepare the change for us: "increase demand
+                      in the EU by 10%", "halve the capacity of San Diego" or
+                      "set the maximum stock to 8".
+                    </p>
+                    <p>
+                      The assistant never writes to our data on its own.
+                      Instead, it puts a <b>proposal</b> into the chat, and
+                      nothing happens until we confirm it. Each proposal is a
+                      card that spells out exactly what would change:
+                    </p>
+                    <ul>
+                      <li>
+                        <b>What is affected</b> - the symbol, the column, and
+                        the rows the change applies to (if the assistant
+                        restricted it to a subset), plus how many values that
+                        comes to.
+                      </li>
+                      <li>
+                        <b>The arithmetic</b> - whether the current values are
+                        multiplied, divided, increased, decreased, or replaced
+                        outright, and by which number. The assistant works
+                        <i>with</i> our numbers rather than overwriting the
+                        table: multiplying a column by 1.1 keeps every
+                        individual value and scales it. For an input that holds
+                        a single selection rather than numbers - a dropdown -
+                        the proposal is simply the new selection, and it can
+                        only ever be one of the values that dropdown offers.
+                      </li>
+                      <li>
+                        <b>The exact result</b> - a before/after table of the
+                        values that would change, so we can see the new data
+                        before it exists. A change can span millions of rows,
+                        so the table shows the first of them and tells us how
+                        many there are in total.
+                      </li>
+                    </ul>
+                    <p>
+                      <i>Apply</i> writes the new values into the sandbox
+                      scenario, exactly as if we had typed them ourselves: the
+                      input widgets update, the scenario is marked as modified,
+                      and we can solve, save, or undo it like any other manual
+                      edit. <i>Discard</i> leaves everything untouched. Each
+                      proposal is confirmed on its own, so we can accept one
+                      suggestion and reject the next.
+                    </p>
+                    <p>
+                      A few things are deliberately out of the assistant's
+                      reach. It can only change what we could change by hand:
+                      readonly symbols, individual columns a table marks as
+                      readonly, symbols without a numeric column and
+                      multi-select dropdowns are never offered, output data is
+                      never touched, and a value that would fall outside the
+                      bounds of its widget (a slider's minimum or maximum, for
+                      instance) is rejected before we ever see a proposal.
+                      Proposals are also tied to the data they were computed
+                      from - if the underlying data changes before we confirm,
+                      the card is marked as outdated rather than applied to
+                      values the preview never showed. In readonly mode, the
+                      assistant cannot propose changes at all.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+
                 <section id="how-it-works" class="doc-section">
                   <h2 class="section-title">How the AI Assistant Works</h2>
                   <div class="section-block">
                     <p>
                       The AI Assistant does not receive a dump of our scenario
                       data up front. Its system prompt is built from a fixed
-                      set of context, plus a tool to query MIRO's scenario
-                      database on demand:
+                      set of context, plus tools to query MIRO's scenario
+                      database on demand and to propose changes to our sandbox
+                      input data:
                     </p>
                     <ul>
                       <li>
@@ -430,6 +503,17 @@
                       what it is asked. This is the same access control that
                       governs every other part of MIRO; the AI Assistant does
                       not bypass it.
+                    </p>
+                    <p>
+                      Writing works the other way around: the model has no
+                      connection to our session at all, so a proposed change is
+                      only ever a description of an operation. It is the app,
+                      not the model, that resolves it against our live data,
+                      renders the before/after preview we confirm, and performs
+                      the edit - which is why every change needs our click, and
+                      why the same guardrails that apply to us editing a table
+                      by hand apply to the assistant too (see
+                      <a href="#changing-input-data">Changing Input Data</a>).
                     </p>
                     <p>
                       The conversation itself, together with the running token
@@ -529,6 +613,9 @@
                   >
                   <a class="nav-link scrollto" href="#using-ai-assistant"
                     >Using the AI Assistant</a
+                  >
+                  <a class="nav-link scrollto" href="#changing-input-data"
+                    >Changing Input Data</a
                   >
                   <a class="nav-link scrollto" href="#how-it-works"
                     >How the AI Assistant Works</a

@@ -99,6 +99,29 @@ test_that("AIToolAdapter initializes and getSystemMetadata builds scenario maps 
   DBI::dbDisconnect(env$conn)
 })
 
+test_that("getSystemMetadata describes each symbol's columns, aliases and types", {
+  # the shape of this block is the contract the model is prompted with, so it
+  # should only ever change deliberately
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+
+  symbols <- jsonlite::fromJSON(adapter$getSystemMetadata(), simplifyVector = FALSE)$databaseSymbols
+
+  expect_equal(names(symbols), c("demand", "capacity"))
+  expect_equal(symbols$demand$alias, "Customer Demand")
+  expect_equal(symbols$demand$direction, "input")
+  expect_false(symbols$demand$isScalar)
+  expect_equal(names(symbols$demand$columns), c("region", "year", "value"))
+  expect_equal(symbols$demand$columns$region$alias, "Region")
+  expect_equal(symbols$demand$columns$value$type, "numeric")
+  # a column type is reported as one of the two kinds MIRO stores
+  expect_true(all(vapply(symbols$demand$columns, "[[", character(1L), "type") %in%
+    c("string", "numeric")))
+
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("getToolSchema returns correct JSON schema structure with analysis modes", {
   env <- setup_test_env()
   adapter <- env$adapter

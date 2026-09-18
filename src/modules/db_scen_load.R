@@ -555,6 +555,7 @@ observeEvent(input$btBatchCompare, {
   if (identical(viewMode, "aiCompare")) {
     return(aiAssistantDialogState(list(
       sidsToLoad = sidsToLoad,
+      isSandbox = FALSE,
       chatContext = sprintf(lang$nav$aiBotDialog$currentContextCompare, length(sidsToLoad)),
       scenIdNameMap = scenIdNameMap, timestamp = Sys.time()
     )))

@@ -3540,6 +3540,127 @@ li.drop-index-item[data-col-hidden="true"] {
     border: 1px solid #5a5b5f;
   });
 }
+.miro-ai-change-proposal .miro-ai-change-card {
+  width: 100%;
+  .responsiveDark({
+    border-left: 4px solid @primary-color;
+  },
+  {
+    border-left: 4px solid @primary-color-dark;
+  });
+}
+.miro-ai-change-reason {
+  margin: 8px 0;
+  font-style: italic;
+  opacity: 0.85;
+}
+.miro-ai-change-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 10px 0;
+  font-size: 0.9em;
+
+  dt {
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+.miro-ai-change-preview {
+  max-height: 240px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 4px;
+  .responsiveDark({
+    border: 1px solid #e0e0e0;
+  },
+  {
+    border: 1px solid @dropdown-sidebar-bg-dark;
+  });
+}
+.miro-ai-change-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+
+  th,
+  td {
+    padding: 4px 8px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-weight: 700;
+    .responsiveDark({
+      background-color: @modal-bg;
+      border-bottom: 1px solid #e0e0e0;
+    },
+    {
+      background-color: @modal-bg-dark;
+      border-bottom: 1px solid @dropdown-sidebar-bg-dark;
+    });
+  }
+
+  .miro-ai-change-cell-before {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .miro-ai-change-cell-after {
+    font-weight: 700;
+  }
+}
+.miro-ai-change-truncated {
+  margin-top: 6px;
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+.miro-ai-change-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.miro-ai-change-actions .miro-ai-change-apply {
+  &,
+  &:active,
+  &:focus,
+  &:hover {
+    color: #fff;
+  }
+}
+.miro-ai-change-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 0.9em;
+  font-weight: 700;
+}
+.miro-ai-change-status-applied {
+  color: #28a745;
+}
+.miro-ai-change-status-discarded {
+  opacity: 0.6;
+}
+.miro-ai-change-status-outdated,
+.miro-ai-change-status-failed {
+  font-weight: 400;
+  .responsiveDark({
+    color: @secondary-color;
+  },
+  {
+    color: @secondary-color-dark;
+  });
+}
 .miro-ai-disclaimer {
   font-size: 11px;
   opacity: 0.55;

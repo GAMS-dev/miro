@@ -5,11 +5,21 @@ observe({
       return()
     }
     newSids <- unique(sort(dialogState$sidsToLoad))
-    if (!identical(newSids, aiAssistantState$activeSids)) {
+    newIsSandbox <- isTRUE(dialogState$isSandbox)
+    if (!identical(newSids, aiAssistantState$activeSids) ||
+      !identical(newIsSandbox, aiAssistantState$contextIsSandbox)) {
       if (!is.null(aiAssistantState$activeSids)) {
         aiAssistantState$pendingContextNote <<- dialogState$chatContext
       }
       aiAssistantState$activeSids <<- newSids
+      aiAssistantState$contextIsSandbox <<- newIsSandbox
+      if (!newIsSandbox) {
+        for (changeIdx in aiAssistantState$changeIndex) {
+          if (identical(aiAssistantState$chatHistory[[changeIdx]]$change$status, "pending")) {
+            updateAiInputChangeCard(changeIdx, "outdated")
+          }
+        }
+      }
       # append if last history item is not a context item, else overwrite
       historyIdx <- length(aiAssistantState$chatHistory)
       if (!is.null(aiAssistantState$chatHistory[[historyIdx]]$role)) {
@@ -63,14 +73,21 @@ observeEvent(input$btAIOutput, {
     sidToLoad <- aiAssistantState$tempScen$getSid()
   }
   aiAssistantDialogState(list(
-    sidsToLoad = sidToLoad, scenIdNameMap = NULL,
+    sidsToLoad = sidToLoad, scenIdNameMap = NULL, isSandbox = TRUE,
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
 })
 
+# Input data can only be changed where the user could change it by hand anyway.
+aiInputModificationEnabled <- !isTRUE(config$activateModules$readonlyMode)
+
+aiCanModifyInput <- function() {
+  return(aiInputModificationEnabled && isTRUE(aiAssistantState$contextIsSandbox))
+}
+
 mAiTask <- NULL
 aiTask <- ExtendedTask$new(
-  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history) {
+  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history, allowInputModification) {
     mAiTask <<- mirai(
       {
         library(R6)
@@ -86,7 +103,9 @@ aiTask <- ExtendedTask$new(
         providerAndModel <- strsplit(model, "/", fixed = TRUE)[[1]]
 
         assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
-        aiAdapter <- AIToolAdapter$new(dbSchema, conn, ioConfig)
+        aiAdapter <- AIToolAdapter$new(dbSchema, conn, ioConfig,
+          inputModificationEnabled = allowInputModification
+        )
         if (length(scenIdNameMap)) {
           aiAdapter$setScenIdNameMap(scenIdNameMap)
         }
@@ -95,7 +114,8 @@ aiTask <- ExtendedTask$new(
 
         toolSchema <- aiAdapter$getToolSchema()
         toolDispatcher <- list(
-          "queryScenarioDatabase" = function(args) aiAdapter$queryScenarioDatabase(args)
+          "queryScenarioDatabase" = function(args) aiAdapter$queryScenarioDatabase(args),
+          "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args)
         )
         roleContext <- "### ROLE
 Expert optimization analyst for a GAMS MIRO app. Answer scenario questions using the scenario database: precise, concise, quantitative, directly on-point. No unneeded explanation.
@@ -133,6 +153,17 @@ Answer directly—concise, quantitative, prioritized. Synthesize into conclusion
 ### SCENARIO RULES
 1. Use exact scenario names (`_scenario_name`, `_target_scenario`, `_baseline_scenario`)—never generic labels like \"Scenario 1\" or \"Base case\".
 2. Single scenario available: report its results directly, without noting the lack of comparisons."
+        if (allowInputModification) {
+          guardrails <- paste0(guardrails, "
+
+### INPUT DATA CHANGES
+`modifySandboxInputData` only *proposes* a change; the user confirms each one on a card showing the exact before/after values.
+1. **On request only** -- never change data to \"fix\" something you spotted; report it instead.
+2. **Stay within `modifiable`** and any `widget` min/max. `kind: \"numeric\"`: `value` plus one column from `modifiable.columns`, one call per column. `kind: \"choice\"`: SET with `textValue` from `widget.choices` -- no `value`, no `filters`.
+3. **Scope it** -- without `filters` the whole column changes; say which rows you are affecting.
+4. **Prefer MULTIPLY/DIVIDE/ADD/SUBTRACT** over SET, which throws the user's own numbers away.
+5. **Never claim it happened** -- say what you proposed and that it needs confirming. Do not re-query to verify: the database holds the old values until the user confirms.")
+        }
         if (length(history$sessionId)) {
           aiProvider$sessionId <- history$sessionId
         }
@@ -154,7 +185,8 @@ Answer directly—concise, quantitative, prioritized. Synthesize into conclusion
           inputTokens = result$inputTokens,
           outputTokens = result$outputTokens,
           newSessionId = aiProvider$sessionId,
-          newHistory = aiProvider$history
+          newHistory = aiProvider$history,
+          pendingInputChanges = aiAdapter$getPendingInputChanges()
         ))
       },
       userInput = userInput,
@@ -165,7 +197,8 @@ Answer directly—concise, quantitative, prioritized. Synthesize into conclusion
       model = model,
       allowedSids = allowedSids,
       scenIdNameMap = scenIdNameMap,
-      history = history
+      history = history,
+      allowInputModification = allowInputModification
     )
   }
 )
@@ -183,7 +216,9 @@ observeEvent(input$miroAiUserText, {
   if (!identical(aiAssistantState$model, input$miroAiModel)) {
     if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
       # switch from one provider to another -> need to pass state as chat history
-      chatHistory <- aiAssistantState$chatHistory[lapply(aiAssistantState$chatHistory, length) > 1L][-1]
+      # only the user/model bubbles carry over; context dividers and input
+      # change proposals have no counterpart in a provider's chat history
+      chatHistory <- Filter(function(item) length(item$text) > 0L, aiAssistantState$chatHistory)[-1]
       aiAssistantState$history <<- list()
       aiAssistantState$sessionId <<- NULL
     }
@@ -198,12 +233,23 @@ observeEvent(input$miroAiUserText, {
   )
   dialogState <- aiAssistantDialogState()
   modelInput <- userText
+  notes <- character(0L)
   if (!is.null(aiAssistantState$pendingContextNote)) {
-    modelInput <- sprintf(
-      "[Context switch: %s. This is now the active data context - treat it as authoritative and don't conflate it with figures or conclusions from earlier in this conversation.]\n\n%s",
-      aiAssistantState$pendingContextNote, userText
-    )
+    notes <- c(notes, sprintf(
+      "Context switch: %s. This is now the active data context - treat it as authoritative and don't conflate it with figures or conclusions from earlier in this conversation.",
+      aiAssistantState$pendingContextNote
+    ))
     aiAssistantState$pendingContextNote <<- NULL
+  }
+  if (length(aiAssistantState$changeNotes)) {
+    notes <- c(notes, sprintf(
+      "The user reviewed your proposed input data changes: %s. The sandbox scenario in the database now reflects the applied ones, so re-query it instead of relying on earlier figures.",
+      paste(aiAssistantState$changeNotes, collapse = "; ")
+    ))
+    aiAssistantState$changeNotes <<- character(0L)
+  }
+  if (length(notes)) {
+    modelInput <- sprintf("[%s]\n\n%s", paste(notes, collapse = " "), userText)
   }
   aiTask$invoke(
     userInput = modelInput,
@@ -214,7 +260,8 @@ observeEvent(input$miroAiUserText, {
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
     scenIdNameMap = dialogState$scenIdNameMap,
-    history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
+    history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory),
+    allowInputModification = aiCanModifyInput()
   )
 })
 observe({
@@ -246,6 +293,9 @@ observe({
     )), role = "model")
   )
   if (!is.null(result)) {
+    if (length(result$pendingInputChanges)) {
+      registerAiInputChanges(result$pendingInputChanges)
+    }
     aiAssistantState$history <<- result$newHistory
     aiAssistantState$sessionId <<- result$newSessionId
     aiAssistantState$inputTokens <<- aiAssistantState$inputTokens + result$inputTokens
@@ -260,17 +310,193 @@ observe({
     ))
   }
 })
+updateAiInputChangeCard <- function(historyIdx, status, statusDetail = NULL) {
+  aiAssistantState$chatHistory[[historyIdx]]$change$status <<- status
+  aiAssistantState$chatHistory[[historyIdx]]$change$statusDetail <<- statusDetail
+  change <- aiAssistantState$chatHistory[[historyIdx]]$change
+  session$sendCustomMessage("gms-updateAiChatCard", list(
+    id = change$changeId,
+    html = as.character(renderAiInputChangeProposal(change, lang$nav$aiBotDialog))
+  ))
+  return(invisible())
+}
+aiInputChangeSummary <- function(change) {
+  return(sprintf(
+    "%s (%s %s)", change$symbolName,
+    tolower(change$operation), formatAiInputValue(change$value)
+  ))
+}
+#' Values a single-choice widget currently accepts, as the widget itself sees
+#' them (a dependent dropdown's choices follow another symbol's data).
+aiInputChangeChoices <- function(symName) {
+  return(tryCatch(unname(as.character(sandboxInputData$getWidget(symName)$getChoices())),
+    error = function(err) {
+      flog.warn(
+        "Could not determine choices of symbol: '%s'. Error message: %s",
+        symName, conditionMessage(err)
+      )
+      return(character(0L))
+    }
+  ))
+}
+#' Take the changes the assistant queued during the last request and turn each
+#' one into a confirmation card. The preview is recomputed against the *live*
+#' sandbox data (the assistant works on a database dump that can be a few
+#' seconds old), so what the card shows is what applying it would produce.
+registerAiInputChanges <- function(pendingChanges) {
+  for (change in pendingChanges) {
+    while (change$changeId %in% names(aiAssistantState$changeIndex)) {
+      change$changeId <- paste0(change$changeId, "_")
+    }
+    change$status <- "pending"
+    currentData <- tryCatch(isolate(sandboxInputData$getData(change$symbolName)()),
+      error = function(err) err
+    )
+    changeResult <- NULL
+    if (!inherits(currentData, "error")) {
+      changeResult <- tryCatch(applyAiInputChange(currentData, change), error = function(err) err)
+    }
+    if (inherits(currentData, "error") || inherits(changeResult, "error")) {
+      errMsg <- conditionMessage(if (inherits(currentData, "error")) currentData else changeResult)
+      flog.warn(
+        "AI assistant proposed a change to symbol: '%s' that could not be previewed. Error message: %s",
+        change$symbolName, errMsg
+      )
+      change$status <- "failed"
+      change$statusDetail <- errMsg
+      change$preview <- list(labels = NULL, before = character(0L), after = character(0L), noRows = 0L, noRowsShown = 0L)
+    } else if (!change$isScalar && !any(changeResult$rowMask)) {
+      change$status <- "failed"
+      change$statusDetail <- lang$nav$aiBotDialog$changeErrNoRows
+      change$preview <- list(labels = NULL, before = character(0L), after = character(0L), noRows = 0L, noRowsShown = 0L)
+    } else if (isTRUE(change$isChoice) && !change$value %in% aiInputChangeChoices(change$symbolName)) {
+      change$status <- "failed"
+      change$statusDetail <- sprintf(lang$nav$aiBotDialog$changeErrBadChoice, change$value)
+      change$preview <- list(labels = NULL, before = character(0L), after = character(0L), noRows = 0L, noRowsShown = 0L)
+    } else {
+      change$preview <- buildAiInputChangePreview(currentData, change, changeResult)
+      change$dataHash <- digest::digest(currentData, algo = "sha1")
+    }
+    if (identical(change$status, "failed")) {
+      aiAssistantState$changeNotes <<- c(
+        aiAssistantState$changeNotes,
+        sprintf("REJECTED %s: %s", aiInputChangeSummary(change), change$statusDetail)
+      )
+    }
+    historyIdx <- length(aiAssistantState$chatHistory) + 1L
+    aiAssistantState$chatHistory[[historyIdx]] <<- list(role = "inputChange", change = change)
+    aiAssistantState$changeIndex[[change$changeId]] <<- historyIdx
+    session$sendCustomMessage("gms-addAiChatCard", list(
+      html = as.character(renderAiInputChangeProposal(change, lang$nav$aiBotDialog))
+    ))
+  }
+  return(invisible())
+}
+refreshAiSandboxSnapshot <- function() {
+  tempScenName <- lang$nav$dialogNewScen$newScenName
+  tempScenTags <- NULL
+  if (!is.null(activeScen)) {
+    tempScenName <- activeScen$getScenName()
+    tempScenTags <- activeScen$getStags()
+  }
+  tempScen <- tryCatch(saveScenDumpTempToDb(tempScenName, tempScenTags),
+    error = function(err) {
+      flog.error(
+        "Could not refresh the AI assistant sandbox snapshot after applying an input change. Error message: %s",
+        conditionMessage(err)
+      )
+      return(NULL)
+    }
+  )
+  if (is.null(tempScen)) {
+    return(invisible())
+  }
+  aiAssistantState$tempScen <<- tempScen
+  aiAssistantState$activeSids <<- tempScen$getSid()
+  return(invisible())
+}
+
+observeEvent(input$miroAiInputChangeAction, {
+  changeAction <- input$miroAiInputChangeAction
+  if (length(changeAction$id) != 1L ||
+    !changeAction$id %in% names(aiAssistantState$changeIndex)) {
+    flog.warn("Received AI input change action for unknown change. Ignoring.")
+    return()
+  }
+  historyIdx <- aiAssistantState$changeIndex[[changeAction$id]]
+  change <- aiAssistantState$chatHistory[[historyIdx]]$change
+  if (!identical(change$status, "pending")) {
+    return()
+  }
+  if (!isTRUE(changeAction$apply)) {
+    flog.debug("AI input data change discarded by user (symbol: '%s').", change$symbolName)
+    updateAiInputChangeCard(historyIdx, "discarded")
+    aiAssistantState$changeNotes <<- c(
+      aiAssistantState$changeNotes,
+      sprintf("DISCARDED %s", aiInputChangeSummary(change))
+    )
+    return()
+  }
+  if (!aiCanModifyInput()) {
+    # belt and braces: the card is retired on a context switch, so getting here
+    # means one survived it (a stale client, a second browser tab)
+    flog.info("Refusing to apply AI proposed input data change outside the sandbox context.")
+    updateAiInputChangeCard(historyIdx, "outdated")
+    return()
+  }
+  currentData <- tryCatch(isolate(sandboxInputData$getData(change$symbolName)()), error = function(err) err)
+  if (inherits(currentData, "error") ||
+    !identical(digest::digest(currentData, algo = "sha1"), change$dataHash)) {
+    flog.info("Input data of symbol: '%s' changed since the AI assistant proposed a change to it.", change$symbolName)
+    updateAiInputChangeCard(historyIdx, "outdated")
+    return()
+  }
+  newData <- tryCatch(applyAiInputChange(currentData, change)$data, error = function(err) err)
+  if (inherits(newData, "error")) {
+    flog.error(
+      "Could not apply AI proposed change to symbol: '%s'. Error message: %s",
+      change$symbolName, conditionMessage(newData)
+    )
+    updateAiInputChangeCard(historyIdx, "failed", conditionMessage(newData))
+    return()
+  }
+  flog.info("Applying AI proposed input data change to symbol: '%s'.", change$symbolName)
+  sandboxInputData$setData(change$symbolName, newData)
+  # setData deliberately does not flag the scenario as modified (it is also used
+  # to load scenarios), so the sandbox has to be marked unsaved explicitly
+  markUnsaved(markDirty = TRUE)
+  updateAiInputChangeCard(historyIdx, "applied")
+  aiAssistantState$changeNotes <<- c(
+    aiAssistantState$changeNotes,
+    sprintf("APPLIED %s", aiInputChangeSummary(change))
+  )
+  # any other proposal for the same symbol was previewed against data that no
+  # longer exists, so it can no longer be confirmed as shown
+  for (otherIdx in aiAssistantState$changeIndex) {
+    if (identical(otherIdx, historyIdx)) {
+      next
+    }
+    otherChange <- aiAssistantState$chatHistory[[otherIdx]]$change
+    if (identical(otherChange$status, "pending") &&
+      identical(otherChange$symbolName, change$symbolName)) {
+      updateAiInputChangeCard(otherIdx, "outdated")
+    }
+  }
+  refreshAiSandboxSnapshot()
+  showNotification(sprintf(
+    lang$nav$aiBotDialog$nfChangeApplied,
+    change$symbolAlias
+  ), type = "message")
+})
+
 observeEvent(input$btMiroAiClearChat, {
   flog.debug("Clear AI chat button clicked.")
   stop_mirai(mAiTask)
   aiAssistantState$chatHistory <<- list(aiAssistantState$chatHistory[[1]], list(aiAssistantDialogState()$chatContext))
+  aiAssistantState$changeIndex <<- list()
+  aiAssistantState$changeNotes <<- character(0L)
   setContent(session, "#miroAiChatLog", as.character(tagList(
-    lapply(aiAssistantState$chatHistory, function(item) {
-      if (is.null(item$role)) {
-        return(renderAiChatDivider(item))
-      }
-      return(renderAiChatBubble(item, lang$nav$aiBotDialog))
-    }),
+    lapply(aiAssistantState$chatHistory, function(item) renderAiChatItem(item, lang$nav$aiBotDialog)),
     genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
   )), sanitizeHTML = TRUE)
   aiAssistantState$history <<- list()

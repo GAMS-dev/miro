@@ -1506,9 +1506,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             private$ignoreUpdate <- 0L
             currentValue <- newChoices[[1L]]
           }
-          if (identical(config$activateModules$hcube, TRUE)) {
-            private$currentChoices <- newChoices
-          }
+          private$currentChoices <- newChoices
           updateSelectInput(private$session,
             private$config$htmlSelector,
             choices = newChoices,

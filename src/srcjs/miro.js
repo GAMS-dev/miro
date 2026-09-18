@@ -34,7 +34,7 @@ import { registerAiHandlers, hydrateAiMessagesIn } from './ai_assistant';
 
 export { parseKatex } from './util';
 export { default as modal } from './modal';
-export { copyChatContent, toggleChatCollapse } from './ai_assistant';
+export { copyChatContent, toggleChatCollapse, resolveAiInputChange } from './ai_assistant';
 
 const loadingScreen = new LoadingScreen();
 const miroLogParser = new MiroLogParser();

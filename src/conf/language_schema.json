@@ -2288,9 +2288,101 @@
             "btApplyCode": {
               "type": "string",
               "minLength": 1
+            },
+            "changeProposalHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalSymbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalColumn": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalOperation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalFilter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalAffected": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalBefore": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalAfter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalTruncated": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpMultiply": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpDivide": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpAdd": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpSubtract": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpSet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusDiscarded": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusOutdated": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusFailed": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeErrNoRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeErrBadChoice": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfChangeApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyChange": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btDiscardChange": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 21
+          "minProperties": 44
         },
         "hcubeMode": {
           "type": "object",
