@@ -1304,6 +1304,8 @@ update_doc_job:
     - python3 -m venv doc/sphinx/.venv
     - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
     - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check -r doc/sphinx/requirements.txt
+    # Staging is a Sphinx source preview; production-only release post-processing is omitted.
+    - rm -rf doc/sphinx/_build/html
     - doc/sphinx/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/sphinx/source doc/sphinx/_build/html
     - rsync -Orlptvz doc/sphinx/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
   rules:

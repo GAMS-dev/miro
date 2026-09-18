@@ -114,12 +114,14 @@ mv "$download_temporary" "$download_page"
 
 license_escaped=$(mktemp)
 server_license_escaped=$(mktemp)
-trap 'rm -f "$license_escaped" "$server_license_escaped"' EXIT
+schema_escaped=$(mktemp)
+trap 'rm -f "$license_escaped" "$server_license_escaped" "$schema_escaped"' EXIT
 html_escape ./src/LICENSE "$license_escaped"
 html_escape ./server/LICENSE "$server_license_escaped"
+html_escape ./src/conf/config_schema.json "$schema_escaped"
 insert_after_marker "${DOC_OUTPUT_DIR}/license.html" '<pre id="miro-license">' "$license_escaped"
 insert_after_marker "${DOC_OUTPUT_DIR}/license-server.html" '<pre id="miro-license">' "$server_license_escaped"
-insert_after_marker "${DOC_OUTPUT_DIR}/schema.html" '<pre><code class="language-json config-schema-container">' ./src/conf/config_schema.json
+insert_after_marker "${DOC_OUTPUT_DIR}/schema.html" '<pre><code class="language-json config-schema-container">' "$schema_escaped"
 
 security_page="${DOC_OUTPUT_DIR}/security_ci_report.html"
 if ! grep -Fq '<div id="ci-vuln-report"></div>' "$security_page"; then
