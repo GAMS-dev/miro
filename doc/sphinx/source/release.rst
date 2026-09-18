@@ -14,6 +14,20 @@ Minor new features and improvements
 - Enhanced how background tasks are managed, ensuring smoother job
   submissions, progress tracking, and result downloads without
   interrupting your workflow.
+- Make the `thresholds at which MIRO Pivot truncates data before rendering
+  <./configuration_json_only.html#pivot-truncation>`__ (e.g. the maximum
+  number of chart data points, pie slices, or table columns) configurable via
+  JSON.
+- Add option to `hide specific input/output symbols
+  <./configuration_general.html#hidden-compare-symbols>`__ in split, tab and
+  pivot scenario comparison mode, while still displaying them normally
+  everywhere else in the app.
+- Introduce a global `Numerical Tolerance
+  <./configuration_general.html#numerical-tolerance>`__ setting: values
+  within this threshold of zero are now treated as exactly zero when the
+  Dashboard and MIRO Pivot renderers compute a baseline comparison, avoiding
+  division-by-zero or inflated percentage/normalized results caused by
+  floating-point noise around zero.
 
 Bug fixes
 ~~~~~~~~~
@@ -22,6 +36,8 @@ Bug fixes
 - Hypercube module: Fixed bug that, in certain situations, caused the
   number of scenarios in the Hypercube module to be calculated
   incorrectly due to issues with numerical precision.
+- Fix incorrect conversion of ``null`` array values to ``"NA"`` in
+  configuration files, which caused schema violations.
 
 .. _v213:
 

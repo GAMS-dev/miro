@@ -330,6 +330,27 @@ values by MIRO. For example, elements of GAMS *Sets* may contain
 numbers, but they are not treated as such but as strings. These are
 therefore not affected by the maximum decimal place set.
 
+.. _numerical-tolerance:
+
+Numerical Tolerance
+~~~~~~~~~~~~~~~~~~~
+
+Numerical accuracy threshold used to treat values close to zero as exactly
+zero. This is a global setting used by the `baseline comparison
+<./configuration_general.html#pivot-default-options>`__ feature in both the
+Dashboard and MIRO Pivot renderers: when computing a percentage difference or
+normalized value against a baseline, a baseline value that is only nonzero due
+to floating-point noise can otherwise blow up or inflate the result. Values
+whose absolute value is smaller than this threshold are treated as exactly
+``0`` for that computation.
+
+The slider sets the number of decimal places *N* of that threshold, i.e. a
+value is treated as zero if it is smaller than 10 :sup:`-N`. It ranges from
+``3`` to ``15``; the default is ``6`` (a threshold of ``1e-6``). Raise this
+value if your model legitimately produces baseline values very close to (but
+not meant to be treated as) zero; lower it if you see inflated or
+division-by-zero-like results in baseline comparisons.
+
 Job Submission
 --------------
 
@@ -560,6 +581,20 @@ information about scenario comparison can be found
 `here <./start.html#scenario-comparison>`__). Regardless of the selected
 option, you can always switch between split view, tab view, pivot view
 and any other configured compare modes within the MIRO application.
+
+.. _hidden-compare-symbols:
+
+Hide Symbols in Scenario Comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This option lets you select input and/or output symbols that should not be
+displayed as a tab in the `split <./start.html#compare-split>`__, `tab
+<./start.html#compare-tab>`__ and `pivot <./start.html#compare-pivot>`__
+scenario comparison modes. Selected symbols are still displayed normally
+everywhere else - this option only affects scenario comparison mode. It is
+useful for symbols that are relevant on their own but are not meaningful to
+compare across scenarios, so we can keep scenario comparison focused on what
+matters.
 
 .. _pivot-default-options:
 

@@ -1267,3 +1267,33 @@ This configuration leads to the following Hypercube submission dialog:
    :class: miro-image-max-height-250pt
 .. |Hypercube widget groups Example| image:: ../../assets/images/configuration_mode/hcube_widget_groups.png
    :class: miro-image-max-height-350pt
+
+.. _pivot-truncation:
+
+MIRO Pivot: Truncation Thresholds
+---------------------------------
+To keep the browser responsive, `MIRO Pivot <./charts.html#pivot-chart>`__ truncates the data it plots or displays once it grows beyond a threshold, showing a warning instead of silently dropping data. These thresholds are global (they apply to every MIRO Pivot instance in the app - output renderer, input widget, and pivot compare mode alike) and can only be set via JSON, not in Configuration Mode:
+
+.. code-block:: json
+
+   {
+     "pivotTruncation": {
+       "maxCategories": 500,
+       "maxTimeseriesPoints": 20000,
+       "maxPieSlices": 40,
+       "maxSeries": 40,
+       "maxTableColumns": 300
+     }
+   }
+
+You can set any subset of these; unset ones keep their default:
+
+- ``maxCategories`` (default: ``500``) - the maximum number of categories (data points along the axis) a line, scatter, area, bar, radar or similar chart can plot.
+- ``maxTimeseriesPoints`` (default: ``20000``) - the same limit, but for the timeseries chart type, which is built to handle much larger series.
+- ``maxPieSlices`` (default: ``40``) - the maximum number of slices a pie or doughnut chart can plot.
+- ``maxSeries`` (default: ``40``) - the maximum number of data series a chart can display.
+- ``maxTableColumns`` (default: ``300``) - the maximum number of columns the table/heatmap renderer can display.
+
+.. warning::
+
+   Raising these limits can significantly impact performance and may cause the app to become unresponsive, especially on less powerful client devices. Only increase them if you have confirmed that your users' browsers can handle the additional load.
