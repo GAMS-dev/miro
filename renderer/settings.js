@@ -581,20 +581,35 @@ aiProviders.forEach(provider => {
   const inputElement = document.getElementById(`key${provider.id}`);
   const badgeElement = document.getElementById(`status${provider.id}`);
 
+  const storedKey = () => newConfig.aiAssistantConfig?.apiKeys?.find(
+    key => key.provider === provider.name
+  )?.key;
+  const dropStoredKey = () => {
+    const index = newConfig.aiAssistantConfig?.apiKeys?.findIndex(
+      key => key.provider === provider.name
+    ) ?? -1;
+    if (index !== -1) {
+      newConfig.aiAssistantConfig.apiKeys.splice(index, 1);
+    }
+  };
+
   const validateKey = async (e) => {
     const keyValue = e.target.value.trim();
+
+    if (keyValue && keyValue === storedKey()) {
+      // unchanged, and a key only ever reaches newConfig after it validated, so
+      // merely focusing and leaving the field must not trigger another round trip
+      inputElement.classList.remove('is-invalid');
+      inputElement.classList.add('is-valid');
+      badgeElement.className = 'ai-key-status badge badge-success';
+      badgeElement.innerText = lang['ai-key-status-connected'];
+      return;
+    }
     inputElement.classList.remove('is-valid', 'is-invalid');
 
-    if (newConfig.aiAssistantConfig?.apiKeys) {
-      const index = newConfig.aiAssistantConfig.apiKeys.findIndex(
-        key => key.provider === provider.name
-      );
-      if (index !== -1) {
-        newConfig.aiAssistantConfig.apiKeys.splice(index, 1);
-      }
-    }
-
     if (!keyValue) {
+      // the user cleared the field: that is an explicit request to remove the key
+      dropStoredKey();
       badgeElement.className = 'ai-key-status badge badge-secondary';
       badgeElement.innerText = lang['ai-key-status-not-configured'];
       saveButton.attr('disabled', false);
@@ -628,11 +643,14 @@ aiProviders.forEach(provider => {
         }
       } else {
         __electronLog.debug(`Invalid API key for AI provider: ${provider.name}`)
+        dropStoredKey();
         inputElement.classList.add('is-invalid');
         badgeElement.className = 'ai-key-status badge badge-danger';
         badgeElement.innerText = lang['ai-key-status-invalid'];
       }
     } catch (err) {
+      // we could not reach the provider, so we do not know whether the key is good;
+      // leave whatever is stored alone rather than discarding a working key
       __electronLog.warn(`Failed validating API key for AI provider: ${provider.name}. Error: ${err}`)
       inputElement.classList.add('is-invalid');
       badgeElement.className = 'ai-key-status badge badge-danger';
@@ -642,9 +660,8 @@ aiProviders.forEach(provider => {
     }
   };
 
-  // the key is removed from newConfig synchronously at the start of validateKey
-  // and only added back once validated, so saving must wait for any validation
-  // still in flight
+  // validateKey updates newConfig only once it knows the outcome, so saving must
+  // wait for any validation still in flight
   inputElement.addEventListener('blur', (e) => {
     aiKeyValidation = Promise.allSettled([aiKeyValidation, validateKey(e)]);
   });
@@ -838,6 +855,10 @@ ipcRenderer.on(
           const provider = aiProviders.find(
             el => el.name === apiKey.provider
           );
+          if (provider == null) {
+            __electronLog.warn(`Unknown AI provider in config: ${apiKey.provider}. Skipping.`);
+            return;
+          }
           const inputElement = document.getElementById(`key${provider.id}`);
           const badgeElement = document.getElementById(`status${provider.id}`);
           inputElement.value = apiKey.key;
