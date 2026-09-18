@@ -2252,6 +2252,12 @@ if (!is.null(errMsg)) {
       source("./modules/scen_render.R", local = TRUE)
       # load scenario
       source("./modules/db_scen_load.R", local = TRUE)
+      # dump sandbox scenario to database (also needed by the AI assistant,
+      # which is available in readonly mode)
+      if (!config$activateModules$readonlyMode ||
+        config$activateModules$aiAssistant) {
+        source("./modules/db_scen_dump.R", local = TRUE)
+      }
       # save scenario
       if (!config$activateModules$readonlyMode) {
         source("./modules/db_scen_save.R", local = TRUE)
