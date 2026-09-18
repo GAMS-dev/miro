@@ -86,6 +86,13 @@ aiCanModifyInput <- function() {
 }
 
 mAiTask <- NULL
+# set whenever we cancel the running mirai ourselves, so that the observer below can
+# tell a deliberate abort apart from a genuine failure
+aiTaskCancelled <- FALSE
+cancelAiTask <- function() {
+  aiTaskCancelled <<- TRUE
+  stop_mirai(mAiTask)
+}
 aiTask <- ExtendedTask$new(
   function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history, allowInputModification) {
     mAiTask <<- mirai(
@@ -258,6 +265,7 @@ observeEvent(input$miroAiUserText, {
   if (length(notes)) {
     modelInput <- sprintf("[%s]\n\n%s", paste(notes, collapse = " "), userText)
   }
+  aiTaskCancelled <<- FALSE
   aiTask$invoke(
     userInput = modelInput,
     dbConnProvider = dbConnProvider,
@@ -284,6 +292,11 @@ observe({
       return(TRUE)
     },
     error = function(err) {
+      if (aiTaskCancelled) {
+        # the request was aborted on purpose (stop button, chat cleared, dialog closed);
+        # the UI was already updated by the handler that cancelled it
+        return(TRUE)
+      }
       flog.error("Problems generating AI response. Error message: %s", conditionMessage(err))
       aiOutput <<- sprintf("### Error\nFailed to calculate response: %s", err$message)
       return(FALSE)
@@ -498,7 +511,7 @@ observeEvent(input$miroAiInputChangeAction, {
 
 observeEvent(input$btMiroAiClearChat, {
   flog.debug("Clear AI chat button clicked.")
-  stop_mirai(mAiTask)
+  cancelAiTask()
   aiAssistantState$chatHistory <<- list(aiAssistantState$chatHistory[[1]], list(aiAssistantDialogState()$chatContext))
   aiAssistantState$changeIndex <<- list()
   aiAssistantState$changeNotes <<- character(0L)
@@ -518,7 +531,7 @@ observeEvent(input$btMiroAiClearChat, {
 })
 observeEvent(input$btMiroAiStop, {
   flog.debug("AI Assistant stop button clicked.")
-  stop_mirai(mAiTask)
+  cancelAiTask()
   session$sendCustomMessage(
     "gms-resetAiChatRequest",
     list(dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$requestAbortedMessage)))
@@ -526,7 +539,7 @@ observeEvent(input$btMiroAiStop, {
 })
 observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant dialog closed")
-  stop_mirai(mAiTask)
+  cancelAiTask()
   if (!is.null(aiAssistantState$tempScen)) {
     tryCatch(
       {

@@ -2609,6 +2609,13 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     return(sysPrompt)
   }
   mAiTask <- NULL
+  # set whenever we cancel the running mirai ourselves, so that the observer below can
+  # tell a deliberate abort apart from a genuine failure
+  aiTaskCancelled <- FALSE
+  cancelAiTask <- function() {
+    aiTaskCancelled <<- TRUE
+    stop_mirai(mAiTask)
+  }
   aiTask <- ExtendedTask$new(
     function(userInput, sysPrompt, assistantConfig, model, history) {
       mAiTask <<- mirai(
@@ -2714,6 +2721,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
       aiAssistantState$model <<- input$miroAiModel
     }
 
+    aiTaskCancelled <<- FALSE
     aiTask$invoke(
       userInput = modelInput,
       sysPrompt = sysPrompt,
@@ -2735,6 +2743,11 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
         return(TRUE)
       },
       error = function(err) {
+        if (aiTaskCancelled) {
+          # the request was aborted on purpose (stop button, chat cleared); the UI was
+          # already updated by the handler that cancelled it
+          return(TRUE)
+        }
         flog.error("Problems generating AI response. Error message: %s", conditionMessage(err))
         aiOutput <<- sprintf("### Error\nFailed to calculate response: %s", err$message)
         return(FALSE)
@@ -2762,7 +2775,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   })
   observeEvent(input$btMiroAiStop, {
     flog.debug("AI Assistant stop button clicked.")
-    stop_mirai(mAiTask)
+    cancelAiTask()
     session$sendCustomMessage(
       "gms-resetAiChatRequest",
       list(dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$requestAbortedMessage)))
@@ -2770,7 +2783,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
   })
   observeEvent(input$btMiroAiClearChat, {
     flog.debug("Clear AI chat button clicked.")
-    stop_mirai(mAiTask)
+    cancelAiTask()
     aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1]
     setContent(session, "#miroAiChatLog", as.character(tagList(
       lapply(aiAssistantState$chatHistory, renderAiChatBubble, lang$nav$aiBotDialog),
