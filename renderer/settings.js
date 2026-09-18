@@ -42,6 +42,8 @@ let importantKeys;
 let noEnvDesc = 'No environment is specified';
 let requireRestart = false;
 let pathValidating = false;
+// resolves once every in-flight AI provider API key validation has finished
+let aiKeyValidation = Promise.resolve();
 
 const aiProviders = [
   { id: 'OpenAi', name: 'openai' },
@@ -328,6 +330,7 @@ saveButton.on('click', async () => {
     if (pathValidating === true) {
       return;
     }
+    await aiKeyValidation;
     let logLifeVal = inputLogLifetime.val();
     if (logLifeVal !== '') {
       logLifeVal = parseInt(logLifeVal, 10);
@@ -569,7 +572,7 @@ aiProviders.forEach(provider => {
   const inputElement = document.getElementById(`key${provider.id}`);
   const badgeElement = document.getElementById(`status${provider.id}`);
 
-  inputElement.addEventListener('blur', async (e) => {
+  const validateKey = async (e) => {
     const keyValue = e.target.value.trim();
     inputElement.classList.remove('is-valid', 'is-invalid');
 
@@ -628,6 +631,13 @@ aiProviders.forEach(provider => {
     } finally {
       saveButton.attr('disabled', false);
     }
+  };
+
+  // the key is removed from newConfig synchronously at the start of validateKey
+  // and only added back once validated, so saving must wait for any validation
+  // still in flight
+  inputElement.addEventListener('blur', (e) => {
+    aiKeyValidation = Promise.allSettled([aiKeyValidation, validateKey(e)]);
   });
 });
 
