@@ -1496,7 +1496,7 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                 tags$div(
                   class = "col-sm-6", style = "margin-bottom: 15px;",
                   tags$button(
-                    class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
+                    class = "btn btn-default btn-block batch-load-content", type = "button", id = "btAiCompare",
                     onclick = "Shiny.setInputValue('btBatchCompare','aiCompare',{priority:'event'});",
                     lang$nav$dialogBatchLoad$interactiveButtonAi
                   )
