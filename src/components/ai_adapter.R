@@ -449,8 +449,16 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
       )
 
-      # Map sids to scenario names
-      if (length(private$allowedSids) > 1L) {
+      # A database failure is reported as a one-column `error` frame. Return it in the
+      # same shape as every other error above, before the scenario-name mapping - that
+      # mapping selects the query's own columns and would otherwise fail with
+      # "undefined columns selected", masking the actual database error.
+      if (identical(names(resDf), "error")) {
+        return(jsonlite::toJSON(list(error = resDf$error[[1L]]), auto_unbox = TRUE))
+      }
+
+      # Map sids to scenario names. Skipped for an empty result.
+      if (length(private$allowedSids) > 1L && nrow(resDf) > 0L) {
         if (analysisMode == "STANDARD") {
           if ("_sid" %in% names(resDf)) {
             mappedNames <- private$scenarioMapById[as.character(resDf$`_sid`)]

@@ -1058,3 +1058,59 @@ test_that("queryScenarioDatabase treats a single-element groupByColumn array lik
 
   DBI::dbDisconnect(env$conn)
 })
+
+test_that("queryScenarioDatabase surfaces a database error instead of a mapping failure", {
+  # In DIFFERENCE/PERCENT_CHANGE mode the scenario-name mapping selects `_target_scenario`
+  # by name. The database-error fallback frame has only an `error` column, so letting it
+  # reach that mapping replaced the real message with "undefined columns selected".
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  DBI::dbExecute(env$conn, "DROP TABLE data_demand")
+
+  res <- adapter$queryScenarioDatabase(list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base"
+  ))
+
+  expect_match(jsonlite::fromJSON(res)$error, "Database Engine Interface Error")
+  expect_no_match(res, "undefined columns selected", fixed = TRUE)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase returns an empty result rather than erroring in DIFFERENCE mode", {
+  # A length-1 column assignment onto a zero-row frame fails with
+  # "replacement has 1 row, data has 0", so an empty diff result used to be reported
+  # to the model as a tool execution failure.
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  res <- adapter$queryScenarioDatabase(list(
+    symbolName = "demand",
+    scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value",
+    aggregation = "SUM",
+    groupByColumn = "region",
+    analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base",
+    filters = data.frame(
+      column = "region", operator = "=", value = "does-not-exist",
+      stringsAsFactors = FALSE
+    )
+  ))
+
+  # a zero-row frame serializes to `[]`, which parses back to an empty list
+  expect_false("error" %in% names(jsonlite::fromJSON(res)))
+  expect_length(jsonlite::fromJSON(res), 0L)
+
+  DBI::dbDisconnect(env$conn)
+})
