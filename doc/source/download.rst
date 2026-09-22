@@ -119,7 +119,7 @@ Please check the `release notes <./release.html>`__.
             .. rubric:: Installation
 
 
-            #. In case a current R version (4.0 or later) is not yet installed on your system, you need to do this first. You can download R `here <https://cloud.r-project.org/>`__.
+            #. In case a current R version (4.4 or later) is not yet installed on your system, you need to do this first. You can download R `here <https://cloud.r-project.org/>`__.
             #. For MIRO to work, compilers as well as the system libraries libpng and libcurl need to be installed. For example, on Fedora:
 
                .. code-block:: console

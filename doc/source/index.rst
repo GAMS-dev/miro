@@ -95,6 +95,20 @@ Welcome!
    .. grid-item-card::
       :link-type: doc
       :text-align: center
+      :link: ai_assistant
+
+      .. raw:: html
+
+         <i class="miro-card-icon fa-solid fa-robot" aria-hidden="true"></i>
+
+      AI Assistant
+      ^^^
+
+      Explore scenario data and spot inconsistencies by asking questions
+
+   .. grid-item-card::
+      :link-type: doc
+      :text-align: center
       :link: model
 
       .. raw:: html
@@ -309,6 +323,7 @@ Have a look at our fact sheets:
    :hidden:
 
    start
+   ai_assistant
    model
    Configuration <customize>
    deployment

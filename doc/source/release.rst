@@ -8,6 +8,21 @@ GAMS MIRO 2.14
 
 (xxxx-xx-xx)
 
+New features
+~~~~~~~~~~~~
+
+- Introduce the `AI Assistant <./ai_assistant.html>`__, a chat-based
+  assistant that helps you get more out of your app:
+
+  - Analyze the currently loaded sandbox scenario or a comparison of
+    scenarios, and ask questions about your data directly within the app.
+  - Ask the assistant to `propose changes to your input data
+    <./ai_assistant.html#changing-input-data>`__, e.g. "increase demand in
+    the EU by 10%", and apply them with a single click after reviewing a
+    before/after preview.
+  - In Configuration Mode, get assistance writing `custom renderers
+    <./ai_assistant.html#ai-assisted-custom-renderers>`__.
+
 Minor new features and improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

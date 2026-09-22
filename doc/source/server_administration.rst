@@ -183,6 +183,13 @@ Further settings that can be made before adding the app:
   scenario owner will have read, write, and execute
   permissions.
 
+  **AI Assistant**: The *AI Assistant* tab is where you enter API keys for
+  the LLM providers (e.g. OpenAI, Anthropic, Google) this app's `AI
+  Assistant <./ai_assistant.html>`__ should use. MIRO validates each key
+  against the provider as soon as you enter it. Keys are configured per app,
+  so different apps on the same MIRO Server can use different providers, or
+  have no AI Assistant at all.
+
   **Language**: While the `global language
   setting <./server_setup.html#global-language>`__ applies to
   all apps, the app environment can be used to change the
