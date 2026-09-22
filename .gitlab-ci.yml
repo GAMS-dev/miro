@@ -1307,7 +1307,7 @@ update_doc_job:
     # Staging is a Sphinx source preview; production-only release post-processing is omitted.
     - rm -rf doc/_build/html
     - doc/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/source doc/_build/html
-    - rsync -Orlptvz doc/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
+    - rsync -Orlptvz --no-perms doc/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always

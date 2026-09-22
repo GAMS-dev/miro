@@ -19,7 +19,7 @@ doc/.venv/bin/python -m pip install --disable-pip-version-check -r doc/requireme
 
 ./scripts/fix_docs.sh
 
-rsync -rlptvz doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
+rsync -rlptvz --no-perms doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
 
 git add ./doc/miro_server_api.json ./server/image-docs/*
 
