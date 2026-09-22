@@ -137,10 +137,6 @@ html[data-theme="dark"] {
     top: 0;
 }
 
-.bd-main .bd-content .bd-article-container {
-    overflow-x: visible;
-}
-
 .bd-header-article {
     position: sticky;
     top: 0;
