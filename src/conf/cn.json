@@ -618,7 +618,8 @@
       "toolActivityFilter": "行",
       "toolActivityOrderBy": "排序依据",
       "toolActivityLimit": "限制",
-      "toolActivityRows": "返回的行数"
+      "toolActivityRows": "返回的行数",
+      "toolActivityGroupCount": "%s 次数据库查询"
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",

@@ -618,7 +618,8 @@
       "toolActivityFilter": "Rows",
       "toolActivityOrderBy": "Sorted by",
       "toolActivityLimit": "Limit",
-      "toolActivityRows": "Rows returned"
+      "toolActivityRows": "Rows returned",
+      "toolActivityGroupCount": "%s database queries"
     },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",

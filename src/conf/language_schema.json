@@ -2424,9 +2424,13 @@
             "toolActivityRows": {
               "type": "string",
               "minLength": 1
+            },
+            "toolActivityGroupCount": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 55
+          "minProperties": 56
         },
         "hcubeMode": {
           "type": "object",

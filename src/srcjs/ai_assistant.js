@@ -38,6 +38,90 @@ export function toggleChatCollapse(btn) {
     icon.classList.add('fa-chevron-down');
   }
 }
+export function toggleAiActivityGroup(btn) {
+  const group = btn.closest('.miro-ai-activity-group');
+  if (!group) return;
+  const expanded = group.classList.toggle('miro-ai-activity-group-expanded');
+  btn.setAttribute('aria-expanded', String(expanded));
+}
+
+function createAiActivityGroup(chatLog) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'miro-ai-chat-bubble-wrapper miro-ai-chat-assistant miro-ai-activity-group-wrapper';
+  wrapper.dataset.countLabel = chatLog?.dataset.activityGroupLabel || '%s';
+  wrapper.innerHTML = `
+    <div class="miro-ai-activity-group">
+      <button type="button" class="miro-ai-activity-group-toggle" onclick="Miro.toggleAiActivityGroup(this)" aria-expanded="false">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <span class="miro-ai-activity-group-count"></span>
+        <i class="fas fa-chevron-down miro-ai-activity-group-chevron" aria-hidden="true"></i>
+      </button>
+      <div class="miro-ai-activity-group-body"></div>
+    </div>
+  `;
+  return wrapper;
+}
+
+// Moves a single already-rendered `.miro-ai-tool-activity` bubble's card
+// into `group`, drops its now-redundant bubble wrapper, and refreshes the
+// group's summary count and error state.
+function moveCardIntoGroup(group, cardWrapper) {
+  const card = cardWrapper.querySelector('.miro-ai-activity-card');
+  if (card) {
+    group.querySelector('.miro-ai-activity-group-body').appendChild(card);
+    if (card.classList.contains('miro-ai-activity-card-error')) {
+      group.classList.add('miro-ai-activity-group-has-error');
+    }
+  }
+  cardWrapper.remove();
+  const count = group.querySelectorAll('.miro-ai-activity-card').length;
+  const template = group.dataset.countLabel || '%s';
+  const countLabel = group.querySelector('.miro-ai-activity-group-count');
+  countLabel.textContent = template.replace('%s', String(count));
+}
+
+// Called once, on a freshly (re-)rendered chat log (initial history, or the
+// whole log after Clear Chat), to merge every existing run of 2+ adjacent
+// activity cards. Later arrivals are merged incrementally instead, in the
+// `gms-addAiChatCard` handler below.
+export function groupAdjacentAiActivityCards(chatLog) {
+  const children = Array.from(chatLog.children);
+  let run = [];
+  const flushRun = () => {
+    if (run.length > 1) {
+      const group = createAiActivityGroup(chatLog);
+      run[0].before(group);
+      run.forEach((cardWrapper) => moveCardIntoGroup(group, cardWrapper));
+    }
+    run = [];
+  };
+  children.forEach((el) => {
+    if (el.classList.contains('miro-ai-tool-activity')) {
+      run.push(el);
+    } else {
+      flushRun();
+    }
+  });
+  flushRun();
+}
+
+// A new activity card just arrived while the request is still running.
+// Merges it into the previous element if that is itself a group already, or
+// if it is a lone activity card that now needs upgrading into one.
+function appendAiActivityCard(chatLog, spinner, cardWrapper) {
+  const prev = spinner.previousElementSibling;
+  if (prev?.classList.contains('miro-ai-activity-group-wrapper')) {
+    moveCardIntoGroup(prev, cardWrapper);
+    return;
+  }
+  spinner.before(cardWrapper);
+  if (prev?.classList.contains('miro-ai-tool-activity')) {
+    const group = createAiActivityGroup(chatLog);
+    prev.before(group);
+    moveCardIntoGroup(group, prev);
+    moveCardIntoGroup(group, cardWrapper);
+  }
+}
 export function resolveAiInputChange(button, apply) {
   const card = button.closest('.miro-ai-change-proposal');
   if (!card) return;
@@ -126,6 +210,7 @@ export function registerAiHandlers() {
     hydrateAiMessagesIn(this);
     const chatLog = document.getElementById('miroAiChatLog');
     if (!chatLog) return;
+    groupAdjacentAiActivityCards(chatLog);
     const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
     if (userBubbles.length > 0) {
       userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -168,8 +253,15 @@ export function registerAiHandlers() {
   // Input-data change proposals are plain server-rendered markup (no
   // `data-raw-html` payload), so they are appended as-is rather than hydrated.
   Shiny.addCustomMessageHandler('gms-addAiChatCard', (content) => {
-    const $chatLog = $('#miroAiChatLog');
-    $('#miroAiChatSpinner').before($(content.html));
+    const chatLog = document.getElementById('miroAiChatLog');
+    const spinner = document.getElementById('miroAiChatSpinner');
+    const newElement = $(content.html).get(0);
+    if (newElement.classList.contains('miro-ai-tool-activity')) {
+      appendAiActivityCard(chatLog, spinner, newElement);
+    } else {
+      spinner.before(newElement);
+    }
+    const $chatLog = $(chatLog);
     $chatLog.animate({ scrollTop: $chatLog[0].scrollHeight }, 300);
   });
   Shiny.addCustomMessageHandler('gms-updateAiChatCard', (content) => {

@@ -618,7 +618,8 @@
       "toolActivityFilter": "Zeilen",
       "toolActivityOrderBy": "Sortiert nach",
       "toolActivityLimit": "Limit",
-      "toolActivityRows": "Zurückgegebene Zeilen"
+      "toolActivityRows": "Zurückgegebene Zeilen",
+      "toolActivityGroupCount": "%s Datenbankabfragen"
     },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
