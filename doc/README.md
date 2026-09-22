@@ -15,3 +15,36 @@ This style guide aims to standardize the structure and style of the documentatio
 
 #### Sources:
 [https://www.georgegopen.com/the-litigation-articles.html](https://www.georgegopen.com/the-litigation-articles.html)
+
+# Sphinx documentation
+
+The MIRO documentation is authored in reStructuredText under `source/` and
+built with Sphinx.
+
+## Build locally
+
+From the repository root:
+
+```sh
+python3 -m venv doc/.venv
+doc/.venv/bin/python -m pip install -r doc/requirements.txt
+doc/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/source doc/_build/html
+```
+
+On Windows, use `doc/.venv/Scripts/python.exe` for the interpreter. Build
+output and the virtual environment are ignored by Git.
+
+To preview the generated site locally:
+
+```sh
+doc/.venv/bin/python -m http.server 8000 --directory doc/_build/html
+```
+
+## Layout
+
+- `source/` contains flat RST source files. For example, `model.rst` builds to
+  `model.html`.
+- `assets/` is the shared source of images and runtime resources. The Sphinx
+  build copies it to `doc/_build/html/assets/` for compatibility URLs and
+  runtime resources such as ReDoc.
+- `_build/html/` is generated output and must not be committed.

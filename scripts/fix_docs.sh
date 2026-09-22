@@ -10,8 +10,8 @@ case "$(uname)" in
     *) echo "Currently only Linux/macOS supported." >&2 && exit 1 ;;
 esac
 
-DOC_OUTPUT_DIR="${DOC_OUTPUT_DIR:-./doc/sphinx/_build/html}"
-SPHINX_PYTHON="${SPHINX_PYTHON:-./doc/sphinx/.venv/bin/python}"
+DOC_OUTPUT_DIR="${DOC_OUTPUT_DIR:-./doc/_build/html}"
+SPHINX_PYTHON="${SPHINX_PYTHON:-./doc/.venv/bin/python}"
 
 require_file() {
     if [[ ! -f "$1" ]]; then
@@ -92,7 +92,7 @@ rm -rf "$DOC_OUTPUT_DIR"
     -n \
     -W \
     --keep-going \
-    ./doc/sphinx/source \
+    ./doc/source \
     "$DOC_OUTPUT_DIR"
 
 for page in index.html download.html license.html license-server.html schema.html security_ci_report.html release.html; do

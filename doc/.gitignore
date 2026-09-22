@@ -6,3 +6,8 @@ GAMS-MIRO-Demo-Apps.zip
 GAMS-MIRO-Demo-Apps-GAMSPy.zip
 GAMS-MIRO-Server-*.zip
 latest.ver
+
+# Local Sphinx build artifacts
+/_build/
+/.venv/
+__pycache__/

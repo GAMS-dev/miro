@@ -1301,13 +1301,13 @@ update_doc_job:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_GAMSCOM_STAGING" | tr -d '\r' | DISPLAY=":0.0" SSH_ASKPASS=~/.ssh/.print_ssh_password setsid ssh-add - > /dev/null
   script:
-    - python3 -m venv doc/sphinx/.venv
-    - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
-    - doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check -r doc/sphinx/requirements.txt
+    - python3 -m venv doc/.venv
+    - doc/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
+    - doc/.venv/bin/python -m pip install --disable-pip-version-check -r doc/requirements.txt
     # Staging is a Sphinx source preview; production-only release post-processing is omitted.
-    - rm -rf doc/sphinx/_build/html
-    - doc/sphinx/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/sphinx/source doc/sphinx/_build/html
-    - rsync -Orlptvz doc/sphinx/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
+    - rm -rf doc/_build/html
+    - doc/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/source doc/_build/html
+    - rsync -Orlptvz doc/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: always

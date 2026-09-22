@@ -13,13 +13,13 @@ pushd server > /dev/null
     rm -rf data models
 popd > /dev/null
 
-python3 -m venv doc/sphinx/.venv
-doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
-doc/sphinx/.venv/bin/python -m pip install --disable-pip-version-check -r doc/sphinx/requirements.txt
+python3 -m venv doc/.venv
+doc/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
+doc/.venv/bin/python -m pip install --disable-pip-version-check -r doc/requirements.txt
 
 ./scripts/fix_docs.sh
 
-rsync -rlptvz doc/sphinx/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
+rsync -rlptvz doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
 
 git add ./doc/miro_server_api.json ./server/image-docs/*
 
