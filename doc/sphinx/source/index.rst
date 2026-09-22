@@ -2,7 +2,13 @@
    :alt: GAMS MIRO
    :height: 100px
    :align: center
-   :class: miro-hero-logo
+   :class: miro-hero-logo only-light
+
+.. image:: ../../assets/images/MIRO_Logo_Schriftzug_white.svg
+   :alt: GAMS MIRO
+   :height: 100px
+   :align: center
+   :class: miro-hero-logo only-dark
 
 .. container:: miro-documentation-center
 

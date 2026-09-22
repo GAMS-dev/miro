@@ -50,6 +50,10 @@ html_theme_options = {
     "navbar_start": [],
     "navbar_end": [],
     "navbar_persistent": ["search-button-field"],
+    "logo": {
+        "image_light": "../../assets/images/MIRO_Logo_Schriftzug.svg",
+        "image_dark": "../../assets/images/MIRO_Logo_Schriftzug_white.svg",
+    },
     "footer_start": [],
     "footer_center": [],
     "footer_end": [],
