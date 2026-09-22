@@ -89,12 +89,44 @@ mAiTask <- NULL
 # set whenever we cancel the running mirai ourselves, so that the observer below can
 # tell a deliberate abort apart from a genuine failure
 aiTaskCancelled <- FALSE
+aiTaskRunning <- reactiveVal(FALSE)
+mAiActivityFile <- NULL
+aiActivityCursor <- 0L
 cancelAiTask <- function() {
   aiTaskCancelled <<- TRUE
+  aiTaskRunning(FALSE)
+  if (length(mAiActivityFile)) {
+    unlink(mAiActivityFile)
+  }
   stop_mirai(mAiTask)
 }
+flushAiActivity <- function() {
+  if (!length(mAiActivityFile) || !file.exists(mAiActivityFile)) {
+    return(invisible())
+  }
+  entries <- tryCatch(jsonlite::fromJSON(mAiActivityFile, simplifyVector = FALSE), error = function(err) NULL)
+  if (is.null(entries) || length(entries) <= aiActivityCursor) {
+    return(invisible())
+  }
+  newEntries <- entries[(aiActivityCursor + 1L):length(entries)]
+  aiActivityCursor <<- length(entries)
+  for (activity in newEntries) {
+    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1L]] <<- list(role = "toolActivity", activity = activity)
+    session$sendCustomMessage("gms-addAiChatCard", list(
+      html = as.character(renderAiToolActivity(activity, lang$nav$aiBotDialog))
+    ))
+  }
+  return(invisible())
+}
+observe({
+  if (!aiTaskRunning()) {
+    return()
+  }
+  invalidateLater(750, session)
+  isolate(flushAiActivity())
+})
 aiTask <- ExtendedTask$new(
-  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history, allowInputModification) {
+  function(userInput, dbConnProvider, dbSchema, ioConfig, assistantConfig, model, allowedSids, scenIdNameMap, history, allowInputModification, activityFile) {
     mAiTask <<- mirai(
       {
         library(R6)
@@ -117,11 +149,31 @@ aiTask <- ExtendedTask$new(
           aiAdapter$setScenIdNameMap(scenIdNameMap)
         }
         aiProvider <- assistant$getProvider(providerAndModel[1], providerAndModel[2])
+
+        activityLog <- list()
+        writeActivitySnapshot <- function() {
+          tmpFile <- paste0(activityFile, ".tmp")
+          tryCatch(
+            {
+              writeLines(jsonlite::toJSON(activityLog, auto_unbox = TRUE), tmpFile)
+              file.rename(tmpFile, activityFile)
+            },
+            error = function(err) NULL
+          )
+        }
         aiAdapter$setAllowedSids(allowedSids)
 
         toolSchema <- aiAdapter$getToolSchema()
         toolDispatcher <- list(
-          "queryScenarioDatabase" = function(args) aiAdapter$queryScenarioDatabase(args),
+          "queryScenarioDatabase" = function(args) {
+            dbRes <- aiAdapter$queryScenarioDatabase(args)
+            activity <- tryCatch(aiAdapter$describeToolCall("queryScenarioDatabase", args, dbRes), error = function(err) NULL)
+            if (!is.null(activity)) {
+              activityLog[[length(activityLog) + 1L]] <<- activity
+              writeActivitySnapshot()
+            }
+            dbRes
+          },
           "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args)
         )
         roleContext <- "### ROLE
@@ -212,7 +264,8 @@ Answer directly—concise, quantitative, prioritized. Synthesize into conclusion
       allowedSids = allowedSids,
       scenIdNameMap = scenIdNameMap,
       history = history,
-      allowInputModification = allowInputModification
+      allowInputModification = allowInputModification,
+      activityFile = activityFile
     )
   }
 )
@@ -266,6 +319,12 @@ observeEvent(input$miroAiUserText, {
     modelInput <- sprintf("[%s]\n\n%s", paste(notes, collapse = " "), userText)
   }
   aiTaskCancelled <<- FALSE
+  if (length(mAiActivityFile)) {
+    unlink(mAiActivityFile)
+  }
+  mAiActivityFile <<- tempfile(pattern = "miro_ai_activity_", fileext = ".json")
+  aiActivityCursor <<- 0L
+  aiTaskRunning(TRUE)
   aiTask$invoke(
     userInput = modelInput,
     dbConnProvider = dbConnProvider,
@@ -276,7 +335,8 @@ observeEvent(input$miroAiUserText, {
     allowedSids = aiAssistantState$activeSids,
     scenIdNameMap = dialogState$scenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory),
-    allowInputModification = aiCanModifyInput()
+    allowInputModification = aiCanModifyInput(),
+    activityFile = mAiActivityFile
   )
 })
 observe({
@@ -304,6 +364,10 @@ observe({
   )) {
     return()
   }
+  aiTaskRunning(FALSE)
+  # catch any activity written between the last poll and completion, so it
+  # is never missing from the chat even though the request already finished
+  flushAiActivity()
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "model", text = aiOutput)
   session$sendCustomMessage(
     "gms-addAiChatBubble",

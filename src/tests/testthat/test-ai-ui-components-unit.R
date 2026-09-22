@@ -273,3 +273,101 @@ test_that("renderAiInputChangeProposal renders a dropdown selection change", {
   expect_false(grepl("Affected values", html, fixed = TRUE))
   expect_match(html, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
 })
+
+# ==============================================================================
+# 5. renderAiToolActivity (live "what did the model query" card)
+# ==============================================================================
+
+mockActivityLang <- list(
+  toolActivityStatusError = "Error",
+  toolActivityStatusRows = "%s rows",
+  toolActivitySymbol = "Symbol",
+  toolActivityScenarios = "Scenarios",
+  toolActivityAggregation = "Aggregation",
+  toolActivityAnalysisMode = "Comparison",
+  toolActivityGroupBy = "Grouped by",
+  toolActivityFilter = "Rows",
+  toolActivityOrderBy = "Sorted by",
+  toolActivityLimit = "Limit",
+  toolActivityRows = "Rows returned"
+)
+
+mockActivity <- function(...) {
+  modifyList(list(
+    symbolName = "demand", symbolAlias = "Customer Demand",
+    scenarioNames = "Base",
+    filters = list(list(column = "region", operator = "=", value = "NA")),
+    rowCount = 1L, truncated = FALSE
+  ), list(...))
+}
+
+test_that("renderAiToolActivity shows the symbol, scenarios, filters and row count", {
+  html <- as.character(renderAiToolActivity(mockActivity(), mockActivityLang))
+
+  expect_match(html, "Customer Demand", fixed = TRUE)
+  expect_match(html, "Base", fixed = TRUE)
+  expect_match(html, "region = NA", fixed = TRUE)
+  expect_match(html, "1 rows", fixed = TRUE)
+  expect_false(grepl("miro-ai-activity-card-error", html, fixed = TRUE))
+})
+
+test_that("renderAiToolActivity falls back to the raw symbol name when no alias is known", {
+  html <- as.character(renderAiToolActivity(mockActivity(symbolAlias = NULL, symbolName = "unknown_sym"), mockActivityLang))
+  expect_match(html, "unknown_sym", fixed = TRUE)
+})
+
+test_that("renderAiToolActivity marks a failed query and shows the error instead of a row count", {
+  activity <- mockActivity(error = "Symbol 'foo' does not exist.", rowCount = NULL, filters = NULL)
+  html <- as.character(renderAiToolActivity(activity, mockActivityLang))
+
+  expect_match(html, "miro-ai-activity-card-error", fixed = TRUE)
+  expect_match(html, "Symbol 'foo' does not exist.", fixed = TRUE)
+  expect_false(grepl("Rows returned", html, fixed = TRUE))
+})
+
+test_that("renderAiToolActivity shows the truncation warning", {
+  activity <- mockActivity(truncated = TRUE, warning = "WARNING: Results truncated to 1 rows.")
+  html <- as.character(renderAiToolActivity(activity, mockActivityLang))
+
+  expect_match(html, "miro-ai-activity-warning", fixed = TRUE)
+  expect_match(html, "WARNING: Results truncated to 1 rows.", fixed = TRUE)
+})
+
+test_that("renderAiToolActivity shows aggregation, comparison mode, grouping, sort order and limit when present", {
+  activity <- mockActivity(
+    aggregation = "SUM", analysisMode = "DIFFERENCE", groupByColumn = "region",
+    orderBy = "_delta", sortDirection = "DESC", limit = 5L
+  )
+  html <- as.character(renderAiToolActivity(activity, mockActivityLang))
+
+  expect_match(html, "SUM", fixed = TRUE)
+  expect_match(html, "DIFFERENCE", fixed = TRUE)
+  expect_match(html, "region", fixed = TRUE)
+  expect_match(html, "_delta (DESC)", fixed = TRUE)
+  expect_match(html, ">5<", fixed = TRUE)
+})
+
+test_that("renderAiToolActivity joins multiple scenario names and group-by columns", {
+  activity <- mockActivity(scenarioNames = list("Base", "High Demand"), groupByColumn = list("region", "year"))
+  html <- as.character(renderAiToolActivity(activity, mockActivityLang))
+
+  expect_match(html, "Base, High Demand", fixed = TRUE)
+  expect_match(html, "region, year", fixed = TRUE)
+})
+
+test_that("renderAiToolActivity never emits model-controlled text as live markup (stored XSS guard)", {
+  activity <- mockActivity(symbolAlias = "<img src=x onerror=alert(1)>", error = "<script>alert(1)</script>")
+  html <- as.character(renderAiToolActivity(activity, mockActivityLang))
+
+  expect_false(grepl("<img", html, fixed = TRUE))
+  expect_false(grepl("<script>alert", html, fixed = TRUE))
+  expect_match(html, "&lt;img", fixed = TRUE)
+  expect_match(html, "&lt;script&gt;", fixed = TRUE)
+  expect_false(grepl("data-raw-html", html, fixed = TRUE))
+})
+
+test_that("renderAiChatItem dispatches tool activity items to renderAiToolActivity", {
+  html <- as.character(renderAiChatItem(list(role = "toolActivity", activity = mockActivity()), mockActivityLang))
+  expect_match(html, "miro-ai-tool-activity", fixed = TRUE)
+  expect_match(html, "Customer Demand", fixed = TRUE)
+})

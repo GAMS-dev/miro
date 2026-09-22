@@ -3661,6 +3661,79 @@ li.drop-index-item[data-col-hidden="true"] {
     color: @secondary-color-dark;
   });
 }
+.miro-ai-tool-activity {
+  max-width: 95%;
+}
+.miro-ai-activity-card {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  .responsiveDark({
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+  },
+  {
+    background-color: @modal-bg-dark;
+    border: 1px solid @dropdown-sidebar-bg-dark;
+  });
+}
+.miro-ai-activity-card[open] summary {
+  margin-bottom: 8px;
+}
+.miro-ai-activity-card summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.miro-ai-activity-symbol {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.miro-ai-activity-status {
+  margin-left: auto;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+.miro-ai-activity-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 0;
+
+  dt {
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+.miro-ai-activity-warning,
+.miro-ai-activity-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  font-weight: 700;
+  .responsiveDark({
+    color: @secondary-color;
+  },
+  {
+    color: @secondary-color-dark;
+  });
+}
+.miro-ai-activity-card-error {
+  .responsiveDark({
+    border-left: 4px solid @secondary-color;
+  },
+  {
+    border-left: 4px solid @secondary-color-dark;
+  });
+}
 .miro-ai-disclaimer {
   font-size: 11px;
   opacity: 0.55;

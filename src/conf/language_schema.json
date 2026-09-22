@@ -2380,9 +2380,53 @@
             "btDiscardChange": {
               "type": "string",
               "minLength": 1
+            },
+            "toolActivityStatusError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityStatusRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivitySymbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityScenarios": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityAggregation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityAnalysisMode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityGroupBy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityFilter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityOrderBy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityLimit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityRows": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 44
+          "minProperties": 55
         },
         "hcubeMode": {
           "type": "object",

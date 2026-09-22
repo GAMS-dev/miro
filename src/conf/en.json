@@ -607,7 +607,18 @@
       "changeErrBadChoice": "'%s' is not one of the values this symbol currently accepts.",
       "nfChangeApplied": "Input data of '%s' updated.",
       "btApplyChange": "Apply",
-      "btDiscardChange": "Discard"
+      "btDiscardChange": "Discard",
+      "toolActivityStatusError": "Error",
+      "toolActivityStatusRows": "%s rows",
+      "toolActivitySymbol": "Symbol",
+      "toolActivityScenarios": "Scenarios",
+      "toolActivityAggregation": "Aggregation",
+      "toolActivityAnalysisMode": "Comparison",
+      "toolActivityGroupBy": "Grouped by",
+      "toolActivityFilter": "Rows",
+      "toolActivityOrderBy": "Sorted by",
+      "toolActivityLimit": "Limit",
+      "toolActivityRows": "Rows returned"
     },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",

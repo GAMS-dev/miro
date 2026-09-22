@@ -607,7 +607,18 @@
       "changeErrBadChoice": "“%s”不是该符号当前允许的取值之一。",
       "nfChangeApplied": "“%s”的输入数据已更新。",
       "btApplyChange": "应用",
-      "btDiscardChange": "丢弃"
+      "btDiscardChange": "丢弃",
+      "toolActivityStatusError": "错误",
+      "toolActivityStatusRows": "%s 行",
+      "toolActivitySymbol": "符号",
+      "toolActivityScenarios": "场景",
+      "toolActivityAggregation": "聚合",
+      "toolActivityAnalysisMode": "比较",
+      "toolActivityGroupBy": "分组依据",
+      "toolActivityFilter": "行",
+      "toolActivityOrderBy": "排序依据",
+      "toolActivityLimit": "限制",
+      "toolActivityRows": "返回的行数"
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",

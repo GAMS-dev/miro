@@ -199,9 +199,70 @@ renderAiInputChangeProposal <- function(change, lang) {
     )
   ))
 }
+aiToolActivityFilterLabel <- function(activity) {
+  if (!length(activity$filters)) {
+    return(NULL)
+  }
+  return(paste(vapply(activity$filters, function(filterSpec) {
+    return(sprintf("%s %s %s", filterSpec$column, filterSpec$operator, filterSpec$value))
+  }, character(1L), USE.NAMES = FALSE), collapse = " & "))
+}
+renderAiToolActivity <- function(activity, lang) {
+  hasError <- length(activity$error) > 0L
+  filterLabel <- aiToolActivityFilterLabel(activity)
+  symbolLabel <- activity$symbolAlias %||% activity$symbolName
+  statusText <- NULL
+  if (hasError) {
+    statusText <- lang$toolActivityStatusError
+  } else if (length(activity$rowCount)) {
+    statusText <- sprintf(lang$toolActivityStatusRows, format(activity$rowCount, big.mark = ","))
+  }
+  return(tags$div(
+    class = "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant miro-ai-tool-activity",
+    tags$details(
+      class = paste(c("miro-ai-activity-card", if (hasError) "miro-ai-activity-card-error"), collapse = " "),
+      tags$summary(
+        icon("magnifying-glass"),
+        tags$span(class = "miro-ai-activity-symbol", symbolLabel),
+        if (length(statusText)) tags$span(class = "miro-ai-activity-status", statusText)
+      ),
+      tags$dl(
+        class = "miro-ai-activity-facts",
+        tags$dt(lang$toolActivitySymbol), tags$dd(symbolLabel),
+        if (length(activity$scenarioNames)) tags$dt(lang$toolActivityScenarios),
+        if (length(activity$scenarioNames)) tags$dd(paste(activity$scenarioNames, collapse = ", ")),
+        if (length(activity$aggregation)) tags$dt(lang$toolActivityAggregation),
+        if (length(activity$aggregation)) tags$dd(activity$aggregation),
+        if (length(activity$analysisMode)) tags$dt(lang$toolActivityAnalysisMode),
+        if (length(activity$analysisMode)) tags$dd(activity$analysisMode),
+        if (length(activity$groupByColumn)) tags$dt(lang$toolActivityGroupBy),
+        if (length(activity$groupByColumn)) tags$dd(paste(activity$groupByColumn, collapse = ", ")),
+        if (!is.null(filterLabel)) tags$dt(lang$toolActivityFilter),
+        if (!is.null(filterLabel)) tags$dd(filterLabel),
+        if (length(activity$orderBy)) tags$dt(lang$toolActivityOrderBy),
+        if (length(activity$orderBy)) {
+          tags$dd(if (length(activity$sortDirection)) sprintf("%s (%s)", activity$orderBy, activity$sortDirection) else activity$orderBy)
+        },
+        if (length(activity$limit)) tags$dt(lang$toolActivityLimit),
+        if (length(activity$limit)) tags$dd(format(activity$limit, big.mark = ",")),
+        if (!hasError && length(activity$rowCount)) tags$dt(lang$toolActivityRows),
+        if (!hasError && length(activity$rowCount)) tags$dd(format(activity$rowCount, big.mark = ","))
+      ),
+      if (isTRUE(activity$truncated) && length(activity$warning)) {
+        tags$div(class = "miro-ai-activity-warning", icon("triangle-exclamation"), activity$warning)
+      },
+      if (hasError) {
+        tags$div(class = "miro-ai-activity-error", icon("triangle-exclamation"), activity$error)
+      }
+    )
+  ))
+}
 renderAiChatItem <- function(item, lang) {
   if (identical(item$role, "inputChange")) {
     return(renderAiInputChangeProposal(item$change, lang))
+  }
+  if (identical(item$role, "toolActivity")) {
+    return(renderAiToolActivity(item$activity, lang))
   }
   if (is.null(item$role)) {
     return(renderAiChatDivider(item))

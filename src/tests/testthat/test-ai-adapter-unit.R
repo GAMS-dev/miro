@@ -1137,3 +1137,131 @@ test_that("queryScenarioDatabase returns an empty result rather than erroring in
 
   DBI::dbDisconnect(env$conn)
 })
+
+test_that("describeToolCall returns NULL for tools other than queryScenarioDatabase", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  expect_null(adapter$describeToolCall("modifySandboxInputData", list(symbolName = "demand"), "{}"))
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall summarizes a successful query with its symbol alias and row count", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand", scenarioNames = c("Base"),
+    filters = data.frame(column = "region", operator = "=", value = "NA", stringsAsFactors = FALSE)
+  )
+  res <- adapter$queryScenarioDatabase(query_args)
+  activity <- adapter$describeToolCall("queryScenarioDatabase", query_args, res)
+
+  expect_equal(activity$symbolName, "demand")
+  # the alias is looked up from the database schema, not just echoed back
+  expect_equal(activity$symbolAlias, "Customer Demand")
+  expect_equal(activity$scenarioNames, "Base")
+  expect_equal(activity$rowCount, 1L)
+  expect_false(activity$truncated)
+  expect_null(activity$error)
+  expect_equal(activity$filters[[1]]$column, "region")
+  expect_equal(activity$filters[[1]]$value, "NA")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall reports the error message when the query is rejected", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(symbolName = "nonexistent", scenarioNames = c("Base"))
+  res <- adapter$queryScenarioDatabase(query_args)
+  activity <- adapter$describeToolCall("queryScenarioDatabase", query_args, res)
+
+  expect_match(activity$error, "does not exist")
+  expect_null(activity$rowCount)
+  # no symbol of that name exists, so the alias falls back to the raw name
+  expect_equal(activity$symbolAlias, "nonexistent")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall flags a truncated result and surfaces the warning", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(symbolName = "demand", scenarioNames = c("Base", "High Demand", "Low Demand"), limit = 1)
+  res <- adapter$queryScenarioDatabase(query_args)
+  activity <- adapter$describeToolCall("queryScenarioDatabase", query_args, res)
+
+  expect_true(activity$truncated)
+  expect_match(activity$warning, "truncated")
+  expect_equal(activity$rowCount, 1L)
+  expect_equal(activity$limit, 1L)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall reports zero rows for an empty result set", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  query_args <- list(
+    symbolName = "demand", scenarioNames = c("Base"),
+    filters = data.frame(column = "region", operator = "=", value = "does-not-exist", stringsAsFactors = FALSE)
+  )
+  res <- adapter$queryScenarioDatabase(query_args)
+  activity <- adapter$describeToolCall("queryScenarioDatabase", query_args, res)
+
+  expect_equal(activity$rowCount, 0L)
+  expect_false(activity$truncated)
+  expect_null(activity$error)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall omits NONE/STANDARD defaults and echoes explicit aggregation/analysisMode", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  plainArgs <- list(symbolName = "demand", scenarioNames = c("Base"), aggregation = "NONE", analysisMode = "STANDARD")
+  res <- adapter$queryScenarioDatabase(plainArgs)
+  plainActivity <- adapter$describeToolCall("queryScenarioDatabase", plainArgs, res)
+  expect_null(plainActivity$aggregation)
+  expect_null(plainActivity$analysisMode)
+
+  aggArgs <- list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"),
+    selectColumn = "value", aggregation = "SUM", groupByColumn = "region"
+  )
+  res2 <- adapter$queryScenarioDatabase(aggArgs)
+  aggActivity <- adapter$describeToolCall("queryScenarioDatabase", aggArgs, res2)
+  expect_equal(aggActivity$aggregation, "SUM")
+  expect_equal(aggActivity$groupByColumn, "region")
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("describeToolCall returns NULL when the tool arguments cannot be parsed", {
+  env <- setup_test_env()
+  adapter <- env$adapter
+  adapter$setAllowedSids(c(1, 2, 3))
+  adapter$getSystemMetadata()
+
+  expect_null(adapter$describeToolCall("queryScenarioDatabase", "not-json{{", "{}"))
+
+  DBI::dbDisconnect(env$conn)
+})

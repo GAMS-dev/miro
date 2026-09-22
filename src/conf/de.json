@@ -607,7 +607,18 @@
       "changeErrBadChoice": "'%s' ist keiner der Werte, die dieses Symbol derzeit zulässt.",
       "nfChangeApplied": "Eingabedaten von '%s' aktualisiert.",
       "btApplyChange": "Anwenden",
-      "btDiscardChange": "Verwerfen"
+      "btDiscardChange": "Verwerfen",
+      "toolActivityStatusError": "Fehler",
+      "toolActivityStatusRows": "%s Zeilen",
+      "toolActivitySymbol": "Symbol",
+      "toolActivityScenarios": "Szenarien",
+      "toolActivityAggregation": "Aggregation",
+      "toolActivityAnalysisMode": "Vergleich",
+      "toolActivityGroupBy": "Gruppiert nach",
+      "toolActivityFilter": "Zeilen",
+      "toolActivityOrderBy": "Sortiert nach",
+      "toolActivityLimit": "Limit",
+      "toolActivityRows": "Zurückgegebene Zeilen"
     },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",

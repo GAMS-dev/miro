@@ -210,6 +210,99 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       private$customscenIdNameMap <- scenIdNameMap
       return(invisible(self))
     },
+    describeToolCall = function(toolName, argumentsJson, resultJson) {
+      if (!identical(toolName, "queryScenarioDatabase")) {
+        return(NULL)
+      }
+      args <- tryCatch(
+        {
+          parsed <- if (is.character(argumentsJson)) jsonlite::fromJSON(argumentsJson) else argumentsJson
+          if (!is.list(parsed)) NULL else parsed
+        },
+        error = function(e) NULL
+      )
+      if (is.null(args)) {
+        return(NULL)
+      }
+      parsedResult <- tryCatch(jsonlite::fromJSON(resultJson, simplifyVector = TRUE), error = function(err) NULL)
+
+      symName <- if (length(args$symbolName) == 1L && nzchar(args$symbolName)) as.character(args$symbolName) else NULL
+      symbolAlias <- symName
+      if (!is.null(symName) && length(private$symbols[[symName]]$alias) == 1L) {
+        symbolAlias <- private$symbols[[symName]]$alias
+      }
+
+      filters <- args$filters
+      if (!is.null(filters) && !is.data.frame(filters) && is.list(filters) &&
+        all(c("column", "operator", "value") %in% names(filters))) {
+        # A single filter object was sent instead of a one-element array; normalize it.
+        filters <- as.data.frame(filters, stringsAsFactors = FALSE)
+      }
+      filterList <- NULL
+      if (is.data.frame(filters) && nrow(filters)) {
+        filterList <- lapply(seq_len(nrow(filters)), function(i) {
+          list(
+            column = as.character(filters$column[[i]]),
+            operator = as.character(filters$operator[[i]]),
+            value = as.character(filters$value[[i]])
+          )
+        })
+      }
+
+      errorMsg <- NULL
+      warningMsg <- NULL
+      rowCount <- NULL
+      truncated <- FALSE
+      if (!is.null(parsedResult)) {
+        if (length(parsedResult$error) == 1L) {
+          errorMsg <- as.character(parsedResult$error)
+        } else if (!is.null(parsedResult$`_warning`)) {
+          warningMsg <- as.character(parsedResult$`_warning`)
+          truncated <- TRUE
+          rowCount <- if (!is.null(parsedResult$data)) nrow(parsedResult$data) else 0L
+        } else if (is.data.frame(parsedResult)) {
+          rowCount <- nrow(parsedResult)
+        } else if (is.list(parsedResult)) {
+          # an empty result set parses to an empty (non-data-frame) list
+          rowCount <- length(parsedResult)
+        }
+      }
+
+      aggregation <- if (length(args$aggregation) == 1L) toupper(as.character(args$aggregation)) else NULL
+      if (identical(aggregation, "NONE")) {
+        aggregation <- NULL
+      }
+      analysisMode <- if (length(args$analysisMode) == 1L) toupper(as.character(args$analysisMode)) else NULL
+      if (identical(analysisMode, "STANDARD")) {
+        analysisMode <- NULL
+      }
+      groupByColumn <- if (length(args$groupByColumn)) as.character(unlist(args$groupByColumn, use.names = FALSE)) else NULL
+      scenarioNames <- if (length(args$scenarioNames)) as.character(unlist(args$scenarioNames, use.names = FALSE)) else NULL
+      orderBy <- if (length(args$orderBy) == 1L && nzchar(args$orderBy)) as.character(args$orderBy) else NULL
+      sortDirection <- if (!is.null(orderBy) && length(args$sortDirection) == 1L) toupper(as.character(args$sortDirection)) else NULL
+      limitVal <- if (length(args$limit) == 1L) suppressWarnings(as.integer(args$limit)) else NULL
+
+      entry <- list(
+        symbolName = symName,
+        symbolAlias = symbolAlias,
+        scenarioNames = scenarioNames,
+        aggregation = aggregation,
+        analysisMode = analysisMode,
+        groupByColumn = groupByColumn,
+        filters = filterList,
+        orderBy = orderBy,
+        sortDirection = sortDirection,
+        limit = limitVal,
+        error = errorMsg,
+        warning = warningMsg,
+        rowCount = rowCount,
+        truncated = truncated
+      )
+      # drop absent fields entirely rather than keeping them as `NULL` --
+      # otherwise a JSON round-trip turns them into `{}` instead of leaving
+      # them out, which the renderer would then have to special-case
+      return(Filter(Negate(is.null), entry))
+    },
     getSystemMetadata = function() {
       scenMetaTable <- private$dbSchema$getDbTableName("_scenMeta")
       scenMetaSchema <- private$dbSchema$getDbSchema("_scenMeta")
