@@ -290,6 +290,7 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
       id = "miroAiChatLog",
       class = "miro-ai-chat-log",
       `data-activity-group-label` = lang$toolActivityGroupCount,
+      `data-copy-label` = lang$btCopy,
       lapply(chatHistory, function(item) renderAiChatItem(item, lang)),
       genSpinner("miroAiChatSpinner",
         hidden = TRUE, absolute = FALSE,

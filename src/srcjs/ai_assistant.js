@@ -3,10 +3,8 @@
 import DOMPurify from 'dompurify';
 import { parseKatex } from './util';
 
-export function copyChatContent(button) {
-  const wrapper = button.closest('.miro-ai-chat-bubble-wrapper');
-  const contentToCopy = wrapper.querySelector('.miro-ai-chat-content-raw').textContent;
-  navigator.clipboard.writeText(contentToCopy).then(() => {
+function copyTextWithFeedback(button, text) {
+  navigator.clipboard.writeText(text).then(() => {
     const icon = button.querySelector('i');
     if (icon) {
       const originalClass = icon.className;
@@ -21,6 +19,27 @@ export function copyChatContent(button) {
   }).catch((err) => {
     // eslint-disable-next-line no-console
     console.error('Failed to copy AI chat content: ', err);
+  });
+}
+export function copyChatContent(button) {
+  const wrapper = button.closest('.miro-ai-chat-bubble-wrapper');
+  const contentToCopy = wrapper.querySelector('.miro-ai-chat-content-raw').textContent;
+  copyTextWithFeedback(button, contentToCopy);
+}
+function addCodeCopyButtons(root) {
+  const copyLabel = document.getElementById('miroAiChatLog')?.dataset.copyLabel || '';
+  root.querySelectorAll('pre').forEach((pre) => {
+    if (pre.querySelector('.miro-ai-code-copy-btn')) return;
+    const code = pre.querySelector('code') || pre;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'miro-ai-code-copy-btn';
+    button.title = copyLabel;
+    button.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i>';
+    button.addEventListener('click', () => {
+      copyTextWithFeedback(button, code.textContent);
+    });
+    pre.appendChild(button);
   });
 }
 export function toggleChatCollapse(btn) {
@@ -199,6 +218,7 @@ function hydrateAiMessageContent(el) {
   el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml);
   delete el.dataset.rawHtml;
   parseKatex(el, { delimiters: AI_KATEX_DELIMITERS });
+  addCodeCopyButtons(el);
 }
 export function hydrateAiMessagesIn(root) {
   root.querySelectorAll('[data-raw-html]').forEach(hydrateAiMessageContent);
