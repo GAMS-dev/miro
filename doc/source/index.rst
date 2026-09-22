@@ -274,7 +274,7 @@ Have a look at our fact sheets:
 
       .. raw:: html
 
-         <a href="../assets/images/cheat_sheets/interface.png" download><img src="../assets/images/cheat_sheets/interface_lowres.png" alt="GAMS MIRO interface" style="max-height:300px"></a>
+         <a href="assets/images/cheat_sheets/interface.png" download><img src="assets/images/cheat_sheets/interface_lowres.png" alt="GAMS MIRO interface" style="max-height:300px"></a>
 
       The Interface
 
@@ -282,7 +282,7 @@ Have a look at our fact sheets:
 
       .. raw:: html
 
-         <a href="../assets/images/cheat_sheets/development_deployment.png" download><img src="../assets/images/cheat_sheets/development_deployment_lowres.png" alt="Development &amp; deployment" style="max-height:300px"></a>
+         <a href="assets/images/cheat_sheets/development_deployment.png" download><img src="assets/images/cheat_sheets/development_deployment_lowres.png" alt="Development &amp; deployment" style="max-height:300px"></a>
 
       Development & Deployment
 
@@ -290,7 +290,7 @@ Have a look at our fact sheets:
 
       .. raw:: html
 
-         <a href="../assets/images/cheat_sheets/miro_server.png" download><img src="../assets/images/cheat_sheets/miro_server_lowres.png" alt="GAMS MIRO Server" style="max-height:300px"></a>
+         <a href="assets/images/cheat_sheets/miro_server.png" download><img src="assets/images/cheat_sheets/miro_server_lowres.png" alt="GAMS MIRO Server" style="max-height:300px"></a>
 
       GAMS MIRO Server
 

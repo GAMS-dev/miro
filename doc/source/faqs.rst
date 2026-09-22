@@ -117,7 +117,7 @@ interface <./customize.html#configurationMode>`__, with which you can
 create plots and widgets or change certain settings with a few mouse
 clicks, visually supported by a live preview. In addition, the
 configuration can also be done
-`manually <./configuration_advanced.html.html#jsonfiles>`__ via the
+`manually <./configuration_advanced.html#jsonfiles>`__ via the
 <modelname>.json file inside the directory:
 <modeldirecory>/<modelname>.json.
 
