@@ -8,6 +8,7 @@ html[data-theme="light"] {
     /* Brand / primary */
     --pst-color-primary: #f4961a;
     --pst-color-secondary: #f4961a;
+    --pst-color-accent: #f4961a;
     --pst-color-primary-highlight: #d97f00;
     --pst-color-secondary-highlight: #d97f00;
     --pst-color-primary-bg: #fff2df;
@@ -49,6 +50,7 @@ html[data-theme="dark"] {
     /* Brand / primary */
     --pst-color-primary: #f4961a;
     --pst-color-secondary: #f4961a;
+    --pst-color-accent: #f4961a;
     --pst-color-primary-highlight: #ffb14d;
     --pst-color-secondary-highlight: #ffb14d;
     --pst-color-primary-bg: #3a2608;
@@ -100,6 +102,77 @@ html[data-theme="dark"] {
 }
 
 /* Generic presentation rules adapted from gamspy_docs/_static/custom.css. */
+.miro-sidebar-brand {
+    padding: 0 0 0.5rem;
+}
+
+.miro-sidebar-brand .navbar-brand {
+    display: block;
+    padding-top: 0;
+}
+
+.miro-sidebar-search {
+    padding: 0 0 0.75rem;
+}
+
+.miro-sidebar-search .bd-search {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.bd-sidebar-primary {
+    padding-top: 1rem;
+}
+
+.bd-sidebar-primary .sidebar-primary-item {
+    padding-top: 0;
+}
+
+.bd-sidebar-primary .sidebar-primary-items__start {
+    border-top: none;
+}
+
+#pst-primary-sidebar,
+.bd-sidebar-secondary {
+    top: 0;
+}
+
+.bd-main .bd-content .bd-article-container {
+    overflow-x: visible;
+}
+
+.bd-header-article {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--pst-color-background);
+    border-bottom: 1px solid var(--pst-color-border);
+}
+
+.bd-header-article .header-article-items {
+    align-items: center;
+    display: flex;
+    height: 3rem;
+    width: 100%;
+}
+
+.bd-header-article .header-article-items__start,
+.bd-header-article .header-article-items__end,
+.bd-header-article .header-article-item {
+    align-items: center;
+    display: flex;
+}
+
+.bd-sidebar-primary .sidebar-header-items__end {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .bd-header {
+        display: none;
+    }
+}
+
 .navbar-icon-links img.icon-link-image {
     height: 1.25em;
 }

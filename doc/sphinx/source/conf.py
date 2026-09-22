@@ -40,33 +40,21 @@ html_show_sourcelink = False
 html_show_search_summary = True
 html_last_updated_fmt = ""
 html_title = "GAMS MIRO documentation"
-html_logo = str(DOC_DIR / "assets" / "images" / "logo.svg")
+html_logo = str(DOC_DIR / "assets" / "images" / "MIRO_Logo_Schriftzug.svg")
 html_favicon = "_static/gams.ico"
 # Preserve public page names, including configuration_general.html.
 html_file_suffix = ".html"
 html_link_suffix = ".html"
 html_theme_options = {
-    "icon_links": [
-        {
-            "name": "GitHub",
-            "url": "https://github.com/GAMS-dev/miro",
-            "icon": "fa-brands fa-square-github",
-            "type": "fontawesome",
-        },
-        {
-            "name": "X",
-            "url": "https://twitter.com/GamsSoftware",
-            "icon": "fa-brands fa-x-twitter",
-        },
-        {
-            "name": "GAMS",
-            "url": "https://www.gams.com",
-            "icon": "_static/gams.svg",
-            "type": "local",
-            "attributes": {"target": "_blank"},
-        },
-    ],
     "navbar_center": [],
+    "navbar_start": [],
+    "navbar_end": [],
+    "navbar_persistent": ["search-button-field"],
+    "footer_start": [],
+    "footer_center": [],
+    "footer_end": [],
+    "article_header_start": ["breadcrumbs"],
+    "article_header_end": ["theme-switcher"],
     "show_nav_level": 1,
     "sidebar_includehidden": True,
     "navigation_depth": 4,
@@ -103,5 +91,6 @@ def setup(app):
 # The PyData theme suppresses its default TOC sidebar on the root document;
 # use the same local sidebar template under a distinct name so index retains it.
 html_sidebars = {
-    "index": ["sidebar-nav-index.html"],
+    "**": ["sidebar-brand-search.html", "sidebar-nav-bs.html"],
+    "index": ["sidebar-brand-search.html", "sidebar-nav-index.html"],
 }
