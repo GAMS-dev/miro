@@ -37,7 +37,7 @@
       "interrupt":"Stop"
     },
     "header":{
-      "aiAssistant": "MIRO KI-Assistent",
+      "aiAssistant": "Mira",
       "scenario":{
         "title":"Szenario",
         "edit":"Metadaten bearbeiten",
@@ -558,15 +558,15 @@
       "interactiveButtonTab":"Vergleichen (Tab)",
       "interactiveButtonPivot":"Vergleichen (Pivot)",
       "interactiveButtonSplit": "Vergleichen (Split)",
-      "interactiveButtonAi": "KI-Assistent",
+      "interactiveButtonAi": "Mira fragen",
       "downloadButton":"Daten herunterladen",
       "removeButton": "Szenarien löschen",
       "removeIncompleteError": "Nicht alle der ausgewählten Szenarien konnten entfernt werden. Dies könnte daran liegen, dass sie schreibgeschützt sind oder in der Zwischenzeit bereits von jemand anderem entfernt wurden."
     },
     "aiBotDialog": {
-      "title": "MIRO KI-Assistent",
-      "welcomeMessage": "Hallo! Ich bin Ihr MIRO KI-Assistent. Ich bin hier, um Ihnen bei der Untersuchung Ihrer Optimierungsergebnisse zu helfen – egal, ob Sie ein einzelnes Szenario analysieren oder mehrere vergleichen.",
-      "welcomeMessageCustomRenderer": "Hallo! Ich bin Ihr MIRO KI-Assistent. Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
+      "title": "Mira",
+      "welcomeMessage": "Hallo, hier ist Mira – die KI-Unterstützung in MIRO! Ich bin hier, um Ihnen bei der Untersuchung Ihrer Optimierungsergebnisse zu helfen – egal, ob Sie ein einzelnes Szenario analysieren oder mehrere vergleichen.",
+      "welcomeMessageCustomRenderer": "Hallo, hier ist Mira – die KI-Unterstützung in MIRO! Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
       "currentContextSandbox": "Sandbox-Szenario: %s",
       "currentContextCompare": "Vergleich von %d Szenarien",
       "requestAbortedMessage": "Anfrage abgebrochen.",
@@ -578,11 +578,13 @@
       "inputTokensTitle": "Für den Prompt verwendete Tokens.",
       "outputTokensLabel": "Output-Tokens: %s",
       "outputTokensTitle": "Vom KI-Modell generierte Tokens.",
-      "disclaimer": "Der MIRO KI-Assistent kann Fehler machen. Bitte überprüfen Sie wichtige Informationen.",
+      "disclaimer": "Mira kann Fehler machen. Bitte überprüfen Sie wichtige Informationen.",
       "nfApplySuccess": "Code angewendet!",
       "nfApplyErrNoCode": "Weder Output- noch Renderer-Funktion in der letzten KI-Antwort gefunden",
       "nfApplyErrNoResponse": "Die letzte Nachricht muss von der KI stammen, um Code anzuwenden.",
       "btClear": "Chat löschen",
+      "btClose": "Schließen",
+      "resizeHandle": "Ziehen, um die Breite zu ändern, Doppelklick zum Zurücksetzen",
       "btCopy": "Text kopieren",
       "btApplyCode": "Code anwenden",
       "changeProposalHeader": "Vorgeschlagene Änderung der Eingabedaten",

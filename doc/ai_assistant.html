@@ -6,7 +6,7 @@
 <html class="no-js" lang="">
   <!--<![endif]-->
   <head>
-    <title>GAMS MIRO - AI Assistant</title>
+    <title>GAMS MIRO - Mira (AI Assistant)</title>
     <!-- Meta -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -60,7 +60,7 @@
           <!--//branding-->
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">AI Assistant</li>
+            <li class="breadcrumb-item active">Mira (AI Assistant)</li>
           </ol>
         </div>
         <!--//container-->
@@ -82,7 +82,7 @@
           </div>
           <div id="doc-header" class="doc-header text-center">
             <h1 class="doc-title">
-              <i class="icon fas fa-robot"></i> AI Assistant
+              <i class="icon fas fa-magic"></i> Mira (AI Assistant)
             </h1>
           </div>
           <!--//doc-header-->
@@ -99,9 +99,9 @@
                       which inputs actually drove the change. Finding the
                       answer, however, still means opening several output
                       tables, cross-referencing them with the inputs, and doing
-                      the arithmetic ourselves. The MIRO AI Assistant lets us
-                      ask for that answer directly, in plain language, and get
-                      a grounded response back - computed from the actual
+                      the arithmetic ourselves. Mira, MIRO's AI assistant, lets
+                      us ask for that answer directly, in plain language, and
+                      get a grounded response back - computed from the actual
                       scenario data, not guessed from a description of it.
                     </p>
                     <p>
@@ -115,21 +115,21 @@
                       feature already gives us a table of deltas between the
                       two - but turning that table into an answer to "what
                       actually changed and why" still means scanning it
-                      ourselves. Instead, we can open the AI Assistant and ask:
+                      ourselves. Instead, we can open Mira and ask:
                       <i
                         >"Which routes changed the most between these two
                         scenarios, and why?"</i
                       >
-                      The assistant queries the underlying scenario database
-                      for exactly the tables it needs, ranks the routes by how
-                      much they shifted, and reports back the answer directly
-                      together with the cost values driving that shift - the
-                      digging done for us, not a table we still have to read.
+                      Mira queries the underlying scenario database for exactly
+                      the tables it needs, ranks the routes by how much they
+                      shifted, and reports back the answer directly together
+                      with the cost values driving that shift - the digging
+                      done for us, not a table we still have to read.
                     </p>
                     <p>
-                      The AI Assistant is just as useful before we get to
-                      comparing scenarios at all. Before we even run a model,
-                      we can ask it to look over our inputs:
+                      Mira is just as useful before we get to comparing
+                      scenarios at all. Before we even run a model, we can ask
+                      it to look over our inputs:
                       <i>"Do any of the demand or supply values look off?"</i>.
                       It reviews the input tables we point it to and calls out
                       what stands out - missing values, unusual units,
@@ -146,13 +146,12 @@
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          The AI Assistant answers questions about the
-                          scenarios currently loaded in the app (a single
-                          sandbox scenario or a comparison of several). It does
-                          not have access to scenarios you have not loaded, and
-                          it cannot change your model or your data - it only
-                          reads from the scenario database to answer your
-                          question.
+                          Mira answers questions about the scenarios currently
+                          loaded in the app (a single sandbox scenario or a
+                          comparison of several). It does not have access to
+                          scenarios you have not loaded, and it cannot change
+                          your model or your data - it only reads from the
+                          scenario database to answer your question.
                         </p>
                       </div>
                       <!--//content-->
@@ -164,16 +163,15 @@
                 <!--//doc-section-->
 
                 <section id="enabling-ai-assistant" class="doc-section">
-                  <h2 class="section-title">Enabling the AI Assistant</h2>
+                  <h2 class="section-title">Enabling Mira</h2>
                   <div class="section-block">
                     <p>
-                      The AI Assistant talks to a third-party large language
-                      model (LLM) provider on our behalf, so before it shows up
-                      in any app we first have to tell MIRO which provider to
-                      use and give it an API key for that provider. MIRO
-                      currently supports OpenAI, Anthropic (Claude), and Google
-                      (Gemini) - we only need a key for the provider(s) we
-                      intend to use.
+                      Mira talks to a third-party large language model (LLM)
+                      provider on our behalf, so before it shows up in any app
+                      we first have to tell MIRO which provider to use and give
+                      it an API key for that provider. MIRO currently supports
+                      OpenAI, Anthropic (Claude), and Google (Gemini) - we only
+                      need a key for the provider(s) we intend to use.
                     </p>
                     <p>
                       Where we configure this key depends on how our MIRO app
@@ -233,15 +231,15 @@
                       <div class="content">
                         <b class="callout-title">Note:</b>
                         <p>
-                          The AI Assistant sends data to a third-party provider
-                          outside of GAMS. Only the pieces of scenario data the
-                          assistant explicitly queries to answer a given
-                          question are sent - MIRO never uploads a scenario
-                          wholesale - but if your data is sensitive, review the
-                          provider's data handling terms before enabling this
-                          feature. Requests are also billed by the provider
-                          based on usage; consult their pricing before rolling
-                          this out to a large group of users.
+                          Mira sends data to a third-party provider outside of
+                          GAMS. Only the pieces of scenario data the assistant
+                          explicitly queries to answer a given question are
+                          sent - MIRO never uploads a scenario wholesale - but
+                          if your data is sensitive, review the provider's data
+                          handling terms before enabling this feature. Requests
+                          are also billed by the provider based on usage;
+                          consult their pricing before rolling this out to a
+                          large group of users.
                         </p>
                       </div>
                       <!--//content-->
@@ -249,12 +247,11 @@
                     <!--//callout-block-->
                     <p>
                       On MIRO Desktop, once at least one provider key is
-                      configured, the AI Assistant is available to every app
-                      installed on that machine. On MIRO Server, a key
-                      configured for one app has no effect on any other app.
-                      Either way, whether the assistant is actually turned on
-                      for a given app is a separate, per-app setting, covered
-                      next.
+                      configured, Mira is available to every app installed on
+                      that machine. On MIRO Server, a key configured for one
+                      app has no effect on any other app. Either way, whether
+                      Mira is actually turned on for a given app is a separate,
+                      per-app setting, covered next.
                     </p>
                   </div>
                   <!--//section-block-->
@@ -262,15 +259,13 @@
                 <!--//doc-section-->
 
                 <section id="configuring-ai-assistant" class="doc-section">
-                  <h2 class="section-title">
-                    Configuring the AI Assistant for Your App
-                  </h2>
+                  <h2 class="section-title">Configuring Mira for Your App</h2>
                   <div class="section-block">
                     <p>
-                      With a provider key in place, we can tailor how the AI
-                      Assistant behaves for a specific app - whether it is
-                      enabled at all, and what background knowledge and
-                      instructions it is given. These settings live in
+                      With a provider key in place, we can tailor how Mira
+                      behaves for a specific app - whether it is enabled at
+                      all, and what background knowledge and instructions it is
+                      given. These settings live in
                       <a href="customize.html">Configuration Mode</a>'s
                       <i>General</i> tab and are documented there, in
                       <a href="configuration_general.html#ai-assistant-config"
@@ -283,14 +278,20 @@
                 <!--//doc-section-->
 
                 <section id="using-ai-assistant" class="doc-section">
-                  <h2 class="section-title">Using the AI Assistant</h2>
+                  <h2 class="section-title">Using Mira</h2>
                   <div class="section-block">
                     <p>
-                      Once enabled, a <i class="fa fa-robot"></i> (robot) icon
-                      appears in the app's header. Clicking it opens the AI
-                      Assistant, pre-loaded with the context of whatever we are
+                      Once enabled, a <i class="fas fa-magic"></i> <i>Mira</i>
+                      button appears in the app's header, on every page.
+                      Clicking it opens Mira in a panel that slides in from the
+                      right, pre-loaded with the context of whatever we are
                       currently looking at - a single sandbox scenario, or a
-                      comparison of however many scenarios we have loaded.
+                      comparison of however many scenarios we have loaded. The
+                      panel sits on top of the page rather than pushing it
+                      aside, so our tables and charts stay where they are while
+                      we ask about them. We can drag its left edge to make it
+                      wider (a double-click on the edge resets the width); on
+                      phones, it fills the screen.
                     </p>
                     <div class="section-block" style="text-align: center">
                       <img
@@ -302,7 +303,7 @@
                           margin-right: auto;
                         "
                         src="assets/images/ai-assistant-chat.png"
-                        alt="AI Assistant chat interface"
+                        alt="Mira chat panel"
                       />
                     </div>
                     <p>
@@ -312,38 +313,37 @@
                     <ol>
                       <li>Open the <i>Load Scenarios</i> section.</li>
                       <li>Select the scenarios we want to analyze.</li>
-                      <li>
-                        In the dialog that opens, click <i>AI Assistant</i>.
-                      </li>
+                      <li>In the dialog that opens, click <i>Ask Mira</i>.</li>
                     </ol>
                     <p>
-                      The selected scenarios are then loaded as context for the
-                      assistant. We can ask questions that compare values
-                      across the scenarios, identify the most important
-                      changes, or explain which inputs could be associated with
-                      changes in the outputs. Only the scenarios we selected
-                      are available to the assistant - it cannot query other
-                      database scenarios that have not been loaded into the
-                      current session (see
-                      <a href="#how-it-works">How the AI Assistant Works</a>
+                      The selected scenarios are then loaded as context for
+                      Mira. We can ask questions that compare values across the
+                      scenarios, identify the most important changes, or
+                      explain which inputs could be associated with changes in
+                      the outputs. Only the scenarios we selected are available
+                      to the assistant - it cannot query other database
+                      scenarios that have not been loaded into the current
+                      session (see
+                      <a href="#how-it-works">How Mira Works</a>
                       for more on this access control).
                     </p>
                     <p>
-                      We type a question and press Enter to send it. While the
-                      assistant is working, a spinner appears and the input is
-                      disabled; a stop button lets us cancel a request that is
-                      taking too long or that we no longer need answered.
-                      Responses render as formatted Markdown, including tables
-                      and LaTeX-style math, and each message has a copy button
-                      so we can grab the raw text for a report or an email.
+                      We type a question and press Enter to send it. While Mira
+                      is working, a spinner appears and the input is disabled;
+                      a stop button lets us cancel a request that is taking too
+                      long or that we no longer need answered. Responses render
+                      as formatted Markdown, including tables and LaTeX-style
+                      math, and each message has a copy button so we can grab
+                      the raw text for a report or an email.
                     </p>
                     <p>
                       A model dropdown lets us switch between the providers and
-                      models an administrator has configured, and a running
-                      token count at the bottom of the dialog keeps a running
-                      total of what the conversation has cost so far - useful
-                      context, since providers bill by token. The
-                      <i>Clear Chat</i> button resets the conversation (but
+                      models an administrator has configured, and the token
+                      count at the top of the panel keeps a running total of
+                      what the conversation has cost so far - useful context,
+                      since providers bill by token. The
+                      <i class="fas fa-trash"></i> (<i>Clear Chat</i>) button
+                      at the top of the panel resets the conversation (but
                       keeps the app's current scenario context), which is the
                       easiest way to start a fresh line of questioning without
                       the assistant carrying over unrelated earlier answers.
@@ -356,12 +356,12 @@
                       <div class="content">
                         <b class="callout-title">Tip:</b>
                         <p>
-                          The assistant is a good starting point for a first
-                          pass over a result set - ask it to summarize what
-                          changed, then dig into the specific tables it points
-                          us to ourselves. As with any AI-generated content, we
-                          still verify anything we plan to rely on before
-                          acting on it.
+                          Mira is a good starting point for a first pass over a
+                          result set - ask it to summarize what changed, then
+                          dig into the specific tables it points us to
+                          ourselves. As with any AI-generated content, we still
+                          verify anything we plan to rely on before acting on
+                          it.
                         </p>
                       </div>
                       <!--//content-->
@@ -445,14 +445,13 @@
                 <!--//doc-section-->
 
                 <section id="how-it-works" class="doc-section">
-                  <h2 class="section-title">How the AI Assistant Works</h2>
+                  <h2 class="section-title">How Mira Works</h2>
                   <div class="section-block">
                     <p>
-                      The AI Assistant does not receive a dump of our scenario
-                      data up front. Its system prompt is built from a fixed
-                      set of context, plus tools to query MIRO's scenario
-                      database on demand and to propose changes to our sandbox
-                      input data:
+                      Mira does not receive a dump of our scenario data up
+                      front. Its system prompt is built from a fixed set of
+                      context, plus tools to query MIRO's scenario database on
+                      demand and to propose changes to our sandbox input data:
                     </p>
                     <ul>
                       <li>
@@ -501,8 +500,8 @@
                       scenarios that are part of our active session, never
                       scenarios it has not been given access to, regardless of
                       what it is asked. This is the same access control that
-                      governs every other part of MIRO; the AI Assistant does
-                      not bypass it.
+                      governs every other part of MIRO; Mira does not bypass
+                      it.
                     </p>
                     <p>
                       Writing works the other way around: the model has no
@@ -517,10 +516,12 @@
                     </p>
                     <p>
                       The conversation itself, together with the running token
-                      count, is kept for as long as the dialog stays open (or
-                      until we hit <i>Clear Chat</i>), so follow-up questions
-                      can build on earlier answers without us having to restate
-                      the context each time.
+                      count, is kept for as long as the chat panel stays open
+                      (or until we hit <i>Clear Chat</i>). Closing the panel
+                      ends the conversation and cancels a request that is still
+                      running, so follow-up questions can build on earlier
+                      answers without us having to restate the context each
+                      time.
                     </p>
                   </div>
                   <!--//section-block-->
@@ -580,14 +581,14 @@
                           margin-right: auto;
                         "
                         src="assets/images/configuration_mode/custom_renderer_editor_ai.png"
-                        alt="Custom renderer editor with AI Assistant"
+                        alt="Custom renderer editor with Mira"
                       />
                     </div>
-                    <p>The AI Assistant can be opened directly from there.</p>
+                    <p>Mira can be opened directly from there.</p>
                     <p>
                       It uses the same provider key(s) configured for the app,
-                      so nothing extra needs to be set up to use it once the AI
-                      Assistant itself is enabled.
+                      so nothing extra needs to be set up to use it once Mira
+                      itself is enabled.
                     </p>
                   </div>
                   <!--//section-block-->
@@ -606,19 +607,19 @@
                     >Introduction</a
                   >
                   <a class="nav-link scrollto" href="#enabling-ai-assistant"
-                    >Enabling the AI Assistant</a
+                    >Enabling Mira</a
                   >
                   <a class="nav-link scrollto" href="#configuring-ai-assistant"
-                    >Configuring the AI Assistant</a
+                    >Configuring Mira</a
                   >
                   <a class="nav-link scrollto" href="#using-ai-assistant"
-                    >Using the AI Assistant</a
+                    >Using Mira</a
                   >
                   <a class="nav-link scrollto" href="#changing-input-data"
                     >Changing Input Data</a
                   >
                   <a class="nav-link scrollto" href="#how-it-works"
-                    >How the AI Assistant Works</a
+                    >How Mira Works</a
                   >
                   <a
                     class="nav-link scrollto"

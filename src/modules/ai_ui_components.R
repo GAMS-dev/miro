@@ -284,6 +284,61 @@ renderAiTokenInfoContainer <- function(lang, inputTokens = 0L, outputTokens = 0L
     )
   )
 }
+renderAiChatLogContent <- function(chatHistory, lang) {
+  tagList(
+    lapply(chatHistory, function(item) renderAiChatItem(item, lang)),
+    genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
+  )
+}
+# Base mode: chat drawer that slides in from the right and overlays the content.
+# The chat log is filled by the server whenever the drawer is opened.
+renderAiChatDrawer <- function(lang, supportedModels) {
+  tags$aside(
+    id = "miroAiChatDrawer",
+    class = "miro-ai-assistant-drawer miro-ai-drawer-overlay",
+    role = "dialog",
+    `aria-labelledby` = "miroAiChatDrawerTitle",
+    `aria-hidden` = "true",
+    inert = NA,
+    # drag (or focus + arrow keys) to change the width, double-click to reset
+    tags$div(
+      class = "miro-ai-drawer-resizer",
+      role = "separator",
+      tabindex = "0",
+      `aria-orientation` = "vertical",
+      `aria-controls` = "miroAiChatDrawer",
+      `aria-label` = lang$resizeHandle,
+      title = lang$resizeHandle
+    ),
+    tags$div(
+      class = "miro-ai-assistant-drawer-header",
+      tags$div(
+        class = "miro-ai-drawer-heading",
+        tags$h4(id = "miroAiChatDrawerTitle", class = "miro-ai-drawer-title", lang$title),
+        renderAiTokenInfoContainer(lang)
+      ),
+      tags$div(
+        class = "miro-ai-drawer-actions",
+        tags$button(
+          id = "btMiroAiClearChat", type = "button",
+          class = "btn btn-default action-button",
+          title = lang$btClear, `aria-label` = lang$btClear,
+          icon("trash")
+        ),
+        tags$button(
+          type = "button", class = "btn btn-default miro-ai-close-drawer-btn",
+          title = lang$btClose, `aria-label` = lang$btClose,
+          onclick = "Miro.hideAiDrawer()",
+          icon("xmark")
+        )
+      )
+    ),
+    tags$div(
+      class = "miro-ai-assistant-drawer-body",
+      renderAiChatWindow(lang, supportedModels)
+    )
+  )
+}
 renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL, userInputPlaceholderKey = "userTextPlaceholder") {
   tagList(
     tags$div(

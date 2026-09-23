@@ -2281,6 +2281,14 @@
               "type": "string",
               "minLength": 1
             },
+            "btClose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resizeHandle": {
+              "type": "string",
+              "minLength": 1
+            },
             "btCopy": {
               "type": "string",
               "minLength": 1
@@ -2430,7 +2438,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 56
+          "minProperties": 58
         },
         "hcubeMode": {
           "type": "object",

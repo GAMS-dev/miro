@@ -2485,6 +2485,9 @@ if (!is.null(errMsg)) {
     source("./UI/body.R", local = TRUE)
 
     ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
+    if (isTRUE(config$activateModules$aiAssistant)) {
+      ui <- tagAppendChild(ui, renderAiChatDrawer(lang$nav$aiBotDialog, config$aiAssistant$supportedModels))
+    }
 
     app <- shinyApp(ui = ui, server = server)
   }

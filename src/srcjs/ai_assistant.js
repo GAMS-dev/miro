@@ -224,22 +224,162 @@ export function hydrateAiMessagesIn(root) {
   root.querySelectorAll('[data-raw-html]').forEach(hydrateAiMessageContent);
 }
 
-export function registerAiHandlers() {
-  $(document).on('shown.bs.modal', '.ai-assistant-modal', function () {
-    $('#miroAiUserText').focus();
-    hydrateAiMessagesIn(this);
-    const chatLog = document.getElementById('miroAiChatLog');
-    if (!chatLog) return;
-    groupAdjacentAiActivityCards(chatLog);
-    const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
-    if (userBubbles.length > 0) {
-      userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+// drawer width: user-adjustable, remembered per browser (a convenience only, so
+// storage failures are ignored)
+const AI_DRAWER_WIDTH_KEY = 'miro-ai-drawer-width';
+const AI_DRAWER_MIN_WIDTH = 360;
+const AI_DRAWER_KEY_STEP = 40;
+function clampAiDrawerWidth(width) {
+  const maxWidth = Math.max(AI_DRAWER_MIN_WIDTH, window.innerWidth * 0.9);
+  return Math.round(Math.min(Math.max(width, AI_DRAWER_MIN_WIDTH), maxWidth));
+}
+function setAiDrawerWidth(drawer, width, persist = false) {
+  const clamped = clampAiDrawerWidth(width);
+  drawer.style.setProperty('--miro-ai-drawer-width', `${clamped}px`);
+  drawer.querySelector('.miro-ai-drawer-resizer')?.setAttribute('aria-valuenow', clamped);
+  if (persist) {
+    try {
+      localStorage.setItem(AI_DRAWER_WIDTH_KEY, clamped);
+    } catch (e) {
+      // storage unavailable (private mode, blocked site data)
+    }
+  }
+}
+function resetAiDrawerWidth(drawer) {
+  drawer.style.removeProperty('--miro-ai-drawer-width');
+  drawer.querySelector('.miro-ai-drawer-resizer')?.removeAttribute('aria-valuenow');
+  try {
+    localStorage.removeItem(AI_DRAWER_WIDTH_KEY);
+  } catch (e) {
+    // storage unavailable (private mode, blocked site data)
+  }
+}
+function restoreAiDrawerWidth(drawer) {
+  let saved = null;
+  try {
+    saved = parseInt(localStorage.getItem(AI_DRAWER_WIDTH_KEY), 10);
+  } catch (e) {
+    // storage unavailable (private mode, blocked site data)
+  }
+  if (Number.isFinite(saved)) {
+    setAiDrawerWidth(drawer, saved);
+  }
+}
+function registerAiDrawerResizer() {
+  const drawer = document.getElementById('miroAiChatDrawer');
+  const handle = drawer?.querySelector('.miro-ai-drawer-resizer');
+  if (!handle) return;
+  restoreAiDrawerWidth(drawer);
+  handle.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+    drawer.classList.add('resizing');
+    document.body.classList.add('miro-ai-drawer-resizing');
+  });
+  handle.addEventListener('pointermove', (e) => {
+    if (!handle.hasPointerCapture(e.pointerId)) return;
+    setAiDrawerWidth(drawer, window.innerWidth - e.clientX);
+  });
+  const endResize = (e) => {
+    if (!handle.hasPointerCapture(e.pointerId)) return;
+    handle.releasePointerCapture(e.pointerId);
+    drawer.classList.remove('resizing');
+    document.body.classList.remove('miro-ai-drawer-resizing');
+    setAiDrawerWidth(drawer, drawer.getBoundingClientRect().width, true);
+  };
+  handle.addEventListener('pointerup', endResize);
+  handle.addEventListener('pointercancel', endResize);
+  handle.addEventListener('dblclick', () => resetAiDrawerWidth(drawer));
+  handle.addEventListener('keydown', (e) => {
+    // the handle sits on the left edge: ArrowLeft widens, ArrowRight narrows
+    let delta = 0;
+    if (e.key === 'ArrowLeft') delta = AI_DRAWER_KEY_STEP;
+    else if (e.key === 'ArrowRight') delta = -AI_DRAWER_KEY_STEP;
+    else return;
+    e.preventDefault();
+    setAiDrawerWidth(drawer, drawer.getBoundingClientRect().width + delta, true);
+  });
+  window.addEventListener('resize', () => {
+    if (drawer.style.getPropertyValue('--miro-ai-drawer-width')) {
+      setAiDrawerWidth(drawer, drawer.getBoundingClientRect().width);
     }
   });
-  $(document).on('hidden.bs.modal', '.ai-assistant-modal', () => {
-    Shiny.setInputValue('abortAiCall', 1, {
-      priority: 'event',
-    });
+}
+
+function onAiChatShown(root) {
+  hydrateAiMessagesIn(root);
+  const chatLog = document.getElementById('miroAiChatLog');
+  if (!chatLog) return;
+  groupAdjacentAiActivityCards(chatLog);
+  const userBubbles = chatLog.querySelectorAll('.miro-ai-chat-user');
+  if (userBubbles.length > 0) {
+    userBubbles[userBubbles.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+}
+
+// Base mode: the drawer overlays the content (it does not push it aside like in
+// Configuration Mode), so the data stays where it is while chatting about it.
+function isAiDrawerOpen() {
+  const drawer = document.getElementById('miroAiChatDrawer');
+  return drawer != null && drawer.classList.contains('open');
+}
+function showAiDrawer() {
+  const drawer = document.getElementById('miroAiChatDrawer');
+  if (!drawer) return;
+  drawer.classList.add('open');
+  drawer.removeAttribute('inert');
+  drawer.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('miro-ai-drawer-open');
+  $('#btAIOutput').attr('aria-expanded', 'true');
+  $(drawer).trigger('miro:aiDrawerShown');
+  // on touch devices, focusing the textarea would pop up the keyboard right away
+  if (!window.matchMedia('(pointer: coarse)').matches) {
+    document.getElementById('miroAiUserText')?.focus();
+  }
+}
+export function hideAiDrawer() {
+  const drawer = document.getElementById('miroAiChatDrawer');
+  if (!drawer || !drawer.classList.contains('open')) return;
+  drawer.classList.remove('open');
+  drawer.setAttribute('inert', '');
+  drawer.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('miro-ai-drawer-open');
+  $('#btAIOutput').attr('aria-expanded', 'false').trigger('focus');
+  // closing ends the conversation's request and removes its temporary scenario
+  Shiny.setInputValue('abortAiCall', 1, {
+    priority: 'event',
+  });
+}
+export function toggleAiDrawer() {
+  if (isAiDrawerOpen()) {
+    hideAiDrawer();
+    return;
+  }
+  // the server loads the current context into the chat, then sends gms-showAiDrawer
+  Shiny.setInputValue('btAIOutput', 1, {
+    priority: 'event',
+  });
+}
+
+export function registerAiHandlers() {
+  registerAiDrawerResizer();
+  // Shiny requires message handlers to take exactly one argument
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-showAiDrawer', (_message) => {
+    showAiDrawer();
+  });
+  // re-run whenever the drawer (re)opens, and by tests to re-hydrate injected messages
+  $(document).on('miro:aiDrawerShown', '#miroAiChatDrawer', function () {
+    onAiChatShown(this);
+  });
+  $(document).on('keydown', (e) => {
+    // Escape closes the drawer unless a modal dialog is open on top of it
+    if (e.key === 'Escape' && isAiDrawerOpen() && !$('.modal.in').length) {
+      hideAiDrawer();
+    }
   });
   $(document).on('keydown', '#miroAiUserText', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {

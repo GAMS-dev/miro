@@ -27,26 +27,28 @@ observe({
       }
       aiAssistantState$chatHistory[[historyIdx]] <<- list(dialogState$chatContext)
     }
-    showModal(tagAppendAttributes(modalDialog(
-      size = "l",
-      easyClose = TRUE,
-      footer = tagList(
-        modalButton(lang$general$modal$cancelButton),
-        actionButton("btMiroAiClearChat", lang$nav$aiBotDialog$btClear,
-          class = "btn btn-default bt-remove", style = "float: left;"
-        ),
-        tagAppendAttributes(
-          renderAiTokenInfoContainer(lang$nav$aiBotDialog, aiAssistantState$inputTokens, aiAssistantState$outputTokens),
-          style = "float: left; margin-top: 8px;"
-        )
-      ),
-      tags$div(
-        class = "miro-ai-modal-body",
-        renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, aiAssistantState$chatHistory, selectedModel = aiAssistantState$model)
-      )
-    ), class = "ai-assistant-modal"))
+    setContent(session, "#miroAiChatLog",
+      as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog)),
+      sanitizeHTML = TRUE
+    )
+    if (!is.null(aiAssistantState$model)) {
+      updateSelectInput(session, "miroAiModel", selected = aiAssistantState$model)
+    }
+    setAiTokenInfo()
+    session$sendCustomMessage("gms-showAiDrawer", list())
   })
 })
+
+setAiTokenInfo <- function() {
+  setTextContent(session, "#miroAiInputTokens", sprintf(
+    lang$nav$aiBotDialog$inputTokensLabel,
+    format(aiAssistantState$inputTokens, big.mark = ",")
+  ))
+  setTextContent(session, "#miroAiOutputTokens", sprintf(
+    lang$nav$aiBotDialog$outputTokensLabel,
+    format(aiAssistantState$outputTokens, big.mark = ",")
+  ))
+}
 
 observeEvent(input$btAIOutput, {
   flog.debug("AI Output Analysis button clicked.")
@@ -387,14 +389,7 @@ observe({
     aiAssistantState$sessionId <<- result$newSessionId
     aiAssistantState$inputTokens <<- aiAssistantState$inputTokens + result$inputTokens
     aiAssistantState$outputTokens <<- aiAssistantState$outputTokens + result$outputTokens
-    setTextContent(session, "#miroAiInputTokens", sprintf(
-      lang$nav$aiBotDialog$inputTokensLabel,
-      format(aiAssistantState$inputTokens, big.mark = ",")
-    ))
-    setTextContent(session, "#miroAiOutputTokens", sprintf(
-      lang$nav$aiBotDialog$outputTokensLabel,
-      format(aiAssistantState$outputTokens, big.mark = ",")
-    ))
+    setAiTokenInfo()
   }
 })
 updateAiInputChangeCard <- function(historyIdx, status, statusDetail = NULL) {
@@ -582,14 +577,15 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$chatHistory <<- list(aiAssistantState$chatHistory[[1]], list(aiAssistantDialogState()$chatContext))
   aiAssistantState$changeIndex <<- list()
   aiAssistantState$changeNotes <<- character(0L)
-  setContent(session, "#miroAiChatLog", as.character(tagList(
-    lapply(aiAssistantState$chatHistory, function(item) renderAiChatItem(item, lang$nav$aiBotDialog)),
-    genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
-  )), sanitizeHTML = TRUE)
+  setContent(session, "#miroAiChatLog",
+    as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog)),
+    sanitizeHTML = TRUE
+  )
   aiAssistantState$history <<- list()
   aiAssistantState$sessionId <<- NULL
   aiAssistantState$inputTokens <<- 0L
   aiAssistantState$outputTokens <<- 0L
+  setAiTokenInfo()
   aiAssistantState$pendingContextNote <<- NULL
   session$sendCustomMessage(
     "gms-resetAiChatRequest",
@@ -605,8 +601,9 @@ observeEvent(input$btMiroAiStop, {
   )
 })
 observeEvent(input$abortAiCall, {
-  flog.debug("AI Assistant dialog closed")
+  flog.debug("AI Assistant drawer closed")
   cancelAiTask()
+  session$sendCustomMessage("gms-resetAiChatRequest", list())
   if (!is.null(aiAssistantState$tempScen)) {
     tryCatch(
       {

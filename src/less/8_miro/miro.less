@@ -3249,31 +3249,219 @@ li.drop-index-item[data-col-hidden="true"] {
 }
 
 /* AI bot */
-.ai-assistant-modal .modal-dialog {
-  height: calc(100vh - 20px); // 100vh minus the 10px top/bottom margin below
-  margin: 10px auto;
+// header entry point: labelled pill, collapses to an icon on small screens
+.skin-black .main-header .navbar .nav > li.miro-ai-nav-item > a.miro-ai-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  margin: 9px 6px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 32px;
+  color: #fff;
+  transition: filter 150ms ease, box-shadow 150ms ease;
+  .responsiveDark({
+    background: @primary-color;
+  },
+  {
+    background: @primary-color-dark;
+  });
+  &:hover,
+  &:focus {
+    color: #fff;
+    filter: brightness(1.12);
+    .responsiveDark({
+      background: @primary-color;
+    },
+    {
+      background: @primary-color-dark;
+    });
+  }
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    outline: none;
+    .responsiveDark({
+      box-shadow: ~"0 0 0 3px color-mix(in srgb, @{primary-color} 30%, transparent)";
+    },
+    {
+      box-shadow: ~"0 0 0 3px color-mix(in srgb, @{primary-color-dark} 45%, transparent)";
+    });
+  }
+  @media (max-width: 767px) {
+    width: 34px;
+    height: 34px;
+    margin: 8px 4px;
+    padding: 0;
+    justify-content: center;
+    .miro-ai-nav-label {
+      display: none;
+    }
+  }
 }
-.ai-assistant-modal .modal-content {
-  height: 100%;
+
+// base mode: drawer overlaying the content from the right
+// It starts below the header, so the header (incl. the toggle button and its dropdowns) stays usable.
+.miro-ai-drawer-overlay {
+  position: fixed;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  width: var(--miro-ai-drawer-width, 520px);
+  max-width: 100vw;
+  z-index: 1029; // above content and sidebar, below the header (1030) and modals (1040+)
   display: flex;
   flex-direction: column;
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 250ms ease, visibility 0s linear 250ms;
+  &.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 250ms ease, visibility 0s;
+  }
+  .miro-ai-assistant-drawer-header {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-height: 50px;
+    padding: 6px 8px 6px 16px;
+  }
+  .miro-ai-assistant-drawer-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    padding-bottom: ~"max(8px, env(safe-area-inset-bottom))";
+  }
+  .miro-ai-chat-log {
+    margin-bottom: 10px;
+  }
+  &.resizing {
+    transition: none;
+  }
+  @media (max-width: 767px) {
+    width: 100vw;
+    .miro-ai-drawer-resizer {
+      display: none;
+    }
+    .miro-ai-assistant-drawer-body {
+      padding: 8px;
+    }
+    .miro-ai-chat-log {
+      padding: 10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &.open {
+      transition: none;
+    }
+  }
 }
-.ai-assistant-modal .modal-body {
-  flex: 1 1 auto;
-  min-height: 0;
+// drag handle along the drawer's left edge (grab area wider than the visible line)
+.miro-ai-drawer-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 8px;
+  z-index: 1;
+  cursor: ew-resize;
+  touch-action: none;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    width: 2px;
+    background: transparent;
+    transition: background-color 150ms ease;
+  }
+  &:hover::after,
+  &:focus-visible::after,
+  .miro-ai-drawer-overlay.resizing &::after {
+    .responsiveDark({
+      background: @primary-color;
+    },
+    {
+      background: @primary-color-dark;
+    });
+  }
+  &:focus-visible {
+    outline: none;
+  }
+}
+// keep the cursor and avoid selecting page text while dragging
+body.miro-ai-drawer-resizing {
+  cursor: ew-resize;
+  user-select: none;
+}
+.miro-ai-drawer-heading {
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  gap: 2px;
+  min-width: 0;
+  .miro-ai-token-info-wrapper {
+    margin-left: 0;
+    gap: 10px;
+  }
 }
-.ai-assistant-modal .modal-footer {
-  flex: 0 0 auto;
-  padding: 10px 15px;
+.miro-ai-drawer-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
 }
-.miro-ai-modal-body {
-  flex: 1 1 auto;
-  min-height: 0;
+.miro-ai-drawer-actions {
   display: flex;
-  flex-direction: column;
+  flex-shrink: 0;
+  gap: 2px;
+  .btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0.75;
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+      .responsiveDark({
+        background: rgba(0, 0, 0, 0.06);
+      },
+      {
+        background: rgba(255, 255, 255, 0.08);
+      });
+    }
+  }
+  .miro-ai-close-drawer-btn {
+    font-size: 1.2em;
+  }
+}
+// the full-screen drawer on phones should not let the page scroll underneath
+@media (max-width: 767px) {
+  body.miro-ai-drawer-open {
+    overflow: hidden;
+  }
+}
+// the textarea is borderless inside the input card, so the card carries the focus ring
+.miro-ai-textarea-input:focus {
+  box-shadow: none !important;
+}
+.miro-ai-chat-input-wrapper:focus-within {
+  .responsiveDark({
+    border-color: @primary-color;
+  },
+  {
+    border-color: @primary-color-dark;
+  });
 }
 .miro-ai-chat-log {
   flex: 1 1 auto;

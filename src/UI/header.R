@@ -2,13 +2,18 @@
 header <- dashboardHeader(
   if (identical(config$activateModules$aiAssistant, TRUE)) {
     tags$li(
-      class = "dropdown",
+      class = "dropdown miro-ai-nav-item",
       tags$a(
         href = "#",
-        class = "action-button",
         id = "btAIOutput",
+        class = "miro-ai-nav-btn",
+        role = "button",
         title = lang$nav$header$aiAssistant,
-        tags$i(class = "fa fa-robot"),
+        `aria-controls` = "miroAiChatDrawer",
+        `aria-expanded` = "false",
+        onclick = "Miro.toggleAiDrawer(); return false;",
+        tags$i(class = "fa fa-wand-magic-sparkles", `aria-hidden` = "true"),
+        tags$span(class = "miro-ai-nav-label", lang$nav$header$aiAssistant)
       )
     )
   } else {

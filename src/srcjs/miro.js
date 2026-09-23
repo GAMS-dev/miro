@@ -36,6 +36,7 @@ export { parseKatex } from './util';
 export { default as modal } from './modal';
 export {
   copyChatContent, toggleChatCollapse, resolveAiInputChange, toggleAiActivityGroup,
+  toggleAiDrawer, hideAiDrawer,
 } from './ai_assistant';
 
 const loadingScreen = new LoadingScreen();

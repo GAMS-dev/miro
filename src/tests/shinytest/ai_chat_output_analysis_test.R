@@ -15,14 +15,17 @@ Sys.sleep(1)
 # nav icon is only rendered once the AI assistant module is activated
 expect_true(app$get_js("$('#btAIOutput').length === 1;"))
 
+# the assistant lives in a drawer that is always in the DOM but only open on demand
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
 app$click(selector = "#btAIOutput")
-app$wait_for_js("$('.ai-assistant-modal').is(':visible');", timeout = 10000)
+app$wait_for_js("$('#miroAiChatDrawer').hasClass('open');", timeout = 10000)
+expect_equal(app$get_js("$('#btAIOutput').attr('aria-expanded');"), "true")
 Sys.sleep(1)
 
 # initial state: welcome message bubble + scenario context divider, nothing else
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-bubble-wrapper').length;"), 1)
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').length;"), 1)
-expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant .miro-ai-chat-content-raw').text().includes('MIRO AI Assistant');"))
+expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant .miro-ai-chat-content-raw').text().includes('Mira');"))
 expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').text().includes('Sandbox scenario:');"))
 
 # model dropdown defaults to the (only) configured provider/model
@@ -74,7 +77,7 @@ expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').lengt
 # live DOM -- see ai_assistant.js::hydrateAiMessageContent (01efd6faa "Fix
 # potential stored XSS"). We cannot make the (fake-keyed) provider echo such
 # a payload back for real, so this simulates a malicious assistant bubble
-# reaching the chat log and re-fires the same `shown.bs.modal` event the app
+# reaching the chat log and re-fires the same `miro:aiDrawerShown` event the app
 # already listens for, exercising the real, already-wired hydration path
 # instead of a re-implementation of it.
 # ==========================================================================
@@ -90,7 +93,7 @@ app$run_js(
   );
   $bubble.find('.miro-ai-chat-content-html').attr('data-raw-html', payload);
   $('#miroAiChatLog').prepend($bubble);
-  $('.ai-assistant-modal').trigger('shown.bs.modal');"
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
 )
 Sys.sleep(0.5)
 
@@ -128,7 +131,7 @@ app$run_js(
     $('#miroAiChatLog').prepend($bubble);
   };
   window.__miroAddMathBubble();
-  $('.ai-assistant-modal').trigger('shown.bs.modal');"
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
 )
 Sys.sleep(0.5)
 
@@ -144,23 +147,31 @@ expect_false(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().tex
 # untouched, since a bare `$` is deliberately not treated as a delimiter
 expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().text().includes('$50 to $75');"))
 
-# Re-rendering the chat log (re-opening the dialog, clearing the chat) replays
+# Re-rendering the chat log (re-opening the drawer, clearing the chat) replays
 # the stored messages as fresh `data-raw-html` payloads. Hydration has to
 # render their math again -- it used to only happen for a message arriving as
-# a live reply, so the math vanished as soon as the dialog was re-opened.
+# a live reply, so the math vanished as soon as the chat was re-opened.
 app$run_js(
   "$('#miroAiChatLog').empty();
   window.__miroAddMathBubble();
-  $('.ai-assistant-modal').trigger('shown.bs.modal');"
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
 )
 Sys.sleep(0.5)
 expect_equal(app$get_js("$('#miroAiChatLog [data-raw-html]').length;"), 0)
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex').length;"), 3)
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex-error').length;"), 0)
 
-# closing the dialog does not error out
-app$click(selector = 'button[data-dismiss="modal"]')
+# closing the drawer does not error out and leaves the chat ready for the next request
+app$click(selector = "#miroAiChatDrawer .miro-ai-close-drawer-btn")
 Sys.sleep(1)
-expect_false(app$get_js("$('.ai-assistant-modal').is(':visible');"))
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
+expect_false(app$get_js("$('#miroAiUserText').prop('disabled');"))
+
+# the header button toggles the drawer, and Escape closes it again
+app$click(selector = "#btAIOutput")
+app$wait_for_js("$('#miroAiChatDrawer').hasClass('open');", timeout = 10000)
+app$run_js("document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));")
+Sys.sleep(0.5)
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
 
 app$stop()
