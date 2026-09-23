@@ -447,3 +447,79 @@ section#fact-sheets > h1 {
 .miro-inline-icon-link {
     pointer-events: none;
 }
+
+/* --------------------------------------------------------------------------
+   Layout: no global scroll container above the header or ReDoc
+   -------------------------------------------------------------------------- */
+
+.bd-content,
+.bd-article-container,
+article.bd-article {
+    min-width: 0;
+}
+
+article.bd-article {
+    overflow: visible;
+}
+
+.bd-main .bd-content .bd-article-container {
+    overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   Give code blocks their own horizontal scroll area
+   -------------------------------------------------------------------------- */
+
+article.bd-article .highlight {
+    max-inline-size: 100%;
+}
+
+article.bd-article :is(pre, .literal-block-wrapper pre) {
+    max-inline-size: 100%;
+    overflow-x: auto;
+}
+
+
+/* --------------------------------------------------------------------------
+   Give known Sphinx / PyData table wrappers their own scroll area
+   -------------------------------------------------------------------------- */
+
+article.bd-article :is(
+    .pst-scrollable-table-container,
+    .table-wrapper
+) {
+    max-inline-size: 100%;
+    overflow-x: auto;
+}
+
+
+/* --------------------------------------------------------------------------
+   Avoid long URLs and words breaking ordinary prose layout
+   -------------------------------------------------------------------------- */
+
+article.bd-article :is(p, li, td, th) {
+    overflow-wrap: anywhere;
+}
+
+
+/* --------------------------------------------------------------------------
+   ReDoc: preserve its sticky navigation; scroll only API content if required
+   -------------------------------------------------------------------------- */
+
+article.bd-article > redoc,
+article.bd-article > redoc .redoc-wrap {
+    display: block;
+    min-width: 0;
+    overflow: visible;
+}
+
+article.bd-article > redoc .api-content {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+article.bd-article > redoc pre {
+    max-width: 100%;
+    overflow-x: auto;
+}
