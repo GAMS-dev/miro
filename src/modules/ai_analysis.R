@@ -35,7 +35,10 @@ observe({
         actionButton("btMiroAiClearChat", lang$nav$aiBotDialog$btClear,
           class = "btn btn-default bt-remove", style = "float: left;"
         ),
-        renderAiTokenInfoContainer(lang$nav$aiBotDialog, aiAssistantState$inputTokens, aiAssistantState$outputTokens)
+        tagAppendAttributes(
+          renderAiTokenInfoContainer(lang$nav$aiBotDialog, aiAssistantState$inputTokens, aiAssistantState$outputTokens),
+          style = "float: left; margin-top: 8px;"
+        )
       ),
       tags$div(
         class = "miro-ai-modal-body",
