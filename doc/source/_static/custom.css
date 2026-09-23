@@ -13,6 +13,7 @@ html[data-theme="light"] {
     --pst-color-secondary-highlight: #d97f00;
     --pst-color-primary-bg: #fff2df;
     --pst-color-secondary-bg: #fff2df;
+    --pst-color-link: var(--pst-color-text-base);
 
     /* Warning / Attention -> orange */
     --pst-color-warning: #f4961a;
@@ -55,6 +56,7 @@ html[data-theme="dark"] {
     --pst-color-secondary-highlight: #ffb14d;
     --pst-color-primary-bg: #3a2608;
     --pst-color-secondary-bg: #3a2608;
+    --pst-color-link: var(--pst-color-text-base);
 
     /* Warning / Attention -> orange */
     --pst-color-warning: #f6a63b;
