@@ -342,9 +342,9 @@ Have a look at our fact sheets:
    :maxdepth: 2
    :hidden:
 
-   file_formats
-   faqs
    release
+   faqs
+   file_formats
    license
    license-server
    schema
