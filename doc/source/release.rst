@@ -26,6 +26,8 @@ New features
 Minor new features and improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- Updated documentation with a new design and layout, resulting in clearer
+  guides, improved navigation and search, and light/dark theme support.
 - Enhanced how background tasks are managed, ensuring smoother job
   submissions, progress tracking, and result downloads without
   interrupting your workflow.
