@@ -284,6 +284,19 @@ renderAiTokenInfoContainer <- function(lang, inputTokens = 0L, outputTokens = 0L
     )
   )
 }
+# Mira's mark: a four-point sparkle with a lens in its center ("mira" = look), a small
+# companion star and a dot. Inline SVG, so it takes the text color of its surroundings;
+# the parts are animated in CSS (see .mira-icon in miro.less).
+renderMiraIcon <- function() {
+  HTML(paste0(
+    '<svg class="mira-icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" focusable="false">',
+    '<path class="mira-icon-star" fill-rule="evenodd" d="M10 3.2Q11.9 10.1 18.8 12Q11.9 13.9 10 20.8',
+    'Q8.1 13.9 1.2 12Q8.1 10.1 10 3.2ZM10 10.3A1.7 1.7 0 1 0 10 13.7A1.7 1.7 0 1 0 10 10.3Z"/>',
+    '<path class="mira-icon-spark" d="M18.5 1.8Q19 5 22.2 5.5Q19 6 18.5 9.2Q18 6 14.8 5.5Q18 5 18.5 1.8Z"/>',
+    '<circle class="mira-icon-dot" cx="19.4" cy="18.8" r="1.35"/>',
+    "</svg>"
+  ))
+}
 renderAiChatLogContent <- function(chatHistory, lang) {
   tagList(
     lapply(chatHistory, function(item) renderAiChatItem(item, lang)),

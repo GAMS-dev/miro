@@ -24,6 +24,7 @@ import {
 
 import ShortcutManager from './shortcut_manager';
 import MiroLogParser from './miro_log_parser';
+import registerHeightFitting from './fit_height';
 
 import {
   activateMiroPivotPresentation,
@@ -986,6 +987,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     }
   });
   registerAiHandlers();
+  registerHeightFitting();
   const autoNumericBinding = new Shiny.InputBinding();
   $.extend(autoNumericBinding, {
     find(scope) {

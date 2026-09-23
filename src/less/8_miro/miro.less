@@ -2023,13 +2023,16 @@ li.drop-index-item[data-col-hidden="true"] {
 
 /* scrollbar */
 /* width */
-::-webkit-scrollbar {
+// Handsontable's scroll areas keep native scrollbars: with custom (::-webkit-scrollbar)
+// scrollbars, Safari re-evaluates them when a cell gets selected and a table that fits
+// its area exactly ends up showing both scrollbars permanently
+:not(.wtHolder)::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 /* Track */
-::-webkit-scrollbar-track {
+:not(.wtHolder)::-webkit-scrollbar-track {
   .responsiveDark({
      box-shadow: inset 0 0 5px @scrollbar-shadow;
      background: @background-color;
@@ -2041,7 +2044,7 @@ li.drop-index-item[data-col-hidden="true"] {
   border-radius: 10px;
 }
 /* Handle */
-::-webkit-scrollbar-thumb {
+:not(.wtHolder)::-webkit-scrollbar-thumb {
   .responsiveDark({
      background: @scrollbar;
   },
@@ -2052,7 +2055,23 @@ li.drop-index-item[data-col-hidden="true"] {
 }
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+// the selection outline and its corner handle are drawn a few pixels past the last row and
+// column; clip them at the table's own box so they can never make the table scrollable
+// (Safari then shows scrollbars whenever a cell at the bottom or right edge is selected)
+.handsontable .ht_master .wtHider {
+  overflow: hidden;
+  overflow: clip;
+}
+.handsontable .wtHolder {
+  scrollbar-width: thin;
+  .responsiveDark({
+    scrollbar-color: @scrollbar transparent;
+  },
+  {
+    scrollbar-color: @scrollbar-dark transparent;
+  });
+}
+:not(.wtHolder)::-webkit-scrollbar-thumb:hover {
   .responsiveDark({
      background: darken(@scrollbar, 10%);
   },
@@ -3299,6 +3318,71 @@ li.drop-index-item[data-col-hidden="true"] {
     .miro-ai-nav-label {
       display: none;
     }
+  }
+}
+
+// Mira's mark. Hovering the button turns the large star a quarter turn (it lands on itself,
+// so it reads as a flourish, not a state change) and lets the small star and dot twinkle;
+// while an answer is being prepared, the stars breathe.
+.mira-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  flex: 0 0 auto;
+  vertical-align: -0.22em;
+  fill: currentColor;
+  overflow: visible;
+  .mira-icon-star,
+  .mira-icon-spark,
+  .mira-icon-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .mira-icon-star {
+    transition: transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  // a single twinkle once the app has loaded, to introduce Mira without nagging
+  .mira-icon-spark {
+    animation: mira-twinkle 900ms ease-out 1.5s 1 both;
+  }
+}
+.miro-ai-nav-btn:hover .mira-icon,
+.miro-ai-nav-btn:focus-visible .mira-icon {
+  .mira-icon-star {
+    transform: rotate(90deg);
+  }
+  .mira-icon-spark {
+    animation: mira-twinkle 700ms ease-out;
+  }
+  .mira-icon-dot {
+    animation: mira-twinkle 700ms ease-out 120ms;
+  }
+}
+body.miro-ai-working .miro-ai-nav-btn .mira-icon {
+  .mira-icon-star {
+    animation: mira-breathe 1.8s ease-in-out infinite;
+  }
+  .mira-icon-spark {
+    animation: mira-twinkle 1.8s ease-in-out 0.3s infinite;
+  }
+  .mira-icon-dot {
+    animation: mira-twinkle 1.8s ease-in-out 0.6s infinite;
+  }
+}
+@keyframes mira-twinkle {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  45% { transform: scale(0.45) rotate(45deg); opacity: 0.35; }
+  100% { transform: scale(1) rotate(90deg); opacity: 1; }
+}
+@keyframes mira-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(0.8) rotate(45deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mira-icon,
+  .mira-icon * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

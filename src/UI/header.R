@@ -12,7 +12,7 @@ header <- dashboardHeader(
         `aria-controls` = "miroAiChatDrawer",
         `aria-expanded` = "false",
         onclick = "Miro.toggleAiDrawer(); return false;",
-        tags$i(class = "fa fa-wand-magic-sparkles", `aria-hidden` = "true"),
+        renderMiraIcon(),
         tags$span(class = "miro-ai-nav-label", lang$nav$header$aiAssistant)
       )
     )

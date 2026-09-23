@@ -398,6 +398,7 @@ export function registerAiHandlers() {
     sendCurrentUserText(document.getElementById('miroAiUserText'));
   });
   Shiny.addCustomMessageHandler('gms-resetAiChatRequest', (content) => {
+    document.body.classList.remove('miro-ai-working');
     const textarea = document.getElementById('miroAiUserText');
     const stopButton = document.getElementById('btMiroAiStop');
     stopButton.style.display = 'none';
@@ -437,6 +438,8 @@ export function registerAiHandlers() {
     const $chatLog = $('#miroAiChatLog');
     const textarea = document.getElementById('miroAiUserText');
     const stopButton = document.getElementById('btMiroAiStop');
+    // lets the Mira icon in the header show that an answer is on its way
+    document.body.classList.toggle('miro-ai-working', content.role === 'user');
     if (content.role === 'user') {
       textarea.value = '';
       textarea.disabled = true;

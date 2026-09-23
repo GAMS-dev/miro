@@ -1178,7 +1178,7 @@ if (buildUI) {
           type = "application/javascript", `defer src` = "auto-render.min.js",
           onload = paste0(
             "Array.prototype.forEach.call(document.getElementsByClassName('",
-            if (isTRUE(config$readme$enableMath)) "miro-markdown" else "label-wrapper", "), function(el) {Miro.parseKatex(el);});"
+            if (isTRUE(config$readme$enableMath)) "miro-markdown" else "label-wrapper", "'), function(el) {Miro.parseKatex(el);});"
           )
         ),
         tags$meta(
