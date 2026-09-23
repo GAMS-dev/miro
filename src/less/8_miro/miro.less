@@ -3889,6 +3889,11 @@ li.drop-index-item[data-col-hidden="true"] {
   });
   box-shadow: none;
 }
+/* selectize makes the active input inline-block, which puts it on the text
+   baseline and adds the line's descender space below it (28px -> 33px) */
+.miro-ai-lean-select .selectize-control.single .selectize-input.input-active {
+  display: flex;
+}
 .miro-ai-lean-select .selectize-input .item {
   line-height: 20px;
   max-width: 85%;
@@ -3899,7 +3904,14 @@ li.drop-index-item[data-col-hidden="true"] {
 .miro-ai-lean-select .selectize-input::after {
   right: 8px;
 }
+/* the model select sits at the very bottom of the chat, so the dropdown opens
+   upwards: opening downwards would overflow the dialog, adding a scroll bar
+   (and a jump back to the top once a model was picked). Selectize positions
+   the dropdown with an inline `top`, hence the !important. */
 .miro-ai-lean-select .selectize-dropdown {
+  top: auto !important;
+  bottom: 100%;
+  margin: 0 0 2px 0;
   font-size: 13px;
   line-height: 1.4;
   .responsiveDark({
