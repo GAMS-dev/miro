@@ -1,6 +1,6 @@
 Rversion <- "4.0.4"
 CRANMirrors <- c(
-  "https://cran.datenrettung360.de/",
+  "https://mirror.kamp.de/cran/",
   "https://cloud.r-project.org/",
   "https://stat.ethz.ch/CRAN/"
 )
