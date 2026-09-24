@@ -80,6 +80,11 @@ const KEY_VALID = 'valid';
 const KEY_INVALID = 'invalid';
 const KEY_UNREACHABLE = 'unreachable';
 
+// only these say something about the key itself; rate limits, outages etc. do not
+const isKeyRejected = (provider, status) => status === 401
+  || status === 403
+  || (provider === 'google' && status === 400);
+
 const testAiProviderApiKey = async (provider, apiKey) => {
   if (apiKey.length < 10) {
     return KEY_INVALID;
@@ -119,7 +124,12 @@ const testAiProviderApiKey = async (provider, apiKey) => {
     });
 
     clearTimeout(timeoutId);
-    return response.status === 200 ? KEY_VALID : KEY_INVALID;
+    if (response.status === 200) {
+      return KEY_VALID;
+    }
+    return isKeyRejected(provider, response.status)
+      ? KEY_INVALID
+      : KEY_UNREACHABLE;
   } catch (error) {
     console.error(
       `Network or configuration error for ${provider}:`,

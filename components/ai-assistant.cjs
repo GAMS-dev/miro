@@ -9,6 +9,10 @@ const KEY_VALID = 'valid';
 const KEY_INVALID = 'invalid';
 const KEY_UNREACHABLE = 'unreachable';
 
+// only these say something about the key itself; rate limits, outages etc. do not
+const isKeyRejected = (provider, status) => status === 401 || status === 403
+  || (provider === 'google' && status === 400);
+
 const testAiProviderApiKey = async (provider, apiKey) => {
   if (apiKey.length < 10) {
     return KEY_INVALID;
@@ -40,13 +44,14 @@ const testAiProviderApiKey = async (provider, apiKey) => {
       headers,
       timeout: REQUEST_TIMEOUT
     });
-    return response.status === 200 ? KEY_VALID : KEY_INVALID;
+    return response.status === 200 ? KEY_VALID : KEY_UNREACHABLE;
   } catch (error) {
-    if (error.response) {
+    if (error.response && isKeyRejected(provider, error.response.status)) {
       __electronLog.warn(`API rejected key for ${provider}. Status: ${error.response.status}`);
       return KEY_INVALID;
     }
-    __electronLog.error(`Network or configuration error for ${provider}:`, error.message);
+    __electronLog.error(`Could not verify key for ${provider}:`, error.response
+      ? `HTTP ${error.response.status}` : error.message);
     return KEY_UNREACHABLE;
   }
 }
