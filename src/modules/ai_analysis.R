@@ -4,7 +4,19 @@ observe({
     if (is.null(dialogState$sidsToLoad)) {
       return()
     }
-    newSids <- unique(sort(dialogState$sidsToLoad))
+    newSids <- suppressWarnings(as.integer(unlist(dialogState$sidsToLoad, use.names = FALSE)))
+    newSids <- unique(sort(newSids[!is.na(newSids)]))
+    readableSids <- tryCatch(
+      db$importDataset("_scenMeta", colNames = "_sid", subsetSids = newSids)[["_sid"]],
+      error = function(e) {
+        flog.error("Problems fetching scenario metadata for AI assistant. Error message: '%s'.", conditionMessage(e))
+        integer()
+      }
+    )
+    if (!length(newSids) || !all(newSids %in% readableSids)) {
+      flog.error("AI assistant: Invalid scenario id(s) requested. This is likely an attempt to tamper with the app!")
+      return()
+    }
     newIsSandbox <- isTRUE(dialogState$isSandbox)
     if (!identical(newSids, aiAssistantState$activeSids) ||
       !identical(newIsSandbox, aiAssistantState$contextIsSandbox)) {

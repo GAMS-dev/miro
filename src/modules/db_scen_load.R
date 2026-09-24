@@ -412,8 +412,18 @@ observeEvent(input$btLoadScenConfirm, {
   if (!length(scenSelected)) {
     return()
   }
+  if (!is.character(scenSelected)) {
+    flog.error("Invalid scenario id(s) selected. This is likely an attempt to tamper with the app!")
+    return()
+  }
+  sidsSelected <- lapply(strsplit(scenSelected, split = "_", fixed = TRUE), "[[", 1)
+  if (!length(scenMetaDb) ||
+    !all(unlist(sidsSelected, use.names = FALSE) %in% as.character(scenMetaDb[["_sid"]]))) {
+    flog.error("Invalid scenario id(s) selected. This is likely an attempt to tamper with the app!")
+    return()
+  }
   loadIntoSandbox <<- FALSE
-  sidsToLoad <<- lapply(strsplit(scenSelected, split = "_", fixed = TRUE), "[[", 1)
+  sidsToLoad <<- sidsSelected
 
   # if in comparison mode skip input data check
   if (!isInSolveMode) {

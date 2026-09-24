@@ -124,6 +124,12 @@ ScenData <- R6Class("ScenData", public = list(
         # fetch timestamp
         if (!identical(refId, "sb") || !addToSandbox) {
           metaData <- private$getMetadata(scenId)
+          if (!identical(refId, "sb") && (!length(metaData) || !nrow(metaData))) {
+            stop_custom("error_not_found",
+              sprintf("Scenario with id: '%s' does not exist or user has no read access.", scenId),
+              call. = FALSE
+            )
+          }
           private$cachedData[[scenIdChar]] <- list(
             data = list(),
             meta = metaData,
