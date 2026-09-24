@@ -27,7 +27,7 @@ $(() => {
   const loadingScreen = $('#loadingScreen');
   const animationScreen = $('#animationScreen');
   const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-height">
-                               <div style="height:200px;">
+                               <div class="app-logo-wrapper">
                                    <p class="add-app-box-logo">
                                   </p>
                                </div>
@@ -196,7 +196,7 @@ $(() => {
                               <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </div>
-                          <div style="height:200px;">
+                          <div class="app-logo-wrapper">
                              <div class="drag-drop-area app-window" id="newAppFiles">
                                <div class="drag-drop-area-text empty d-flex flex-column justify-content-center align-items-center h-100 position-relative">
                                  <div class="drag-drop-plus-icon">
@@ -222,7 +222,7 @@ $(() => {
                              </div>
                           </div>
                           <div class="app-description">
-                          <h3 id="newAppName" class="app-title editable" style="margin-top:15pt;" contenteditable="true">
+                          <h3 id="newAppName" class="app-title editable" contenteditable="true">
                              ${lang.appNamePlaceholder}
                           </h3>
                           <p id="newAppDesc" class="app-desc editable" contenteditable="true">
@@ -722,14 +722,14 @@ $(() => {
                       </div>
                     </div>
                      <div>
-                       <div style="height:200px;">
+                       <div class="app-logo-wrapper">
                            <div id="appLogo_${unicodeToHTMLID(app.id)}" style="background-image:url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}');" \
   data-id="${unicodeToHTMLID(app.id)}" class="app-logo">
                           </div>
                        </div>
                        <div>
-                           <div style="height:125px">
-                             <h3 title="${escapeHtml(app.title)}" id="appTitle_${unicodeToHTMLID(app.id)}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;">${escapeHtml(app.title)}</h3>
+                           <div class="app-text">
+                             <h3 title="${escapeHtml(app.title)}" id="appTitle_${unicodeToHTMLID(app.id)}" class="app-title app-title-fixed app-item-title">${escapeHtml(app.title)}</h3>
                              <p title="${escapeHtml(app.description)}" id="appDesc_${unicodeToHTMLID(app.id)}" class="app-desc app-desc-fixed app-item-desc">${escapeHtml(app.description)}</p>
                            </div>
                            <div class="custom-file db-path-field" style="display:none;">

@@ -13,6 +13,7 @@ const {
 const {
   testAiProviderApiKey, KEY_VALID, KEY_INVALID,
 } = require('../components/ai-assistant.cjs');
+const { EnvEditor } = require('./env-editor.cjs');
 
 log.errorHandler.startCatching();
 
@@ -41,7 +42,6 @@ let oldConfig = {};
 const newConfig = {};
 let defaultValues;
 let importantKeys;
-let noEnvDesc = 'No environment is specified';
 let requireRestart = false;
 let pathValidating = false;
 // resolves once every in-flight AI provider API key validation has finished
@@ -114,32 +114,20 @@ if (['darwin', 'win32'].includes(process.platform)) {
   $('#rpathWrapper').hide();
 }
 
-function updateEnvTable(envData) {
-  if (envData && Object.keys(envData).length > 0) {
-    btEnvReset.attr('disabled', false);
-    newConfig.miroEnv = envData;
-    $('#env tbody').html(
-      Object.entries(envData)
-        .map((entry) => `<tr><td>${entry[0]}</td><td>${entry[1]}</td></tr>`)
-        .join(''),
-    );
-  } else {
-    newConfig.miroEnv = null;
-    btEnvReset.attr('disabled', true);
-    $('#env tbody').html(`<tr><td colspan="2">${noEnvDesc}</td></tr>`);
-  }
+const envEditor = new EnvEditor(document.getElementById('envEditor'), () => {
+  btEnvReset.attr('disabled', envEditor.rows().length === 0);
+  saveButton.attr('disabled', false);
+});
+
+function updateEnvEditor(envData) {
+  envEditor.setEnv(envData);
+  btEnvReset.attr('disabled', !envData || Object.keys(envData).length === 0);
 }
 
-$('#btEnvImport').on('click', () => {
-  ipcRenderer.send('import-miroenv');
-});
-
-$('#btEnvExport').on('click', () => {
-  ipcRenderer.send('export-miroenv');
-});
+updateEnvEditor();
 
 $('#btEnvReset').on('click', () => {
-  updateEnvTable();
+  updateEnvEditor();
   saveButton.attr('disabled', false);
 });
 
@@ -340,6 +328,14 @@ saveButton.on('click', async () => {
         return;
       }
     }
+    if (!envEditor.disabled) {
+      if (!envEditor.validate()) {
+        $('#env-tab').tab('show');
+        envEditor.focusFirstError();
+        return;
+      }
+      newConfig.miroEnv = envEditor.getEnv();
+    }
     newConfig.logLifeTime = logLifeVal;
     newConfig.launchExternal = cbLaunchExternal.is(':checked');
 
@@ -489,11 +485,6 @@ ipcRenderer.on('settings-new-path-selected', (e, id, pathSelected) => {
   if (pathConfig[id].requiresRestart === true) {
     requireRestart = true;
   }
-});
-
-ipcRenderer.on('update-miroEnv', (e, envData) => {
-  updateEnvTable(envData);
-  saveButton.attr('disabled', false);
 });
 
 Object.keys(pathConfig).forEach((id) => {
@@ -726,11 +717,8 @@ ipcRenderer.on(
         'pathRReset',
         'needHelp',
         'btSave',
-        'btEnvImport',
-        'btEnvExport',
         'btEnvReset',
-        'miroEnvHdrVar',
-        'miroEnvHdrVal',
+        'envInfo',
         'generalColorTheme',
         'colorThemeReset',
         'colorThemeOptionDefault',
@@ -768,7 +756,7 @@ ipcRenderer.on(
           $(`.${className}`).text(lang[className]);
         });
       $('.ai-key-status').text(lang['ai-key-status-not-configured']);
-      noEnvDesc = lang.noEnvDesc;
+      envEditor.setLabels(lang);
       document.getElementById('btCancel').value = lang.btCancel;
       [
         'pathMiroappSelect',
@@ -901,7 +889,11 @@ ipcRenderer.on(
           $(`#${key}`).attr('disabled', true);
         }
       } else if (key === 'miroEnv') {
-        updateEnvTable(newValue);
+        updateEnvEditor(newValue);
+        if (isImportant) {
+          envEditor.setDisabled(true);
+          btEnvReset.attr('disabled', true);
+        }
       } else {
         const pathSelectEl = $(`#btPathSelect_${key}`);
         if (isImportant) {
