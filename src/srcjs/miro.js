@@ -342,6 +342,20 @@ $(() => {
   $(document).on('click', '.deactivate-pivot-controls', function () {
     deactivateMiroPivotPresentation(this.dataset.id);
   });
+  // bootstrap-accessibility handles plain shown/hidden events (e.g. the ones triggered for Shiny's
+  // visibility tracking) like shown/hidden.bs.dropdown and flags the enclosing dropdown toggles
+  $(document).on('shown hidden', (e) => {
+    if (e.namespace) {
+      return;
+    }
+    $(e.target).parents().each(function () {
+      if ($(this).children('[data-toggle="dropdown"]').length) {
+        $(this).find('[data-toggle="dropdown"]').each(function () {
+          this.setAttribute('aria-expanded', String($(this).parent().hasClass('open')));
+        });
+      }
+    });
+  });
   Shiny.addCustomMessageHandler(
     'gms-activateMiroPivotPresentationObservers',
     (id) => {
