@@ -531,7 +531,7 @@ if (!identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   Sys.setenv(MIRO_BUILD = "true")
   for (modelName in c(
     "pickstock", "transport", "sudoku", "tsp", "farming",
-    "inscribedsquare", "cpack", "cutstock"
+    "inscribedsquare", "cpack", "cutstock", "stg1"
   )) {
     print(sprintf("Building example app: %s", modelName))
     Sys.setenv(MIRO_MODE = "base")

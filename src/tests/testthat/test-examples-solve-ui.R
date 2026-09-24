@@ -13,7 +13,7 @@ test_that(
 
     for (modelToTest in c(
       "pickstock", "transport", "sudoku", "farming",
-      "inscribedsquare", "tsp", "cpack", "lubrication", "indus89"
+      "inscribedsquare", "tsp", "cpack", "lubrication", "indus89", "stg1"
     )) {
       createTestDb()
       if (modelToTest %in% c("indus89")) {

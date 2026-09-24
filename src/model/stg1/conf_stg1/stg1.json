@@ -1,0 +1,3539 @@
+{
+    "activateModules": {
+        "attachments": true,
+        "downloadTempFiles": false,
+        "hcube": true,
+        "loadLocal": true,
+        "logFile": false,
+        "lstFile": false
+    },
+    "aggregateWidgets": true,
+    "autoGenInputGraphs": true,
+    "compareModules": [
+        {
+            "label": "Dashboard compare",
+            "options": {
+                "dataViews": {
+                    "absorption": [
+                        {
+                            "absorption1": "Composition of absorption (nominal)"
+                        },
+                        {
+                            "absorption2": "Composition of absorption (real)"
+                        },
+                        {
+                            "absorption3": ""
+                        }
+                    ],
+                    "averagehouseholdconsumption": [
+                        {
+                            "averagehouseholdconsumption1": "Household consumption by product group (real)"
+                        },
+                        {
+                            "averagehouseholdconsumption2": "Household consumption (real, percentage change)"
+                        }
+                    ],
+                    "averagehouseholdincome": [
+                        {
+                            "averagehouseholdincome1": "Household income (nominal)"
+                        },
+                        {
+                            "averagehouseholdincome2": "Household income (nominal)"
+                        }
+                    ],
+                    "averagewage": [
+                        {
+                            "averagewage1": "Returns to labour (wages)"
+                        },
+                        {
+                            "averagewage2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "capital": [
+                        {
+                            "capital1": "Returns to capital"
+                        },
+                        {
+                            "capital2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "exports": [
+                        {
+                            "exports1": "Exports (volume)"
+                        },
+                        {
+                            "exports2": ""
+                        }
+                    ],
+                    "gdp": [
+                        {
+                            "gdp1": "Composition of GDP (nominal)"
+                        },
+                        {
+                            "gdp2": "Composition of GDP (real)"
+                        },
+                        {
+                            "gdp3": ""
+                        }
+                    ],
+                    "govtsavings": [
+                        {
+                            "govtsavings1": "Government indicators (nominal unless otherwise indicated)"
+                        },
+                        {
+                            "govtsavings2": "Government indicators (nominal unless otherwise indicated)"
+                        }
+                    ],
+                    "imports": [
+                        {
+                            "imports1": "Imports (volume)"
+                        },
+                        {
+                            "imports2": ""
+                        }
+                    ],
+                    "incometaxscaling": [
+                        {
+                            "incometaxscaling1": "Government indicators (nominal unless otherwise indicated)"
+                        },
+                        {
+                            "incometaxscaling2": "Government indicators (nominal unless otherwise indicated)"
+                        }
+                    ],
+                    "land": [
+                        {
+                            "land1": "Returns to land"
+                        },
+                        {
+                            "land2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "production": [
+                        {
+                            "production1": "Production (constant prices)"
+                        },
+                        {
+                            "production2": "Value added share by sector (nominal)"
+                        }
+                    ],
+                    "summary": [
+                        {
+                            "macro1": "Macroeconomic indicators (real)"
+                        },
+                        {
+                            "macro2": ""
+                        }
+                    ]
+                },
+                "dataViewsConfig": {
+                    "absorption1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "title": "Composition of absorption (nominal, percentage change)",
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "colWidth": 6,
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "nominal",
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "bar",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "abscomp"
+                    },
+                    "absorption2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "title": "Composition of absorption (real, percentage change)",
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "colWidth": 6,
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "real",
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "bar",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "abscomp"
+                    },
+                    "absorption3": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "title": "Composition of absorption"
+                        },
+                        "cols": {
+                            "_scenName": null,
+                            "rnvalue": null
+                        },
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "table",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "abscomp",
+                            "rnvalue"
+                        ]
+                    },
+                    "averagehouseholdconsumption1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "groupDimension": "_scenName",
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "qcdpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": [
+                            "hgrp",
+                            "cagg"
+                        ],
+                        "singleDropdown": "hgrp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "hgrp",
+                            "cagg"
+                        ]
+                    },
+                    "averagehouseholdconsumption2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "h_African_female_high": "African Female High",
+                                "h_African_female_low": "African Female Low",
+                                "h_African_female_med": "African Female Med",
+                                "h_African_male_high": "African Male High",
+                                "h_African_male_low": "African Male Low",
+                                "h_African_male_med": "African Male Med",
+                                "h_Coloured_Asian_high": "Coloured Asian High",
+                                "h_Coloured_Asian_low": "Coloured Asian Low",
+                                "h_White_high": "White High",
+                                "h_White_low": "White Low"
+                            },
+                            "hideLegend": false
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "qcdtotpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "radar",
+                        "rows": "h",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "h"
+                    },
+                    "averagehouseholdincome1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "percentage difference",
+                                "value"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Female_High": "African Female High",
+                                "African_Female_Low": "African Female Low",
+                                "African_Female_Mid": "African Female Med",
+                                "African_Male_High": "African Male High",
+                                "African_Male_Low": "African Male Low",
+                                "African_Male_Mid": "African Male Med",
+                                "Coloured_Asian_High": "Coloured Asian High",
+                                "Coloured_Asian_Low": "Coloured Asian Low",
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education",
+                                "White_High": "White High",
+                                "White_Low": "White Low"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null,
+                            "hgrp": null
+                        },
+                        "data": "yhlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "hlabel",
+                        "singleDropdown": "hgrp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "hgrp",
+                            "hlabel"
+                        ]
+                    },
+                    "averagehouseholdincome2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "percentage difference",
+                                "value"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Female_High": "African Female High",
+                                "African_Female_Low": "African Female Low",
+                                "African_Female_Mid": "African Female Med",
+                                "African_Male_High": "African Male High",
+                                "African_Male_Low": "African Male Low",
+                                "African_Male_Mid": "African Male Med",
+                                "Coloured_Asian_High": "Coloured Asian High",
+                                "Coloured_Asian_Low": "Coloured Asian Low",
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education",
+                                "White_High": "White High",
+                                "White_Low": "White Low"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "yhlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": [
+                            "hgrp",
+                            "hlabel"
+                        ],
+                        "singleDropdown": "hgrp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "averagehouseholdincome1"
+                    },
+                    "averagewage1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to labour (wages) (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "fgrp": "Labour",
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "flabel"
+                    },
+                    "averagewage2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "capital1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to capital (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "fgrp": "Capital",
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "fgrp"
+                    },
+                    "capital2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "exports1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario",
+                            "tgrp": "Exports"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "cagg"
+                    },
+                    "exports2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario",
+                            "tgrp": "Exports"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "exports1"
+                    },
+                    "gdp1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "colWidth": 6,
+                        "data": "pergdpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "nominal",
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gdpcomp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gdpcomp"
+                    },
+                    "gdp2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "colWidth": 6,
+                        "data": "pergdpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "real",
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gdpcomp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gdpcomp"
+                    },
+                    "gdp3": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "title": "Composition of GDP"
+                        },
+                        "cols": {
+                            "_scenName": null,
+                            "rnvalue": null
+                        },
+                        "data": "pergdpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "table",
+                        "rows": "gdpcomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "gdpcomp",
+                            "rnvalue"
+                        ]
+                    },
+                    "govtsavings1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gov"
+                    },
+                    "govtsavings2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "govtsavings1"
+                    },
+                    "imports1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario",
+                            "tgrp": "Imports"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "cagg"
+                    },
+                    "imports2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario",
+                            "tgrp": "Imports"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "imports1"
+                    },
+                    "incometaxscaling1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gov"
+                    },
+                    "incometaxscaling2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "incometaxscaling1"
+                    },
+                    "land1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to land (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "fgrp": "Land",
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "flabel"
+                    },
+                    "land2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "macro1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "percentage difference",
+                                "value"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Absorption",
+                                "Production",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Macroeconomic indicators (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "macrolevel",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "hideLegend": false,
+                        "pivotRenderer": "bar",
+                        "rows": "mac",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "mac"
+                    },
+                    "macro2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "percentage difference",
+                                "value"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Absorption",
+                                "Production",
+                                "Imports",
+                                "Exports"
+                            ],
+                            "heatmapType": 2,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "macrolevel",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "hideLegend": false,
+                        "pivotRenderer": "table",
+                        "rows": "mac",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "macro1"
+                    },
+                    "production1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "a_Agriculture": "Agriculture",
+                                "a_Construction": "Construction",
+                                "a_Food": "Food",
+                                "a_Machinery": "Machinery",
+                                "a_Metal_mineral_products": "Metal mineral products",
+                                "a_Minerals": "Minerals",
+                                "a_Other_manufacturing": "Other manufacturing",
+                                "a_Petrol_chemicals": "Petrol chemicals",
+                                "a_Services": "Services",
+                                "a_Textiles": "Textiles",
+                                "a_Trade_transport_communications": "Trade transport communications",
+                                "a_Utilities": "Utilities",
+                                "a_Vehicles": "Vehicles"
+                            },
+                            "customLabelsOrder": {
+                                "agrp": [
+                                    "Primary",
+                                    "Manufacturing",
+                                    "Services"
+                                ],
+                                "sector": [
+                                    "Agriculture",
+                                    "Minerals",
+                                    "Food",
+                                    "Machinery",
+                                    "Metal mineral products",
+                                    "Other manufacturing",
+                                    "Petrol chemicals",
+                                    "Textiles",
+                                    "Vehicles"
+                                ]
+                            },
+                            "groupDimension": "_scenName",
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "qxpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": [
+                            "sector",
+                            "agrp"
+                        ],
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "sector",
+                            "agrp"
+                        ]
+                    },
+                    "production2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "percentage difference",
+                                "value"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "a_Agriculture": "Agriculture",
+                                "a_Construction": "Construction",
+                                "a_Food": "Food",
+                                "a_Machinery": "Machinery",
+                                "a_Metal_mineral_products": "Metal mineral products",
+                                "a_Minerals": "Minerals",
+                                "a_Other_manufacturing": "Other manufacturing",
+                                "a_Petrol_chemicals": "Petrol chemicals",
+                                "a_Services": "Services",
+                                "a_Textiles": "Textiles",
+                                "a_Trade_transport_communications": "Trade transport communications",
+                                "a_Utilities": "Utilities",
+                                "a_Vehicles": "Vehicles"
+                            },
+                            "customLabelsOrder": [
+                                "Agriculture",
+                                "Minerals",
+                                "Food",
+                                "Machinery",
+                                "Metal mineral products",
+                                "Other manufacturing",
+                                "Petrol chemicals",
+                                "Textiles",
+                                "Vehicles"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Value added share by sector (nominal)",
+                            "yLogScale": false
+                        },
+                        "cols": {
+                            "_scenName": null
+                        },
+                        "data": "qvash",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "agrp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "production1"
+                    }
+                },
+                "valueBoxes": {
+                    "color": [
+                        "#848991",
+                        "olive",
+                        "aqua",
+                        "#3c8dbc",
+                        "red",
+                        "red",
+                        "yellow",
+                        "yellow",
+                        "green",
+                        "green",
+                        "green",
+                        "blue",
+                        "navy"
+                    ],
+                    "decimals": [
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "icon": [
+                        "chart-line",
+                        "money-bill-trend-up",
+                        "credit-card",
+                        "industry",
+                        "plane-departure",
+                        "plane-arrival",
+                        "sack-dollar",
+                        "hand-holding-dollar",
+                        "hand-holding-dollar",
+                        "hand-holding-dollar",
+                        "money-check",
+                        "basket-shopping",
+                        "coins"
+                    ],
+                    "id": [
+                        "summary",
+                        "gdp",
+                        "absorption",
+                        "production",
+                        "exports",
+                        "imports",
+                        "govtsavings",
+                        "incometaxscaling",
+                        "land",
+                        "capital",
+                        "averagewage",
+                        "averagehouseholdconsumption",
+                        "averagehouseholdincome"
+                    ],
+                    "noColor": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
+                    "postfix": [
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%"
+                    ],
+                    "prefix": [
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+"
+                    ],
+                    "redPositive": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
+                    "title": [
+                        "MACROECONOMIC INDICATORS",
+                        "GDP",
+                        "ABSORPTION",
+                        "PRODUCTION",
+                        "EXPORTS",
+                        "IMPORTS",
+                        "GOVTSAVINGS",
+                        "INCOME TAX SCALING",
+                        "RETURNS TO LAND",
+                        "RETURNS TO CAPITAL",
+                        "AVERAGE WAGE",
+                        "HOUSEHOLD CONSUMPTION",
+                        "HOUSEHOLD INCOME"
+                    ],
+                    "valueScalar": [
+                        null,
+                        "gdp",
+                        "absorption",
+                        "production",
+                        "exports",
+                        "imports",
+                        "govtsavings",
+                        "incometaxscaling",
+                        "land",
+                        "capital",
+                        "averagewage",
+                        "averagehouseholdconsumption",
+                        "averagehouseholdincome"
+                    ]
+                },
+                "valueBoxesTitle": "Summary indicators"
+            },
+            "type": "dashboard"
+        }
+    ],
+    "customCss": true,
+    "dataRendering": {
+        "closurechoice": {
+            "outType": "mirorenderer_ersim"
+        },
+        "ersim": {
+            "outType": "mirorenderer_ersim"
+        },
+        "macrolevel": {
+            "additionalData": [
+                "map_aagg_a",
+                "map_cagg_c",
+                "pergdpcomp",
+                "perabsorpcomp",
+                "qxlev",
+                "qxpc",
+                "qvash",
+                "tradepc",
+                "wffpc",
+                "wflabpc",
+                "fdlpc",
+                "yhlev",
+                "yhpc",
+                "yhavpc",
+                "qcdpc",
+                "qcdtotpc",
+                "qcdavpc",
+                "govlev"
+            ],
+            "options": {
+                "dataViews": {
+                    "absorption": [
+                        {
+                            "absorption1": "Composition of absorption (nominal)"
+                        },
+                        {
+                            "absorption2": "Composition of absorption (real)"
+                        },
+                        {
+                            "absorption3": ""
+                        }
+                    ],
+                    "averagehouseholdconsumption": [
+                        {
+                            "averagehouseholdconsumption1": "Household consumption by product group (real)"
+                        },
+                        {
+                            "averagehouseholdconsumption2": "Household consumption (real, percentage change)"
+                        }
+                    ],
+                    "averagehouseholdincome": [
+                        {
+                            "averagehouseholdincome1": "Household income (nominal)"
+                        },
+                        {
+                            "averagehouseholdincome2": "Household income (nominal)"
+                        }
+                    ],
+                    "averagewage": [
+                        {
+                            "averagewage1": "Returns to land, capital and labour (wages)"
+                        },
+                        {
+                            "averagewage2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "capital": [
+                        {
+                            "capital1": "Returns to land, capital and labour (wages)"
+                        },
+                        {
+                            "capital2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "exports": [
+                        {
+                            "exports1": "Trade (volume)"
+                        },
+                        {
+                            "exports2": ""
+                        }
+                    ],
+                    "gdp": [
+                        {
+                            "gdp1": "Composition of GDP"
+                        },
+                        {
+                            "gdp3": ""
+                        }
+                    ],
+                    "govtsavings": [
+                        {
+                            "govtsavings1": "Government indicators (nominal unless otherwise indicated)"
+                        },
+                        {
+                            "govtsavings2": "Government indicators (nominal unless otherwise indicated)"
+                        }
+                    ],
+                    "imports": [
+                        {
+                            "imports1": "Trade (volume)"
+                        },
+                        {
+                            "imports2": ""
+                        }
+                    ],
+                    "incometaxscaling": [
+                        {
+                            "incometaxscaling1": "Government indicators (nominal unless otherwise indicated)"
+                        },
+                        {
+                            "incometaxscaling2": "Government indicators (nominal unless otherwise indicated)"
+                        }
+                    ],
+                    "land": [
+                        {
+                            "land1": "Returns to land, capital and labour (wages)"
+                        },
+                        {
+                            "land2": "Labour demand by sector (real)"
+                        }
+                    ],
+                    "production": [
+                        {
+                            "production1": "Production (constant prices)"
+                        },
+                        {
+                            "production2": "Value added share by sector (nominal)"
+                        }
+                    ],
+                    "summary": [
+                        {
+                            "macro1": "Macroeconomic indicators (real)"
+                        },
+                        {
+                            "macro2": ""
+                        }
+                    ]
+                },
+                "dataViewsConfig": {
+                    "absorption1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "title": "Composition of absorption (nominal, percentage change)",
+                            "yTitle": "Percentage change"
+                        },
+                        "colWidth": 6,
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "nominal",
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "bar",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "absorption2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "title": "Composition of absorption (real, percentage change)",
+                            "yTitle": "Percentage change"
+                        },
+                        "colWidth": 6,
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "rnvalue": "real",
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "bar",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "absorption3": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "Absorption",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption"
+                            ],
+                            "heatmapType": 2,
+                            "title": "Composition of absorption"
+                        },
+                        "cols": {
+                            "rnvalue": null
+                        },
+                        "data": "perabsorpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "table",
+                        "rows": "abscomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "averagehouseholdconsumption1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "hgrp": null
+                        },
+                        "data": "qcdpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "cagg",
+                            "hgrp"
+                        ]
+                    },
+                    "averagehouseholdconsumption2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "h_African_female_high": "African Female High",
+                                "h_African_female_low": "African Female Low",
+                                "h_African_female_med": "African Female Med",
+                                "h_African_male_high": "African Male High",
+                                "h_African_male_low": "African Male Low",
+                                "h_African_male_med": "African Male Med",
+                                "h_Coloured_Asian_high": "Coloured Asian High",
+                                "h_Coloured_Asian_low": "Coloured Asian Low",
+                                "h_White_high": "White High",
+                                "h_White_low": "White Low"
+                            },
+                            "hideLegend": true
+                        },
+                        "data": "qcdtotpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "radar",
+                        "rows": "h",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "averagehouseholdincome1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Female_High": "African Female High",
+                                "African_Female_Low": "African Female Low",
+                                "African_Female_Mid": "African Female Med",
+                                "African_Male_High": "African Male High",
+                                "African_Male_Low": "African Male Low",
+                                "African_Male_Mid": "African Male Med",
+                                "Coloured_Asian_High": "Coloured Asian High",
+                                "Coloured_Asian_Low": "Coloured Asian Low",
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education",
+                                "White_High": "White High",
+                                "White_Low": "White Low"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "hgrp": null
+                        },
+                        "data": "yhlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "stackedbar",
+                        "rows": "hlabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "hlabel",
+                            "hgrp"
+                        ]
+                    },
+                    "averagehouseholdincome2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Female_High": "African Female High",
+                                "African_Female_Low": "African Female Low",
+                                "African_Female_Mid": "African Female Med",
+                                "African_Male_High": "African Male High",
+                                "African_Male_Low": "African Male Low",
+                                "African_Male_Mid": "African Male Med",
+                                "Coloured_Asian_High": "Coloured Asian High",
+                                "Coloured_Asian_Low": "Coloured Asian Low",
+                                "HighEducation": "High Education",
+                                "LowMedEducation": "Low Med Education",
+                                "White_High": "White High",
+                                "White_Low": "White Low"
+                            },
+                            "customSeriesOrder": [
+                                "Low Med Education",
+                                "High Education"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "sim_miro": null
+                        },
+                        "data": "yhlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": [
+                            "hgrp",
+                            "hlabel"
+                        ],
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "hlabel",
+                            "hgrp"
+                        ]
+                    },
+                    "averagewage1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to land, capital and labour (wages) (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "fgrp": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "stackedbar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "flabel",
+                            "fgrp"
+                        ]
+                    },
+                    "averagewage2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "capital1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to land, capital and labour (wages) (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "fgrp": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "stackedbar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "flabel",
+                            "fgrp"
+                        ]
+                    },
+                    "capital2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "exports1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "tgrp": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "cagg"
+                    },
+                    "exports2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "tgrp": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "exports1"
+                    },
+                    "gdp1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": false,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "rnvalue": null
+                        },
+                        "data": "pergdpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gdpcomp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "gdp3": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Household Consumption",
+                                "Enterprise Consumption",
+                                "Investment",
+                                "Government Consumption",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "title": "Composition of GDP"
+                        },
+                        "cols": {
+                            "rnvalue": null
+                        },
+                        "data": "pergdpcomp",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "pivotRenderer": "table",
+                        "rows": "gdpcomp",
+                        "tableSummarySettings": {
+                            "colSummaryFunction": "sum",
+                            "enabled": false,
+                            "rowSummaryFunction": "sum"
+                        }
+                    },
+                    "govtsavings1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gov"
+                    },
+                    "govtsavings2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "sim_miro": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "govtsavings1"
+                    },
+                    "imports1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "tgrp": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "cagg"
+                    },
+                    "imports2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Trade (volume, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "tgrp": null
+                        },
+                        "data": "tradepc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "cagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "imports1"
+                    },
+                    "incometaxscaling1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "gov"
+                    },
+                    "incometaxscaling2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Government indicators (nominal unless otherwise indicated)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "sim_miro": null
+                        },
+                        "data": "govlev",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "table",
+                        "rows": "gov",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "incometaxscaling1"
+                    },
+                    "land1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "African_Skilled": "African Skilled",
+                                "African_Unskilled": "African Unskilled",
+                                "Coloured_Asian_Skilled": "Coloured Asian Skilled",
+                                "Coloured_Asian_Unskilled": "Coloured Asian Unskilled",
+                                "White_Skilled": "White Skilled",
+                                "White_Unskilled": "White Unskilled"
+                            },
+                            "customLabelsOrder": [
+                                "Capital",
+                                "Land",
+                                "African Unskilled",
+                                "African Skilled",
+                                "Coloured Asian Unskilled",
+                                "Coloured Asian Skilled",
+                                "White Unskilled",
+                                "White Skilled"
+                            ],
+                            "customSeriesOrder": [
+                                "Capital",
+                                "Land",
+                                "Labour"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "title": "Returns to land, capital and labour (wages) (percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "fgrp": null
+                        },
+                        "data": "wffpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "stackedbar",
+                        "rows": "flabel",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "flabel",
+                            "fgrp"
+                        ]
+                    },
+                    "land2": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Labour demand by sector (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "data": "fdlpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "aagg",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "aagg"
+                    },
+                    "macro1": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": "percentage difference",
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Absorption",
+                                "Production",
+                                "Exports",
+                                "Imports"
+                            ],
+                            "heatmapType": 2,
+                            "hideLegend": true,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "title": "Macroeconomic indicators (real, percentage change)",
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "sim_miro": "scenario"
+                        },
+                        "data": "macrolevel",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "hideLegend": true,
+                        "pivotRenderer": "bar",
+                        "rows": "mac",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "mac"
+                    },
+                    "macro2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabelsOrder": [
+                                "GDP",
+                                "Absorption",
+                                "Production",
+                                "Imports",
+                                "Exports"
+                            ],
+                            "heatmapType": 2,
+                            "showXGrid": false,
+                            "showYGrid": true,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "sim_miro": "scenario"
+                        },
+                        "data": "macrolevel",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "hideLegend": true,
+                        "pivotRenderer": "table",
+                        "rows": "mac",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "macro1"
+                    },
+                    "production1": {
+                        "aggregationFunction": "sum",
+                        "chartOptions": {
+                            "customLabels": {
+                                "a_Agriculture": "Agriculture",
+                                "a_Construction": "Construction",
+                                "a_Food": "Food",
+                                "a_Machinery": "Machinery",
+                                "a_Metal_mineral_products": "Metal mineral products",
+                                "a_Minerals": "Minerals",
+                                "a_Other_manufacturing": "Other manufacturing",
+                                "a_Petrol_chemicals": "Petrol chemicals",
+                                "a_Services": "Services",
+                                "a_Textiles": "Textiles",
+                                "a_Trade_transport_communications": "Trade transport communications",
+                                "a_Utilities": "Utilities",
+                                "a_Vehicles": "Vehicles"
+                            },
+                            "customLabelsOrder": [
+                                "Agriculture",
+                                "Minerals",
+                                "Food",
+                                "Machinery",
+                                "Metal mineral products",
+                                "Other manufacturing",
+                                "Petrol chemicals",
+                                "Textiles",
+                                "Vehicles"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "singleStack": false,
+                            "yLogScale": false,
+                            "yTitle": "Percentage change"
+                        },
+                        "cols": {
+                            "agrp": null
+                        },
+                        "data": "qxpc",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "filter": {
+                            "sim_miro": "scenario"
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "stackedbar",
+                        "rows": "sector",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": [
+                            "sector",
+                            "agrp"
+                        ]
+                    },
+                    "production2": {
+                        "aggregationFunction": "sum",
+                        "baselineComparison": {
+                            "domain": "sim_miro",
+                            "metrics": [
+                                "value",
+                                "percentage difference"
+                            ],
+                            "record": "base"
+                        },
+                        "chartOptions": {
+                            "customLabels": {
+                                "a_Agriculture": "Agriculture",
+                                "a_Construction": "Construction",
+                                "a_Food": "Food",
+                                "a_Machinery": "Machinery",
+                                "a_Metal_mineral_products": "Metal mineral products",
+                                "a_Minerals": "Minerals",
+                                "a_Other_manufacturing": "Other manufacturing",
+                                "a_Petrol_chemicals": "Petrol chemicals",
+                                "a_Services": "Services",
+                                "a_Textiles": "Textiles",
+                                "a_Trade_transport_communications": "Trade transport communications",
+                                "a_Utilities": "Utilities",
+                                "a_Vehicles": "Vehicles"
+                            },
+                            "customLabelsOrder": [
+                                "Agriculture",
+                                "Minerals",
+                                "Food",
+                                "Machinery",
+                                "Metal mineral products",
+                                "Other manufacturing",
+                                "Petrol chemicals",
+                                "Textiles",
+                                "Vehicles"
+                            ],
+                            "showXGrid": true,
+                            "showYGrid": true,
+                            "title": "Value added share by sector (nominal)",
+                            "yLogScale": false
+                        },
+                        "cols": {
+                            "sim_miro": null
+                        },
+                        "data": "qvash",
+                        "decimals": 2,
+                        "domainFilter": {
+                            "default": null
+                        },
+                        "fixedColumns": true,
+                        "hideEmptyCols": false,
+                        "pivotRenderer": "bar",
+                        "rows": "agrp",
+                        "tableSummarySettings": {
+                            "colEnabled": false,
+                            "colSummaryFunction": "sum",
+                            "rowEnabled": false,
+                            "rowSummaryFunction": "sum"
+                        },
+                        "userFilter": "production1"
+                    }
+                },
+                "valueBoxes": {
+                    "color": [
+                        "#848991",
+                        "olive",
+                        "aqua",
+                        "#3c8dbc",
+                        "red",
+                        "red",
+                        "yellow",
+                        "yellow",
+                        "green",
+                        "green",
+                        "green",
+                        "blue",
+                        "navy"
+                    ],
+                    "decimals": [
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "icon": [
+                        "chart-line",
+                        "money-bill-trend-up",
+                        "credit-card",
+                        "industry",
+                        "plane-departure",
+                        "plane-arrival",
+                        "sack-dollar",
+                        "hand-holding-dollar",
+                        "hand-holding-dollar",
+                        "hand-holding-dollar",
+                        "money-check",
+                        "basket-shopping",
+                        "coins"
+                    ],
+                    "id": [
+                        "summary",
+                        "gdp",
+                        "absorption",
+                        "production",
+                        "exports",
+                        "imports",
+                        "govtsavings",
+                        "incometaxscaling",
+                        "land",
+                        "capital",
+                        "averagewage",
+                        "averagehouseholdconsumption",
+                        "averagehouseholdincome"
+                    ],
+                    "noColor": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
+                    "postfix": [
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%",
+                        "%"
+                    ],
+                    "prefix": [
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+",
+                        "+"
+                    ],
+                    "redPositive": [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
+                    "title": [
+                        "MACROECONOMIC INDICATORS",
+                        "GDP",
+                        "ABSORPTION",
+                        "PRODUCTION",
+                        "EXPORTS",
+                        "IMPORTS",
+                        "GOVTSAVINGS",
+                        "INCOME TAX SCALING",
+                        "RETURNS TO LAND",
+                        "RETURNS TO CAPITAL",
+                        "AVERAGE WAGE",
+                        "HOUSEHOLD CONSUMPTION",
+                        "HOUSEHOLD INCOME"
+                    ],
+                    "valueScalar": [
+                        null,
+                        "gdp",
+                        "absorption",
+                        "production",
+                        "exports",
+                        "imports",
+                        "govtsavings",
+                        "incometaxscaling",
+                        "land",
+                        "capital",
+                        "averagewage",
+                        "averagehouseholdconsumption",
+                        "averagehouseholdincome"
+                    ]
+                },
+                "valueBoxesTitle": "Summary indicators"
+            },
+            "outType": "dashboard"
+        },
+        "sam_za": {
+            "outType": "mirorenderer_ersim"
+        },
+        "sam_za_expsh": {
+            "outType": "mirorenderer_ersim"
+        },
+        "sam_za_incsh": {
+            "outType": "mirorenderer_ersim"
+        },
+        "tmadj_sim": {
+            "outType": "mirorenderer_ersim"
+        }
+    },
+    "datatable": {
+        "class": "stripe",
+        "filter": "bottom",
+        "options": {
+            "pageLength": 15
+        },
+        "rownames": false
+    },
+    "defaultRendererOutput": "miroPivot",
+    "defaultScenName": "default",
+    "defCompMode": "__dashboard_1",
+    "excelIncludeEmptySheets": true,
+    "excelIncludeMeta": true,
+    "handsontable": {
+        "colWidths": 200,
+        "contextMenu": {
+            "allowColEdit": true,
+            "allowRowEdit": true,
+            "enabled": true
+        },
+        "height": 700,
+        "readonly": false,
+        "stretchH": "none"
+    },
+    "hiddenOutputSymbols": [
+        "map_aagg_a",
+        "map_cagg_c",
+        "pergdpcomp",
+        "perabsorpcomp",
+        "qxlev",
+        "qxpc",
+        "qvash",
+        "tradepc",
+        "wffpc",
+        "wflabpc",
+        "fdlpc",
+        "yhlev",
+        "yhpc",
+        "yhavpc",
+        "qcdpc",
+        "qcdtotpc",
+        "qcdavpc",
+        "govlev",
+        "_scalars_out"
+    ],
+    "inputWidgets": {
+        "closurechoice": {
+            "alias": "Assumptions",
+            "apiVersion": 2,
+            "rendererName": "mirowidget_closurechoice",
+            "widgetType": "custom"
+        },
+        "ersim": {
+            "alias": "World prices",
+            "apiVersion": 2,
+            "rendererName": "mirowidget_ersim",
+            "widgetSymbols": [
+                "pwmsim_agr",
+                "pwmsim_nat",
+                "pwmsim_fd",
+                "pwmsim_ind",
+                "pwmsim_ser",
+                "pwesim_agr",
+                "pwesim_nat",
+                "pwesim_fd",
+                "pwesim_ind",
+                "pwesim_ser"
+            ],
+            "widgetType": "custom"
+        },
+        "pwesim_agr": {
+            "default": 1,
+            "label": "Change in world price of agricultural exports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwesim_fd": {
+            "default": 1,
+            "label": "Change in world price of food exports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwesim_ind": {
+            "default": 1,
+            "label": "Change in world price of industrial exports including petrol and chemicals (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwesim_nat": {
+            "default": 1,
+            "label": "Change in world price of mineral exports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwesim_ser": {
+            "default": 1,
+            "label": "Change in world price of service exports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwmsim_agr": {
+            "default": 1,
+            "label": "Change in world price of agricultural imports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwmsim_fd": {
+            "default": 1,
+            "label": "Change in world price of food imports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwmsim_ind": {
+            "default": 1,
+            "label": "Change in world price of industrial imports including petrol and chemicals (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwmsim_nat": {
+            "default": 1,
+            "label": "Change in world price of mineral imports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "pwmsim_ser": {
+            "default": 1,
+            "label": "Change in world price of service imports (1 = no change)",
+            "max": 1.1,
+            "min": 0.9,
+            "noHcube": false,
+            "step": 0.02,
+            "ticks": true,
+            "tooltip": "Example: 0.98 = 2% reduction, 1.02 = 2% increase",
+            "widgetType": "slider"
+        },
+        "sam_za": {
+            "label": "### Social Accounting Matrix for South Africa, 2000\n\n<br />A social accounting matrix (SAM) represents flows of all economic transactions that take place within an economy (regional or national). It is at the core, a matrix representation of the national accounts for a given country, but can be extended to include non-national accounting flows, and created for whole regions or area. SAMs refer to a single year providing a static picture of the economy. Read more <a href='https://en.wikipedia.org/wiki/Social_accounting_matrix' target='_blank'>here</a>.<br /><br />For a glossary see the 'Introduction' tab.<br /><br />This pivot table allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of a heatmap or as chart (line chart, bar chart, etc.). Each slice, or 'view' of data can be exported by clicking the download button. If you are currently viewing a chart, the view is exported as a PNG file; if you are viewing a table or heatmap, the data is exported as a CSV file. Load a view by clicking on the dropdown menu. Read more about the pivot table tool <a href='https://www.gams.com/miro/charts.html#pivot-chart' target='_blank'>here</a>.<br /><br />You are currently looking at the pivot table in presentation mode. In this mode, all pivot controls are hidden so that the chart or table takes center stage. Only configured views and export buttons remain visible. To show all pivot controls, clock on the corresponding button. Note that the table is configured as read-only.",
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "sacntp": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "externalDefaultView": "Factor use (table)",
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "sacnt"
+            },
+            "readonly": true,
+            "tableType": "pivot",
+            "widgetType": "table"
+        },
+        "sam_za_expsh": {
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "sacntp": null
+                },
+                "emptyUEL": "-",
+                "enableHideEmptyCols": false,
+                "externalDefaultView": "Production costs structures (chart)",
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "sacnt"
+            },
+            "readonly": true,
+            "tableType": "pivot",
+            "widgetType": "table"
+        },
+        "sam_za_incsh": {
+            "options": {
+                "aggregationFunction": "sum",
+                "cols": {
+                    "sacntp": null
+                },
+                "enableHideEmptyCols": false,
+                "externalDefaultView": "Household income (chart)",
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": true,
+                "pivotRenderer": "table",
+                "rows": "sacnt"
+            },
+            "readonly": true,
+            "tableType": "pivot",
+            "widgetType": "table"
+        },
+        "texadj_sim": {
+            "default": 1,
+            "label": "Change in excise taxes (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "tfadj_sim": {
+            "default": 1,
+            "label": "Change in factor use taxes (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "tmadj_sim": {
+            "alias": "Tax policy",
+            "apiVersion": 2,
+            "rendererName": "mirowidget_tmadj_sim",
+            "widgetSymbols": [
+                "tsadj_sim",
+                "texadj_sim",
+                "txadj_sim",
+                "tfadj_sim",
+                "tyhadj_sim",
+                "tyeadj_sim"
+            ],
+            "widgetType": "custom"
+        },
+        "tsadj_sim": {
+            "default": 1,
+            "label": "Change in sales taxes (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "txadj_sim": {
+            "default": 1,
+            "label": "Change in production taxes (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "tyeadj_sim": {
+            "default": 1,
+            "label": "Change in enterprise income tax (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        },
+        "tyhadj_sim": {
+            "default": 1,
+            "label": "Change in household income taxes (1 = no change)",
+            "max": 1.5,
+            "min": 0.5,
+            "noHcube": false,
+            "step": 0.01,
+            "ticks": true,
+            "widgetType": "slider"
+        }
+    },
+    "layoutSettings": {
+        "maxTabsExpandedInput": 5,
+        "maxTabsExpandedOutput": 9,
+        "maxTabsExpandedPivotComp": 5,
+        "maxTabsExpandedSplitComp": 5,
+        "maxTabsExpandedTabComp": 5
+    },
+    "miroLogFile": "miro.log",
+    "outputAttachments": [
+        {
+            "execPerm": false,
+            "filename": "all_data.gdx",
+            "throwError": true
+        }
+    ],
+    "overwriteAliases": {
+        "_scalars": {
+            "newAlias": "Model closure"
+        },
+        "_scalars_out": {
+            "newAlias": "Output Scalars"
+        },
+        "absorption": {
+            "newAlias": "absorption"
+        },
+        "averagehouseholdconsumption": {
+            "newAlias": "averagehouseholdconsumption"
+        },
+        "averagehouseholdincome": {
+            "newAlias": "averagehouseholdincome"
+        },
+        "averagewage": {
+            "newAlias": "averagewage"
+        },
+        "capital": {
+            "newAlias": "capital"
+        },
+        "closurechoice": {
+            "newAlias": "Closure choice"
+        },
+        "ersim": {
+            "newAlias": "Exchange rate multiplier"
+        },
+        "exports": {
+            "newAlias": "exports"
+        },
+        "fdlpc": {
+            "newAlias": "Labour"
+        },
+        "gdp": {
+            "newAlias": "gdp"
+        },
+        "govlev": {
+            "newAlias": "Government"
+        },
+        "govtsavings": {
+            "newAlias": "govtsavings"
+        },
+        "imports": {
+            "newAlias": "imports"
+        },
+        "incometaxscaling": {
+            "newAlias": "incometaxscaling"
+        },
+        "land": {
+            "newAlias": "land"
+        },
+        "macrolevel": {
+            "newAlias": "Macro indicators (simulation value)"
+        },
+        "map_aagg_a": {
+            "newAlias": "Mapping from activies to aggregate activities"
+        },
+        "map_cagg_c": {
+            "newAlias": "Mapping from commodities to aggregate commodities"
+        },
+        "perabsorpcomp": {
+            "newAlias": "Composition of Absorption (pc)"
+        },
+        "pergdpcomp": {
+            "newAlias": "Composition of GDP (pc)"
+        },
+        "production": {
+            "newAlias": "production"
+        },
+        "pwesim_agr": {
+            "newAlias": "Agricultural export price scalar"
+        },
+        "pwesim_fd": {
+            "newAlias": "Food export price scalar"
+        },
+        "pwesim_ind": {
+            "newAlias": "Industrial export price scalar"
+        },
+        "pwesim_nat": {
+            "newAlias": "Minerals export price scalar"
+        },
+        "pwesim_ser": {
+            "newAlias": "Services export price scalar"
+        },
+        "pwmsim_agr": {
+            "newAlias": "Agricultural import price scalar"
+        },
+        "pwmsim_fd": {
+            "newAlias": "Food import price scalar"
+        },
+        "pwmsim_ind": {
+            "newAlias": "Industrial import price scalar"
+        },
+        "pwmsim_nat": {
+            "newAlias": "Minerals import price scalar"
+        },
+        "pwmsim_ser": {
+            "newAlias": "Services import price scalar"
+        },
+        "qcdavpc": {
+            "newAlias": "Average household consumption (pc)"
+        },
+        "qcdpc": {
+            "newAlias": "Household consumption"
+        },
+        "qcdtotpc": {
+            "newAlias": "Total household consumption by group pc)"
+        },
+        "qvash": {
+            "newAlias": "Sectoral share (expt)"
+        },
+        "qxlev": {
+            "newAlias": "Production by sector"
+        },
+        "qxpc": {
+            "newAlias": "Production by sector (pc)"
+        },
+        "sam_za": {
+            "newAlias": "South Africa SAM (read-only)"
+        },
+        "sam_za_expsh": {
+            "newAlias": "Expenditure shares South Africa SAM (read-only)"
+        },
+        "sam_za_incsh": {
+            "newAlias": "Income shares South Africa SAM (read-only)"
+        },
+        "texadj_sim": {
+            "newAlias": "Excise tax rate scaling factor"
+        },
+        "tfadj_sim": {
+            "newAlias": "Factor Use Tax Scaling Factor"
+        },
+        "tmadj_sim": {
+            "newAlias": "Tariff rate Scaling Factor"
+        },
+        "tradepc": {
+            "newAlias": "Trade"
+        },
+        "tsadj_sim": {
+            "newAlias": "Sales tax rate scaling factor"
+        },
+        "txadj_sim": {
+            "newAlias": "Indirect Tax Scaling Factor"
+        },
+        "tyeadj_sim": {
+            "newAlias": "Enterprise income tax Scaling Factor"
+        },
+        "tyhadj_sim": {
+            "newAlias": "Household Income Tax Scaling Factor"
+        },
+        "wffpc": {
+            "newAlias": "Factor returns"
+        },
+        "wflabpc": {
+            "newAlias": "Percentage change in average wage"
+        },
+        "yhavpc": {
+            "newAlias": "Average household income (pc)"
+        },
+        "yhlev": {
+            "newAlias": "Household income"
+        },
+        "yhpc": {
+            "newAlias": "Percentage change in household income"
+        }
+    },
+    "overwriteHeaderAliases": {
+        "sam_za": {
+            "newHeaders": [
+                "SAM rows",
+                "SAM columns",
+                "Value"
+            ]
+        },
+        "sam_za_expsh": {
+            "newHeaders": [
+                "SAM rows",
+                "SAM columns",
+                "Value"
+            ]
+        },
+        "sam_za_incsh": {
+            "newHeaders": [
+                "SAM rows",
+                "SAM columns",
+                "Value"
+            ]
+        }
+    },
+    "overwriteSheetOrder": {
+        "input": [
+            "ersim",
+            "tmadj_sim",
+            "closurechoice",
+            "_widgets",
+            "sam_za",
+            "sam_za_expsh",
+            "sam_za_incsh"
+        ],
+        "output": [
+            "macrolevel",
+            "qxlev",
+            "qxpc",
+            "qvash",
+            "wffpc",
+            "fdlpc",
+            "yhlev",
+            "yhpc",
+            "govlev",
+            "qcdpc",
+            "tradepc",
+            "pergdpcomp",
+            "perabsorpcomp",
+            "wflabpc",
+            "yhavpc",
+            "qcdavpc",
+            "map_aagg_a",
+            "map_cagg_c",
+            "qcdtotpc",
+            "_scalars_out"
+        ]
+    },
+    "pageTitle": "Modeling the Impact of Domestic Policies and Global Shocks",
+    "parseLogForMiroLogSyntax": false,
+    "pivotCompSettings": {
+        "emptyUEL": "-",
+        "fixedColumns": true,
+        "hideEmptyCols": false,
+        "hidePivotControls": true,
+        "tableSummarySettings": {
+            "colEnabled": false,
+            "colSummaryFunction": "sum",
+            "rowEnabled": false,
+            "rowSummaryFunction": "sum"
+        }
+    },
+    "readme": {
+        "enableMath": false,
+        "filename": "README.md",
+        "tabTitle": "Introduction"
+    },
+    "roundingDecimals": 3,
+    "saveTraceFile": true,
+    "storeLogFilesDuration": 0,
+    "theme": "browser"
+}
