@@ -2304,7 +2304,6 @@
         "secondary": "Secondary color",
         "sidebar": "Sidebar color",
         "navbar": "Header color",
-        "body_bg": "Body background color",
         "alert": "Alert color",
         "mainBg": "Main background color",
         "console": "Console text color",
@@ -2312,16 +2311,16 @@
         "secondaryDark": "Secondary color",
         "sidebarDark": "Sidebar color",
         "navbarDark": "Header color",
-        "body_bg_dark": "Body background color",
         "alertDark": "Alert color",
         "mainBgDark": "Main background color",
         "consoleDark": "Console text color",
         "widgetBgDark": "Widgets background color",
         "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
-        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
+        "secondaryTooltip": "Accent color for warnings, progress bars, validation messages and the hover state of outlined buttons. Filled main actions (e.g. solve, confirm) use the primary color.",
         "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
         "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
-        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
+        "widgetBgDarkTooltip": "Background of dropdown menus and other controls such as checkboxes, date pickers and scrollbars. Text inputs and tables adapt to the main background automatically.",
+        "mainBgTooltip": "Background of the main content area, including sections, dialogs and tables."
       },
       "themeButtons": {
         "buttonsTitle": "Save theme colors",

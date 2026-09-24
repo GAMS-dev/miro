@@ -160,6 +160,7 @@
     --miro-primary-color-dark: #295f98;
     --miro-secondary-color: #f39619;
     --miro-secondary-color-dark: #f39619;
+    --miro-sidebar-active-color: #295f98;
     --miro-sidebar-color: #ffffff;
     --miro-sidebar-color-dark: #1d1f20;
     --miro-sidebar-color-gradient: linear-gradient(171deg, #ffffff 0%, #ffffff 50%, #f8faff 100%);

@@ -2303,7 +2303,6 @@
         "secondary": "Sekundärfarbe",
         "sidebar": "Seitenleistenfarbe",
         "navbar": "Kopfzeilenfarbe",
-        "body_bg": "Body-Hintergrundfarbe",
         "alert": "Farbe der Entfernen-Schaltfläche",
         "mainBg": "Hintergrundfarbe Hauptbereich",
         "console": "Hintergrundfarbe für Log und Code",
@@ -2311,16 +2310,16 @@
         "secondaryDark": "Sekundärfarbe",
         "sidebarDark": "Seitenleistenfarbe",
         "navbarDark": "Kopfzeilenfarbe",
-        "body_bg_dark": "Body-Hintergrundfarbe",
         "alertDark": "Farbe der Entfernen-Schaltfläche",
         "mainBgDark": "Hintergrundfarbe Hauptbereich",
         "consoleDark": "Hintergrundfarbe für Log und Code",
         "widgetBgDark": "Hintergrundfarbe Widgets",
         "primaryTooltip": "Hauptmarkenfarbe. Sie wird am häufigsten in der Anwendung verwendet, um primäre Aktionen hervorzuheben und die Benutzeraufmerksamkeit zu lenken.",
-        "secondaryTooltip": "Die Sekundärfarbe wird verwendet, um die Benutzeroberfläche zu akzentuieren, Inhalte zu unterscheiden, weniger prominente Aktionen anzuzeigen und dient als Farbe der Hauptschaltflächen in der Anwendung.",
+        "secondaryTooltip": "Akzentfarbe für Warnungen, Fortschrittsbalken, Validierungsmeldungen und den Hover-Zustand umrandeter Schaltflächen. Gefüllte Hauptaktionen (z.B. Lösen, Bestätigen) verwenden die Primärfarbe.",
         "alertTooltip": "Die Warnfarbe wird für Schaltflächen verwendet, die Aktionen wie Entfernen, Löschen oder Zurücksetzen auslösen, um Vorsicht zu signalisieren und auf potenziell irreversible Änderungen hinzuweisen.",
         "consoleTooltip": "Wird zur Anzeige von Ausgaben in Log- und Listing-Dateien innerhalb des GAMS-Interaktionsbereichs verwendet.",
-        "widgetBgDarkTooltip": "Die Widget-Farbe wird für interaktive UI-Elemente wie Dropdowns, Tabellen, Schieberegler und andere Steuerelemente verwendet."
+        "widgetBgDarkTooltip": "Hintergrund von Dropdown-Menüs und weiteren Steuerelementen wie Checkboxen, Datumsauswahl und Scrollbalken. Texteingaben und Tabellen passen sich automatisch an die Hintergrundfarbe des Hauptbereichs an.",
+        "mainBgTooltip": "Hintergrund des Hauptbereichs, einschließlich Abschnitten, Dialogen und Tabellen."
       },
       "themeButtons": {
         "buttonsTitle": "Farbschema speichern",

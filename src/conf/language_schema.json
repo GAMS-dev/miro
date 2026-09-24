@@ -9282,10 +9282,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "body_bg": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "alert": {
                   "type": "string",
                   "minLength": 1
@@ -9311,10 +9307,6 @@
                   "minLength": 1
                 },
                 "navbarDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "body_bg_dark": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -9353,9 +9345,13 @@
                 "widgetBgDarkTooltip": {
                   "type": "string",
                   "minLength": 1
+                },
+                "mainBgTooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 26
+              "minProperties": 25
             },
             "themeButtons": {
               "type": "object",

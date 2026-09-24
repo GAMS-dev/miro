@@ -397,22 +397,22 @@ body > .wrapper > .main-sidebar {
   > li.active > a {
     font-weight: 600;
     .responsiveDark({
-      .modern-tint(background-color; @primary-color; 12%);
-      color: @primary-color;
+      .modern-tint(background-color; @sidebar-active-color; 12%);
+      color: @sidebar-active-color;
     },
     {
       .modern-tint(background-color; @primary-color-dark; 28%);
-      color: #fff;
+      color: @sidebar-contrast-dark2;
     });
   }
   .sidebar-separator {
     margin: 10px 16px;
     border-top-width: 1px;
     .responsiveDark({
-      border-color: @modern-border;
+      .modern-tint(border-color; @sidebar-contrast-light; 15%);
     },
     {
-      border-color: @modern-border-dark;
+      .modern-tint(border-color; @sidebar-contrast-dark; 15%);
     });
   }
 }
@@ -434,38 +434,38 @@ body > .wrapper > .main-sidebar {
 .skin-black section.sidebar .btSplitView .dropdown-toggle.btn-cmp-mode-dropdown {
   background-color: transparent;
   .responsiveDark({
-    border-color: @modern-border-strong;
-    color: @text-color;
+    .modern-tint(border-color; @sidebar-contrast-light; 25%);
+    color: @sidebar-contrast-light;
   },
   {
-    border-color: @modern-border-strong-dark;
-    color: @text-color-dark;
+    .modern-tint(border-color; @sidebar-contrast-dark; 25%);
+    color: @sidebar-contrast-dark;
   });
   &:hover,
   &:focus {
     .responsiveDark({
-      background-color: @modern-hover;
-      border-color: @modern-border-strong;
-      color: @text-color;
+      .modern-tint(background-color; @sidebar-contrast-light; 6%);
+      .modern-tint(border-color; @sidebar-contrast-light; 25%);
+      color: @sidebar-contrast-light;
     },
     {
-      background-color: @modern-hover-dark;
-      border-color: @modern-border-strong-dark;
-      color: @text-color-dark;
+      .modern-tint(background-color; @sidebar-contrast-dark; 8%);
+      .modern-tint(border-color; @sidebar-contrast-dark; 25%);
+      color: @sidebar-contrast-dark;
     });
   }
 }
 .skin-black section.sidebar .btSplitView.open .dropdown-toggle.btn-cmp-mode-dropdown,
 .skin-black section.sidebar .btSplitView.open .dropdown-toggle.btn-cmp-mode-dropdown:hover {
   .responsiveDark({
-    .modern-tint(background-color; @primary-color; 12%);
-    border-color: @primary-color;
-    color: @primary-color;
+    .modern-tint(background-color; @sidebar-active-color; 12%);
+    border-color: @sidebar-active-color;
+    color: @sidebar-active-color;
   },
   {
     .modern-tint(background-color; @primary-color-dark; 30%);
     border-color: @primary-color-dark;
-    color: #fff;
+    color: @sidebar-contrast-dark2;
   });
 }
 
@@ -527,7 +527,7 @@ body > .wrapper > .main-sidebar {
     },
     {
       color: #fff;
-      border-bottom-color: @secondary-color-dark;
+      border-bottom-color: @if-d2f31bc0;
     });
   }
   .log-tab-color {

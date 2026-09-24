@@ -1649,7 +1649,7 @@ html {
 }
 .timevis.html-widget .vis-background .vis-minor.vis-odd {
   .responsiveDark({
-    background-color: darken(@modal-bg, 1%, relative) !important;
+    background-color: ~"color-mix(in srgb, @{modal-bg} 99%, #000)" !important;
   },
   {
     background-color: @darken-62f5e2b6 !important;
@@ -1665,7 +1665,7 @@ html {
 }
 .timevis.html-widget .zoom-menu .btn{
   .responsiveDark({
-    border-color: darken(@modal-bg, 20%, relative) !important;
+    border-color: ~"color-mix(in srgb, @{modal-bg} 80%, #000)" !important;
   },
   {
     background-color: @widget-bg-dark !important;

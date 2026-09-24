@@ -415,7 +415,7 @@ isAdvanced <- function(cfg, mode = "light") {
   }
 
   if (identical(mode, "dark")) {
-    if (is.null(cfg$miro_primary_color_dark) && is.null(cfg$miro_main_bg_dark)) {
+    if (is.null(cfg$miro_primary_color_dark)) {
       return(FALSE)
     }
     sidebar <- hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
@@ -429,18 +429,8 @@ isAdvanced <- function(cfg, mode = "light") {
       hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
     }
 
-    neutralBg <- (hue(cfg$miro_main_bg_dark) == 0) &&
-      (saturation(cfg$miro_main_bg_dark) == 0)
-
-    bodybg <- if (neutralBg) {
-      hslHex(hue(cfg$miro_main_bg_dark), 0, 12)
-    } else {
-      hslHex(hue(cfg$miro_main_bg_dark), 10, 18)
-    }
-
     defaults <- list(
       miro_sidebar_color_dark = sidebar,
-      miro_body_bg_color_dark = bodybg,
       miro_navbar_color_dark  = navbar
     )
   } else {
@@ -450,19 +440,10 @@ isAdvanced <- function(cfg, mode = "light") {
 
     sidebar <- hslHex(hue(cfg$miro_primary_color), 6, 12)
 
-    neutral <- (hue(cfg$miro_primary_color) == 0) &&
-      (saturation(cfg$miro_primary_color) == 0)
-
-    bodybg <- if (neutral) {
-      makeHsl(cfg$miro_primary_color, 80, 0)
-    } else {
-      makeHsl(cfg$miro_primary_color, 94, 26)
-    }
-
     defaults <- list(
       miro_sidebar_color = sidebar,
-      miro_body_bg_color = bodybg,
-      miro_navbar_color  = "#ffffff"
+      miro_navbar_color  = "#ffffff",
+      miro_main_bg       = "#ffffff"
     )
   }
 

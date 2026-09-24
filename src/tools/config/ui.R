@@ -2112,9 +2112,12 @@ body.drawer-open {
                       tags$div(
                         class = "col-sm-6",
                         colorPickerInput(
-                          "body_bg_color",
-                          lang$adminMode$colors$themeColors$body_bg,
-                          value = baseColors$miro_body_bg_color,
+                          "main_bg",
+                          labelTooltip(
+                            lang$adminMode$colors$themeColors$mainBg,
+                            lang$adminMode$colors$themeColors$mainBgTooltip
+                          ),
+                          value = baseColors$miro_main_bg,
                           colorPreview = TRUE,
                           disableAlphaChannel = TRUE
                         )
@@ -2192,7 +2195,10 @@ body.drawer-open {
                       class = "col-sm-6",
                       colorPickerInput(
                         "main_bg_dark",
-                        lang$adminMode$colors$themeColors$mainBgDark,
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$mainBgDark,
+                          lang$adminMode$colors$themeColors$mainBgTooltip
+                        ),
                         value = baseColors$miro_main_bg_dark,
                         colorPreview = TRUE,
                         disableAlphaChannel = TRUE
@@ -2222,16 +2228,6 @@ body.drawer-open {
                           "navbar_color_dark",
                           lang$adminMode$colors$themeColors$navbarDark,
                           value = baseColors$miro_navbar_color_dark,
-                          colorPreview = TRUE,
-                          disableAlphaChannel = TRUE
-                        )
-                      ),
-                      tags$div(
-                        class = "col-sm-6",
-                        colorPickerInput(
-                          "body_bg_color_dark",
-                          lang$adminMode$colors$themeColors$body_bg_dark,
-                          value = baseColors$miro_body_bg_color_dark,
                           colorPreview = TRUE,
                           disableAlphaChannel = TRUE
                         )

@@ -4,15 +4,15 @@ customBaseColors <- reactive({
     miro_secondary_color         = resolveColor(input$secondary_color, baseColors$miro_secondary_color),
     miro_sidebar_color           = resolveColor(input$sidebar_color, baseColors$miro_sidebar_color),
     miro_navbar_color            = resolveColor(input$navbar_color, baseColors$miro_navbar_color),
-    miro_body_bg_color           = resolveColor(input$body_bg_color, baseColors$miro_body_bg_color),
+    miro_body_bg_color           = baseColors$miro_body_bg_color,
     miro_alert_color             = resolveColor(input$alert_color, baseColors$miro_alert_color),
-    miro_main_bg                 = "#ffffff",
+    miro_main_bg                 = resolveColor(input$main_bg, baseColors$miro_main_bg),
     miro_console_text_color      = resolveColor(input$console_text_color, baseColors$miro_console_text_color),
     miro_primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$miro_primary_color_dark),
     miro_secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$miro_secondary_color_dark),
     miro_sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$miro_sidebar_color_dark),
     miro_navbar_color_dark       = resolveColor(input$navbar_color_dark, baseColors$miro_navbar_color_dark),
-    miro_body_bg_color_dark      = resolveColor(input$body_bg_color_dark, baseColors$miro_body_bg_color_dark),
+    miro_body_bg_color_dark      = baseColors$miro_body_bg_color_dark,
     miro_alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$miro_alert_color_dark),
     miro_main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$miro_main_bg_dark),
     miro_console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$miro_console_text_color_dark),
@@ -291,6 +291,14 @@ derivePalette <- function(b = baseColors) {
   v[["miro_sidebar_contrast_light"]] <- sidebar_contrast_light
   sidebar_contrast_light2 <- if (boolean_486b1f24) "#222222" else "#ffffff"
   v[["miro_sidebar_contrast_light2"]] <- sidebar_contrast_light2
+  sidebar_active_color <- if (goodContrast(b$miro_primary_color, b$miro_sidebar_color, threshold = 3)) {
+    b$miro_primary_color
+  } else if (boolean_486b1f24) {
+    if (goodContrast(darken(b$miro_primary_color, 20), b$miro_sidebar_color, threshold = 3)) darken(b$miro_primary_color, 20) else sidebar_contrast_light2
+  } else {
+    if (goodContrast(lighten(b$miro_primary_color, 30), b$miro_sidebar_color, threshold = 3)) lighten(b$miro_primary_color, 30) else sidebar_contrast_light2
+  }
+  v[["miro_sidebar_active_color"]] <- sidebar_active_color
 
   navbar_contrast_light <- if (goodContrast("#333333", b$miro_navbar_color)) "#333333" else "#eeeeee"
   v[["miro_navbar_contrast_light"]] <- navbar_contrast_light
@@ -448,14 +456,8 @@ observeEvent(input$advanced_light,
 
     sidebarColor <- hslHex(hue(input$primary_color), 6, 12)
     updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
-
-    isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
-    if (isNeutral) {
-      bodyBgColor <- makeHsl(input$primary_color, 80, 0)
-    } else {
-      bodyBgColor <- makeHsl(input$primary_color, 94, 26)
-    }
-    updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+    updateColorPickerInput(session, "navbar_color", value = "#ffffff")
+    updateColorPickerInput(session, "main_bg", value = "#ffffff")
   },
   ignoreInit = TRUE
 )
@@ -469,14 +471,6 @@ observeEvent(input$primary_color, {
   req(!input$advanced_light)
   sidebarColor <- hslHex(hue(input$primary_color), 6, 12)
   updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
-
-  isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
-  if (isNeutral) {
-    bodyBgColor <- makeHsl(input$primary_color, 80, 0)
-  } else {
-    bodyBgColor <- makeHsl(input$primary_color, 94, 26)
-  }
-  updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
 })
 
 observeEvent(input$advanced_dark,
@@ -493,14 +487,6 @@ observeEvent(input$advanced_dark,
       navBarColorDark <- hslHex(hue(input$primary_color_dark), 6, 12)
     }
     updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
-
-    isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
-    if (isNeutral) {
-      bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 0, 12)
-    } else {
-      bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 10, 18)
-    }
-    updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
   },
   ignoreInit = TRUE
 )
@@ -524,21 +510,12 @@ observeEvent(input$primary_color_dark, {
   updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
 })
 
-observeEvent(input$main_bg_dark, {
-  if (identical(input$main_bg_dark, "")) {
-    updateColorPickerInput(session, "main_bg_dark", value = customBaseColors()$miro_main_bg_dark)
-    return()
-  }
-
-  req(!input$advanced_dark)
-
-  isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
-  if (isNeutral) {
-    bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 0, 12)
-  } else {
-    bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 10, 18)
-  }
-  updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
+lapply(c("main_bg", "main_bg_dark"), function(id) {
+  observeEvent(input[[id]], {
+    if (identical(input[[id]], "")) {
+      updateColorPickerInput(session, id, value = customBaseColors()[[paste0("miro_", id)]])
+    }
+  })
 })
 
 lapply(
