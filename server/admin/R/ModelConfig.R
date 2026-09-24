@@ -302,10 +302,22 @@ ModelConfig <- R6::R6Class("ModelConfig",
         appConfig[["containerEnv"]] <- lapply(appConfig[["containerEnv"]], "[[", "value")
         return(appConfig)
       })
+      # Write to a temporary file first and rename it: readers of specs.yaml (the proxy and
+      # the auth service, possibly on a network file system like EFS) must never see a
+      # partially written file. A rename within the same directory is atomic.
+      tmpConfigPath <- paste0(private$configPath, ".tmp.", Sys.getpid())
+      on.exit(unlink(tmpConfigPath), add = TRUE)
       yaml::write_yaml(
         appSpecsTmp,
-        private$configPath
+        tmpConfigPath
       )
+      if (file.exists(private$configPath)) {
+        # keep the permissions of the existing file
+        Sys.chmod(tmpConfigPath, file.info(private$configPath)[["mode"]], use_umask = FALSE)
+      }
+      if (!file.rename(tmpConfigPath, private$configPath)) {
+        stop(sprintf("Could not write specs file: '%s'.", private$configPath), call. = FALSE)
+      }
     }
   )
 )
