@@ -757,3 +757,16 @@ test_that("hotToR works", {
     tibble(uni = character(), value = numeric())
   )
 })
+
+test_that("hotToR unescapes pivoted column headers", {
+  expect_identical(
+    names(hotToR(
+      list(data = list(list("a1", 1, 2)), params = list(
+        rColHeaders = list("uni", "x", "value"),
+        colHeaders = list("Universal set", "&lt;img src=x&gt;", "a&amp;b")
+      )),
+      list(pivotCols = "x", headers = list(uni = list(), x = list(), value = list()))
+    )),
+    c("uni", "<img src=x>", "a&b")
+  )
+})

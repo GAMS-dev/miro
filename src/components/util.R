@@ -508,6 +508,13 @@ addHtmlLineBreaks <- function(string) {
 
   return(escapedString)
 }
+htmlUnescape <- function(string) {
+  entities <- c("&lt;" = "<", "&gt;" = ">", "&quot;" = "\"", "&#39;" = "'", "&#13;" = "\r", "&#10;" = "\n", "&amp;" = "&")
+  for (entity in names(entities)) {
+    string <- gsub(entity, entities[[entity]], string, fixed = TRUE)
+  }
+  return(string)
+}
 
 getOS <- function() {
   # returns string that identifies the operationg system
@@ -1233,7 +1240,7 @@ hotToR <- function(data, metaData, fixType = TRUE) {
       )
     }
     fixedCols <- length(metaData$headers) - 2L
-    names(dataTmp) <- unlist(data$params$colHeaders)
+    names(dataTmp) <- htmlUnescape(unlist(data$params$colHeaders))
     names(dataTmp)[1:fixedCols] <- unlist(data$params$rColHeaders)[1:fixedCols]
     return(dataTmp)
   }

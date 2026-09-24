@@ -295,6 +295,8 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           }
           colHeaders <- dataTmp$colHeaders
           dataTmp <- dataTmp$data
+          isPivotHeader <- seq_along(colHeaders) > length(private$staticColHeaders)
+          colHeaders[isPivotHeader] <- htmltools::htmlEscape(colHeaders[isPivotHeader], attribute = TRUE)
         } else {
           dataTmp <- isolate(private$data())
           colHeaders <- private$staticColHeaders
@@ -465,6 +467,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
                 if ( newHdr == null || newHdr === '') {
                 return false;
                 }
+                newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
                 let i = 1;
                 while ( currentHeaders.find(function (el) {
                 return el === newHdr;
@@ -509,6 +512,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
                 if ( newHdr == null || newHdr === '' ) {
                 return false;
                 }
+                newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
                 let i = 1;
                 while ( currentHeaders.find(function (el) {
                 return el === newHdr;
@@ -559,6 +563,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
             if ( newHdr == null || newHdr === '' ) {
             return false;
             }
+            newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
             if ( newHdr === currentHeaders[ind] ) {
             return true;
             }
