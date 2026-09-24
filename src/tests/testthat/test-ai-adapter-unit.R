@@ -19,7 +19,7 @@ MockDbSchema <- R6Class("MockDbSchema",
     },
     getDbSchema = function(sym) {
       if (sym == "_scenMeta") {
-        return(list(colNames = c(sid = "_sid", sname = "_sname", stag = "_stag")))
+        return(list(colNames = c(sid = "_sid", uid = "_uid", sname = "_sname", stag = "_stag")))
       }
       if (sym == "demand") {
         return(list(colNames = c("_sid", "region", "year", "value")))
@@ -62,6 +62,7 @@ setup_test_env <- function() {
   # Populate mock scenario metadata
   DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
     `_sid` = c(1, 2, 3),
+    `_uid` = "user",
     `_sname` = c("Base", "High Demand", "Low Demand"),
     `_stag` = c("production", "test", "test")
   ))
@@ -95,6 +96,18 @@ test_that("AIToolAdapter initializes and getSystemMetadata builds scenario maps 
   expect_true(inherits(adapter, "AIToolAdapter"))
   expect_equal(nrow(meta$activeScenarios), 3)
   expect_true("Base" %in% meta$activeScenarios$name)
+
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("getSystemMetadata disambiguates scenarios sharing a name by owner", {
+  env <- setup_test_env()
+  DBI::dbExecute(env$conn, "UPDATE scen_meta SET _sname = 'Base', _uid = 'other' WHERE _sid = 2")
+  env$adapter$setAllowedSids(c(1, 2, 3))
+
+  meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata())
+
+  expect_setequal(meta$activeScenarios$name, c("Base (user)", "Base (other)", "Low Demand"))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -659,6 +672,7 @@ setup_multi_target_truncation_env <- function() {
 
   DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
     `_sid` = 1:5,
+    `_uid` = "user",
     `_sname` = c("Base", "T1", "T2", "T3", "T4"),
     `_stag` = "test"
   ))
@@ -905,6 +919,7 @@ setup_multi_dim_test_env <- function() {
 
   DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
     `_sid` = c(1, 2),
+    `_uid` = "user",
     `_sname` = c("Base", "High Demand"),
     `_stag` = c("production", "test")
   ))

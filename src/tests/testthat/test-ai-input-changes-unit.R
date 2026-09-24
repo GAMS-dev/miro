@@ -23,7 +23,7 @@ MockModifyDbSchema <- R6Class("MockModifyDbSchema",
     },
     getDbSchema = function(sym) {
       if (sym == "_scenMeta") {
-        return(list(colNames = c(sid = "_sid", sname = "_sname", stag = "_stag")))
+        return(list(colNames = c(sid = "_sid", uid = "_uid", sname = "_sname", stag = "_stag")))
       }
       if (sym %in% c("demand", "capacity")) {
         return(list(colNames = c("region", "year", "value")))
@@ -117,6 +117,7 @@ setup_modify_test_env <- function(inputModificationEnabled = TRUE) {
 
   DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
     `_sid` = c(1, 2),
+    `_uid` = "user",
     `_sname` = c("Sandbox", "Other"),
     `_stag` = c("", "")
   ))

@@ -311,10 +311,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       escSidCol <- DBI::dbQuoteIdentifier(private$conn, scenMetaSchema$colNames[["sid"]])
       escSnameCol <- DBI::dbQuoteIdentifier(private$conn, scenMetaSchema$colNames[["sname"]])
       escStagCol <- DBI::dbQuoteIdentifier(private$conn, scenMetaSchema$colNames[["stag"]])
+      escUidCol <- DBI::dbQuoteIdentifier(private$conn, scenMetaSchema$colNames[["uid"]])
 
       metaQuery <- sprintf(
-        "SELECT %s AS sid, %s AS name, %s AS tags FROM %s WHERE %s IN (%s)",
-        escSidCol, escSnameCol, escStagCol, escMetaTable,
+        "SELECT %s AS sid, %s AS name, %s AS tags, %s AS uid FROM %s WHERE %s IN (%s)",
+        escSidCol, escSnameCol, escStagCol, escUidCol, escMetaTable,
         escSidCol, paste(private$allowedSids, collapse = ",")
       )
 
@@ -323,7 +324,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           DBI::dbGetQuery(private$conn, metaQuery)
         },
         error = function(e) {
-          data.frame(sid = integer(0), name = character(0), tags = character(0))
+          data.frame(sid = integer(0), name = character(0), tags = character(0), uid = character(0))
         }
       )
 
@@ -334,6 +335,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           activeScenariosDf$name[namesNeedRemapping] <- private$customscenIdNameMap[sidNameMapIds[namesNeedRemapping]]
         }
       }
+      duplicatedNames <- activeScenariosDf$name %in%
+        activeScenariosDf$name[duplicated(activeScenariosDf$name)]
+      activeScenariosDf$name[duplicatedNames] <- paste0(
+        activeScenariosDf$name[duplicatedNames], " (", activeScenariosDf$uid[duplicatedNames], ")"
+      )
       private$scenarioMap <- setNames(as.character(activeScenariosDf$sid), activeScenariosDf$name)
       private$scenarioMapById <- setNames(activeScenariosDf$name, as.character(activeScenariosDf$sid))
 
