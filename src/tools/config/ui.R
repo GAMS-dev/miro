@@ -211,7 +211,8 @@ body.drawer-open {
 }
 .miro-ai-assistant-drawer-body {
   padding: 15px;
-  flex-grow: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }')))
@@ -616,7 +617,8 @@ body.drawer-open {
                   if (config$activateModules$aiAssistant) {
                     tags$button(
                       id = "btOpenAiCopilot",
-                      "AI Assistant",
+                      renderMiraIcon(),
+                      lang$nav$header$aiAssistant,
                       class = "bt-highlight-1 category-btn category-btn-custom full-width",
                       style = "margin-bottom: 15px;",
                       onclick = "Miro.openMiroAiDrawer()"
@@ -763,7 +765,11 @@ body.drawer-open {
           class = "miro-ai-assistant-drawer",
           tags$div(
             class = "miro-ai-assistant-drawer-header",
-            tags$h4(lang$nav$aiBotDialog$title, style = "margin: 0; font-weight: bold;"),
+            tags$div(
+              class = "miro-ai-drawer-heading",
+              tags$h4(class = "miro-ai-drawer-title", lang$nav$aiBotDialog$title),
+              renderAiTokenInfoContainer(lang$nav$aiBotDialog)
+            ),
             tags$div(
               style = "display: flex; gap: 4px; align-items: center;",
               tags$button(

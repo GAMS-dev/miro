@@ -417,10 +417,7 @@ renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, render
             lang$btApplyCode
           )
         }
-      ),
-      if (renderApplyCodeBtn) {
-        renderAiTokenInfoContainer(lang)
-      }
+      )
     ),
     tags$div(
       class = "miro-ai-disclaimer",
