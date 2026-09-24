@@ -376,6 +376,10 @@ if (is.null(errMsg)) {
         })
       ))
     }
+    if (!length(config$numericalTolerance)) {
+      # legacy app deployed before numericalTolerance was added
+      config$numericalTolerance <- 1e-6
+    }
     suppressWarnings(rm(lang))
     for (customRendererName in customRendererNames) {
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
