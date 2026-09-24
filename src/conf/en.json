@@ -571,7 +571,7 @@
       "currentContextCompare": "Comparison of %d scenarios",
       "requestAbortedMessage": "Request aborted.",
       "chatBubbleUserHeader": "User:",
-      "chatBubbleAssistantHeader": "Assistant:",
+      "chatBubbleAssistantHeader": "Mira:",
       "userTextPlaceholder": "Type your scenario question here...",
       "userTextPlaceholderRenderer": "What should we build today?",
       "inputTokensLabel": "Input Tokens: %s",

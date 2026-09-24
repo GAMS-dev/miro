@@ -571,7 +571,7 @@
       "currentContextCompare": "Vergleich von %d Szenarien",
       "requestAbortedMessage": "Anfrage abgebrochen.",
       "chatBubbleUserHeader": "Benutzer:",
-      "chatBubbleAssistantHeader": "Assistent:",
+      "chatBubbleAssistantHeader": "Mira:",
       "userTextPlaceholder": "Stellen Sie hier Ihre Frage zum Szenario...",
       "userTextPlaceholderRenderer": "Was bauen wir heute?",
       "inputTokensLabel": "Input-Tokens: %s",
