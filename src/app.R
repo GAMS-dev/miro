@@ -1834,6 +1834,7 @@ if (!is.null(errMsg)) {
           inputTokens = 0L,
           outputTokens = 0L,
           tempScen = NULL,
+          sandboxScenName = NULL,
           snapshotRevision = NULL,
           activeSids = NULL,
           contextIsSandbox = FALSE,

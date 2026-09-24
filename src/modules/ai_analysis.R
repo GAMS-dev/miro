@@ -75,7 +75,7 @@ observeEvent(input$btAIOutput, {
     if (is.null(tempScen)) {
       return()
     }
-    setAiTempScen(tempScen)
+    setAiTempScen(tempScen, tempScenName)
     sidToLoad <- tempScen$getSid()
   }
   markAiSnapshotCurrent()
@@ -85,9 +85,10 @@ observeEvent(input$btAIOutput, {
   ))
 })
 
-setAiTempScen <- function(tempScen) {
+setAiTempScen <- function(tempScen, scenName = NULL) {
   oldTempScen <- aiAssistantState$tempScen
   aiAssistantState$tempScen <<- tempScen
+  aiAssistantState$sandboxScenName <<- scenName
   if (is.null(oldTempScen) || (!is.null(tempScen) &&
     identical(oldTempScen$getSid(), tempScen$getSid()))) {
     return(invisible())
@@ -401,7 +402,11 @@ observeEvent(input$miroAiUserText, {
     assistantConfig = config$aiAssistant,
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
-    scenIdNameMap = dialogState$scenIdNameMap,
+    scenIdNameMap = if (isTRUE(aiAssistantState$contextIsSandbox) && !is.null(aiAssistantState$tempScen)) {
+      setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid())
+    } else {
+      dialogState$scenIdNameMap
+    },
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory),
     allowInputModification = aiCanModifyInput(),
     activityFile = mAiActivityFile
@@ -558,7 +563,7 @@ refreshAiSandboxSnapshot <- function() {
     aiAssistantState$snapshotRevision <<- NULL
     return(FALSE)
   }
-  setAiTempScen(tempScen)
+  setAiTempScen(tempScen, tempScenName)
   aiAssistantState$activeSids <<- tempScen$getSid()
   markAiSnapshotCurrent()
   return(TRUE)
