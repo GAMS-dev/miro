@@ -978,13 +978,14 @@ inc/inc2.inc
                       <span class="key">,</span> on macOS). You will notice
                       that settings are grouped into several categories:
                       <i>General</i>, <i>Paths</i>, <i>GAMS Engine</i>,
-                      <i>AI Assistant</i>, and <i>Environment</i>. In the
-                      <i>General</i> category you can specify whether you want
-                      to launch your MIRO apps in a new MIRO Desktop window or
-                      in your default browser. You can set the language, the
-                      color theme, specify the level of detail of information
-                      to be logged as well as the number of days you want your
-                      log files to be stored for (-1 being no limit).
+                      <i>Mira</i> (the AI assistant), and <i>Environment</i>.
+                      In the <i>General</i> category you can specify whether
+                      you want to launch your MIRO apps in a new MIRO Desktop
+                      window or in your default browser. You can set the
+                      language, the color theme, specify the level of detail of
+                      information to be logged as well as the number of days
+                      you want your log files to be stored for (-1 being no
+                      limit).
                     </p>
                     <p>
                       In the <i>Paths</i> section, you can control the location
@@ -1153,7 +1154,7 @@ inc/inc2.inc
                           </tr>
                           <tr>
                             <td><b>AI Assistant</b></td>
-                            <td>Enable AI Features?</td>
+                            <td>Enable Mira, the AI assistant?</td>
                             <td>
                               Makes <a href="./ai_assistant.html">Mira</a>,
                               MIRO's AI assistant, available for MIRO apps
@@ -1186,8 +1187,8 @@ inc/inc2.inc
                     <!--//table-responsive-->
                     <p id="custom-environments">
                       <b>Environment</b><br />
-                      In the <i>Environment</i> section, you can import a
-                      customized environment to be used by your MIRO apps. This
+                      In the <i>Environment</i> section, you can define
+                      environment variables to be used by your MIRO apps. This
                       is useful, for example, if you want to run
                       <a
                         href="./configuration_analysis.html#batch-analysis-scripts"
@@ -1201,12 +1202,10 @@ inc/inc2.inc
                       >.
                     </p>
                     <p>
-                      Environment files are JSON files of the following form:
+                      Click <i>Add variable</i> to add a new row, enter the
+                      name and value of the variable and click <i>Apply</i> to
+                      save your changes.
                     </p>
-                    <pre><code class="language-json">{
-    "ENV_VAR_1": "VAL_1",
-    "ENV_VAR_2": "VAL_2"
-}</code></pre>
                     <p>
                       Environment variables names must consist solely of
                       uppercase letters, digits and '_' (underscore) and must
@@ -1287,11 +1286,13 @@ inc/inc2.inc
                     <p>
                       Now all we have to do is tell MIRO to use this Python
                       environment by adding it to the
-                      <kbd>PATH</kbd> via the following environment file:
+                      <kbd>PATH</kbd>: add a variable named
+                      <kbd>PATH</kbd> with the value
+                      <kbd>&lt;path_to_venv&gt;/venv/bin</kbd> (<kbd
+                        >&lt;path_to_venv&gt;\venv\Scripts</kbd
+                      >
+                      on Windows).
                     </p>
-                    <pre><code class="language-json">{
-    "PATH": "&lt;path_to_venv&gt;/venv/bin"
-}</code></pre>
                   </div>
                   <!--//section-block-->
                 </section>
