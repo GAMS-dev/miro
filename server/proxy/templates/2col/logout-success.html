@@ -53,32 +53,20 @@
   </head>
 
   <body>
-    <div class="site-wrapper">
-      <header class="sub-header text-center py-4">
-        <div class="container">
-          <div class="branding">
-            <h1 class="logo">
-              <img
-                class="img-fluid"
-                th:src="@{${resourcePrefix} + ${logoPath}}"
-                alt="Logo"
-              />
-            </h1>
-          </div>
-          <div class="tagline"></div>
+    <div class="text-center d-flex h-100 auth-page">
+      <main class="form-signin m-auto">
+        <img
+          class="auth-logo p-4 mb-4 rounded w-100"
+          th:src="@{${resourcePrefix} + ${logoPath}}"
+          alt="Logo"
+        />
+        <h1 class="h3 mb-3 fw-normal">
+          You have been logged out successfully!
+        </h1>
+        <div class="d-grid gap-2">
+          <a class="btn btn-lg btn-primary" th:href="@{/}">Login again</a>
         </div>
-      </header>
-
-      <section class="cards-section text-center">
-        <div class="container">
-          <h2 class="form-signin-heading">
-            You have been logged out successfully!
-          </h2>
-          <a class="btn btn-primary btn-lg w-100 w-sm-auto mt-2" th:href="@{/}"
-            >Login again</a
-          >
-        </div>
-      </section>
+      </main>
     </div>
   </body>
 </html>

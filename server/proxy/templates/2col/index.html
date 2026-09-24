@@ -98,10 +98,9 @@
                 </div>
 
                 <!-- Text -->
-                <div style="height: 125px">
+                <div class="app-text">
                   <h3
                     class="app-title app-title-fixed app-item-title"
-                    style="margin-top: 15pt"
                     th:title="${app.displayName == null} ? ${app.id} : ${app.displayName}"
                     th:text="${app.displayName == null} ? ${app.id} : ${app.displayName}"
                   ></h3>

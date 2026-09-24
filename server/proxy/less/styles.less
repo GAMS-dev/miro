@@ -19,78 +19,393 @@
  * along with this program.  If not, see <http://www.apache.org/licenses/>
  */
 
+
+@font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+@radius-sm: 6px;
+@radius: 8px;
+@radius-lg: 12px;
+@ease: 150ms ease;
+@ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+@header-height: 50px;
+
+@surface: @main-bg;
+@surface-dark: @main-bg-dark;
+// page background: a soft tint of the theme's body color, so cards stand out without a gradient
+@page-bg: ~"color-mix(in srgb, var(--miro-server-body-bg) 45%, #fff)";
+@page-bg-dark: @body-bg-dark;
+@border: rgba(16, 24, 40, 0.1);
+@border-dark: rgba(255, 255, 255, 0.09);
+@border-strong: rgba(16, 24, 40, 0.18);
+@border-strong-dark: rgba(255, 255, 255, 0.18);
+@hover: rgba(16, 24, 40, 0.05);
+@hover-dark: rgba(255, 255, 255, 0.07);
+@text: #1d2433;
+@text-dark: #eeeeee;
+@muted: #667085;
+@muted-dark: #a3a9b3;
+@shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.07);
+@shadow-sm-dark: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25);
+@shadow-lg: 0 20px 40px -8px rgba(16, 24, 40, 0.22), 0 6px 12px -4px rgba(16, 24, 40, 0.10);
+@shadow-lg-dark: 0 20px 40px -8px rgba(0, 0, 0, 0.6), 0 6px 12px -4px rgba(0, 0, 0, 0.4);
+
+.tint(@property; @color; @amount) {
+  @{property}: ~"color-mix(in srgb, @{color} @{amount}, transparent)";
+}
+.focus-ring(@color) {
+  outline: none;
+  box-shadow: ~"0 0 0 3px color-mix(in srgb, @{color} 30%, transparent)";
+}
+// filled button whose text switches between black and white depending on how light the
+// theme color is (relative color syntax), so it stays readable with any theme color
+.filled(@color) {
+  background-color: @color;
+  border-color: @color;
+  color: #fff;
+  color: ~"oklch(from @{color} clamp(0, (0.62 - l) * 1000, 1) 0 0)";
+}
+.filled-hover(@color) {
+  background-color: ~"color-mix(in srgb, @{color} 88%, #000)";
+  border-color: ~"color-mix(in srgb, @{color} 88%, #000)";
+  color: #fff;
+  color: ~"oklch(from @{color} clamp(0, (0.62 - l) * 1000, 1) 0 0)";
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- base ---------------------------------------------------------------- */
 body {
-    font-family: "montserratlight",sans-serif;
-    margin: 0px;
-    font-family: "montserratlight",sans-serif;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 1.428571429;
-    .responsiveDark({
-      background-color: @body-bg;
-      background-image: linear-gradient(to bottom, @body-bg, #ffffff);
-      background-attachment: fixed;
-    },
-    {
-      color: #eeeeee;
-      background-color: @body-bg-dark;
-      background-image: linear-gradient(to bottom, @body-bg-dark, #000);
-      background-attachment: fixed;
-    });
+  margin: 0;
+  font-family: @font;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  .responsiveDark({
+    color: @text;
+    background-color: @page-bg;
+  },
+  {
+    color: @text-dark;
+    background-color: @page-bg-dark;
+  });
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+p {
+  line-height: 1.6;
+}
+a {
+  .responsiveDark({
+    color: @primary-color;
+  },
+  {
+    color: @primary-color-dark;
+  });
 }
 .text-body-secondary {
   .responsiveDark({
-    color: rgba(33, 37, 41, 0.75)!important;
+    color: @muted !important;
   },
   {
-    color: rgba(222, 226, 230, 0.75)!important;
+    color: @muted-dark !important;
   });
 }
-.row {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
-}
-
 .full-height {
   height: 100%;
   height: 100vh;
 }
-@media screen and (min-width: 768px) {
-  .col-sm-6 {
-    -ms-flex: 0 0 50%;
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-}
-@media screen and (min-width: 992px) {
-  .col-lg-4 {
-    -ms-flex: 0 0 33.333333%;
-    flex: 0 0 33.333333%;
-    max-width: 33.333333%;
-  }
-}
 @media screen and (min-width: 1600px) {
   .container {
-      width: 1440px;
+    width: 1440px;
   }
 }
-@media screen and (min-width: 1600px) {
-  .col-xxl-3 {
-    -ms-flex: 0 0 25%;
-    flex: 0 0 25%;
-    max-width: 25%;
+
+/* --- navbar (matches the MIRO app header) --------------------------------- */
+#navbar .navbar {
+  --bs-navbar-padding-y: 0;
+  --bs-navbar-nav-link-padding-x: 0.75rem;
+  height: @header-height;
+  padding: 0 8px 0 0;
+  font-weight: 500;
+  .responsiveDark({
+    background-color: @surface;
+    border-bottom: 1px solid @border;
+    --bs-navbar-color: @muted;
+    --bs-navbar-hover-color: @text;
+    --bs-navbar-active-color: @text;
+    --bs-navbar-brand-color: @text;
+    --bs-navbar-brand-hover-color: @text;
+  },
+  {
+    background-color: ~"color-mix(in srgb, var(--miro-server-body-bg-dark) 80%, #000)";
+    border-bottom: 1px solid @border-dark;
+    --bs-navbar-color: @muted-dark;
+    --bs-navbar-hover-color: #fff;
+    --bs-navbar-active-color: #fff;
+    --bs-navbar-brand-color: #fff;
+    --bs-navbar-brand-hover-color: #fff;
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  });
+}
+#navbar .navbar-brand {
+  margin: 0 0.75rem 0 1rem;
+  font-size: 15px;
+  font-weight: 600;
+}
+// active page: an underline flush with the bottom edge, like the active tab in MIRO
+#navbar .navbar-brand,
+#navbar .navbar-nav .nav-link:not(.dropdown-toggle) {
+  position: relative;
+  height: @header-height;
+  display: flex;
+  align-items: center;
+  transition: color @ease;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: @primary-color;
+    transform: scaleX(0);
+    transition: transform 180ms @ease-out;
+  }
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(0.5);
+  }
+  &.active::after,
+  &[aria-current="page"]::after {
+    transform: scaleX(1);
   }
 }
+#navbar .navbar-brand::after {
+  left: 0;
+  right: 0;
+}
+// the brand also carries .navbar-nav, which would stack its content in a column
+#navbar .navbar-brand.navbar-nav {
+  flex-direction: row;
+}
+#navbar .navbar-nav .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  margin: 7px 0;
+  padding: 0 12px;
+  border-radius: @radius;
+  transition: background-color @ease, color @ease;
+  &:hover,
+  &[aria-expanded="true"] {
+    .responsiveDark({
+      background-color: @hover;
+    },
+    {
+      background-color: @hover-dark;
+    });
+  }
+}
+#navbar .navbar-toggler {
+  margin-right: 4px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: @radius;
+  &:focus {
+    .focus-ring(@primary-color);
+  }
+}
+// user menu: same floating menu as MIRO's dropdowns
+#navbar .dropdown-menu {
+  --bs-dropdown-padding-y: 6px;
+  --bs-dropdown-item-padding-y: 6px;
+  --bs-dropdown-item-border-radius: @radius-sm;
+  --bs-dropdown-font-size: 14px;
+  padding: 6px;
+  min-width: 180px;
+  border-radius: @radius;
+  animation: pop-in 140ms @ease-out;
+  .responsiveDark({
+    --bs-dropdown-bg: @surface;
+    --bs-dropdown-color: @text;
+    --bs-dropdown-link-color: @text;
+    --bs-dropdown-link-hover-color: @text;
+    --bs-dropdown-link-hover-bg: @hover;
+    --bs-dropdown-link-active-color: @text;
+    --bs-dropdown-link-active-bg: @hover;
+    --bs-dropdown-divider-bg: @border;
+    border: 1px solid @border;
+    box-shadow: @shadow-lg;
+  },
+  {
+    --bs-dropdown-bg: @surface-dark;
+    --bs-dropdown-color: @text-dark;
+    --bs-dropdown-link-color: @text-dark;
+    --bs-dropdown-link-hover-color: #fff;
+    --bs-dropdown-link-hover-bg: @hover-dark;
+    --bs-dropdown-link-active-color: #fff;
+    --bs-dropdown-link-active-bg: @hover-dark;
+    --bs-dropdown-divider-bg: @border-dark;
+    border: 1px solid @border-dark;
+    box-shadow: @shadow-lg-dark;
+  });
+  .dropdown-item {
+    border-radius: @radius-sm;
+  }
+  .dropdown-divider {
+    margin: 6px -6px;
+  }
+}
+// small screens: the menu slides in from the right
+#mainOffcanvas {
+  --bs-offcanvas-zindex: 3000;
+  --bs-offcanvas-width: 280px;
+  .responsiveDark({
+    --bs-offcanvas-bg: @surface;
+    --bs-offcanvas-color: @text;
+  },
+  {
+    --bs-offcanvas-bg: @surface-dark;
+    --bs-offcanvas-color: @text-dark;
+  });
+}
+@media (max-width: 991.98px) {
+  #mainOffcanvas {
+    .responsiveDark({
+      box-shadow: @shadow-lg;
+    },
+    {
+      box-shadow: @shadow-lg-dark;
+      .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+      }
+    });
+    .offcanvas-body {
+      padding: 8px 12px;
+    }
+    .navbar-nav .nav-link:not(.dropdown-toggle) {
+      height: auto;
+      padding: 10px 12px;
+      border-radius: @radius;
+      &::after {
+        display: none;
+      }
+      &.active {
+        .responsiveDark({
+          .tint(background-color; @primary-color; 14%);
+        },
+        {
+          .tint(background-color; @primary-color-dark; 24%);
+        });
+      }
+    }
+    .navbar-user .dropdown-toggle {
+      height: auto;
+      margin: 8px 0 0;
+      padding: 10px 12px;
+      font-weight: 600;
+      &:hover {
+        background: transparent;
+      }
+    }
+  }
+  #navbar .navbar-user .dropdown-menu[data-bs-popper] {
+    margin-top: 0;
+  }
+  // inside the slide-in menu the user entries are a plain list, not a floating menu
+  #navbar .navbar-user .dropdown-menu {
+    display: block;
+    position: static;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    animation: none;
+    .dropdown-item {
+      padding: 10px 12px;
+    }
+  }
+  .navbar-user .dropdown-toggle::after {
+    display: none;
+  }
+}
+
+/* --- navbar handle (app page) --------------------------------------------- */
+// the server navbar is hidden while an app is open; hovering this handle in the app's header
+// reveals it. It sits next to MIRO's sidebar toggle and looks like one of its header buttons.
+.navbar-handle-wrapper {
+  position: absolute;
+  left: 280px;
+  height: @header-height;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+@media screen and (max-width: 767px) {
+  .navbar-handle-wrapper {
+    left: 50px;
+  }
+}
+.navbar-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  border-radius: @radius;
+  cursor: pointer;
+  transition: background-color @ease, color @ease;
+  .responsiveDark({
+    color: @muted;
+  },
+  {
+    color: @muted-dark;
+  });
+  &:hover {
+    .responsiveDark({
+      background-color: @hover;
+      color: @text;
+    },
+    {
+      background-color: @hover-dark;
+      color: #fff;
+    });
+  }
+}
+.user-custom-wrapper {
+  display: flex;
+}
+.user-custom {
+  width: 14px;
+  height: 16px;
+}
+
+/* --- app page: loading and error states ------------------------------------ */
+// same surface as the app that is about to appear, instead of a black flash
 .loading-screen {
   display: none;
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: rgb(0,0,0);
+  .responsiveDark({
+    background-color: @surface;
+  },
+  {
+    background-color: @surface-dark;
+  });
 }
 .lds-ellipsis {
   display: inline-block;
@@ -104,10 +419,14 @@ body {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: #fff;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  .responsiveDark({
+    background: @primary-color;
+  },
+  {
+    background: @primary-color-dark;
+  });
 }
-
 .lds-ellipsis div:nth-child(1) {
   left: 6px;
   animation: lds-ellipsis1 0.6s infinite;
@@ -125,141 +444,173 @@ body {
   animation: lds-ellipsis3 0.6s infinite;
 }
 @keyframes lds-ellipsis1 {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
 }
 @keyframes lds-ellipsis3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
+  0% { transform: scale(1); }
+  100% { transform: scale(0); }
 }
 @keyframes lds-ellipsis2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(19px, 0);
-  }
-}
-@media screen and (max-width: 767px) {
-  .navbar-collapse.collapse.in > .navbar-right {
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-}
-.navbar-handle-wrapper {
-  height: 50px;
-  left: 280px;
-  position: absolute;
-  .responsiveDark({
-    color: #333;
-  },
-  {
-    color: #eee;
-  });
-}
-@media screen and (max-width: 767px) {
-  .navbar-handle-wrapper {
-    left: 50px;
-  }
-}
-.navbar-handle {
-  width: 53px;
-  height: 100%;
-  margin-left: auto;
-  font-size: 26px;
-  text-align: center;
-  border: 1px solid #eee;
-  border-top: none;
-  border-bottom: none;
-}
-.user-custom-wrapper {
-  position: relative;
-}
-.user-custom {
-  max-width: 30%;
-  position: absolute;
-  top: 50%;
-  -webkit-transform: translateY(75%);
-  -ms-transform: translateY(75%);
-  transform: translateY(75%);
-  left: 0;
-  right: 0;
-  margin: auto;
-  text-align: center;
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(19px, 0); }
 }
 .load-app-error {
-  position:relative;
-  top:50%;
-  width:100%;
-  text-align:center;
-  display:none;
-  color:#fff;
-}
-.load-app-error.load-app-error-absolute {
-  position:absolute;
-}
-@media (prefers-color-scheme: light) {
-  .load-app-error.load-app-error-absolute{
-    color:#000;
+  position: relative;
+  top: 50%;
+  width: 100%;
+  padding: 0 16px;
+  text-align: center;
+  display: none;
+  font-size: 16px;
+  .responsiveDark({
+    color: @text;
+  },
+  {
+    color: @text-dark;
+  });
+  .btn {
+    margin: 4px;
   }
 }
-.app-wrapper {
-    position: relative;
+.load-app-error.load-app-error-absolute {
+  position: absolute;
+  transform: translateY(-50%);
+}
+
+/* --- app gallery ---------------------------------------------------------- */
+// room below the fixed navbar (the template adds Bootstrap's mt-5 on top of this)
+.site-wrapper > main.container {
+  padding-top: 28px;
+}
+// fixed-width tiles in a centered grid: tiles keep a comfortable size on wide screens and a
+// handful of apps sits in the middle of the page instead of in the top left corner
+.app-wrapper.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 340px));
+  justify-content: center;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1160px;
+  padding-bottom: 48px;
+  font-size: 14px;
+  > .col {
     display: flex;
-    box-sizing: border-box;
-    font-family: montserratregular,'Open Sans',sans-serif;
-    font-size: 14px;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    // every tile in a row gets the height of the tallest one
+    > .app-box {
+      flex: 1 1 auto;
+      height: auto;
+    }
+  }
+}
+@media (max-width: 400px) {
+  .app-wrapper.row {
+    grid-template-columns: 1fr;
+  }
+}
+.app-wrapper > .col {
+  animation: fade-in-up 360ms @ease-out backwards;
+  &:nth-child(2) { animation-delay: 40ms; }
+  &:nth-child(3) { animation-delay: 80ms; }
+  &:nth-child(4) { animation-delay: 120ms; }
+  &:nth-child(n+5) { animation-delay: 160ms; }
 }
 .app-box {
-    margin: 30px auto;
-    margin-bottom: 32.5px;
-    padding: 45px 30px;
-    position: relative;
-    border-radius: 5px;
-    background-clip: padding-box;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: @radius-lg;
+  background-clip: padding-box;
+  transition: transform 200ms @ease-out, box-shadow 200ms @ease-out, border-color 200ms ease;
+  .responsiveDark({
+    background: @surface;
+    border: 1px solid @border;
+    box-shadow: @shadow-sm;
+  },
+  {
+    background: @surface-dark;
+    border: 1px solid @border-dark;
+    box-shadow: @shadow-sm-dark;
+  });
+}
+.launch-app-box {
+  cursor: pointer;
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px);
     .responsiveDark({
-      background: @main-bg;
-      border: 1px solid @app-box-border;
+      box-shadow: @shadow-lg;
+      border-color: ~"color-mix(in srgb, var(--miro-server-primary-color) 45%, transparent)";
     },
     {
-      background: @main-bg-dark;
-      border: 1px solid @main-bg-dark;
+      box-shadow: @shadow-lg-dark;
+      border-color: ~"color-mix(in srgb, var(--miro-server-primary-color-dark) 55%, transparent)";
     });
+  }
+  &:focus-visible {
+    outline: none;
+  }
+  &:active {
+    transform: translateY(-1px);
+  }
+  &:hover .app-logo {
+    transform: scale(1.03);
+  }
 }
-.launch-app-box:hover {
-  cursor: pointer;
-  box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.20);
-  transform: scale(1.005);
-}
-.app-box-fixed-height {
-    height: 450px;
-}
+// logo fills the top of the card
 .app-logo-wrapper {
-  height: 200px;
   overflow: hidden;
+  .responsiveDark({
+    border-bottom: 1px solid @border;
+    background-color: @hover;
+  },
+  {
+    border-bottom: 1px solid @border-dark;
+    background-color: @hover-dark;
+  });
 }
 .app-logo {
-  height:180px;
-  display:block;
-  margin:auto;
-  padding: 55px 20px;
-  background-size:cover;
-  text-align:center;
+  display: block;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background-size: cover !important;
+  background-position: center !important;
+  transition: transform 400ms @ease-out;
+}
+.app-text {
+  min-height: 132px;
+  padding: 18px 20px 22px;
 }
 .app-title {
-  max-height: 35px;
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  max-height: none;
+  .responsiveDark({
+    color: @text;
+  },
+  {
+    color: @text-dark;
+  });
 }
 .app-desc {
-  max-height: 85px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: none;
+  .responsiveDark({
+    color: @muted;
+  },
+  {
+    color: @muted-dark;
+  });
 }
 .app-title,
 .app-desc {
@@ -273,128 +624,32 @@ body {
 }
 .app-desc-fixed {
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
-
-.doc-wrapper .container, .cards-section .container {
-    padding: 70px 50px;
-    margin-bottom:45px;
-    -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
-    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
-    webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
-    .responsiveDark({
-      background-color: @main-bg;
-    },
-    {
-      background: @main-bg-dark;
-    });
-}
-
-p {
-  line-height: 1.5;
-}
-a {
-  .responsiveDark({
-    color: @primary-color;
-  },
-  {
-    color: @primary-color-dark;
-  });
-}
-.navbar {
-  .responsiveDark({
-    border-bottom: 3px solid @primary-color;
-  },
-  {
-    border-bottom: 3px solid @primary-color-dark;
-  });
-}
-
-.navbar-dark .navbar-brand,
-.navbar-dark .navbar-nav .nav-link:not(.dropdown-toggle):not([data-bs-toggle="dropdown"]) {
-  color: rgba(255, 255, 255, .85);
-  position: relative;
-  transition: color .15s ease;
-}
-
-.navbar-dark .navbar-brand:hover,
-.navbar-dark .navbar-brand:focus,
-.navbar-dark .navbar-nav .nav-link:hover,
-.navbar-dark .navbar-nav .nav-link:focus {
-  color: #fff;
-}
-
-.navbar-dark .navbar-brand::after,
-.navbar-dark .navbar-nav .nav-link:not(.dropdown-toggle):not([data-bs-toggle="dropdown"])::after {
-  content: "";
-  position: absolute;
-  left: .75rem;
-  right: .75rem;
-  bottom: .35rem;
-  height: 2px;
-  background: @primary-color;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .18s ease;
-}
-
-/* Show underline on hover/focus/active */
-.navbar-dark .navbar-brand:hover::after,
-.navbar-dark .navbar-brand:focus::after,
-.navbar-dark .navbar-brand.active::after,
-.navbar-dark .navbar-brand[aria-current="page"]::after,
-.navbar-dark .navbar-nav .nav-link:not(.dropdown-toggle):not([data-bs-toggle="dropdown"]):hover::after,
-.navbar-dark .navbar-nav .nav-link:not(.dropdown-toggle):not([data-bs-toggle="dropdown"]):focus::after,
-.navbar-dark .navbar-nav .nav-link.active:not(.dropdown-toggle):not([data-bs-toggle="dropdown"])::after,
-.navbar-dark .navbar-nav .nav-link[aria-current="page"]:not(.dropdown-toggle):not([data-bs-toggle="dropdown"])::after {
-  transform: scaleX(1);
-}
-.navbar .navbar-brand {
-  margin: 0 1rem;
-}
-.navbar-dark {
-  background-color: #2D3748 !important;
-  background-image: linear-gradient(to right, #4A5568, #2D3748);
-}
-.navbar.fixed-top {
-  padding: 0;
-  height: 50px;
-}
-.navbar-dark a, .navbar-dark .navbar-text {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-#mainOffcanvas {
-  --bs-offcanvas-zindex: 3000;
-}
-.navbar-nav .dropdown-menu {
-  background: #2D3748;
-}
-.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
-  background: #080808;
-}
-@media (max-width: 991.98px) {
-  .navbar-user .dropdown-menu[data-bs-popper] {
-    margin-top: 0;
-  }
-  .navbar-user .dropdown-menu {
-    display: block;
-    position: static;
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-  }
-  .navbar-user .dropdown-toggle::after {
-    display: none;
+.no-apps-container {
+  max-width: 420px;
+  margin: 18vh auto 0;
+  text-align: center;
+  h3 {
+    font-size: 20px;
   }
 }
+
+/* --- buttons -------------------------------------------------------------- */
 .btn,
 a.btn {
-  -webkit-transition: all 0.4s ease-in-out;
-  -moz-transition: all 0.4s ease-in-out;
-  -ms-transition: all 0.4s ease-in-out;
-  -o-transition: all 0.4s ease-in-out;
   font-weight: 600;
+  border-radius: @radius;
+  transition: background-color @ease, border-color @ease, color @ease, box-shadow @ease, transform 80ms ease;
+  &:active {
+    transform: translateY(1px);
+  }
+}
+.btn-lg {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: @radius;
 }
 .btn .svg-inline--fa,
 a.btn .svg-inline--fa {
@@ -402,67 +657,147 @@ a.btn .svg-inline--fa {
   position: relative;
   top: -1px;
 }
+// Bootstrap 5 styles every state (hover, :active, disabled, focus) through these variables;
+// setting them keeps a pressed button in the theme color instead of Bootstrap's blue
+.bs-btn-vars(@color) {
+  @hover: ~"color-mix(in srgb, @{color} 88%, #000)";
+  @active: ~"color-mix(in srgb, @{color} 80%, #000)";
+  @text: ~"oklch(from @{color} clamp(0, (0.62 - l) * 1000, 1) 0 0)";
+  --bs-btn-bg: @color;
+  --bs-btn-border-color: @color;
+  --bs-btn-color: @text;
+  --bs-btn-hover-bg: @hover;
+  --bs-btn-hover-border-color: @hover;
+  --bs-btn-hover-color: @text;
+  --bs-btn-active-bg: @active;
+  --bs-btn-active-border-color: @active;
+  --bs-btn-active-color: @text;
+  --bs-btn-disabled-bg: @color;
+  --bs-btn-disabled-border-color: @color;
+  --bs-btn-disabled-color: @text;
+  --bs-btn-focus-box-shadow: ~"0 0 0 3px color-mix(in srgb, @{color} 30%, transparent)";
+}
 .btn-primary,
 a.btn-primary {
+  box-shadow: @shadow-sm;
   .responsiveDark({
-    background-color: @primary-color;
-    border: 1px solid @primary-color-focus;
+    .bs-btn-vars(@primary-color);
+    .filled(@primary-color);
   },
   {
-    background-color: @primary-color-dark;
-    border: 1px solid @primary-color-focus-dark;
+    .bs-btn-vars(@primary-color-dark);
+    .filled(@primary-color-dark);
   });
-  color: #fff !important;
+  &:hover,
+  &:focus,
+  &:active,
+  &.active,
+  &.hover {
+    .responsiveDark({
+      .filled-hover(@primary-color);
+    },
+    {
+      .filled-hover(@primary-color-dark);
+    });
+  }
+  &:focus-visible {
+    .responsiveDark({
+      .focus-ring(@primary-color);
+    },
+    {
+      .focus-ring(@primary-color-dark);
+    });
+  }
 }
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active,
-.btn-primary.active,
-.btn-primary.hover,
-a.btn-primary:hover,
-a.btn-primary:focus,
-a.btn-primary:active,
-a.btn-primary.active,
-a.btn-primary.hover {
+.btn-secondary,
+a.btn-secondary {
   .responsiveDark({
-    border: 1px solid @primary-color;
-    background: @primary-color-focus;
-    color: @launch-text-color !important;
+    --bs-btn-bg: transparent;
+    --bs-btn-color: @text;
+    --bs-btn-border-color: @border-strong;
+    --bs-btn-hover-bg: @hover;
+    --bs-btn-hover-color: @text;
+    --bs-btn-hover-border-color: @border-strong;
+    --bs-btn-active-bg: rgba(16, 24, 40, 0.09);
+    --bs-btn-active-color: @text;
+    --bs-btn-active-border-color: @border-strong;
+    --bs-btn-focus-box-shadow: ~"0 0 0 3px color-mix(in srgb, var(--miro-server-primary-color) 30%, transparent)";
   },
   {
-    border: 1px solid @primary-color-dark;
-    background: @primary-color-focus-dark;
-    color: @launch-text-color-dark !important;
+    --bs-btn-bg: transparent;
+    --bs-btn-color: @text-dark;
+    --bs-btn-border-color: @border-strong-dark;
+    --bs-btn-hover-bg: @hover-dark;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-border-color: @border-strong-dark;
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-border-color: @border-strong-dark;
+    --bs-btn-focus-box-shadow: ~"0 0 0 3px color-mix(in srgb, var(--miro-server-primary-color-dark) 30%, transparent)";
   });
+  background-color: transparent;
+  .responsiveDark({
+    color: @text;
+    border: 1px solid @border-strong;
+  },
+  {
+    color: @text-dark;
+    border: 1px solid @border-strong-dark;
+  });
+  &:hover,
+  &:focus,
+  &:active {
+    .responsiveDark({
+      color: @text;
+      background-color: @hover;
+      border-color: @border-strong;
+    },
+    {
+      color: #fff;
+      background-color: @hover-dark;
+      border-color: @border-strong-dark;
+    });
+  }
 }
+
+/* --- forms ---------------------------------------------------------------- */
 .form-control {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
+  height: 44px;
+  border-radius: @radius;
   box-shadow: none;
-  height: 40px;
-  border-color: #f0f0f0;
-}
-.form-control::-webkit-input-placeholder {
-  /* WebKit browsers */
-  color: #afb3bb;
-}
-.form-control:-moz-placeholder {
-  /* Mozilla Firefox 4 to 18 */
-  color: #afb3bb;
-}
-.form-control::-moz-placeholder {
-  /* Mozilla Firefox 19+ */
-  color: #afb3bb;
-}
-.form-control:-ms-input-placeholder {
-  /* Internet Explorer 10+ */
-  color: #afb3bb;
-}
-.form-control:focus {
-  border-color: #e3e3e3;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
+  transition: border-color @ease, box-shadow @ease;
+  .responsiveDark({
+    color: @text;
+    background-color: @surface;
+    border: 1px solid @border-strong;
+  },
+  {
+    color: @text-dark;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid @border-strong-dark;
+  });
+  &::placeholder {
+    .responsiveDark({
+      color: #98a2b3;
+    },
+    {
+      color: @muted-dark;
+    });
+  }
+  &:focus {
+    .responsiveDark({
+      color: @text;
+      background-color: @surface;
+      border-color: @primary-color;
+      .focus-ring(@primary-color);
+    },
+    {
+      color: @text-dark;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: @primary-color-dark;
+      .focus-ring(@primary-color-dark);
+    });
+  }
 }
 input[type="text"],
 input[type="email"],
@@ -475,39 +810,95 @@ select {
   /* for mobile safari */
   -webkit-appearance: none;
 }
+.alert {
+  border-radius: @radius;
+  font-size: 14px;
+  text-align: left;
+}
+
+/* --- sign-in, sign-out and error pages ------------------------------------- */
+// the logo banner and the content below it form one centered card
+.cards-section {
+  padding: 0 16px;
+}
+.cards-section .container {
+  max-width: 420px;
+  margin: 0 auto 48px;
+  padding: 32px;
+  border-radius: @radius-lg;
+  animation: fade-in-up 360ms @ease-out backwards;
+  .responsiveDark({
+    background-color: @surface;
+    border: 1px solid @border;
+    box-shadow: @shadow-lg;
+  },
+  {
+    background-color: @surface-dark;
+    border: 1px solid @border-dark;
+    box-shadow: @shadow-lg-dark;
+  });
+}
+.site-wrapper > .cards-section:first-child .container {
+  margin-top: 14vh;
+}
 .sub-header {
+  max-width: 420px;
+  margin: 10vh auto 0;
+  padding: 28px 24px;
   color: rgba(255, 255, 255, 0.85);
-  padding: 30px 0;
-  max-width: 1400px;
+  border-radius: @radius-lg @radius-lg 0 0;
+  animation: fade-in-up 360ms @ease-out backwards;
   .responsiveDark({
     background: @login-header-bg;
-    border-bottom: 7px solid @primary-color;
+    border-bottom: 3px solid @primary-color;
   },
   {
     background: @login-header-bg-dark;
-    border-bottom: 7px solid @primary-color-dark;
+    border-bottom: 3px solid @primary-color-dark;
   });
-  margin-left: auto;
-  margin-right: auto;
+  .container {
+    padding: 0;
+  }
 }
-
+.sub-header + .cards-section .container {
+  margin-top: 0;
+  border-top: 0;
+  border-radius: 0 0 @radius-lg @radius-lg;
+  animation: none;
+}
+@media (max-width: 480px) {
+  .sub-header {
+    margin: 0 -16px;
+    border-radius: 0;
+    max-width: none;
+  }
+  .cards-section {
+    padding: 0;
+  }
+  .cards-section .container,
+  .sub-header + .cards-section .container {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    box-shadow: none;
+    padding: 28px 20px;
+  }
+}
 .sub-header a {
   color: #fff;
 }
 .branding {
-  text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 .branding .logo {
+  margin: 0;
   font-size: 28px;
-  margin-top: 0;
-  margin-bottom: 0;
 }
 .branding .logo a {
   text-decoration: none;
 }
 .branding .logo img {
-  max-height:100px;
+  max-height: 72px;
 }
 .branding .text-highlight {
   color: #fff;
@@ -521,83 +912,168 @@ select {
     color: @primary-color-dark;
   });
 }
-.branding .icon {
-  font-size: 24px;
-  color: #40babd;
-}
-
-@media (prefers-color-scheme: dark) {
-  .table-hover>tbody>tr:hover {
-     background-color: #292D33;
-  }
-}
-.cards-section {
-  margin-top:50px;
-}
-@media (max-width: 767.98px) {
-  .cards-section .item-inner {
-    padding: 30px 15px;
-  }
-}
-.no-apps-container {
+.cards-section .title {
+  margin-bottom: 20px;
+  font-size: 20px;
   text-align: center;
-  margin-top: 200px;
-}
-
-/* login screen */
-.form-signin {
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
-}
-.form-signin .form-signin-heading, .form-signin .checkbox {
-  margin-bottom: 10px;
-}
-.form-signin .form-control {
-  position: relative;
-  height: auto;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 2;
 }
 @media (prefers-color-scheme: dark) {
-  .form-signin input, .form-signin input:focus {
-      color: #eeeeee;
-      background-color: @body-bg-dark !important;
+  .table-hover > tbody > tr:hover {
+    background-color: #292D33;
   }
 }
-.form-signin #username {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+
+/* --- sign-in flow: same look as the GAMS Engine UI login (LoginForm.jsx) ------------ */
+html:has(.auth-page),
+html:has(.auth-page) body {
+  height: 100%;
 }
-.form-signin #password {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.btn-login,
-.btn-logout > a,
-.btn-login:hover,
-.btn-logout > a:hover,
-.btn-login:active,
-.btn-logout > a:active,
-.btn-login:focus,
-.btn-logout > a:focus {
+.auth-page {
+  // Engine's Bootstrap settings (gams_bootstrap.scss), scoped to the sign-in pages
+  --bs-border-radius: 0.5rem;
+  --bs-border-radius-lg: 0.75rem;
+  padding: 1rem;
+  overflow-y: auto;
   .responsiveDark({
-    color: @launch-text-color!important;
+    --bs-border-color: #dee1e6;
+    background: linear-gradient(180deg, #f6f7f9 0%, #eef0f3 100%);
   },
   {
-    color: @launch-text-color-dark!important;
+    background: linear-gradient(180deg, #1a1c20 0%, #14161a 100%);
   });
+}
+.form-signin {
+  width: 100%;
+  max-width: 380px;
+  padding: 2.5rem 2rem;
+  margin: auto;
+  border-radius: 1rem;
+  animation: fade-in-up 360ms @ease-out backwards;
+  .responsiveDark({
+    color: @text;
+    background-color: #fff;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.14);
+  },
+  {
+    color: @text-dark;
+    background-color: #2b2f36;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  });
+  // plain Bootstrap controls, like in Engine (not the taller ones used elsewhere)
+  .form-control {
+    height: auto;
+    border-radius: var(--bs-border-radius);
+    .responsiveDark({
+      border-color: var(--bs-border-color);
+    },
+    {
+      border-color: rgba(255, 255, 255, 0.15);
+    });
+  }
+  .input-group > .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .alert {
+    text-align: left;
+  }
+}
+// Engine shows its logo on a dark plate; we use the theme's header color instead,
+// so logos made for the MIRO Server header still work
+.auth-logo {
+  max-height: 136px;
+  object-fit: contain;
+  .responsiveDark({
+    background: @login-header-bg;
+  },
+  {
+    background: @login-header-bg-dark;
+  });
+}
+// show/hide password addon, like Engine's ShowHidePasswordInput
+.password-toggle {
+  cursor: pointer;
+  border-top-right-radius: var(--bs-border-radius) !important;
+  border-bottom-right-radius: var(--bs-border-radius) !important;
+  transition: background-color @ease, color @ease;
+  .responsiveDark({
+    color: @text;
+    border-color: var(--bs-border-color);
+  },
+  {
+    color: @text-dark;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+  });
+  &:hover {
+    .responsiveDark({
+      background-color: #e2e5e9;
+    },
+    {
+      background-color: rgba(255, 255, 255, 0.14);
+    });
+  }
+  &:focus-visible {
+    outline: none;
+    z-index: 5;
+    .responsiveDark({
+      .focus-ring(@primary-color);
+    },
+    {
+      .focus-ring(@primary-color-dark);
+    });
+  }
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  // like Engine: crossed-out eye while the password is hidden, eye while it is shown
+  .icon-eye {
+    display: none;
+  }
+  &[aria-pressed="true"] {
+    .icon-eye {
+      display: block;
+    }
+    .icon-eye-off {
+      display: none;
+    }
+  }
+}
+@media (max-width: 480px) {
+  .form-signin {
+    padding: 2rem 1.25rem;
+  }
 }
 
 /* error screen */
 #error {
-	padding-left: 15px;
+  padding: 0;
+  .responsiveDark({
+    color: @muted;
+  },
+  {
+    color: @muted-dark;
+  });
+  p:last-child {
+    margin: 20px 0 0;
+  }
+}
+
+/* --- accessibility: respect reduced motion ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .lds-ellipsis div {
+    animation-duration: 0.6s !important;
+  }
 }

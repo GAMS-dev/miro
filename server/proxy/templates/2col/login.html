@@ -55,68 +55,91 @@
   </head>
 
   <body>
-    <div class="site-wrapper">
-      <!-- Header -->
-      <header class="sub-header text-center">
-        <div class="container">
-          <div class="branding">
-            <h1 class="logo">
-              <img
-                class="img-fluid"
-                th:src="@{${resourcePrefix} + ${logoPath}}"
-                alt="Logo"
-              />
-            </h1>
-          </div>
-          <div class="tagline"></div>
+    <div class="text-center d-flex h-100 auth-page">
+      <form
+        class="form-signin m-auto"
+        th:action="@{/login}"
+        method="POST"
+        novalidate
+      >
+        <img
+          class="auth-logo p-4 mb-4 rounded w-100"
+          th:src="@{${resourcePrefix} + ${logoPath}}"
+          alt="Logo"
+        />
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <div class="alert alert-danger" th:if="${error}">
+          <strong>Could not sign in!</strong><br />
+          <span th:text="${error}"></span>
         </div>
-      </header>
-
-      <!-- Login section -->
-      <section class="cards-section text-center">
-        <div class="container">
-          <form
-            class="form-signin"
-            th:action="@{/login}"
-            method="POST"
-            novalidate
-          >
-            <h2 class="form-signin-heading">Please sign in</h2>
-            <div class="alert alert-danger" th:if="${error}">
-              <strong>Could not sign in!</strong><br />
-              <span th:text="${error}"></span>
-            </div>
-            <label for="username" class="form-label visually-hidden"
-              >Username</label
-            >
+        <div class="mb-3">
+          <label for="username" class="visually-hidden">Username</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            class="form-control"
+            placeholder="Username"
+            autocomplete="username"
+            required
+            autofocus
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="visually-hidden">Password</label>
+          <div class="input-group">
             <input
-              name="username"
-              id="username"
-              class="form-control"
-              placeholder="User name"
-              required
-              autofocus
-            />
-            <label for="password" class="form-label visually-hidden"
-              >Password</label
-            >
-            <input
-              name="password"
               type="password"
+              name="password"
               id="password"
               class="form-control"
               placeholder="Password"
+              autocomplete="current-password"
               required
             />
             <button
-              class="btn btn-primary btn-lg w-100 btn-login"
-              type="submit"
+              type="button"
+              class="input-group-text password-toggle"
+              id="passwordToggle"
+              aria-controls="password"
+              aria-label="Show password"
+              aria-pressed="false"
+              title="Show password"
             >
-              Sign in
+              <svg
+                class="icon-eye"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg
+                class="icon-eye-off"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                />
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                <path
+                  d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                />
+                <path d="m2 2 20 20" />
+              </svg>
             </button>
-          </form>
+          </div>
         </div>
-      </section>
+        <div class="d-grid gap-2">
+          <button class="btn btn-lg btn-primary" type="submit">Login</button>
+        </div>
+      </form>
     </div>
+    <script th:src="@{${resourcePrefix} + '/assets/js/login.js'}"></script>
   </body>
 </html>

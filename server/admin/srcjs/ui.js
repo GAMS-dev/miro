@@ -129,6 +129,10 @@ const testAiProviderApiKey = async (provider, apiKey) => {
   }
 };
 
+const REMOVE_ICON = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'
+  + '<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" '
+  + 'stroke-linecap="round" fill="none"/></svg>';
+
 export function openAdvancedSettingsDialog() {
   const appEnvBtn = $(this);
   const appKey = appEnvBtn.data('id') ?? '~$_newApp';
@@ -159,13 +163,13 @@ export function openAdvancedSettingsDialog() {
                   <td>
                       <div class="input-group">
                           <input type="password" class="form-control env-value" value="${escapeHtml(value)}" placeholder="Value">
-                          <div class="input-group-text">
-                            <i class="fas fa-eye toggle-visibility"></i>
-                          </div>
+                          <button type="button" class="input-group-text toggle-visibility" aria-label="Show value" title="Show value">
+                            <i class="fas fa-eye"></i>
+                          </button>
                       </div>
                   </td>
                   <td>
-                      ${!isEditable || !isFirst ? '<button class="btn btn-danger remove-row" type="button"><i class="fas fa-trash"></i></button>' : ''}
+                      ${!isEditable || !isFirst ? `<button class="env-remove-btn remove-row" type="button" aria-label="Remove variable" title="Remove variable">${REMOVE_ICON}</button>` : ''}
                   </td>
               </tr>`;
   };
@@ -220,19 +224,19 @@ export function openAdvancedSettingsDialog() {
                 <button class="nav-link" id="conf-permissions-tab" data-toggle="tab" data-target="#conf-permissions" type="button" role="tab" aria-controls="conf-permissions" aria-selected="false">Scenario Permissions</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link" id="conf-ai-assistant-tab" data-toggle="tab" data-target="#conf-ai-assistant" type="button" role="tab" aria-controls="conf-ai-assistant" aria-selected="false">AI Assistant</button>
+                <button class="nav-link" id="conf-ai-assistant-tab" data-toggle="tab" data-target="#conf-ai-assistant" type="button" role="tab" aria-controls="conf-ai-assistant" aria-selected="false">Mira</button>
               </li>
             </ul>
             <div class="tab-content pt-3" id="confTabContent">
               <div id="form-error" class="text-danger mb-2"></div>
               <div class="tab-pane fade show active" id="conf-environment" role="tabpanel" aria-labelledby="conf-environment-tab">
-                <table class="table table-bordered">
+                <table class="table settings-table">
                   <thead>
                       <tr>
                           <th>Name</th>
                           <th>Description</th>
                           <th>Value</th>
-                          <th>Actions</th>
+                          <th class="settings-table-action"><span class="sr-only">Actions</span></th>
                       </tr>
                   </thead>
                   <tbody id="env-rows">
@@ -257,7 +261,7 @@ export function openAdvancedSettingsDialog() {
                 </table>
               </div>
               <div class="tab-pane fade" id="conf-permissions" role="tabpanel" aria-labelledby="conf-permissions-tab">
-                <table class="table table-bordered">
+                <table class="table settings-table">
                   <thead>
                       <tr>
                           <th>Type</th>
@@ -291,10 +295,10 @@ export function openAdvancedSettingsDialog() {
 
               <div class="tab-pane fade" id="conf-ai-assistant" role="tabpanel" aria-labelledby="conf-ai-assistant-tab">
                 <p class="small">
-                  Enter your API keys to enable various AI models for the MIRO AI Assistant.
+                  Enter your API keys to enable various AI models for Mira, the MIRO AI assistant.
                   Keys are securely verified automatically when you finish typing and click outside the field.
                 </p>
-                <table class="table table-bordered">
+                <table class="table settings-table">
                   <thead>
                       <tr>
                           <th style="width: 20%">AI Provider</th>
@@ -308,7 +312,7 @@ export function openAdvancedSettingsDialog() {
     const hasKey = providerData && providerData.key !== '';
     return `
                       <tr>
-                        <td class="align-middle">${provider.label}</td>
+                        <td class="ai-provider-name">${provider.label}</td>
                         <td>
                           <input type="password"
                             id="key${provider.id}"
@@ -320,7 +324,7 @@ export function openAdvancedSettingsDialog() {
                             <a href="${provider.url}" target="_blank" rel="noopener noreferrer">Get one here</a>.
                           </small>
                         </td>
-                        <td class="align-middle text-center">
+                        <td class="ai-provider-status">
                           <span id="status${provider.id}" class="badge badge-${hasKey ? 'success' : 'secondary'}">
                             ${hasKey ? 'Saved' : 'Not Configured'}
                           </span>
@@ -337,6 +341,7 @@ export function openAdvancedSettingsDialog() {
     title: 'Advanced Settings',
     message: dialogContent,
     size: 'large',
+    className: 'advanced-settings-dialog',
     buttons: {
       cancel: {
         label: 'Cancel',
@@ -493,14 +498,12 @@ export function openAdvancedSettingsDialog() {
 
   tableBody.on('click', '.toggle-visibility', function () {
     const input = $(this).closest('.input-group').find('.env-value');
-    const icon = $(this);
-    if (input.attr('type') === 'password') {
-      input.attr('type', 'text');
-      icon.removeClass('fa-eye').addClass('fa-eye-slash');
-    } else {
-      input.attr('type', 'password');
-      icon.removeClass('fa-eye-slash').addClass('fa-eye');
-    }
+    const icon = $(this).find('i');
+    const show = input.attr('type') === 'password';
+    input.attr('type', show ? 'text' : 'password');
+    icon.toggleClass('fa-eye', !show).toggleClass('fa-eye-slash', show);
+    const label = show ? 'Hide value' : 'Show value';
+    $(this).attr({ 'aria-label': label, title: label });
   });
   tableBody.on('click', '.remove-row', function () {
     $(this).closest('tr').remove();
@@ -568,14 +571,14 @@ export function refreshConfigList() {
             <div class="progress-bar"></div>
           </div>
           <div>
-            <div style="height:200px;">
+            <div class="app-logo-wrapper">
               <div id="appLogo_${idEncoded}" class="app-logo" style="background-image:url(${configData.logob64});" data-id="${idEncoded}">
               </div>
             </div>
             <div>
-            <div>
-              <h3 title="${appNameSafe}" id="staticAppTitle_${index}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;width:100%;">${appNameSafe}</h3>
-              <input id="appTitle_${index}" value="${appNameSafe}" required="required" type="text" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;display:none;" placeholder="${PLACEHOLDERS.appName}">
+            <div class="app-text">
+              <h3 title="${appNameSafe}" id="staticAppTitle_${index}" class="app-title app-title-fixed app-item-title" style="width:100%;">${appNameSafe}</h3>
+              <input id="appTitle_${index}" value="${appNameSafe}" required="required" type="text" name="alias" class="app-title editable h3-style" style="width:100%;display:none;" placeholder="${PLACEHOLDERS.appName}">
               <p title="${descSafe}" id="staticAppDesc_${index}" class="app-desc app-desc-fixed app-item-desc">${descSafe}</p>
               <textarea id="appDesc_${index}" rows="3" name="desc" class="app-desc editable" style="margin-bottom:1rem;width:100%;display:none;" placeholder="${PLACEHOLDERS.appDesc}">${descSafe}</textarea>
               <div id="appGroupsWrapper_${index}" style="display:none;">
@@ -641,7 +644,7 @@ export function expandAddAppForm() {
                             <div id="addAppProgress" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
                         </div>
-                        <div style="height:200px;">
+                        <div class="app-logo-wrapper">
                            <div class="drag-drop-area app-window input-group" id="newAppFiles">
                               <label for="miroAppFile" style="width:100%;height:100%;">
                                 <div class="drag-drop-area-text empty">
@@ -667,7 +670,7 @@ export function expandAddAppForm() {
                            </div>
                         </div>
                         <div>
-                        <input id="newAppName" type="text" required="required" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;" placeholder="${PLACEHOLDERS.appName}">
+                        <input id="newAppName" type="text" required="required" name="alias" class="app-title editable h3-style" style="width:100%;" placeholder="${PLACEHOLDERS.appName}">
                         <textarea id="newAppDesc" rows="3" name="desc" class="app-desc editable" style="margin-bottom: 1rem;width: 100%;" placeholder="${PLACEHOLDERS.appDesc}"></textarea>
                         <div>
                           <label for="newAppGroups">${PLACEHOLDERS.appGroups}</label>

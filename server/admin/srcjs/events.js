@@ -9,6 +9,7 @@ import {
 } from './api';
 import { escapeHtml, HTMLIDToUnicode, unicodeToHTMLID } from './utils';
 import { PLACEHOLDERS, SUPPORTED_FILE_TYPES } from './constants';
+import registerDropZoneHighlight from './drop_zones';
 
 export default function setupEventListeners() {
   $(document).on('keyup', (event) => {
@@ -28,27 +29,14 @@ export default function setupEventListeners() {
     e.stopPropagation();
   });
 
-  $(document).on('dragenter', '.drag-drop-area', function (e) {
+  $(document).on('dragenter dragleave', '.drag-drop-area', (e) => {
     if (state.reorderAppsMode) {
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    state.dragAddAppCounter += 1;
-    $(this).addClass('drag-drop-area-dragover');
   });
-
-  $(document).on('dragleave', '.drag-drop-area', function (e) {
-    if (state.reorderAppsMode) {
-      return;
-    }
-    e.preventDefault();
-    e.stopPropagation();
-    state.dragAddAppCounter -= 1;
-    if (state.dragAddAppCounter === 0) {
-      $(this).removeClass('drag-drop-area-dragover');
-    }
-  });
+  registerDropZoneHighlight(() => state.reorderAppsMode);
 
   $(document).on('shiny:inputchanged', (event) => {
     const eventName = event.name;
@@ -254,7 +242,6 @@ export default function setupEventListeners() {
     if ($this.hasClass('app-box-expanded')) {
       return;
     }
-    $this.addClass('app-box-expanded');
 
     e.preventDefault();
     e.stopPropagation();
@@ -268,6 +255,9 @@ export default function setupEventListeners() {
     ) {
       return;
     }
+    // only mark the box as expanded once it really opens (e.g. not when its delete
+    // button was clicked), as expanded boxes disable the hover styles of all tiles
+    $this.addClass('app-box-expanded');
     const appIDEncoded = this.dataset.id;
     const appID = HTMLIDToUnicode(appIDEncoded);
     const appIndex = this.dataset.index;

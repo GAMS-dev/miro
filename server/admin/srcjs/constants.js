@@ -9,7 +9,7 @@ export const PLACEHOLDERS = {
 export const SUPPORTED_FILE_TYPES = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
 
 export const ADD_APP_WRAPPER_HTML = `<div id="addAppBox" class="add-app-box app-box-fixed-height">
-  <div style="height:200px;"><p class="add-app-box-logo"></p></div>
+  <div class="app-logo-wrapper"><p class="add-app-box-logo"></p></div>
   <div>
     <div class="add-app-box-title"></div>
     <div class="add-app-box-desc"></div>
