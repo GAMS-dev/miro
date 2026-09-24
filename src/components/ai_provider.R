@@ -129,7 +129,8 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
       if (missing(newChatHistory)) {
         return(private$.chatHistory)
       }
-      private$.chatHistory <- lapply(newChatHistory, function(msg) {
+      # the last item is the current user turn, which is sent as userInput instead
+      private$.chatHistory <- lapply(newChatHistory[-length(newChatHistory)], function(msg) {
         list(
           type = if (msg$role == "user") "user_input" else "model_output",
           content = list(list(type = "text", text = msg$text))
@@ -153,7 +154,12 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
         payload$tools <- private$toolsPayload
       }
       if (!is.null(self$sessionId)) payload$previous_interaction_id <- self$sessionId
-      if (length(self$chatHistory)) payload$input <- self$chatHistory
+      if (length(self$chatHistory)) {
+        payload$input <- c(self$chatHistory, list(list(
+          type = "user_input",
+          content = list(list(type = "text", text = userInput))
+        )))
+      }
       return(payload)
     },
     executeHttpCall = function(payload) {
@@ -230,7 +236,8 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
       if (missing(newChatHistory)) {
         return(private$.chatHistory)
       }
-      private$.chatHistory <- lapply(newChatHistory, function(msg) {
+      # the last item is the current user turn, which is sent as userInput instead
+      private$.chatHistory <- lapply(newChatHistory[-length(newChatHistory)], function(msg) {
         list(
           role = if (msg$role == "user") "user" else "assistant",
           content = msg$text
@@ -256,7 +263,7 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
       if (!is.null(self$sessionId)) {
         payload$previous_response_id <- self$sessionId
       } else if (length(self$chatHistory)) {
-        payload$input <- self$chatHistory
+        payload$input <- c(self$chatHistory, list(list(role = "user", content = userInput)))
       }
       return(payload)
     },

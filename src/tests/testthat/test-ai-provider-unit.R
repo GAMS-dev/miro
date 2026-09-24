@@ -640,3 +640,45 @@ test_that("MiroAiAssistant accepts a provider name whose case differs from the m
   provider <- assistant$getProvider("anthropic", modelId)
   expect_s3_class(provider, "MiroAiAnthropicProvider")
 })
+
+transferredChatHistory <- list(
+  list(role = "user", text = "earlier question"),
+  list(role = "model", text = "earlier answer"),
+  list(role = "user", text = "current question")
+)
+
+test_that("MiroAiOpenAiProvider sends userInput, not the raw last turn, after a provider switch", {
+  provider <- MockOpenAiCapture$new("gpt-5.6", "key")
+  provider$mockResponses <- list(list(
+    id = "r1",
+    output = list(list(type = "message", content = list(list(type = "output_text", text = "done")))),
+    usage = list(input_tokens = 1, output_tokens = 1)
+  ))
+  provider$chatHistory <- transferredChatHistory
+
+  provider$sendMessage(userInput = "[context note]\n\ncurrent question", systemInstructions = "sys")
+
+  sentInput <- provider$capturedPayloads[[1]]$input
+  expect_length(sentInput, 3L)
+  expect_equal(sentInput[[1]], list(role = "user", content = "earlier question"))
+  expect_equal(sentInput[[2]], list(role = "assistant", content = "earlier answer"))
+  expect_equal(sentInput[[3]], list(role = "user", content = "[context note]\n\ncurrent question"))
+})
+
+test_that("MiroAiGoogleProvider sends userInput, not the raw last turn, after a provider switch", {
+  provider <- MockGoogleCapture$new("gemini-3.5-flash", "key")
+  provider$mockResponses <- list(list(
+    id = "r1",
+    steps = list(list(type = "model_output", content = list(list(text = "done")))),
+    usage = list(total_input_tokens = 1, total_output_tokens = 1)
+  ))
+  provider$chatHistory <- transferredChatHistory
+
+  provider$sendMessage(userInput = "[context note]\n\ncurrent question", systemInstructions = "sys")
+
+  sentInput <- provider$capturedPayloads[[1]]$input
+  expect_length(sentInput, 3L)
+  expect_equal(sentInput[[2]]$type, "model_output")
+  expect_equal(sentInput[[3]]$type, "user_input")
+  expect_equal(sentInput[[3]]$content[[1]]$text, "[context note]\n\ncurrent question")
+})
