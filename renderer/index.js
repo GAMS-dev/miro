@@ -7,6 +7,7 @@ const querystring = require('querystring');
 window.Bootstrap = require('bootstrap');
 const jQuery = require('jquery');
 const $ = require('jquery');
+const { registerDropZoneHighlight } = require('./drop-zones.cjs');
 
 log.errorHandler.startCatching();
 
@@ -41,7 +42,6 @@ $(() => {
   let dataPath;
   let newAppConfig;
 
-  let dragAddAppCounter = 0;
   let isInEditMode = false;
   const runningProcesses = [];
   let reorderAppsMode = false;
@@ -177,7 +177,6 @@ $(() => {
       $('#editIcon').removeClass('fa-pen-to-square').addClass('fa-check');
       isInEditMode = true;
       reorderAppsMode = false;
-      dragAddAppCounter = 0;
     }
   }
   function expandAddAppForm() {
@@ -403,7 +402,6 @@ $(() => {
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter = 0;
 
     const $this = $(this);
     $('.app-box').removeClass('drag-drop-area-dragover');
@@ -440,15 +438,29 @@ $(() => {
       HTMLIDToUnicode(this.dataset.id),
     );
   });
+  registerDropZoneHighlight(
+    [
+      {
+        selector: '.drag-drop-area',
+        setHighlight: (el, isOn) =>
+          el.classList.toggle('drag-drop-area-dragover', isOn),
+      },
+      {
+        selector: '#addAppBox',
+        setHighlight: (el, isOn) => {
+          el.classList.toggle('index-dragover', isOn);
+          $('#addApp').toggleClass('btn-add-app-dragover', isOn);
+        },
+      },
+    ],
+    () => !isInEditMode || reorderAppsMode,
+  );
   appsWrapper.on('dragenter', '#addAppBox', (e) => {
     if (!isInEditMode || reorderAppsMode) {
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter += 1;
-    $('#addAppBox').addClass('index-dragover');
-    $('#addApp').addClass('btn-add-app-dragover');
   });
   appsWrapper.on('dragover', '#addAppBox', (e) => {
     e.preventDefault();
@@ -460,11 +472,6 @@ $(() => {
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter -= 1;
-    if (dragAddAppCounter === 0) {
-      $('#addAppBox').removeClass('index-dragover');
-      $('#addApp').removeClass('btn-add-app-dragover');
-    }
   });
   appsWrapper.on('drop', '#addAppBox', (e) => {
     if (!isInEditMode || reorderAppsMode) {
@@ -472,7 +479,6 @@ $(() => {
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter = 0;
     $('#addAppBox').removeClass('index-dragover');
     $('#addApp').removeClass('btn-add-app-dragover');
     const filePaths = [...e.originalEvent.dataTransfer.files].map((el) =>
@@ -484,25 +490,12 @@ $(() => {
     e.preventDefault();
     e.stopPropagation();
   });
-  appsWrapper.on('dragenter', '.drag-drop-area', function dragEnterHandler(e) {
+  appsWrapper.on('dragenter dragleave', '.drag-drop-area', (e) => {
     if (!isInEditMode || reorderAppsMode) {
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter += 1;
-    $(this).addClass('drag-drop-area-dragover');
-  });
-  appsWrapper.on('dragleave', '.drag-drop-area', function dragLeaveHandler(e) {
-    if (!isInEditMode || reorderAppsMode) {
-      return;
-    }
-    e.preventDefault();
-    e.stopPropagation();
-    dragAddAppCounter -= 1;
-    if (dragAddAppCounter === 0) {
-      $(this).removeClass('drag-drop-area-dragover');
-    }
   });
   appsWrapper.on('drop', '#newAppFiles', (e) => {
     if (!isInEditMode || reorderAppsMode) {
@@ -510,7 +503,6 @@ $(() => {
     }
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter = 0;
     $('#newAppFiles')
       .removeClass('index-dragover')
       .text(lang.appFilesPlaceholder);
@@ -548,7 +540,6 @@ $(() => {
   appsWrapper.on('dragenter', '.app-box', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter += 1;
   });
   appsWrapper.on('dragover', '.app-box', (e) => {
     e.preventDefault();
@@ -557,7 +548,6 @@ $(() => {
   appsWrapper.on('dragleave', '.app-box', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dragAddAppCounter -= 1;
   });
   appsWrapper.on('dragend', '.app-box', (e) => {
     e.preventDefault();
@@ -576,7 +566,6 @@ $(() => {
       filesDropped = true;
     }
     reorderAppsMode = false;
-    dragAddAppCounter = 0;
     $('.app-box').removeClass('drag-drop-area-dragover').css('opacity', '');
     const idToEncoded = $(this).attr('id').slice(7);
     const idTo = HTMLIDToUnicode(idToEncoded);

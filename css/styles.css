@@ -1299,6 +1299,7 @@ body:not(.edit-mode-active) .launch-app-box:hover {
   background: var(--m-surface);
   box-shadow: var(--m-shadow-lg);
   outline: none;
+  cursor: pointer;
 }
 .app-logo-wrapper {
   overflow: hidden;
@@ -1361,6 +1362,11 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
 /* rows only get as tall as their cards, even if the wrapper is taller */
 .app-wrapper.row {
   align-content: flex-start;
+}
+/* the "add app" card is as tall as the app cards next to it (minus its 12px margins) */
+#addAppWrapper > .add-app-box {
+  box-sizing: border-box;
+  height: calc(100% - 24px);
 }
 /* all cards in a row share the height of the tallest one */
 .miro-app-item {
@@ -1908,4 +1914,93 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
   .lds-ellipsis div {
     animation-duration: 0.6s !important;
   }
+}
+
+/* --- file drop zones (new app files, app logo) ----------------------------------- */
+.drag-drop-area {
+  position: relative;
+  border: 2px dashed var(--m-border-strong);
+  border-radius: var(--m-radius);
+  outline: none;
+  background-color: var(--m-subtle);
+  cursor: pointer;
+  transition: border-color var(--m-ease), box-shadow var(--m-ease), background-color var(--m-ease);
+}
+/* drop the old dark gradient, but keep logo images (and their sizing) untouched */
+@media (prefers-color-scheme: dark) {
+  .drag-drop-area:not(.app-logo) {
+    background-image: none;
+  }
+}
+/* one cursor for the whole zone (label, text and icon included) */
+.drag-drop-area,
+.drag-drop-area * {
+  cursor: pointer;
+}
+/* the label fills the zone, so clicking anywhere in it opens the file picker */
+.drag-drop-area > label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+.drag-drop-area:hover {
+  border-color: color-mix(in srgb, var(--m-accent) 60%, transparent);
+}
+/* dragging a file over the zone: accent border, tinted fill (also over a logo image) */
+.drag-drop-area.drag-drop-area-dragover {
+  border-color: var(--m-accent);
+  border-style: solid;
+  outline: none;
+  background-color: var(--m-subtle) !important;
+  box-shadow:
+    inset 0 0 0 9999px color-mix(in srgb, var(--m-accent) 14%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--m-accent) 25%, transparent);
+}
+.drag-drop-area-text {
+  border-radius: var(--m-radius-sm);
+  transition: transform 200ms var(--m-ease-out);
+}
+.drag-drop-area-text.empty {
+  background: transparent;
+  color: var(--m-text);
+}
+/* label shown on top of a logo */
+.drag-drop-area-text.not-empty {
+  padding: 6px 10px;
+  background: rgba(16, 24, 40, 0.72);
+  color: #fff;
+  font-size: 13px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.drag-drop-area-dragover .drag-drop-area-text {
+  transform: scale(1.04);
+}
+.drag-drop-area-icon {
+  color: var(--m-accent);
+  transition: transform 200ms var(--m-ease-out);
+}
+.drag-drop-area-dragover .drag-drop-area-icon {
+  transform: translateY(-3px);
+}
+/* upload progress: a thin bar inside the bottom of the zone, taking no space while hidden */
+.app-logo-wrapper {
+  position: relative;
+}
+.app-logo-wrapper > .shiny-file-input-progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 3;
+  height: 4px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+}
+.app-logo-wrapper > .shiny-file-input-progress .progress-bar {
+  border-radius: 999px;
+  background: var(--m-accent);
 }
