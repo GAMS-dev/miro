@@ -42,9 +42,14 @@ ScenData <- R6Class("ScenData", public = list(
     if (!is.null(metaData)) {
       private$cachedData[["sb"]][["meta"]] <- metaData
     }
+    private$sandboxRevision <- private$sandboxRevision + 1L
     return(invisible(self))
   },
+  getSandboxRevision = function() {
+    return(private$sandboxRevision)
+  },
   clearSandbox = function() {
+    private$sandboxRevision <- private$sandboxRevision + 1L
     private$cachedData[["sb"]] <- list(
       data = setNames(private$scenDataTemplate, private$dbSymbols),
       scalar = tibble(
@@ -354,6 +359,7 @@ ScenData <- R6Class("ScenData", public = list(
   dbSymbols = NULL,
   refScenMap = list(),
   scenIdNameMap = character(),
+  sandboxRevision = 0L,
   getMetadata = function(scenIds) {
     metaTmp <- private$db$importDataset("_scenMeta",
       subsetSids = scenIds

@@ -77,11 +77,40 @@ observeEvent(input$btAIOutput, {
     }
     sidToLoad <- aiAssistantState$tempScen$getSid()
   }
+  markAiSnapshotCurrent()
   aiAssistantDialogState(list(
     sidsToLoad = sidToLoad, scenIdNameMap = NULL, isSandbox = TRUE,
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
 })
+
+# The drawer does not block the app, so the sandbox can change after the snapshot the
+# assistant queries was taken: input edits set rv$inputDataDirty (which is reset here),
+# output changes (solve, scenario load) bump the revision of the sandbox in scenData.
+markAiSnapshotCurrent <- function() {
+  aiAssistantState$snapshotRevision <<- scenData$getSandboxRevision()
+  rv$inputDataDirty <- FALSE
+  return(invisible())
+}
+# Returns TRUE if the assistant now looks at different data.
+syncAiSandboxSnapshot <- function() {
+  if (!isTRUE(aiAssistantState$contextIsSandbox) ||
+    (!isTRUE(rv$inputDataDirty) &&
+      identical(scenData$getSandboxRevision(), aiAssistantState$snapshotRevision))) {
+    return(FALSE)
+  }
+  if (is.null(aiAssistantState$tempScen) && !isTRUE(rv$sandboxUnsaved) &&
+    !is.null(activeScen) && length(activeScen$getSid())) {
+    # unchanged saved database scenario in sandbox -> no need for copy
+    markAiSnapshotCurrent()
+    if (identical(activeScen$getSid(), aiAssistantState$activeSids)) {
+      return(FALSE)
+    }
+    aiAssistantState$activeSids <<- activeScen$getSid()
+    return(TRUE)
+  }
+  return(refreshAiSandboxSnapshot())
+}
 
 # Input data can only be changed where the user could change it by hand anyway.
 aiInputModificationEnabled <- !isTRUE(config$activateModules$readonlyMode)
@@ -320,6 +349,9 @@ observeEvent(input$miroAiUserText, {
     ))
     aiAssistantState$changeNotes <<- character(0L)
   }
+  if (syncAiSandboxSnapshot() && is.null(aiAssistantState$pendingContextNote)) {
+    notes <- c(notes, "The sandbox scenario may have changed since your last answer. The database now holds the current data, so re-query it instead of relying on earlier figures.")
+  }
   if (length(notes)) {
     modelInput <- sprintf("[%s]\n\n%s", paste(notes, collapse = " "), userText)
   }
@@ -484,18 +516,19 @@ refreshAiSandboxSnapshot <- function() {
   tempScen <- tryCatch(saveScenDumpTempToDb(tempScenName, tempScenTags),
     error = function(err) {
       flog.error(
-        "Could not refresh the AI assistant sandbox snapshot after applying an input change. Error message: %s",
+        "Could not refresh the AI assistant sandbox snapshot. Error message: %s",
         conditionMessage(err)
       )
       return(NULL)
     }
   )
   if (is.null(tempScen)) {
-    return(invisible())
+    return(FALSE)
   }
   aiAssistantState$tempScen <<- tempScen
   aiAssistantState$activeSids <<- tempScen$getSid()
-  return(invisible())
+  markAiSnapshotCurrent()
+  return(TRUE)
 }
 
 observeEvent(input$miroAiInputChangeAction, {
