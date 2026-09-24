@@ -62,8 +62,8 @@ observeEvent(input$btAIOutput, {
     tempScenName <- activeScen$getScenName()
     tempScenTags <- activeScen$getStags()
   }
-  if (is.null(sidToLoad)) {
-    aiAssistantState$tempScen <<- tryCatch(
+  if (!length(sidToLoad)) {
+    tempScen <- tryCatch(
       {
         saveScenDumpTempToDb(tempScenName, tempScenTags)
       },
@@ -72,10 +72,11 @@ observeEvent(input$btAIOutput, {
         return(NULL)
       }
     )
-    if (is.null(aiAssistantState$tempScen)) {
+    if (is.null(tempScen)) {
       return()
     }
-    sidToLoad <- aiAssistantState$tempScen$getSid()
+    setAiTempScen(tempScen)
+    sidToLoad <- tempScen$getSid()
   }
   markAiSnapshotCurrent()
   aiAssistantDialogState(list(
@@ -83,6 +84,24 @@ observeEvent(input$btAIOutput, {
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
 })
+
+setAiTempScen <- function(tempScen) {
+  oldTempScen <- aiAssistantState$tempScen
+  aiAssistantState$tempScen <<- tempScen
+  if (is.null(oldTempScen) || (!is.null(tempScen) &&
+    identical(oldTempScen$getSid(), tempScen$getSid()))) {
+    return(invisible())
+  }
+  tryCatch(
+    {
+      oldTempScen$delete()$destroy()
+    },
+    error = function(err) {
+      flog.warn("Problems removing temporary scenario. Error message: %s", conditionMessage(err))
+    }
+  )
+  return(invisible())
+}
 
 # The drawer does not block the app, so the sandbox can change after the snapshot the
 # assistant queries was taken: input edits set rv$inputDataDirty (which is reset here),
@@ -539,7 +558,7 @@ refreshAiSandboxSnapshot <- function() {
     aiAssistantState$snapshotRevision <<- NULL
     return(FALSE)
   }
-  aiAssistantState$tempScen <<- tempScen
+  setAiTempScen(tempScen)
   aiAssistantState$activeSids <<- tempScen$getSid()
   markAiSnapshotCurrent()
   return(TRUE)
@@ -651,15 +670,5 @@ observeEvent(input$abortAiCall, {
   flog.debug("AI Assistant drawer closed")
   cancelAiTask()
   session$sendCustomMessage("gms-resetAiChatRequest", list())
-  if (!is.null(aiAssistantState$tempScen)) {
-    tryCatch(
-      {
-        aiAssistantState$tempScen$delete()$destroy()
-      },
-      error = function(err) {
-        flog.warn("Problems removing temporary scenario. Error message: %s", conditionMessage(err))
-      }
-    )
-    aiAssistantState$tempScen <<- NULL
-  }
+  setAiTempScen(NULL)
 })
