@@ -570,6 +570,7 @@
       "currentContextSandbox": "沙盒情景：%s",
       "currentContextCompare": "对比 %d 个情景",
       "requestAbortedMessage": "请求已中止。",
+      "sandboxSyncFailedMessage": "Mira 无法访问当前沙盒情景的数据，因此您的消息未发送。请重试。",
       "chatBubbleUserHeader": "用户：",
       "chatBubbleAssistantHeader": "Mira：",
       "userTextPlaceholder": "在此输入关于情景的问题...",

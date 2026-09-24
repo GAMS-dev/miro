@@ -570,6 +570,7 @@
       "currentContextSandbox": "Sandbox-Szenario: %s",
       "currentContextCompare": "Vergleich von %d Szenarien",
       "requestAbortedMessage": "Anfrage abgebrochen.",
+      "sandboxSyncFailedMessage": "Mira konnte nicht auf die aktuellen Daten des Sandbox-Szenarios zugreifen, daher wurde Ihre Nachricht nicht gesendet. Bitte versuchen Sie es erneut.",
       "chatBubbleUserHeader": "Benutzer:",
       "chatBubbleAssistantHeader": "Mira:",
       "userTextPlaceholder": "Stellen Sie hier Ihre Frage zum Szenario...",

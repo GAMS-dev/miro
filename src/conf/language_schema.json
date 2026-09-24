@@ -2229,6 +2229,10 @@
               "type": "string",
               "minLength": 1
             },
+            "sandboxSyncFailedMessage": {
+              "type": "string",
+              "minLength": 1
+            },
             "chatBubbleUserHeader": {
               "type": "string",
               "minLength": 1
@@ -2438,7 +2442,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 58
+          "minProperties": 59
         },
         "hcubeMode": {
           "type": "object",

@@ -404,6 +404,10 @@ export function registerAiHandlers() {
     stopButton.style.display = 'none';
     textarea.disabled = false;
     $('#miroAiChatSpinner').hide();
+    if (content?.userText) {
+      textarea.value = content.userText;
+      $(textarea).trigger('input');
+    }
     if (content?.dividerHtml) {
       const $newElement = $(content.dividerHtml);
       const $chatLog = $('#miroAiChatLog');

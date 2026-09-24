@@ -92,7 +92,8 @@ markAiSnapshotCurrent <- function() {
   rv$inputDataDirty <- FALSE
   return(invisible())
 }
-# Returns TRUE if the assistant now looks at different data.
+# Returns TRUE if the assistant now looks at different data, NA if the snapshot is
+# outdated but could not be refreshed.
 syncAiSandboxSnapshot <- function() {
   if (!isTRUE(aiAssistantState$contextIsSandbox) ||
     (!isTRUE(rv$inputDataDirty) &&
@@ -109,7 +110,10 @@ syncAiSandboxSnapshot <- function() {
     aiAssistantState$activeSids <<- activeScen$getSid()
     return(TRUE)
   }
-  return(refreshAiSandboxSnapshot())
+  if (!refreshAiSandboxSnapshot()) {
+    return(NA)
+  }
+  return(TRUE)
 }
 
 # Input data can only be changed where the user could change it by hand anyway.
@@ -312,6 +316,14 @@ observeEvent(input$miroAiUserText, {
     flog.error("User sent new chat message while old response was not complete. Should never happen!")
     return()
   }
+  sandboxChanged <- syncAiSandboxSnapshot()
+  if (is.na(sandboxChanged)) {
+    session$sendCustomMessage("gms-resetAiChatRequest", list(
+      userText = userText,
+      dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$sandboxSyncFailedMessage))
+    ))
+    return()
+  }
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
   chatHistory <- NULL
   if (!identical(aiAssistantState$model, input$miroAiModel)) {
@@ -349,7 +361,7 @@ observeEvent(input$miroAiUserText, {
     ))
     aiAssistantState$changeNotes <<- character(0L)
   }
-  if (syncAiSandboxSnapshot() && is.null(aiAssistantState$pendingContextNote)) {
+  if (sandboxChanged && !length(notes)) {
     notes <- c(notes, "The sandbox scenario may have changed since your last answer. The database now holds the current data, so re-query it instead of relying on earlier figures.")
   }
   if (length(notes)) {
@@ -523,6 +535,8 @@ refreshAiSandboxSnapshot <- function() {
     }
   )
   if (is.null(tempScen)) {
+    # forces another attempt before the next request is sent
+    aiAssistantState$snapshotRevision <<- NULL
     return(FALSE)
   }
   aiAssistantState$tempScen <<- tempScen
