@@ -211,6 +211,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                 class = "btn-group pivot-btn-custom",
                 tags$button(
                   class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                  title = lang$renderers$miroPivot$btDownload,
                   type = "button",
                   `data-toggle` = "dropdown",
                   `aria-haspopup` = "true",
@@ -306,6 +307,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               class = "btn-group pivot-btn-custom",
               tags$button(
                 class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                title = lang$renderers$miroPivot$btDownload,
                 type = "button",
                 `data-toggle` = "dropdown",
                 `aria-haspopup` = "true",
@@ -373,6 +375,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           class = "btn-group pivot-btn-custom",
           tags$button(
             class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+            title = lang$renderers$miroPivot$btDownload,
             type = "button",
             `data-toggle` = "dropdown",
             `aria-haspopup` = "true",
