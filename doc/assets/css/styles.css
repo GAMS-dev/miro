@@ -1691,3 +1691,12 @@ figcaption {
   padding: 2px;
   text-align: center;
 }
+
+.mira-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.22em;
+  fill: currentColor;
+  overflow: visible;
+}
