@@ -443,6 +443,21 @@ server <- function(input, output, session) {
       }
     )
   })
+  observeEvent(input$validateAiApiKey, {
+    if (loginRequired(session, isLoggedIn)) {
+      return()
+    }
+    request <- input$validateAiApiKey
+    if (!is.character(request$provider) || length(request$provider) != 1L ||
+      !is.character(request$key) || length(request$key) != 1L) {
+      flog.warn("Invalid AI API key validation request received.")
+      return()
+    }
+    session$sendCustomMessage("onAiApiKeyValidated", list(
+      requestId = request$requestId,
+      status = validateAiApiKey(request$provider, request$key)
+    ))
+  })
   observeEvent(input$updateAppOrder, {
     if (loginRequired(session, isLoggedIn)) {
       return()

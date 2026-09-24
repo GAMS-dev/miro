@@ -2,11 +2,13 @@ import bootbox from 'bootbox';
 
 import { dom, state } from './state';
 import {
-  openAdvancedSettingsDialog, openLoginForm, refreshConfigList, showOverwriteDialog,
+  openAdvancedSettingsDialog, openLoginForm, refreshConfigList, resolveAiKeyValidation,
+  showOverwriteDialog,
 } from './ui';
 import { escapeHtml, unicodeToHTMLID } from './utils';
 
 export default function setupShinyHandlers() {
+  Shiny.addCustomMessageHandler('onAiApiKeyValidated', resolveAiKeyValidation);
   Shiny.addCustomMessageHandler('onInit', (data) => {
     state.currentConfigList = data.configList;
     if (Array.isArray(data.groupList)) {

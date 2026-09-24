@@ -79,65 +79,32 @@ export const AI_PROVIDERS = [
 const KEY_VALID = 'valid';
 const KEY_INVALID = 'invalid';
 const KEY_UNREACHABLE = 'unreachable';
+// longer than the server's request timeout, only covers a lost reply
+const KEY_VALIDATION_TIMEOUT = 20000;
 
-// only these say something about the key itself; rate limits, outages etc. do not
-const isKeyRejected = (provider, status) => status === 401
-  || status === 403
-  || (provider === 'google' && status === 400);
+const pendingKeyValidations = new Map();
+let lastKeyValidationId = 0;
 
-const testAiProviderApiKey = async (provider, apiKey) => {
-  if (apiKey.length < 10) {
-    return KEY_INVALID;
+export function resolveAiKeyValidation({ requestId, status }) {
+  const resolve = pendingKeyValidations.get(requestId);
+  if (resolve) {
+    pendingKeyValidations.delete(requestId);
+    resolve(status);
   }
-  let url = '';
-  let headers = {};
+}
 
-  switch (provider) {
-    case 'openai':
-      url = 'https://api.openai.com/v1/models';
-      headers = { Authorization: `Bearer ${apiKey}` };
-      break;
-    case 'anthropic':
-      url = 'https://api.anthropic.com/v1/models';
-      headers = {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      };
-      break;
-    case 'google':
-      url = 'https://generativelanguage.googleapis.com/v1beta/models';
-      headers = { 'x-goog-api-key': apiKey };
-      break;
-    default:
-      return KEY_INVALID;
-  }
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-    if (response.status === 200) {
-      return KEY_VALID;
-    }
-    return isKeyRejected(provider, response.status)
-      ? KEY_INVALID
-      : KEY_UNREACHABLE;
-  } catch (error) {
-    console.error(
-      `Network or configuration error for ${provider}:`,
-      error.message,
-    );
-    return KEY_UNREACHABLE;
-  }
-};
+const testAiProviderApiKey = (provider, apiKey) => new Promise((resolve) => {
+  lastKeyValidationId += 1;
+  const requestId = lastKeyValidationId;
+  pendingKeyValidations.set(requestId, resolve);
+  setTimeout(
+    () => resolveAiKeyValidation({ requestId, status: KEY_UNREACHABLE }),
+    KEY_VALIDATION_TIMEOUT,
+  );
+  Shiny.setInputValue('validateAiApiKey', { requestId, provider, key: apiKey }, {
+    priority: 'event',
+  });
+});
 
 const REMOVE_ICON = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'
   + '<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" '
