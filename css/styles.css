@@ -1160,7 +1160,7 @@ select.form-control, select.form-control:focus {
   --m-accent: #f90;
   --m-accent-hover: #e68a00;
   --m-accent-text: #1d2433;
-  --m-page: #f4f5f7;
+  --m-page: #fff;
   --m-surface: #fff;
   --m-subtle: rgba(16, 24, 40, 0.035);
   --m-hover: rgba(16, 24, 40, 0.05);
@@ -1665,13 +1665,35 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
 .settings-label {
   font-weight: 500;
 }
+.settings-label {
+  padding-right: 16px;
+}
+/* the control column stays in the flow, so a "Reset to default" link below it
+   grows the row instead of overlapping the divider */
 .settings-item {
-  right: 4px;
+  position: relative;
+  right: auto;
+  width: 70%;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.settings-checkbox {
+  margin-bottom: 0;
+}
+.custom-file.settings-item {
+  height: auto;
 }
 .settings-reset,
 .reset-db-path {
   color: var(--m-accent);
   font-size: 12px;
+}
+.settings-reset {
+  position: static;
+  display: block;
+  margin-top: 6px !important;
+  line-height: 1.2;
+  text-align: right;
 }
 .settings-footer {
   position: fixed;
