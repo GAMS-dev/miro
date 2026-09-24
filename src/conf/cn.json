@@ -565,8 +565,8 @@
     },
     "aiBotDialog": {
       "title": "Mira",
-      "welcomeMessage": "你好！我是 Mira，你的 MIRO AI 助手。无论你是想分析单个情景还是对比多个情景，我都能随时为你提供帮助，与你一起探索优化结果。",
-      "welcomeMessageCustomRenderer": "你好！我是 Mira，你的 MIRO AI 助手。我来协助你编写自定义渲染器代码。只需告诉我你想如何可视化你的数据即可。",
+      "welcomeMessage": "你好！我是 Mira，你的 AI 助手。无论你是想分析单个情景还是对比多个情景，我都能随时为你提供帮助，与你一起探索优化结果。",
+      "welcomeMessageCustomRenderer": "你好！我是 Mira，你的 AI 助手。我来协助你编写自定义渲染器代码。只需告诉我你想如何可视化你的数据即可。",
       "currentContextSandbox": "沙盒情景：%s",
       "currentContextCompare": "对比 %d 个情景",
       "requestAbortedMessage": "请求已中止。",

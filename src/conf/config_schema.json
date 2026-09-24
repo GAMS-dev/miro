@@ -4788,7 +4788,7 @@
     },
     "aiAssistant": {
       "type": "object",
-      "description": "Configuration of the MIRO AI Assistant!",
+      "description": "Configuration of the GAMS MIRO AI Assistant!",
       "additionalProperties": false,
       "properties": {
         "enable": {

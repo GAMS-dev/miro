@@ -565,8 +565,8 @@
     },
     "aiBotDialog": {
       "title": "Mira",
-      "welcomeMessage": "Hallo, hier ist Mira – die KI-Unterstützung in MIRO! Ich bin hier, um Ihnen bei der Untersuchung Ihrer Optimierungsergebnisse zu helfen – egal, ob Sie ein einzelnes Szenario analysieren oder mehrere vergleichen.",
-      "welcomeMessageCustomRenderer": "Hallo, hier ist Mira – die KI-Unterstützung in MIRO! Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
+      "welcomeMessage": "Hallo, hier ist Mira – Ihre KI-Unterstützung! Ich bin hier, um Ihnen bei der Untersuchung Ihrer Optimierungsergebnisse zu helfen – egal, ob Sie ein einzelnes Szenario analysieren oder mehrere vergleichen.",
+      "welcomeMessageCustomRenderer": "Hallo, hier ist Mira – Ihre KI-Unterstützung! Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
       "currentContextSandbox": "Sandbox-Szenario: %s",
       "currentContextCompare": "Vergleich von %d Szenarien",
       "requestAbortedMessage": "Anfrage abgebrochen.",

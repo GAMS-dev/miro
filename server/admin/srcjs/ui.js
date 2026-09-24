@@ -295,7 +295,7 @@ export function openAdvancedSettingsDialog() {
 
               <div class="tab-pane fade" id="conf-ai-assistant" role="tabpanel" aria-labelledby="conf-ai-assistant-tab">
                 <p class="small">
-                  Enter your API keys to enable various AI models for Mira, the MIRO AI assistant.
+                  Enter your API keys to enable various AI models for Mira, the GAMS MIRO AI assistant.
                   Keys are securely verified automatically when you finish typing and click outside the field.
                 </p>
                 <table class="table settings-table">
@@ -384,7 +384,7 @@ export function openAdvancedSettingsDialog() {
             const envName = 'MIRO_AI_ASSISTANT_CONFIG';
             seenEnvNames.add(envName);
             updatedData[envName] = {
-              description: 'MIRO AI Assistant Configuration',
+              description: 'GAMS MIRO AI Assistant Configuration',
               value: JSON.stringify({ apiKeys }),
             };
           }
