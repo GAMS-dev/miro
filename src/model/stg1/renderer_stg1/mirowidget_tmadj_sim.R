@@ -102,7 +102,7 @@ mirowidget_tmadj_simOutput <- function(id, height = NULL, options = NULL, path =
         column(12,
           class = "custom-block col-xs-12 col-sm-12 col-md-12 col-lg-4",
           tags$div(
-            actionButton(ns("resetAll"), "Reset settings to default", class = "btn-custom custom-2")
+            actionButton(ns("resetAll"), "Reset to defaults", icon = icon("rotate-left"), class = "btn-custom custom-2")
           )
         )
       )

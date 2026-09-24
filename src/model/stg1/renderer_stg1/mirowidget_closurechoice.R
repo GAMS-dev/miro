@@ -26,7 +26,7 @@ mirowidget_closurechoiceOutput <- function(id, height = NULL, options = NULL, pa
         column(12,
           class = "custom-block col-xs-12 col-sm-12 col-md-6 col-lg-4",
           tags$div(
-            actionButton(ns("resetAssumptions"), "Reset settings to default", class = "btn-custom custom-2")
+            actionButton(ns("resetAssumptions"), "Reset to defaults", icon = icon("rotate-left"), class = "btn-custom custom-2")
           )
         )
       )

@@ -158,7 +158,7 @@ mirowidget_ersimOutput <- function(id, height = NULL, options = NULL, path = NUL
           ),
           tags$div(
             class = "custom-button",
-            actionButton(ns("resetAll"), "Reset settings to default", class = "btn-custom custom-2")
+            actionButton(ns("resetAll"), "Reset to defaults", icon = icon("rotate-left"), class = "btn-custom custom-2")
           )
         )
       )
