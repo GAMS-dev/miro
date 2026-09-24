@@ -16,13 +16,11 @@ deleteMIROScenario <- function(db, uid) {
   if (!length(scenOwner) || identical(scenOwner, "")) {
     scenOwner <- uid
   }
-  if (!db$checkSnameExists(metadata[["deleteScenName"]], scenOwner)) {
+  sidToDelete <- db$getSid(metadata[["deleteScenName"]], scenOwner)
+  if (identical(sidToDelete, 0L)) {
     stop_custom("error_not_found", "Scenario does not exist", call. = FALSE)
   }
-  scen <- Scenario$new(
-    db = db, sname = metadata[["deleteScenName"]],
-    uid = scenOwner
-  )
+  scen <- Scenario$new(db = db, sid = sidToDelete)
   scen$delete()
 }
 
