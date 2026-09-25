@@ -425,6 +425,35 @@ body > .wrapper > .main-sidebar {
 .skin-black section.sidebar .sidebar-menu .btn-align-sidebar {
   min-height: 36px;
 }
+// split "Solve model" button (remote execution): both halves share one sidebar row
+.skin-black section.sidebar .sidebar-menu .btn-group.btSolve {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 4px 8px;
+  width: ~"calc(100% - 16px)" !important;
+  > .btn-align-sidebar {
+    margin: 0 !important;
+  }
+  > #btSolve {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  > .dropdown-toggle {
+    flex: 0 0 auto;
+    width: auto !important;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-left: 1px solid ~"color-mix(in srgb, currentColor 35%, transparent)";
+  }
+  > .dropdown-sidebar {
+    flex: 0 0 100%;
+    margin: 2px 0 0;
+    width: 100% !important;
+  }
+}
 // "Solve model" is the main action of the app ...
 .skin-black section.sidebar .sidebar-menu .btn-align-sidebar.btn-solve {
   .modern-cta();
@@ -774,7 +803,6 @@ textarea:focus {
 .modal-content {
   border-radius: @modern-radius-lg;
   border: 0;
-  overflow: hidden;
   .responsiveDark({
     box-shadow: @modern-shadow-lg;
   },
@@ -801,6 +829,7 @@ textarea:focus {
 }
 .modal-footer {
   padding: 14px 24px;
+  border-radius: 0 0 @modern-radius-lg @modern-radius-lg;
   .responsiveDark({
     border-top: 1px solid @modern-border;
     background-color: @modern-subtle;

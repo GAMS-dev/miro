@@ -523,7 +523,7 @@ a {
   position: relative;
   height: 100%;
   margin: 0;
-  padding: 0;
+  padding: 14px;
   overflow: hidden;
   border-radius: @radius-lg;
   background-clip: padding-box;
@@ -566,26 +566,24 @@ a {
 // logo fills the top of the card
 .app-logo-wrapper {
   overflow: hidden;
+  border-radius: @radius;
   .responsiveDark({
-    border-bottom: 1px solid @border;
     background-color: @hover;
   },
   {
-    border-bottom: 1px solid @border-dark;
     background-color: @hover-dark;
   });
 }
 .app-logo {
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   width: 100%;
   background-size: cover !important;
   background-position: center !important;
   transition: transform 400ms @ease-out;
 }
 .app-text {
-  min-height: 132px;
-  padding: 18px 20px 22px;
+  padding: 12px 4px 4px;
 }
 .app-title {
   margin: 0 0 6px;
