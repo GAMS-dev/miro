@@ -2952,6 +2952,11 @@
           "type": "boolean",
           "default": false
         },
+        "protectModelFiles": {
+          "description": "Prevent attachments that are visible to the model from overwriting model files?",
+          "type": "boolean",
+          "default": false
+        },
         "hcube": {
           "description": "Allow submitting Hypercube jobs (requires remote execution to be enabled)?",
           "type": "boolean",

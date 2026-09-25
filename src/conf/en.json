@@ -1423,6 +1423,10 @@
       "downloadTempFiles":{
         "label": "Allow access to the temporary working directory"
       },
+      "protectModelFiles":{
+        "title": "Attachments that can be read by the GAMS model are placed in the model's working directory. If enabled, such attachments must not have the same name as one of the model files.",
+        "label": "Prevent attachments that the model can read from overwriting model files"
+      },
       "hcubeModule":{
         "label": "Activate Hypercube module",
         "tooltip": "Requires GAMS Engine backend"

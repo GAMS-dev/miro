@@ -1422,6 +1422,10 @@
       "downloadTempFiles":{
         "label": "允许访问临时工作目录"
       },
+      "protectModelFiles":{
+        "title": "可被GAMS模型读取的附件会被放置在模型的工作目录中。启用后，此类附件不得与任何模型文件同名。",
+        "label": "防止模型可读取的附件覆盖模型文件"
+      },
       "hcubeModule":{
         "label": "激活 Hypercube 模块",
         "tooltip": "需要GAMS引擎后端"

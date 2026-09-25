@@ -641,17 +641,19 @@ if (is.null(errMsg)) {
   } else {
     GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'))
   }
-  protectedModelFiles <- tryCatch(
-    {
-      modelFileEntries <- if (length(modelData)) zip::zip_list(modelData)[["filename"]] else modelFiles
-      modelFileEntries <- sub("[/\\\\].*$", "", modelFileEntries)
-      unique(c(modelGmsName, modelFileEntries[nchar(modelFileEntries) > 0L]))
-    },
-    error = function(e) {
-      flog.warn("Problems reading list of model files. Error message: '%s'.", conditionMessage(e))
-      modelGmsName
-    }
-  )
+  if (isTRUE(config$activateModules$protectModelFiles)) {
+    protectedModelFiles <- tryCatch(
+      {
+        modelFileEntries <- if (length(modelData)) zip::zip_list(modelData)[["filename"]] else modelFiles
+        modelFileEntries <- sub("[/\\\\].*$", "", modelFileEntries)
+        unique(c(modelGmsName, modelFileEntries[nchar(modelFileEntries) > 0L]))
+      },
+      error = function(e) {
+        flog.warn("Problems reading list of model files. Error message: '%s'.", conditionMessage(e))
+        modelGmsName
+      }
+    )
+  }
 }
 
 if (is.null(errMsg)) {

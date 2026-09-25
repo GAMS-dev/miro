@@ -492,6 +492,27 @@
                     </div>
                   </div>
                   <div class="section-block">
+                    <div id="protect-model-files" class="section-block">
+                      <h3 class="block-title">Protect Model Files</h3>
+                      <p>
+                        Attachments that can be read by the GAMS model are
+                        placed in the model's working directory. If this option
+                        is enabled, such attachments must not have the same
+                        name as one of your model files (e.g. the main
+                        <kbd>.gms</kbd> file or files included by it). This
+                        prevents attachments from overwriting model files. The
+                        option is disabled by default. In the
+                        <kbd>&lt;modelname&gt;.json</kbd> file, it can be
+                        enabled as follows:
+                      </p>
+                      <pre><code class="language-json">{
+  "activateModules": {
+    "protectModelFiles": true
+  }
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="section-block">
                     <div id="general-output-attach" class="section-block">
                       <h3 class="block-title">Output Attachments</h3>
                       <p>
@@ -1277,6 +1298,11 @@ putclose log;
                     >
                     <a class="nav-link scrollto save-space" href="#attachments"
                       >Attachments</a
+                    >
+                    <a
+                      class="nav-link scrollto save-space"
+                      href="#protect-model-files"
+                      >Protect Model Files</a
                     >
                     <a
                       class="nav-link scrollto save-space"

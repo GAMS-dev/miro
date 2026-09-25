@@ -1423,6 +1423,10 @@
       "downloadTempFiles":{
         "label": "Zugriff auf das temporäre Arbeitsverzeichnis erlauben"
       },
+      "protectModelFiles":{
+        "title": "Anhänge, die vom GAMS-Modell gelesen werden können, werden im Arbeitsverzeichnis des Modells abgelegt. Wenn aktiviert, dürfen solche Anhänge nicht denselben Namen wie eine der Modelldateien haben.",
+        "label": "Verhindern, dass vom Modell lesbare Anhänge Modelldateien überschreiben"
+      },
       "hcubeModule":{
         "label": "Hypercube-Modul aktivieren",
         "tooltip": "Erfordert GAMS Engine Backend"

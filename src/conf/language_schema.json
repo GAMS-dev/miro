@@ -5537,6 +5537,21 @@
               },
               "minProperties": 1
             },
+            "protectModelFiles": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
             "hcubeModule": {
               "type": "object",
               "additionalProperties": false,
@@ -5564,7 +5579,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 43
+          "minProperties": 44
         },
         "tables": {
           "type": "object",

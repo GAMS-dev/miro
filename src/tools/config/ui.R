@@ -1221,6 +1221,13 @@ body.drawer-open {
                         config$activateModules$attachments
                       }
                     ),
+                    checkboxInput_SIMPLE("general_protectModelFiles",
+                      labelTooltip(
+                        lang$adminMode$general$protectModelFiles$label,
+                        lang$adminMode$general$protectModelFiles$title
+                      ),
+                      value = isTRUE(configJSON$activateModules$protectModelFiles)
+                    ),
                     tags$div(class = "space"),
                     tags$div(
                       style = "max-width: 500px;",
