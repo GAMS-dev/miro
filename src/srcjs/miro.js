@@ -595,15 +595,13 @@ $(() => {
     } else {
       scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
     }
-    const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
-    scriptOutputContainerIframe.open();
-    scriptOutputContainerIframe.write(
+    scriptOutputContainer.attr(
+      'srcdoc',
       data.isError === true
         ? `<div style='margin:5px;color:#F39619;font-weight:bold;\
 font-size:15pt;text-align:center;'>${data.data}</div>`
         : data.data,
     );
-    scriptOutputContainerIframe.close();
     scriptOutputContainer.show();
   });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {

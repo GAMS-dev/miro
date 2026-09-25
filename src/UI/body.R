@@ -1018,7 +1018,7 @@ if (buildUI) {
                 class = "script-spinner", style = "display:none;text-align:center;",
                 genSpinner(absolute = FALSE, externalStyle = "margin-top: 50px")
               ),
-              tags$iframe(class = "script-output")
+              tags$iframe(class = "script-output", sandbox = scriptOutputSandbox)
             ),
             tags$div(class = "small-space")
           )

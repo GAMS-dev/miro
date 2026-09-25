@@ -205,7 +205,7 @@ generateScenarioTabset <- function(scenId, createdDynamically = FALSE, pivotComp
             ),
             tags$iframe(
               id = paste0("scenScript_", scenId, "_", scriptId),
-              class = "script-output"
+              class = "script-output", sandbox = scriptOutputSandbox
             ),
             tags$div(class = "space")
           )

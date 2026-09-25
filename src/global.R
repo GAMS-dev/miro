@@ -121,6 +121,8 @@ attachAllowExec <- TRUE
 attachMaxFileSize <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_SIZE_MB", "50")) * 1e6
 attachMaxNo <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_NO", "20"))
 
+scriptOutputSandbox <- "allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
+
 JOBSTATUSMAP <- c(
   "queued" = -2L,
   "running" = -1L,

@@ -26,7 +26,7 @@ app$set_inputs(btAnalysisConfig = "click")
 expect_identical(getSelectizeAliases(app, "#selHcubeAnalysisScript"), c("bla123"))
 expect_error(app$wait_for_js("$('#btRunHcubeScript').is(':visible')", timeout = 2000), NA)
 app$set_inputs(btRunHcubeScript = "click")
-expect_error(app$wait_for_js("$('#scriptOutput_hcube .script-output').contents().find('body').html().replace(/\\s/g,'')==='<h1>Totaltransportationcost:NA</h1><p><strong>Totalfreightcost:189.00</strong></p>'",
+expect_error(app$wait_for_js("$(new DOMParser().parseFromString($('#scriptOutput_hcube .script-output').attr('srcdoc')||'','text/html').body).html().replace(/\\s/g,'')==='<h1>Totaltransportationcost:NA</h1><p><strong>Totalfreightcost:189.00</strong></p>'",
   timeout = 10000
 ), NA)
 app$stop()
