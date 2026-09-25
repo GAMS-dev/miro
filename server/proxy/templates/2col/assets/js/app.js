@@ -6,21 +6,27 @@ $(function () {
       currLocation.endsWith('app/admin') || currLocation.endsWith('app/admin/')
     )
   ) {
-    let timer;
-    $('#navbarHandle').on('mouseover', function () {
-      clearTimeout(timer);
-      $('#navbarWrapper').show();
+    const handle = document.getElementById('navbarHandle');
+    // clicks inside the app iframe never reach this document, but they move the focus into it
+    $(window).on('blur', function () {
+      bootstrap.Dropdown.getOrCreateInstance(handle).hide();
     });
-    $('#navbarWrapper').on('mouseover', function () {
-      clearTimeout(timer);
-      $('#navbarWrapper').show();
+    // the account menu is positioned for MIRO's header, so only show it once the app is displayed;
+    // the loading and error screens have their own buttons to get back to the app list
+    const isShown = (el) => el !== null && getComputedStyle(el).display !== 'none';
+    const updateBusyState = function () {
+      const busy =
+        !isShown(document.getElementById('shinyframe')) ||
+        $('#loading, .load-app-error-absolute').toArray().some(isShown);
+      document.body.classList.toggle('app-page-busy', busy);
+    };
+    new MutationObserver(updateBusyState).observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style'],
+      childList: true,
+      subtree: true,
     });
-    $('#navbarWrapper').on('mouseleave', function () {
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        $('#navbarWrapper').hide();
-      }, 600);
-    });
+    updateBusyState();
   } else {
     $('#navAdminPanel').attr('href', '#').addClass('active');
     $('#navbarWrapper').show().attr('href', '#');

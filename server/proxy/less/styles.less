@@ -228,7 +228,8 @@ a {
   }
 }
 // user menu: same floating menu as MIRO's dropdowns
-#navbar .dropdown-menu {
+#navbar .dropdown-menu,
+.app-user-menu {
   --bs-dropdown-padding-y: 6px;
   --bs-dropdown-item-padding-y: 6px;
   --bs-dropdown-item-border-radius: @radius-sm;
@@ -342,9 +343,9 @@ a {
   }
 }
 
-/* --- navbar handle (app page) --------------------------------------------- */
-// the server navbar is hidden while an app is open; hovering this handle in the app's header
-// reveals it. It sits next to MIRO's sidebar toggle and looks like one of its header buttons.
+/* --- account menu (app page) --------------------------------------------- */
+// the server navbar is hidden while an app is open; this menu in the app's header leads back to it.
+// It sits next to MIRO's sidebar toggle and is hidden while the loading or error screens are shown.
 .navbar-handle-wrapper {
   position: absolute;
   left: 280px;
@@ -358,39 +359,103 @@ a {
     left: 50px;
   }
 }
+// styled as an account menu (avatar + caret) so it is not mistaken for one of MIRO's header buttons
 .navbar-handle {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 36px;
+  gap: 6px;
   height: 36px;
-  margin-left: 4px;
-  border-radius: @radius;
+  margin-left: 8px;
+  padding: 3px 10px 3px 3px;
+  border-radius: 999px;
+  background: transparent;
   cursor: pointer;
-  transition: background-color @ease, color @ease;
+  transition: background-color @ease, border-color @ease, box-shadow @ease;
   .responsiveDark({
+    border: 1px solid @border-strong;
     color: @muted;
   },
   {
+    border: 1px solid @border-strong-dark;
     color: @muted-dark;
   });
-  &:hover {
+  &:hover,
+  &[aria-expanded="true"] {
     .responsiveDark({
       background-color: @hover;
+      border-color: ~"color-mix(in srgb, var(--miro-server-primary-color) 45%, transparent)";
       color: @text;
     },
     {
       background-color: @hover-dark;
+      border-color: ~"color-mix(in srgb, var(--miro-server-primary-color-dark) 55%, transparent)";
       color: #fff;
+    });
+  }
+  &:focus-visible {
+    outline: none;
+    .responsiveDark({
+      box-shadow: ~"0 0 0 3px color-mix(in srgb, var(--miro-server-primary-color) 30%, transparent)";
+    },
+    {
+      box-shadow: ~"0 0 0 3px color-mix(in srgb, var(--miro-server-primary-color-dark) 30%, transparent)";
     });
   }
 }
 .user-custom-wrapper {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  .responsiveDark({
+    background-color: ~"color-mix(in srgb, var(--miro-server-primary-color) 14%, transparent)";
+    color: var(--miro-server-primary-color);
+  },
+  {
+    background-color: ~"color-mix(in srgb, var(--miro-server-primary-color-dark) 30%, transparent)";
+    color: #fff;
+  });
 }
 .user-custom {
-  width: 14px;
-  height: 16px;
+  width: 12px;
+  height: 14px;
+}
+.navbar-handle-caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  transition: transform @ease;
+}
+.navbar-handle[aria-expanded="true"] .navbar-handle-caret {
+  transform: rotate(180deg);
+}
+.app-user-menu {
+  min-width: 220px;
+  margin-top: 6px !important;
+}
+.app-user-menu-name {
+  padding: 6px 10px;
+  font-size: 13px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  b {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    .responsiveDark({
+      color: @text;
+    },
+    {
+      color: @text-dark;
+    });
+  }
+}
+.app-page-busy .navbar-handle-wrapper {
+  display: none;
 }
 
 /* --- app page: loading and error states ------------------------------------ */
@@ -406,6 +471,35 @@ a {
   {
     background-color: @surface-dark;
   });
+}
+.loading-text {
+  position: absolute;
+  top: ~"calc(50% + 44px)";
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 15px;
+  .responsiveDark({
+    color: @muted;
+  },
+  {
+    color: @muted-dark;
+  });
+  b {
+    font-weight: 600;
+    .responsiveDark({
+      color: @text;
+    },
+    {
+      color: @text-dark;
+    });
+  }
+}
+// ShinyProxy hides the animation when it shows the load error instead
+#loadingAnimation[style*="none"] + .loading-text {
+  display: none;
 }
 .lds-ellipsis {
   display: inline-block;
