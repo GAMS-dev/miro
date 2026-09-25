@@ -41,7 +41,7 @@ test_that("MiroAiAssistant getProvider returns correct R6 instances", {
   ))
 
   # Valid providers
-  openai_provider <- assistant$getProvider("openai", "gpt-5.6-sol")
+  openai_provider <- assistant$getProvider("openai", "gpt-6-sol")
   google_provider <- assistant$getProvider("google", "gemini-3.6-flash")
 
   expect_true(inherits(openai_provider, "MiroAiOpenAiProvider"))
