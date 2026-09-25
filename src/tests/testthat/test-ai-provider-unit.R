@@ -306,6 +306,20 @@ test_that("MiroAiAnthropicProvider surfaces max_tokens truncation instead of hid
   expect_match(res$text, "truncated", ignore.case = TRUE)
 })
 
+test_that("MiroAiAnthropicProvider reports refusals instead of returning an empty answer", {
+  provider <- MockAnthropicCapture$new("claude-opus-5-5", "key")
+  provider$mockResponses <- list(
+    list(
+      content = list(),
+      stop_reason = "refusal",
+      stop_details = list(type = "refusal", category = "bio"),
+      usage = list(input_tokens = 1, output_tokens = 0)
+    )
+  )
+
+  expect_error(provider$sendMessage("hi", "system"), "declined")
+})
+
 test_that("MiroAiAnthropicProvider errors instead of continuing when a tool call is truncated", {
   provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
   provider$mockResponses <- list(

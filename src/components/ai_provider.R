@@ -369,6 +369,10 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
   private = list(
     systemInstructionsPayload = NULL,
     toolsPayload = NULL,
+    # thinking is always on for current Claude models and counts towards max_tokens
+    maxTokens = 16000L,
+    # models with safety classifiers: declined requests are retried server-side on a fallback model
+    fallbackModels = c("claude-opus-5-5", "claude-fable-5-1"),
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       self$history[[length(self$history) + 1]] <- list(role = "user", content = userInput)
       private$systemInstructionsPayload <- list(
@@ -376,7 +380,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       )
       payload <- list(
         model = private$modelName,
-        max_tokens = 8192,
+        max_tokens = private$maxTokens,
         messages = self$history,
         system = private$systemInstructionsPayload,
         # Automatic caching: Anthropic places this breakpoint on the last
@@ -394,16 +398,18 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
     },
     executeHttpCall = function(payload) {
       url <- "https://api.anthropic.com/v1/messages"
+      headers <- c(`x-api-key` = private$apiKey, `anthropic-version` = "2023-06-01")
+      if (private$modelName %in% private$fallbackModels) {
+        payload$fallbacks <- "default"
+        headers <- c(headers, `anthropic-beta` = "server-side-fallback-2026-07-01")
+      }
       resp <- POST(
         url,
         body = toJSON(payload, auto_unbox = TRUE),
         encode = "raw",
-        add_headers(
-          `x-api-key` = private$apiKey,
-          `anthropic-version` = "2023-06-01"
-        ),
+        add_headers(.headers = headers),
         content_type_json(),
-        timeout(120L)
+        timeout(300L)
       )
       if (status_code(resp) != 200) {
         errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
@@ -416,6 +422,9 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       return(content(resp, type = "application/json", encoding = "utf-8"))
     },
     parseApiResponse = function(resContent) {
+      if (identical(resContent$stop_reason, "refusal")) {
+        stop("Claude declined to answer this request.", call. = FALSE)
+      }
       self$history[[length(self$history) + 1]] <- list(role = "assistant", content = resContent$content)
 
       toolCalls <- list()
@@ -463,7 +472,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       self$history[[length(self$history) + 1]] <- list(role = "user", content = toolResultBlocks)
       payload <- list(
         model = private$modelName,
-        max_tokens = 8192,
+        max_tokens = private$maxTokens,
         messages = self$history,
         system = private$systemInstructionsPayload,
         cache_control = list(type = "ephemeral")
