@@ -129,10 +129,10 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
             opacity = flowOptions$opacity,
             minThickness = flowOptions$minThickness,
             layerId = if (length(flowOptions$layerId)) {
-              eval(
+              htmltools::htmlEscape(eval(
                 rendererUtilParseLabel(flowOptions$layerId, names(dataTmp)),
                 envir = list(data = dataTmp)
-              )
+              ))
             },
             time = if (length(flowOptions$time)) dataTmp[[flowOptions$time]],
             maxThickness = flowOptions$maxThickness,
@@ -182,7 +182,7 @@ renderMiroLeaflet <- function(id, data, options = NULL, path = NULL,
             },
             popup = popupArgs(),
             layerId = if (length(minichartOptions$layerId)) {
-              dataTmp[[minichartOptions$layerId]]
+              htmltools::htmlEscape(dataTmp[[minichartOptions$layerId]])
             },
             legend = minichartOptions$legend,
             legendPosition = minichartOptions$legendPosition,
