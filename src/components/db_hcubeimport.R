@@ -208,14 +208,14 @@ HcubeImport <- R6Class("HcubeImport",
           sqlData(private$conn, metadataTable),
           row.names = FALSE
         ), "RETURNING _sid")
-        firstScenId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+        scenIds <- sort(as.integer(DBI::dbGetQuery(private$conn, query)[[1]]))
       } else {
         self$writeMetadata(metadataTable)
         query <- SQL("SELECT LAST_INSERT_ROWID();")
         lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
-        firstScenId <- lasInsertedRowId - numberScen + 1L
+        scenIds <- lasInsertedRowId - rev(seq_len(numberScen)) + 1L
       }
-      stopifnot(firstScenId >= 1L)
+      stopifnot(identical(length(scenIds), numberScen), all(scenIds >= 1L))
 
       if (!is.null(progressBar)) {
         progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
@@ -229,7 +229,7 @@ HcubeImport <- R6Class("HcubeImport",
             tableName <- tableNames[i]
             self$exportScenDataset(bind_rows(lapply(seq_along(private$scenData), function(scenIdx) {
               add_column(
-                `_sid` = firstScenId + scenIdx - 1L,
+                `_sid` = scenIds[scenIdx],
                 private$scenData[[scenIdx]][[tableName]],
                 .before = 1L
               )
@@ -251,18 +251,12 @@ HcubeImport <- R6Class("HcubeImport",
         error = function(e) {
           if (!dbRollback(private$conn)) {
             self$deleteRows("_scenMeta",
-              subsetSids = seq(
-                firstScenId,
-                firstScenId + numberScen - 1L
-              )
+              subsetSids = scenIds
             )
             stop("Could not roll back database transaction.", call. = FALSE)
           }
           self$deleteRows("_scenMeta",
-            subsetSids = seq(
-              firstScenId,
-              firstScenId + numberScen - 1L
-            )
+            subsetSids = scenIds
           )
           stop(conditionMessage(e), call. = FALSE)
         }
