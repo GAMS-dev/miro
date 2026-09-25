@@ -625,6 +625,7 @@ if (is.null(errMsg)) {
     }
   }
 }
+protectedModelFiles <- character()
 if (is.null(errMsg)) {
   modelData <- NULL
   if (useTempDir &&
@@ -640,6 +641,17 @@ if (is.null(errMsg)) {
   } else {
     GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'))
   }
+  protectedModelFiles <- tryCatch(
+    {
+      modelFileEntries <- if (length(modelData)) zip::zip_list(modelData)[["filename"]] else modelFiles
+      modelFileEntries <- sub("[/\\\\].*$", "", modelFileEntries)
+      unique(c(modelGmsName, modelFileEntries[nchar(modelFileEntries) > 0L]))
+    },
+    error = function(e) {
+      flog.warn("Problems reading list of model files. Error message: '%s'.", conditionMessage(e))
+      modelGmsName
+    }
+  )
 }
 
 if (is.null(errMsg)) {
@@ -1550,7 +1562,8 @@ if (!is.null(errMsg)) {
                       } else {
                         paste0(c(names(modelOut), inputDsNames), ".csv")
                       },
-                      paste0(modelNameRaw, c(".log", ".lst"))
+                      paste0(modelNameRaw, c(".log", ".lst")),
+                      protectedModelFiles
                     )
                   ),
                   tmpDir,
@@ -1914,7 +1927,8 @@ if (!is.null(errMsg)) {
             } else {
               paste0(c(names(modelOut), inputDsNames), ".csv")
             },
-            paste0(modelNameRaw, c(".log", ".lst"))
+            paste0(modelNameRaw, c(".log", ".lst")),
+            protectedModelFiles
           )
         ),
         workDir,

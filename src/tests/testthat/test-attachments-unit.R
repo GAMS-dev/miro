@@ -186,6 +186,10 @@ test_that("Adding attachments work", {
     fileNames = "def.json", overwrite = FALSE, execPerm = NULL
   ), class = "error_not_found")
   expect_error(attachments$add(
+    session = NULL, file.path(testDir, "data", "_scalars.csv"),
+    fileNames = toupper(paste0(modelName, ".lst")), overwrite = FALSE, execPerm = TRUE
+  ), class = "error_forbidden_filename")
+  expect_error(attachments$add(
     session = NULL, file.path(testDir, "data", c("_scalars.csv", "bad-views2.json")),
     fileNames = c("_scalars.csv", "def.json"), overwrite = TRUE, execPerm = NULL
   ), class = "error_max_no")
