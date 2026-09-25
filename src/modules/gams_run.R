@@ -526,7 +526,7 @@ output$modelStatus <- renderUI({
   disableEl(session, "#btDetachCurrentJob")
 
   if (config$activateModules$logFile && config$activateModules$miroLogFile) {
-    setContent(session, "#miroLogContainer", renderMiroLogContent())
+    setTextContent(session, "#miroLogContainer", renderMiroLogContent())
     session$sendCustomMessage("gms-parseLog", list())
   }
 
