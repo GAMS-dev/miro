@@ -918,13 +918,8 @@ pidExists <- function(pid) {
   }
 }
 escapeGAMSCL <- function(input) {
-  if (isWindows()) {
-    ret <- shQuote(input, type = "cmd")
-  } else {
-    ret <- shQuote(input)
-    ret <- gsub("^'|'$", "\"", ret)
-  }
-  return(ret)
+  # GAMS has no escape sequence for double quotes inside a quoted value
+  return(paste0("\"", gsub("[\"\r\n]", "", input), "\""))
 }
 gmsFilePath <- function(path) {
   if (isWindows()) {

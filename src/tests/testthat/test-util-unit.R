@@ -770,3 +770,9 @@ test_that("hotToR unescapes pivoted column headers", {
     c("uni", "<img src=x>", "a&b")
   )
 })
+
+test_that("escapeGAMSCL prevents breaking out of quoted value", {
+  expect_identical(escapeGAMSCL("it's $5"), "\"it's $5\"")
+  expect_identical(escapeGAMSCL("abc\" input=evil.gms --z=\""), "\"abc input=evil.gms --z=\"")
+  expect_identical(escapeGAMSCL("a\r\nb"), "\"ab\"")
+})
