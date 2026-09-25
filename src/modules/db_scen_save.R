@@ -211,6 +211,28 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     }
   }
 
+  if (saveAsFlag) {
+    newPerms <- list(
+      read = input$editMetaReadPerm,
+      write = input$editMetaWritePerm,
+      execute = input$editMetaExecPerm
+    )
+    currentPerms <- list()
+    if (!is.null(activeScen)) {
+      currentPerms <- list(
+        read = activeScen$getReadPerm(),
+        write = activeScen$getWritePerm(),
+        execute = activeScen$getExecPerm()
+      )
+    }
+    allowedPerms <- c(db$getUserAccessGroups(), db$getRemoteUsers())
+    if (any(vapply(names(newPerms), function(permId) {
+      any(!newPerms[[permId]] %in% c(allowedPerms, currentPerms[[permId]]))
+    }, logical(1L), USE.NAMES = FALSE))) {
+      flog.error("Attempt to tamper with access permissions!")
+      return(showErrorMsg(lang$errMsg$saveScen$title, lang$errMsg$saveScen$desc))
+    }
+  }
   if (saveScenRefreshScenData(saveOutput)) {
     return()
   }
@@ -248,9 +270,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
           } else {
             activeScen$updateMetadata(
               newName = input$scenName, newTags = scenTags,
-              newReadPerm = input$editMetaReadPerm,
-              newWritePerm = input$editMetaWritePerm,
-              newExecPerm = input$editMetaExecPerm
+              newReadPerm = if (length(input$editMetaReadPerm)) unique(c(uid, input$editMetaReadPerm)),
+              newWritePerm = if (length(input$editMetaWritePerm)) unique(c(uid, input$editMetaWritePerm)),
+              newExecPerm = if (length(input$editMetaExecPerm)) unique(c(uid, input$editMetaExecPerm))
             )
             if (isTRUE(input$newScenDiscardAttach)) {
               if (length(currentScenHash)) {
