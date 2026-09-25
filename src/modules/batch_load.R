@@ -394,6 +394,10 @@ observeEvent(input$btSendQuery, {
 
 batchLoadResultsProxy <- dataTableProxy("batchLoadResults")
 observeEvent(input$batchLoadResults_cell_edit, {
+  if (isTRUE(config$activateModules$readonlyMode)) {
+    flog.error("Attempt to modify scenarios in readonly mode. This is likely an attempt to tamper with the app!")
+    return()
+  }
   newValInfo <- input$batchLoadResults_cell_edit
   scenInfo <- batchLoadData[newValInfo$row, c(1, 2)]
   if (tryCatch(
@@ -680,6 +684,10 @@ output$btBatchDownloadCSV <- downloadHandler(
 )
 
 observeEvent(input$btBatchRemove, {
+  if (isTRUE(config$activateModules$readonlyMode)) {
+    flog.error("Attempt to modify scenarios in readonly mode. This is likely an attempt to tamper with the app!")
+    return()
+  }
   if (hcubeRemoveConfirmed) {
     errMsg <- NULL
     disableEl(session, "#btBatchRemove")
