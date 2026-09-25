@@ -167,7 +167,7 @@ MiroAiGoogleProvider <- R6Class("MiroAiGoogleProvider",
       resp <- POST(url,
         body = toJSON(payload, auto_unbox = TRUE), encode = "json",
         content_type_json(), add_headers(`x-goog-api-key` = private$apiKey),
-        timeout(120L)
+        timeout(600L)
       )
       if (status_code(resp) != 200) {
         errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
@@ -275,7 +275,7 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
         encode = "raw",
         add_headers(Authorization = paste("Bearer", private$apiKey)),
         content_type_json(),
-        timeout(120L)
+        timeout(600L)
       )
       if (status_code(resp) != 200) {
         errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
@@ -370,7 +370,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
     systemInstructionsPayload = NULL,
     toolsPayload = NULL,
     # thinking is always on for current Claude models and counts towards max_tokens
-    maxTokens = 16000L,
+    maxTokens = 32000L,
     # models with safety classifiers: declined requests are retried server-side on a fallback model
     fallbackModels = c("claude-opus-5-5", "claude-fable-5-1"),
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
@@ -409,7 +409,7 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
         encode = "raw",
         add_headers(.headers = headers),
         content_type_json(),
-        timeout(300L)
+        timeout(600L)
       )
       if (status_code(resp) != 200) {
         errBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
