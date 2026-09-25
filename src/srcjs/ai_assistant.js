@@ -214,8 +214,22 @@ const AI_KATEX_DELIMITERS = [
 // can execute no matter which mechanism inserted the markup (a Shiny modal
 // re-render, our own custom message handler, etc.). This reads that attribute,
 // sanitizes it with DOMPurify, and only then injects it as real HTML.
+// resources loaded without user interaction (images, media, CSS urls) could
+// leak data to external hosts via prompt injection
+const AI_SANITIZE_CONFIG = {
+  USE_PROFILES: { html: true },
+  FORBID_TAGS: ['img', 'picture', 'source', 'video', 'audio', 'track', 'form',
+    'input', 'button', 'textarea', 'select', 'style', 'link', 'object', 'embed'],
+  FORBID_ATTR: ['style', 'srcset', 'background', 'poster'],
+};
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.hasAttribute('href')) {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
 function hydrateAiMessageContent(el) {
-  el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml);
+  el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml, AI_SANITIZE_CONFIG);
   delete el.dataset.rawHtml;
   parseKatex(el, { delimiters: AI_KATEX_DELIMITERS });
   addCodeCopyButtons(el);
