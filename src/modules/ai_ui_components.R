@@ -171,6 +171,9 @@ renderAiInputChangeProposal <- function(change, lang) {
       if (length(change$reason)) {
         tags$div(class = "miro-ai-change-reason", change$reason)
       },
+      if (isTRUE(change$rebased) && identical(change$status, "pending")) {
+        tags$div(class = "miro-ai-change-rebased", icon("rotate"), lang$changeRebased)
+      },
       tags$dl(
         class = "miro-ai-change-facts",
         tags$dt(lang$changeProposalSymbol), tags$dd(change$symbolAlias),
@@ -196,6 +199,88 @@ renderAiInputChangeProposal <- function(change, lang) {
         ))
       },
       renderAiInputChangeStatus(change, lang)
+    )
+  ))
+}
+renderAiInputChangeGroupStatus <- function(group, lang) {
+  if (identical(group$status, "applied")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-applied",
+      icon("circle-check"), lang$changeGroupStatusApplied
+    ))
+  }
+  if (identical(group$status, "retired")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-discarded",
+      icon("circle-info"), lang$changeGroupStatusRetired
+    ))
+  }
+  if (identical(group$status, "outdated")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-outdated",
+      icon("triangle-exclamation"), lang$changeStatusOutdated
+    ))
+  }
+  if (identical(group$status, "failed")) {
+    return(tags$div(
+      class = "miro-ai-change-status miro-ai-change-status-failed",
+      icon("triangle-exclamation"), sprintf(lang$changeStatusFailed, group$statusDetail %||% "")
+    ))
+  }
+  return(tags$div(
+    class = "miro-ai-change-actions",
+    tags$button(
+      type = "button", class = "btn btn-primary btn-sm miro-ai-change-apply-all",
+      onclick = "Miro.resolveAiInputChangeGroup(this)",
+      icon("check-double"), sprintf(lang$btApplyAllChanges, length(group$changeIds))
+    )
+  ))
+}
+renderAiInputChangeGroup <- function(group, lang) {
+  return(tags$div(
+    class = "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant miro-ai-change-proposal miro-ai-change-group",
+    `data-change-id` = group$groupId,
+    tags$div(
+      class = "miro-ai-chat-bubble miro-ai-change-card",
+      tags$b(
+        class = "miro-ai-chat-author",
+        icon("list-check"), sprintf(lang$changeGroupHeader, length(group$changeIds))
+      ),
+      if (isTRUE(group$rebased) && identical(group$status, "pending")) {
+        tags$div(class = "miro-ai-change-rebased", icon("rotate"), lang$changeGroupRebased)
+      },
+      if (isTRUE(group$independent)) {
+        tags$div(class = "miro-ai-change-reason", lang$changeGroupIndependent)
+      } else {
+        tagList(
+          tags$div(class = "miro-ai-change-reason", lang$changeGroupCombined),
+          lapply(seq_along(group$steps), function(stepIdx) {
+            step <- group$steps[[stepIdx]]
+            filterLabel <- aiInputChangeFilterLabel(step)
+            tags$div(
+              class = "miro-ai-change-group-step",
+              tags$div(
+                class = "miro-ai-change-group-step-title",
+                sprintf(
+                  "%d. %s%s: %s%s", stepIdx, step$symbolAlias,
+                  if (isTRUE(step$isScalar)) "" else sprintf(" (%s)", step$targetColumnAlias),
+                  aiInputChangeOperationLabel(step, lang),
+                  if (is.null(filterLabel)) "" else sprintf(" [%s]", filterLabel)
+                )
+              ),
+              if (step$preview$noRowsShown > 0L) renderAiInputChangePreviewTable(step, lang),
+              if (step$preview$noRowsShown < step$preview$noRows) {
+                tags$div(class = "miro-ai-change-truncated", sprintf(
+                  lang$changeProposalTruncated,
+                  format(step$preview$noRowsShown, big.mark = ","),
+                  format(step$preview$noRows, big.mark = ",")
+                ))
+              }
+            )
+          })
+        )
+      },
+      renderAiInputChangeGroupStatus(group, lang)
     )
   ))
 }
@@ -260,6 +345,9 @@ renderAiToolActivity <- function(activity, lang) {
 renderAiChatItem <- function(item, lang) {
   if (identical(item$role, "inputChange")) {
     return(renderAiInputChangeProposal(item$change, lang))
+  }
+  if (identical(item$role, "inputChangeGroup")) {
+    return(renderAiInputChangeGroup(item$group, lang))
   }
   if (identical(item$role, "toolActivity")) {
     return(renderAiToolActivity(item$activity, lang))

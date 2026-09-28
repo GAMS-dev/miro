@@ -809,3 +809,94 @@ test_that("a dependent dropdown with too many choices only points at its source"
 
   DBI::dbDisconnect(env$conn)
 })
+
+# ==============================================================================
+# Applying several proposals together ("Apply all")
+# ==============================================================================
+
+demandChange <- function(operation, value, region = NULL, filterColumnIdx = 1L, targetColumnIdx = 2L) {
+  list(
+    symbolName = "demand", isScalar = FALSE, operation = operation, value = value,
+    targetColumnIdx = targetColumnIdx,
+    filters = if (length(region)) list(list(columnIdx = filterColumnIdx, operator = "=", value = region)) else list()
+  )
+}
+demandData <- function() {
+  tibble::tibble(region = c("NA", "EU", "AS"), value = c(100, 150, 200), cost = c(1, 2, 3))
+}
+
+test_that("proposals are applied one after another, each on the previous result", {
+  symbolData <- list(demand = demandData(), maxstock = 4)
+  changes <- list(
+    demandChange("MULTIPLY", 2, "EU"),
+    list(symbolName = "maxstock", isScalar = TRUE, operation = "ADD", value = 1),
+    demandChange("ADD", 5)
+  )
+  sequence <- applyAiInputChangeSequence(changes, function(symName) symbolData[[symName]])
+
+  expect_equal(sequence$data$demand$value, c(105, 305, 205))
+  expect_equal(sequence$data$maxstock, 5)
+  # the third step started from the first step's result, not the original
+  expect_equal(sequence$steps[[3L]]$before$value, c(100, 300, 200))
+  expect_equal(sequence$steps[[3L]]$result$oldValues, c(100, 300, 200))
+})
+
+test_that("each symbol's data is read only once, even when it is NULL", {
+  reads <- character(0L)
+  getData <- function(symName) {
+    reads <<- c(reads, symName)
+    if (identical(symName, "maxstock")) NULL else demandData()
+  }
+  applyAiInputChangeSequence(list(
+    demandChange("ADD", 1, "EU"), demandChange("ADD", 1, "NA"),
+    list(symbolName = "maxstock", isScalar = TRUE, operation = "SET", value = 1),
+    list(symbolName = "maxstock", isScalar = TRUE, operation = "ADD", value = 1)
+  ), getData)
+  expect_equal(reads, c("demand", "maxstock"))
+})
+
+test_that("edits of different rows of the same symbol are independent", {
+  changes <- list(demandChange("MULTIPLY", 2, "EU"), demandChange("ADD", 5, "NA"))
+  sequence <- applyAiInputChangeSequence(changes, function(symName) demandData())
+  expect_true(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("edits of the same cells are not independent", {
+  changes <- list(demandChange("MULTIPLY", 2, "EU"), demandChange("ADD", 5))
+  sequence <- applyAiInputChangeSequence(changes, function(symName) demandData())
+  expect_false(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("a filter on a column another edit changes makes them dependent", {
+  # the second edit only touches rows whose cost is 2, which the first edit
+  # changes: applied together it matches different rows than on its own
+  changes <- list(
+    demandChange("SET", 9, "EU", targetColumnIdx = 3L),
+    list(
+      symbolName = "demand", isScalar = FALSE, operation = "ADD", value = 1, targetColumnIdx = 2L,
+      filters = list(list(columnIdx = 3L, operator = "=", value = "2"))
+    )
+  )
+  sequence <- applyAiInputChangeSequence(changes, function(symName) demandData())
+  expect_false(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("edits of different symbols are independent", {
+  changes <- list(
+    demandChange("ADD", 5),
+    list(symbolName = "maxstock", isScalar = TRUE, operation = "ADD", value = 1)
+  )
+  symbolData <- list(demand = demandData(), maxstock = 4)
+  sequence <- applyAiInputChangeSequence(changes, function(symName) symbolData[[symName]])
+  expect_true(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("the widget bounds apply to the combined result", {
+  sliderConfig <- list(type = "slider", slider = list(min = 0, max = 10))
+  expect_null(aiInputChangeBoundsError(sliderConfig, "maxstock", c(3, 10)))
+  expect_match(aiInputChangeBoundsError(sliderConfig, "maxstock", 12), "exceeds the maximum")
+  expect_match(aiInputChangeBoundsError(sliderConfig, "maxstock", -1), "below the minimum")
+  # no range configured, or nothing numeric to check
+  expect_null(aiInputChangeBoundsError(list(type = "numericinput", numericinput = list()), "x", 1e9))
+  expect_null(aiInputChangeBoundsError(sliderConfig, "maxstock", NA))
+})

@@ -1855,6 +1855,10 @@ if (!is.null(errMsg)) {
           contextIsSandbox = FALSE,
           # proposed input data changes: changeId -> index in chatHistory
           changeIndex = list(),
+          # proposals from one answer that can be applied together:
+          # groupId -> index in chatHistory, and changeId -> groupId
+          changeGroupIndex = list(),
+          changeGroupOf = list(),
           # what the user did with them, relayed to the model on the next message
           changeNotes = character(0L),
           chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))

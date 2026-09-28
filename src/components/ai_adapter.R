@@ -108,6 +108,66 @@ matchAiInputChangeRows <- function(data, filters) {
   return(rowMask)
 }
 
+aiInputChangeBoundsError <- function(symConfig, symName, newValues) {
+  widgetConfig <- symConfig[[symConfig$type]]
+  newValues <- suppressWarnings(as.numeric(newValues))
+  newValues <- newValues[!is.na(newValues)]
+  if (!length(newValues)) {
+    return(NULL)
+  }
+  minValue <- widgetConfig$min
+  maxValue <- widgetConfig$max
+  if (is.numeric(minValue) && length(minValue) == 1L && min(newValues) < minValue) {
+    return(sprintf(
+      "The resulting value (%s) is below the minimum (%s) allowed for '%s'.",
+      formatAiInputValue(min(newValues)), formatAiInputValue(minValue), symName
+    ))
+  }
+  if (is.numeric(maxValue) && length(maxValue) == 1L && max(newValues) > maxValue) {
+    return(sprintf(
+      "The resulting value (%s) exceeds the maximum (%s) allowed for '%s'.",
+      formatAiInputValue(max(newValues)), formatAiInputValue(maxValue), symName
+    ))
+  }
+  return(NULL)
+}
+
+applyAiInputChangeSequence <- function(changes, getData) {
+  workingData <- list()
+  steps <- vector("list", length(changes))
+  for (changeIdx in seq_along(changes)) {
+    change <- changes[[changeIdx]]
+    symName <- change$symbolName
+    if (!symName %in% names(workingData)) {
+      workingData[symName] <- list(getData(symName))
+    }
+    stepResult <- applyAiInputChange(workingData[[symName]], change)
+    steps[[changeIdx]] <- list(before = workingData[[symName]], result = stepResult)
+    workingData[symName] <- list(stepResult$data)
+  }
+  return(list(data = workingData, steps = steps))
+}
+
+aiInputChangesAreIndependent <- function(changes, sequence) {
+  originalData <- list()
+  for (changeIdx in seq_along(changes)) {
+    change <- changes[[changeIdx]]
+    symName <- change$symbolName
+    if (!symName %in% names(originalData)) {
+      # the first step of each symbol was applied to its unchanged data
+      originalData[symName] <- list(sequence$steps[[changeIdx]]$before)
+    }
+    alone <- applyAiInputChange(originalData[[symName]], change)
+    together <- sequence$steps[[changeIdx]]$result
+    if (!identical(alone$rowMask, together$rowMask) ||
+      !identical(alone$oldValues, together$oldValues) ||
+      !identical(alone$newValues, together$newValues)) {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
 applyAiInputChange <- function(data, change) {
   if (isTRUE(change$isChoice)) {
     oldValue <- NA_character_
@@ -1235,27 +1295,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     #' silently clamp an out-of-range value, so the data the user confirmed and
     #' the data that ends up in the sandbox would differ.
     checkInputChangeBounds = function(symName, newValues) {
-      symConfig <- private$ioConfig$modelIn[[symName]]
-      widgetConfig <- symConfig[[symConfig$type]]
-      newValues <- newValues[!is.na(newValues)]
-      if (!length(newValues)) {
-        return(NULL)
-      }
-      minValue <- widgetConfig$min
-      maxValue <- widgetConfig$max
-      if (is.numeric(minValue) && length(minValue) == 1L && min(newValues) < minValue) {
-        return(sprintf(
-          "The resulting value (%s) is below the minimum (%s) allowed for '%s'.",
-          formatAiInputValue(min(newValues)), formatAiInputValue(minValue), symName
-        ))
-      }
-      if (is.numeric(maxValue) && length(maxValue) == 1L && max(newValues) > maxValue) {
-        return(sprintf(
-          "The resulting value (%s) exceeds the maximum (%s) allowed for '%s'.",
-          formatAiInputValue(max(newValues)), formatAiInputValue(maxValue), symName
-        ))
-      }
-      return(NULL)
+      return(aiInputChangeBoundsError(private$ioConfig$modelIn[[symName]], symName, newValues))
     },
     resolveInputChangeFilters = function(filters, symColumns) {
       if (is.null(filters) || length(filters) == 0L) {

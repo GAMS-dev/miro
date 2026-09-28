@@ -371,3 +371,86 @@ test_that("renderAiChatItem dispatches tool activity items to renderAiToolActivi
   expect_match(html, "miro-ai-tool-activity", fixed = TRUE)
   expect_match(html, "Customer Demand", fixed = TRUE)
 })
+
+# ==============================================================================
+# Rebased proposals and "Apply all"
+# ==============================================================================
+
+mockGroupLang <- c(mockChangeLang, list(
+  changeRebased = "Preview updated.",
+  changeGroupRebased = "Group preview updated.",
+  changeGroupHeader = "%d proposed changes",
+  changeGroupIndependent = "These changes do not affect each other.",
+  changeGroupCombined = "Applied together, in this order:",
+  changeGroupStatusApplied = "All changes applied.",
+  changeGroupStatusRetired = "Handled one by one.",
+  btApplyAllChanges = "Apply all %d"
+))
+mockGroup <- function(...) {
+  modifyList(list(
+    groupId = "group_aichg_a", changeIds = c("aichg_a", "aichg_b"),
+    status = "pending", independent = TRUE, steps = NULL
+  ), list(...))
+}
+
+test_that("a rebased proposal says its preview was updated, but only while pending", {
+  rebased <- as.character(renderAiInputChangeProposal(mockTableChange(rebased = TRUE), mockGroupLang))
+  expect_match(rebased, "Preview updated.", fixed = TRUE)
+  expect_match(rebased, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
+
+  applied <- as.character(renderAiInputChangeProposal(
+    mockTableChange(status = "applied", rebased = TRUE), mockGroupLang
+  ))
+  expect_false(grepl("Preview updated.", applied, fixed = TRUE))
+  expect_false(grepl("Preview updated.", as.character(
+    renderAiInputChangeProposal(mockTableChange(), mockGroupLang)
+  ), fixed = TRUE))
+})
+
+test_that("the group card offers Apply all and can be replaced like a proposal card", {
+  html <- as.character(renderAiInputChangeGroup(mockGroup(), mockGroupLang))
+  expect_match(html, "2 proposed changes", fixed = TRUE)
+  expect_match(html, "These changes do not affect each other.", fixed = TRUE)
+  expect_match(html, "Apply all 2", fixed = TRUE)
+  expect_match(html, "Miro.resolveAiInputChangeGroup(this)", fixed = TRUE)
+  # gms-updateAiChatCard finds cards by this class and attribute
+  expect_match(html, "miro-ai-change-proposal", fixed = TRUE)
+  expect_match(html, 'data-change-id="group_aichg_a"', fixed = TRUE)
+})
+
+test_that("the group card shows the combined effect step by step when changes interact", {
+  step <- mockTableChange()
+  step$preview$after <- c("170", "225")
+  html <- as.character(renderAiInputChangeGroup(
+    mockGroup(independent = FALSE, steps = list(mockTableChange(), step)), mockGroupLang
+  ))
+  expect_match(html, "Applied together, in this order:", fixed = TRUE)
+  expect_match(html, "1. Customer Demand (Value): multiply by 1.1 [Region = EU]", fixed = TRUE)
+  expect_match(html, "2. Customer Demand (Value)", fixed = TRUE)
+  expect_match(html, ">225<", fixed = TRUE)
+  expect_false(grepl("do not affect each other", html, fixed = TRUE))
+})
+
+test_that("the group card replaces its button once resolved", {
+  for (status in c("applied", "retired", "outdated", "failed")) {
+    html <- as.character(renderAiInputChangeGroup(
+      mockGroup(status = status, statusDetail = "too large"), mockGroupLang
+    ))
+    expect_false(grepl("Miro.resolveAiInputChangeGroup", html, fixed = TRUE))
+  }
+  expect_match(as.character(renderAiInputChangeGroup(mockGroup(status = "applied"), mockGroupLang)),
+    "All changes applied.",
+    fixed = TRUE
+  )
+  expect_match(as.character(renderAiInputChangeGroup(
+    mockGroup(status = "failed", statusDetail = "too large"), mockGroupLang
+  )), "Could not be applied: too large", fixed = TRUE)
+  expect_match(as.character(renderAiInputChangeGroup(
+    mockGroup(rebased = TRUE), mockGroupLang
+  )), "Group preview updated.", fixed = TRUE)
+})
+
+test_that("renderAiChatItem dispatches group items", {
+  html <- as.character(renderAiChatItem(list(role = "inputChangeGroup", group = mockGroup()), mockGroupLang))
+  expect_match(html, "miro-ai-change-group", fixed = TRUE)
+})

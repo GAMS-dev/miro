@@ -155,6 +155,17 @@ export function resolveAiInputChange(button, apply) {
     priority: 'event',
   });
 }
+export function resolveAiInputChangeGroup(button) {
+  const card = button.closest('.miro-ai-change-group');
+  if (!card) return;
+  // eslint-disable-next-line no-param-reassign
+  button.disabled = true;
+  Shiny.setInputValue('miroAiInputChangeGroupAction', {
+    id: card.dataset.changeId,
+  }, {
+    priority: 'event',
+  });
+}
 export function openMiroAiDrawer() {
   document.getElementById('miroAiDrawer').classList.add('open');
   document.body.classList.add('drawer-open');
@@ -222,15 +233,17 @@ const AI_SANITIZE_CONFIG = {
     'input', 'button', 'textarea', 'select', 'style', 'link', 'object', 'embed'],
   FORBID_ATTR: ['style', 'srcset', 'background', 'poster'],
 };
-DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-  if (node.tagName === 'A' && node.hasAttribute('href')) {
-    node.setAttribute('target', '_blank');
-    node.setAttribute('rel', 'noopener noreferrer');
-  }
-});
+function openAiMessageLinksInNewTab(el) {
+  el.querySelectorAll('a[href]').forEach((link) => {
+    if (link.getAttribute('href').startsWith('#')) return;
+    link.setAttribute('target', '_blank');
+    link.setAttribute('rel', 'noopener noreferrer');
+  });
+}
 function hydrateAiMessageContent(el) {
   el.innerHTML = DOMPurify.sanitize(el.dataset.rawHtml, AI_SANITIZE_CONFIG);
   delete el.dataset.rawHtml;
+  openAiMessageLinksInNewTab(el);
   parseKatex(el, { delimiters: AI_KATEX_DELIMITERS });
   addCodeCopyButtons(el);
 }

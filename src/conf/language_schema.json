@@ -2393,6 +2393,42 @@
               "type": "string",
               "minLength": 1
             },
+            "changeRebased": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupRebased": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupIndependent": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupCombined": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupStatusApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupStatusRetired": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyAllChanges": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfChangesApplied": {
+              "type": "string",
+              "minLength": 1
+            },
             "toolActivityStatusError": {
               "type": "string",
               "minLength": 1
@@ -2442,7 +2478,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 59
+          "minProperties": 68
         },
         "hcubeMode": {
           "type": "object",
