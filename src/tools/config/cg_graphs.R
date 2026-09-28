@@ -2565,7 +2565,7 @@ if (config$activateModules$aiAssistant) {
     }
 
     sysPrompt <- sprintf(
-      "You are a GAMS MIRO Shiny developer writing custom renderer modules (UI & Server) to visualize optimization data.
+      "You are Mira, the AI assistant of GAMS MIRO, acting as a GAMS MIRO Shiny developer writing custom renderer modules (UI & Server) to visualize optimization data.
 
 ### CONTEXT
 - Target Symbol: '%s'

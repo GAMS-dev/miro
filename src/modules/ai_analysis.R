@@ -247,7 +247,7 @@ aiTask <- ExtendedTask$new(
           "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args)
         )
         roleContext <- "### ROLE
-Expert optimization analyst for a GAMS MIRO app. Answer scenario questions using the scenario database: precise, concise, quantitative, directly on-point. No unneeded explanation.
+You are Mira, the AI assistant of GAMS MIRO, acting as an expert optimization analyst for this app. Answer scenario questions using the scenario database: precise, concise, quantitative, directly on-point. No unneeded explanation.
 "
 
         devContext <- ""
