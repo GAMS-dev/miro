@@ -20,6 +20,12 @@ const signInPage = (message) => `<!DOCTYPE html><html><head><meta charset="utf-8
 <title>GAMS MIRO</title></head><body style="font-family: sans-serif; margin: 3em">
 <h2>GAMS MIRO</h2><p>${message}</p></body></html>`;
 
+const describeSignInError = (err) => {
+  const message = String(err?.errorMessage || err?.message || err || 'Unknown error').split(/\r?\n/)[0].trim();
+  const code = err?.errorCode;
+  return code && !message.includes(code) ? `${code}: ${message}` : message;
+};
+
 const firstAccount = async (client) => {
   const accounts = await client.getTokenCache().getAllAccounts();
   return accounts[0] ?? null;
@@ -126,14 +132,17 @@ class AzureUserAuth {
         client.acquireTokenInteractive({
           scopes: AZURE_AI_SCOPES,
           prompt: 'select_account',
+          responseMode: 'query',
           openBrowser: (url) => this.#openExternal(url),
-          successTemplate: signInPage('You are signed in. You can close this tab and return to MIRO.'),
-          errorTemplate: signInPage('Sign-in failed. You can close this tab and try again in MIRO.'),
+          successTemplate: signInPage('You are signed in. You can close this tab and return to GAMS MIRO.'),
+          errorTemplate: signInPage('Sign-in failed. You can close this tab; the reason is shown in GAMS MIRO.'),
         }),
         timeout,
       ]);
       await this.#writeTokenFile(result);
       return result.account?.username ?? null;
+    } catch (err) {
+      throw new Error(describeSignInError(err));
     } finally {
       clearTimeout(timeoutId);
     }

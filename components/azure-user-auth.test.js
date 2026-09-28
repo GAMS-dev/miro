@@ -51,7 +51,8 @@ const fakeClientFactory = (behaviour = {}) => {
       acquireTokenSilent: behaviour.acquireTokenSilent ?? (async () => ({
         accessToken: 'silent-token', expiresOn: new Date(Date.now() + 3600e3),
       })),
-      acquireTokenInteractive: async (request) => {
+      acquireTokenInteractive: behaviour.acquireTokenInteractive ?? (async (request) => {
+        state.interactiveRequest = request;
         await request.openBrowser('https://login.microsoftonline.com/authorize?x');
         state.accounts = [{ username: 'user@contoso.com' }];
         await plugin.afterCacheAccess({ tokenCache, cacheHasChanged: true });
@@ -60,7 +61,7 @@ const fakeClientFactory = (behaviour = {}) => {
           expiresOn: new Date(Date.now() + 3600e3),
           account: state.accounts[0],
         };
-      },
+      }),
     };
     created.push(client);
     return client;
@@ -180,4 +181,26 @@ test('missing tenant or client ids never reach MSAL', async () => {
   await expect(auth.signIn({ tenantId: '', clientId: CLIENT })).rejects.toThrow('missing');
   await expect(auth.signIn({ tenantId: TENANT, clientId: '' })).rejects.toThrow('missing');
   expect(createClient.created).toEqual([]);
+});
+
+test('sign-in returns the result in the redirect query, not as a non-secure form post', async () => {
+  const createClient = fakeClientFactory();
+  const { auth } = await newAuth({ createClient });
+  await auth.signIn(signInEntry);
+  expect(createClient.created[0].state.interactiveRequest.responseMode).toBe('query');
+});
+
+test('a failed sign-in reports Entra\'s reason, without trace ids', async () => {
+  const createClient = fakeClientFactory({
+    acquireTokenInteractive: async () => {
+      throw Object.assign(new Error('invalid_request'), {
+        errorCode: 'invalid_request',
+        errorMessage: 'AADSTS50011: The redirect URI does not match.\r\nTrace ID: abc\r\nCorrelation ID: def',
+      });
+    },
+  });
+  const { auth } = await newAuth({ createClient });
+  await expect(auth.signIn(signInEntry)).rejects.toThrow(
+    /^invalid_request: AADSTS50011: The redirect URI does not match\.$/,
+  );
 });
