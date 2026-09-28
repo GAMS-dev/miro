@@ -5,6 +5,7 @@ import {
   TouchBar,
   ipcMain,
   dialog,
+  safeStorage,
   session,
   shell,
 } from 'electron';
@@ -28,6 +29,7 @@ import ConfigManager from './components/ConfigManager.js';
 import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
+import { AzureUserAuth } from './components/azure-user-auth.cjs';
 import {
   apiVersion,
   miroVersion,
@@ -108,6 +110,13 @@ const miroResourcePath = DEVELOPMENT_MODE
   ? path.join(app.getAppPath(), 'src')
   : path.join(process.resourcesPath, 'src');
 
+const azureUserAuth = errMsg ? null : new AzureUserAuth({
+  storageDir: path.join(configData.getConfigPath(), 'ai-assistant'),
+  safeStorage,
+  openExternal: (url) => shell.openExternal(url),
+  log,
+});
+
 const miroProcessManager = new MiroProcessManager(
   configData,
   miroDevelopMode,
@@ -115,6 +124,7 @@ const miroProcessManager = new MiroProcessManager(
   miroResourcePath,
   appDataPath,
   miroWorkspaceDir,
+  azureUserAuth,
 );
 
 log.info(`MIRO launcher is being started (rootDir: ${appRootDir}, pid: ${process.pid}, \
@@ -2281,6 +2291,7 @@ ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
   log.debug('Save general config request received.');
   try {
     configData.set(newConfigData);
+    azureUserAuth?.refreshTokenFile(await configData.get('aiAssistantConfig'));
     if (settingsWindow) {
       if (needRestart === true) {
         if (
@@ -2319,6 +2330,25 @@ ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
     }
   }
 });
+// Microsoft sign-in for the AI assistant's Azure AI Foundry provider. Only the
+// settings window may use it: these hand out access tokens, and MIRO app
+// windows show app content.
+const handleAzureUserAuth = (channel, handler) => {
+  ipcMain.handle(channel, async (e, azureConfig) => {
+    if (!azureUserAuth || e.sender !== settingsWindow?.webContents) {
+      throw new Error('Not allowed.');
+    }
+    return handler(azureConfig);
+  });
+};
+handleAzureUserAuth('azure-sign-in', (azureConfig) => azureUserAuth.signIn(azureConfig));
+handleAzureUserAuth('azure-sign-out', (azureConfig) => azureUserAuth.signOut(azureConfig));
+handleAzureUserAuth('azure-signed-in-user', (azureConfig) => azureUserAuth.getSignedInUser(azureConfig));
+handleAzureUserAuth('azure-access-token', async (azureConfig) => {
+  const result = await azureUserAuth.getAccessToken(azureConfig);
+  return result?.accessToken ?? null;
+});
+
 ipcMain.on('validate-app', (e, filePath) => {
   validateMIROApp(filePath);
 });
@@ -2616,6 +2646,9 @@ app.on('ready', async () => {
     createMainWindow(false, focusMainWindow, () => searchLibPath());
   }
 
+  // keeps the access token handed to R processes fresh while MIRO runs
+  azureUserAuth?.startRefresher(() => configData.get('aiAssistantConfig'));
+
   log.info('MIRO launcher started successfully.');
 });
 
@@ -2627,6 +2660,8 @@ app.on('will-quit', async (e) => {
   e.preventDefault();
   log.debug('Terminating potentially open R processes.');
   await miroProcessManager.terminateAll();
+  azureUserAuth?.stopRefresher();
+  await azureUserAuth?.removeTokenFile();
   app.exit(0);
 });
 app.on('activate', () => {

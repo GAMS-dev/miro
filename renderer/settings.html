@@ -699,6 +699,105 @@
                   </div>
                 </div>
               </div>
+              <div class="setting-wrapper setting-wrapper--stacked">
+                <div class="settings-label">
+                  <label
+                    id="keyAzureLabel"
+                    for="azureEndpoint"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Azure AI Foundry
+                  </label>
+                  <span
+                    id="statusAzure"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="azureEndpoint"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="https://&lt;resource&gt;.services.ai.azure.com"
+                    />
+                    <select
+                      id="azureAuthMode"
+                      class="miro-launcher-input form-control ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                    >
+                      <option value="userSignIn" class="ai-azure-auth-user">
+                        Sign in with Microsoft (recommended)
+                      </option>
+                      <option value="apiKey" class="ai-azure-auth-key">
+                        API key
+                      </option>
+                    </select>
+                    <input
+                      id="keyAzure"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="API key"
+                    />
+                    <input
+                      id="azureTenantId"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input ai-azure-entra"
+                      style="width: 100%; margin-top: 5px; display: none"
+                      type="text"
+                      placeholder="Directory (tenant) ID"
+                    />
+                    <input
+                      id="azureClientId"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input ai-azure-entra"
+                      style="width: 100%; margin-top: 5px; display: none"
+                      type="text"
+                      placeholder="Application (client) ID"
+                    />
+                    <div
+                      id="azureSignInRow"
+                      class="ai-azure-user"
+                      style="width: 100%; margin-top: 5px; display: none"
+                    >
+                      <button
+                        id="azureSignInButton"
+                        type="button"
+                        class="btn btn-secondary btn-sm ai-azure-sign-in"
+                      >
+                        Sign in with Microsoft
+                      </button>
+                      <button
+                        id="azureSignOutButton"
+                        type="button"
+                        class="btn btn-link btn-sm ai-azure-sign-out"
+                        style="display: none"
+                      >
+                        Sign out
+                      </button>
+                      <small id="azureSignInStatus" class="form-text"></small>
+                    </div>
+                    <textarea
+                      id="azureDeployments"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="gpt4o-prod"
+                    ></textarea>
+                    <small
+                      id="keyAzureHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-custom-provider-deployments-info"
+                        >One deployment per line, optionally as "Label =
+                        deployment-name".</span
+                      >
+                    </small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div

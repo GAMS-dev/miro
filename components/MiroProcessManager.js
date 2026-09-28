@@ -39,8 +39,10 @@ class MiroProcessManager {
     miroResourcePath,
     appDataPath,
     miroWorkspaceDir,
+    azureUserAuth = null,
   ) {
     this.configData = configData;
+    this.azureUserAuth = azureUserAuth;
     this.inDevelopmentMode = inDevelopmentMode;
     this.isInBuildMode = isInBuildMode;
     this.miroResourcePath = miroResourcePath;
@@ -239,6 +241,13 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     const aiAssistantConfigRaw = await aiAssistantConfigPromise;
     if (aiAssistantConfigRaw?.apiKeys?.length > 0) {
       procEnv.MIRO_AI_ASSISTANT_CONFIG = JSON.stringify(aiAssistantConfigRaw);
+      // Azure with Microsoft sign-in: R reads the signed-in user's current
+      // access token from this file, which the launcher keeps fresh
+      if (this.azureUserAuth
+        && this.azureUserAuth.constructor.findUserSignInEntry(aiAssistantConfigRaw)) {
+        await this.azureUserAuth.refreshTokenFile(aiAssistantConfigRaw);
+        procEnv.MIRO_AZURE_ACCESS_TOKEN_FILE = this.azureUserAuth.tokenFile;
+      }
       // TODO: Disable debug logging by default
       procEnv.MIRO_AI_ASSISTANT_DEBUG_FILE_PATH = path.join(this.miroWorkspaceDir, 'ai_assistant_trace.log');
     }

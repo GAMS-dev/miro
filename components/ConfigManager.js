@@ -12,6 +12,19 @@ const minR = '4.0';
 const minPython = '3.8';
 const gamsDirNameRegex = /^(GAMS)?(\d+\.\d+)$/;
 
+const aiCustomProviderModelsSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', minLength: 1 },
+      label: { type: 'string' },
+    },
+    required: ['id'],
+    additionalProperties: false,
+  },
+};
+
 const schema = {
   previousMIROVersion: {
     type: 'string',
@@ -82,8 +95,26 @@ const schema = {
             },
             provider: {
               type: 'string',
-              enum: ['openai', 'google', 'anthropic'],
-            }
+              enum: ['openai', 'google', 'anthropic', 'azure'],
+            },
+            endpoint: {
+              type: 'string',
+              pattern: '^https://([A-Za-z0-9-]+\\.)+[A-Za-z]{2,63}(/[A-Za-z0-9._~-]*)*$',
+            },
+            authMode: {
+              type: 'string',
+              enum: ['apiKey', 'userSignIn'],
+            },
+            // a GUID, or a verified domain such as contoso.onmicrosoft.com
+            tenantId: {
+              type: 'string',
+              pattern: '^([0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}|[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+)$',
+            },
+            clientId: {
+              type: 'string',
+              pattern: '^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$',
+            },
+            models: aiCustomProviderModelsSchema,
           },
           additionalProperties: false,
         }

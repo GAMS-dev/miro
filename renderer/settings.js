@@ -11,7 +11,7 @@ const {
   EngineError,
 } = require('../components/engine.cjs');
 const {
-  testAiProviderApiKey, KEY_VALID, KEY_INVALID,
+  testAiProviderApiKey, testAzureFoundryConnection, KEY_VALID, KEY_INVALID,
 } = require('../components/ai-assistant.cjs');
 const { EnvEditor } = require('./env-editor.cjs');
 
@@ -50,8 +50,29 @@ let aiKeyValidation = Promise.resolve();
 const aiProviders = [
   { id: 'OpenAi', name: 'openai' },
   { id: 'Anthropic', name: 'anthropic' },
-  { id: 'Google', name: 'google' }
+  { id: 'Google', name: 'google' },
+  { id: 'Azure', name: 'azure' },
 ];
+const CUSTOM_AI_PROVIDER_NAMES = ['azure'];
+
+const CUSTOM_AI_PROVIDERS = {
+  azure: {
+    name: 'azure',
+    fields: {
+      endpoint: 'azureEndpoint', authMode: 'azureAuthMode',
+      key: 'keyAzure', tenantId: 'azureTenantId', clientId: 'azureClientId', deployments: 'azureDeployments',
+    },
+    // which fields each auth mode uses; the others are hidden, and neither
+    // validated nor saved
+    fieldsByAuthMode: {
+      // recommended: the user's own Microsoft account, no stored secret at all
+      userSignIn: ['endpoint', 'authMode', 'tenantId', 'clientId'],
+      apiKey: ['endpoint', 'authMode', 'key'],
+    },
+    test: testAzureFoundryConnection,
+    hasAuthModeToggle: true,
+  },
+};
 
 const optionAliasMap = {
   language: {
@@ -513,6 +534,15 @@ const disableAiAssistant = () => {
   $('#aiAssistantForm').hide();
   $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
   $('.ai-key-input').val('').removeClass('is-valid is-invalid');
+  // a <select> is not covered by the .ai-key-input value clear above, and only
+  // Azure has one, so this is a no-op for every other custom provider
+  Object.values(CUSTOM_AI_PROVIDERS).forEach((provider) => {
+    if (provider.hasAuthModeToggle) {
+      const authModeField = document.getElementById(provider.fields.authMode);
+      authModeField.value = 'userSignIn';
+      authModeField.dispatchEvent(new Event('change'));
+    }
+  });
 };
 $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   saveButton.attr('disabled', false);
@@ -571,6 +601,9 @@ ipcRenderer.on(
     $('#aiAssistantForm').show();
   })
 aiProviders.forEach(provider => {
+  if (CUSTOM_AI_PROVIDER_NAMES.includes(provider.name)) {
+    return;
+  }
   const inputElement = document.getElementById(`key${provider.id}`);
   const badgeElement = document.getElementById(`status${provider.id}`);
 
@@ -666,6 +699,235 @@ aiProviders.forEach(provider => {
   });
 });
 
+const parseCustomProviderDeployments = (raw) => raw
+  .split('\n')
+  .map((line) => line.trim())
+  .filter((line) => line !== '')
+  .map((line) => {
+    const separator = line.indexOf('=');
+    if (separator === -1) {
+      return { id: line };
+    }
+    return {
+      label: line.slice(0, separator).trim(),
+      id: line.slice(separator + 1).trim(),
+    };
+  })
+  .filter((deployment) => deployment.id !== '');
+
+function registerCustomProvider({
+  name, fields: fieldIds, fieldsByAuthMode, test, hasAuthModeToggle,
+}) {
+  const fields = Object.fromEntries(
+    Object.entries(fieldIds).map(([key, id]) => [key, document.getElementById(id)]),
+  );
+  const badge = document.getElementById(`status${name[0].toUpperCase()}${name.slice(1)}`);
+  const inputSelector = `.ai-${name}-input`;
+
+  const fieldsInUse = (authMode) => fieldsByAuthMode?.[authMode]
+    ?? Object.keys(fields).filter((key) => key !== 'deployments');
+  const requiredFields = (authMode) => fieldsInUse(authMode).filter((key) => key !== 'authMode');
+  const isUserSignIn = () => fields.authMode?.value === 'userSignIn';
+
+  // Microsoft sign-in (Azure only). The browser flow, the token cache and the
+  // tokens themselves live in the main process (components/azure-user-auth.cjs).
+  const signInRow = document.getElementById(`${name}SignInRow`);
+  const signInStatus = document.getElementById(`${name}SignInStatus`);
+  const signInButton = document.getElementById(`${name}SignInButton`);
+  const signOutButton = document.getElementById(`${name}SignOutButton`);
+  const signInConfig = () => ({ tenantId: fields.tenantId.value.trim(), clientId: fields.clientId.value.trim() });
+  const showSignedInUser = (username) => {
+    signInStatus.textContent = username
+      ? `${lang['ai-azure-signed-in-as'] ?? 'Signed in as'} ${username}`
+      : (lang['ai-azure-not-signed-in'] ?? 'Not signed in');
+    $(signOutButton).toggle(Boolean(username));
+  };
+  const refreshSignInStatus = async () => {
+    if (!signInRow || !isUserSignIn()) return;
+    const config = signInConfig();
+    if (!config.tenantId || !config.clientId) {
+      showSignedInUser(null);
+      return;
+    }
+    try {
+      showSignedInUser(await ipcRenderer.invoke(`${name}-signed-in-user`, config));
+    } catch (err) {
+      showSignedInUser(null);
+    }
+  };
+
+  // blank fields and those the selected auth mode does not use are left out:
+  // the config schema rejects empty strings, and a hidden stale value must
+  // not end up in the saved config
+  const readConfig = () => {
+    const values = Object.fromEntries(
+      Object.entries(fields)
+        .filter(([key]) => key !== 'deployments')
+        .map(([key, el]) => [key, el.value.trim()]),
+    );
+    return Object.fromEntries(
+      fieldsInUse(values.authMode)
+        .filter((key) => values[key] !== '')
+        .map((key) => [key, values[key]]),
+    );
+  };
+
+  if (hasAuthModeToggle) {
+    const authModeChanged = () => {
+      const authMode = fields.authMode.value;
+      const used = fieldsInUse(authMode);
+      Object.entries(fields).forEach(([key, el]) => {
+        if (key !== 'authMode' && key !== 'deployments') {
+          $(el).toggle(used.includes(key));
+        }
+      });
+      $(signInRow).toggle(authMode === 'userSignIn');
+      refreshSignInStatus();
+    };
+    fields.authMode.addEventListener('change', authModeChanged);
+    authModeChanged();
+    fields.tenantId.addEventListener('change', refreshSignInStatus);
+    fields.clientId.addEventListener('change', refreshSignInStatus);
+  }
+  const stored = () => newConfig.aiAssistantConfig?.apiKeys?.find(
+    (entry) => entry.provider === name,
+  );
+  const dropStored = () => {
+    const index = newConfig.aiAssistantConfig?.apiKeys?.findIndex(
+      (entry) => entry.provider === name,
+    ) ?? -1;
+    if (index !== -1) {
+      newConfig.aiAssistantConfig.apiKeys.splice(index, 1);
+    }
+  };
+  const setStatus = (statusKey, valid) => {
+    const variant = { connected: 'success', invalid: 'danger', error: 'danger' }[statusKey]
+      ?? 'secondary';
+    badge.className = `ai-key-status badge badge-${variant}`;
+    badge.innerText = lang[`ai-key-status-${statusKey}`];
+    $(inputSelector).removeClass('is-valid is-invalid');
+    if (valid !== undefined) {
+      $(inputSelector).addClass(valid ? 'is-valid' : 'is-invalid');
+    }
+  };
+
+  const validate = async () => {
+    const config = readConfig();
+    const deployments = parseCustomProviderDeployments(fields.deployments.value);
+    const isComplete = requiredFields(config.authMode).every((key) => config[key])
+      && deployments.length > 0;
+    const isEmpty = requiredFields(config.authMode).every((key) => !config[key])
+      && deployments.length === 0;
+
+    if (isEmpty) {
+      // an entirely empty form is an explicit request to remove the configuration
+      dropStored();
+      setStatus('not-configured');
+      saveButton.attr('disabled', false);
+      return;
+    }
+    if (!isComplete) {
+      // still being filled in: say nothing rather than reporting a bad credential
+      setStatus('not-configured');
+      saveButton.attr('disabled', false);
+      return;
+    }
+
+    const previous = stored();
+    const unchanged = previous
+      && Object.keys(config).every((key) => previous[key] === config[key])
+      && JSON.stringify(previous.models?.map((m) => m.id) ?? [])
+        === JSON.stringify(deployments.map((d) => d.id));
+    if (unchanged) {
+      // nothing changed, and a config only reaches newConfig after it
+      // validated, so merely tabbing through the fields must not re-probe
+      setStatus('connected', true);
+      return;
+    }
+
+    let accessToken;
+    if (config.authMode === 'userSignIn') {
+      // silent only: the browser opens from the sign-in button, never on blur
+      accessToken = await ipcRenderer.invoke(`${name}-access-token`, signInConfig()).catch(() => null);
+      if (!accessToken) {
+        // cannot verify without a signed-in user, but that says nothing
+        // about the configuration itself, so a stored one is kept
+        setStatus('not-configured');
+        showSignedInUser(null);
+        saveButton.attr('disabled', false);
+        return;
+      }
+    }
+
+    setStatus('validating');
+    saveButton.attr('disabled', true);
+    try {
+      __electronLog.debug(`Validating ${name} connection`);
+      const { status, models } = await test(config, deployments, { accessToken });
+
+      if (status === KEY_VALID) {
+        __electronLog.debug(`${name} connection valid, ${models.length} deployment(s)`);
+        setStatus('connected', true);
+        newConfig.aiAssistantConfig ??= {};
+        newConfig.aiAssistantConfig.apiKeys ??= [];
+        dropStored();
+        newConfig.aiAssistantConfig.apiKeys.push({ provider: name, ...config, models });
+        // deployments found unusable are dropped, so show what was stored
+        fields.deployments.value = models
+          .map((model) => (model.label === model.id ? model.id : `${model.label} = ${model.id}`))
+          .join('\n');
+      } else if (status === KEY_INVALID) {
+        __electronLog.debug(`${name} rejected the configuration`);
+        dropStored();
+        setStatus('invalid', false);
+      } else {
+        __electronLog.warn(`Could not reach ${name} to validate the configuration`);
+        setStatus('error', false);
+      }
+    } catch (err) {
+      __electronLog.warn(`Failed validating ${name} configuration. Error: ${err}`);
+      setStatus('error', false);
+    } finally {
+      saveButton.attr('disabled', false);
+    }
+  };
+
+  Object.values(fields).forEach((field) => {
+    field.addEventListener('blur', () => {
+      aiKeyValidation = Promise.allSettled([aiKeyValidation, validate()]);
+    });
+  });
+
+  if (signInButton) {
+    signInButton.addEventListener('click', async () => {
+      const config = signInConfig();
+      if (!config.tenantId || !config.clientId) {
+        signInStatus.textContent = lang['ai-azure-sign-in-missing-ids']
+          ?? 'Enter the tenant ID and application (client) ID first.';
+        return;
+      }
+      signInButton.disabled = true;
+      signInStatus.textContent = lang['ai-azure-signing-in'] ?? 'Complete the sign-in in your browser...';
+      try {
+        showSignedInUser(await ipcRenderer.invoke(`${name}-sign-in`, config));
+        aiKeyValidation = Promise.allSettled([aiKeyValidation, validate()]);
+      } catch (err) {
+        __electronLog.warn(`Microsoft sign-in failed: ${err.message}`);
+        signInStatus.textContent = lang['ai-azure-sign-in-failed'] ?? 'Sign-in failed.';
+      } finally {
+        signInButton.disabled = false;
+      }
+    });
+    signOutButton.addEventListener('click', async () => {
+      await ipcRenderer.invoke(`${name}-sign-out`, signInConfig()).catch(() => {});
+      showSignedInUser(null);
+      setStatus('not-configured');
+    });
+  }
+}
+
+Object.values(CUSTOM_AI_PROVIDERS).forEach(registerCustomProvider);
+
 ipcRenderer.on(
   'settings-loaded',
   (e, data, defaults, langData, customColorsFileExists) => {
@@ -752,7 +1014,12 @@ ipcRenderer.on(
         'ai-key-status-invalid',
         'ai-key-status-connected',
         'ai-no-key-info',
-        'ai-no-key-link'].forEach((className) => {
+        'ai-no-key-link',
+        'ai-azure-auth-key',
+        'ai-azure-auth-user',
+        'ai-azure-sign-in',
+        'ai-azure-sign-out',
+        'ai-custom-provider-deployments-info'].forEach((className) => {
           $(`.${className}`).text(lang[className]);
         });
       $('.ai-key-status').text(lang['ai-key-status-not-configured']);
@@ -855,10 +1122,33 @@ ipcRenderer.on(
             __electronLog.warn(`Unknown AI provider in config: ${apiKey.provider}. Skipping.`);
             return;
           }
-          const inputElement = document.getElementById(`key${provider.id}`);
           const badgeElement = document.getElementById(`status${provider.id}`);
-          inputElement.value = apiKey.key;
-          inputElement.classList.add('is-valid');
+          const customProvider = CUSTOM_AI_PROVIDERS[apiKey.provider];
+          if (customProvider != null) {
+            // several fields rather than a single key, so it cannot go through
+            // the `key${provider.id}` lookup the other providers use
+            Object.entries(customProvider.fields).forEach(([configKey, fieldId]) => {
+              const el = document.getElementById(fieldId);
+              if (configKey === 'deployments') {
+                el.value = (apiKey.models ?? [])
+                  .map((model) => (!model.label || model.label === model.id
+                    ? model.id : `${model.label} = ${model.id}`))
+                  .join('\n');
+              } else if (configKey === 'authMode') {
+                el.value = apiKey.authMode ?? 'userSignIn';
+              } else {
+                el.value = apiKey[configKey] ?? '';
+              }
+            });
+            if (customProvider.hasAuthModeToggle) {
+              document.getElementById(customProvider.fields.authMode).dispatchEvent(new Event('change'));
+            }
+            $(`.ai-${apiKey.provider}-input`).addClass('is-valid');
+          } else {
+            const inputElement = document.getElementById(`key${provider.id}`);
+            inputElement.value = apiKey.key;
+            inputElement.classList.add('is-valid');
+          }
           badgeElement.className = 'ai-key-status badge badge-success';
           badgeElement.innerText = lang['ai-key-status-connected'];
         })

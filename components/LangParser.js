@@ -1305,6 +1305,46 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        'ai-azure-auth-key': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-custom-provider-deployments-info': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-auth-user': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-sign-in': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-sign-out': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-signed-in-as': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-not-signed-in': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-signing-in': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-sign-in-failed': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-azure-sign-in-missing-ids': {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: [
         'title',
@@ -1410,6 +1450,16 @@ const schema = {
         'ai-key-status-error',
         'ai-no-key-info',
         'ai-no-key-link',
+        'ai-azure-auth-key',
+        'ai-custom-provider-deployments-info',
+        'ai-azure-auth-user',
+        'ai-azure-sign-in',
+        'ai-azure-sign-out',
+        'ai-azure-signed-in-as',
+        'ai-azure-not-signed-in',
+        'ai-azure-signing-in',
+        'ai-azure-sign-in-failed',
+        'ai-azure-sign-in-missing-ids',
       ],
     },
   },
@@ -1747,6 +1797,16 @@ log file should be stored is invalid! Please enter only whole numbers!',
     'ai-key-status-error': 'Error',
     'ai-no-key-info': 'Don\'t have a key?',
     'ai-no-key-link': 'Get one here',
+    'ai-azure-auth-key': 'API key',
+    'ai-custom-provider-deployments-info': 'One deployment per line, optionally as "Label = deployment-name".',
+    'ai-azure-auth-user': 'Sign in with Microsoft (recommended)',
+    'ai-azure-sign-in': 'Sign in with Microsoft',
+    'ai-azure-sign-out': 'Sign out',
+    'ai-azure-signed-in-as': 'Signed in as',
+    'ai-azure-not-signed-in': 'Not signed in',
+    'ai-azure-signing-in': 'Complete the sign-in in your browser...',
+    'ai-azure-sign-in-failed': 'Sign-in failed.',
+    'ai-azure-sign-in-missing-ids': 'Enter the tenant ID and application (client) ID first.',
   },
 };
 const de = {
@@ -2097,7 +2157,17 @@ const de = {
   "ai-key-status-invalid": "Ungültiger Schlüssel",
   "ai-key-status-error": "Fehler",
   "ai-no-key-info": "Sie haben keinen Schlüssel?",
-  "ai-no-key-link": "Hier anfordern"
+  "ai-no-key-link": "Hier anfordern",
+  "ai-azure-auth-key": "API-Schlüssel",
+  "ai-custom-provider-deployments-info": "Eine Bereitstellung pro Zeile, optional als \"Bezeichnung = Bereitstellungsname\".",
+  "ai-azure-auth-user": "Mit Microsoft anmelden (empfohlen)",
+  "ai-azure-sign-in": "Mit Microsoft anmelden",
+  "ai-azure-sign-out": "Abmelden",
+  "ai-azure-signed-in-as": "Angemeldet als",
+  "ai-azure-not-signed-in": "Nicht angemeldet",
+  "ai-azure-signing-in": "Schließen Sie die Anmeldung in Ihrem Browser ab...",
+  "ai-azure-sign-in-failed": "Anmeldung fehlgeschlagen.",
+  "ai-azure-sign-in-missing-ids": "Geben Sie zuerst die Mandanten-ID und die Anwendungs-ID (Client-ID) ein."
   },
 };
 const cn = {
@@ -2409,6 +2479,16 @@ const cn = {
   "ai-key-status-error": "错误",
   "ai-no-key-info": "没有密钥？",
   "ai-no-key-link": "点此获取",
+  "ai-azure-auth-key": "API 密钥",
+  "ai-custom-provider-deployments-info": "每行一个部署，可写作“标签 = 部署名称”。",
+  "ai-azure-auth-user": "使用 Microsoft 登录（推荐）",
+  "ai-azure-sign-in": "使用 Microsoft 登录",
+  "ai-azure-sign-out": "注销",
+  "ai-azure-signed-in-as": "已登录为",
+  "ai-azure-not-signed-in": "未登录",
+  "ai-azure-signing-in": "请在浏览器中完成登录...",
+  "ai-azure-sign-in-failed": "登录失败。",
+  "ai-azure-sign-in-missing-ids": "请先输入租户 ID 和应用程序（客户端）ID。",
   },
 };
 

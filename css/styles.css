@@ -1058,6 +1058,16 @@ body:not(.edit-mode-active) .launch-app-box:hover {
   position: absolute;
   right: 10px;
 }
+.setting-wrapper--stacked {
+  flex-direction: column;
+  align-items: stretch;
+}
+.setting-wrapper--stacked .settings-item {
+  position: static;
+  width: 100%;
+  text-align: left;
+  margin-top: 10px;
+}
 .settings-checkbox {
   text-align: right;
   margin-bottom:15px;
