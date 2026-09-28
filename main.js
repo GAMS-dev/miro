@@ -1547,6 +1547,32 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
 
     miroAppWindows[appID].loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
 
+    // Links to other sites open in the system browser: navigating the app
+    // window away would end the Shiny session and with it the MIRO app, and a
+    // new Electron window is no place for arbitrary web content either. Links
+    // within the app itself (e.g. downloads) behave as before.
+    const appOrigin = new URL(url).origin;
+    const openExternally = (targetUrl) => {
+      try {
+        const { protocol, origin } = new URL(targetUrl);
+        if (origin !== appOrigin && ['http:', 'https:', 'mailto:'].includes(protocol)) {
+          shell.openExternal(targetUrl);
+          return true;
+        }
+      } catch (_) {
+        // not a valid URL: leave it to Electron's default handling
+      }
+      return false;
+    };
+    miroAppWindows[appID].webContents.setWindowOpenHandler(({ url: targetUrl }) => (
+      openExternally(targetUrl) ? { action: 'deny' } : { action: 'allow' }
+    ));
+    miroAppWindows[appID].webContents.on('will-navigate', (event, targetUrl) => {
+      if (openExternally(targetUrl)) {
+        event.preventDefault();
+      }
+    });
+
     miroAppWindows[appID].on('focus', () => {
       if (!applicationMenu) {
         return;
