@@ -19,14 +19,14 @@ test_that("MiroAiAssistant initializes correctly and validates API keys", {
 
   assistant <- MiroAiAssistant$new(config = valid_config)
 
-  expect_equal(assistant$apiKeys$openai, "sk-fake-openai")
-  expect_equal(assistant$apiKeys$anthropic, "sk-fake-anthropic")
+  expect_equal(assistant$apiKeys$openai$key, "sk-fake-openai")
+  expect_equal(assistant$apiKeys$anthropic$key, "sk-fake-anthropic")
   expect_null(assistant$apiKeys$google)
 })
 
 test_that("MiroAiAssistant filters supportedModels based on loaded keys", {
   # Only Google key provided
-  assistant <- MiroAiAssistant$new(apiKeys = list(google = "fake-key"))
+  assistant <- MiroAiAssistant$new(apiKeys = list(google = list(key = "fake-key")))
 
   supported <- assistant$supportedModels
   expect_true("google" %in% tolower(names(supported)))
@@ -36,8 +36,8 @@ test_that("MiroAiAssistant filters supportedModels based on loaded keys", {
 
 test_that("MiroAiAssistant getProvider returns correct R6 instances", {
   assistant <- MiroAiAssistant$new(apiKeys = list(
-    openai = "sk-openai",
-    google = "sk-google"
+    openai = list(key = "sk-openai"),
+    google = list(key = "sk-google")
   ))
 
   # Valid providers
@@ -695,4 +695,543 @@ test_that("MiroAiGoogleProvider sends userInput, not the raw last turn, after a 
   expect_equal(sentInput[[2]]$type, "model_output")
   expect_equal(sentInput[[3]]$type, "user_input")
   expect_equal(sentInput[[3]]$content[[1]]$text, "[context note]\n\ncurrent question")
+})
+
+# ==============================================================================
+# Azure AI Foundry
+# ==============================================================================
+
+azureEntry <- function(authMode = "apiKey",
+                       models = list(
+                         list(label = "GPT-4o", id = "gpt4o-prod"),
+                         list(label = "Llama 3.3 70B", id = "llama-33-70b")
+                       ), ...) {
+  modifyList(list(
+    provider = "azure", key = "secret-value",
+    endpoint = "https://res.services.ai.azure.com",
+    authMode = authMode,
+    tenantId = "11111111-2222-3333-4444-555555555555",
+    clientId = "66666666-7777-8888-9999-000000000000", models = models
+  ), list(...))
+}
+
+# Captures the outgoing payloads as well as returning canned responses, so the
+# replayed history can be asserted on. Only executeHttpCall is overridden here.
+MockAzureCapture <- R6Class("MockAzureCapture",
+  inherit = MiroAiAzureProvider,
+  public = list(
+    capturedPayloads = list(),
+    mockResponses = list(),
+    authHeaders = function() private$buildAuthHeaders(),
+    errorMessage = function(body, code) private$extractErrorMessage(body, code),
+    url = function() private$buildUrl()
+  ),
+  private = list(
+    callCount = 0,
+    executeHttpCall = function(payload) {
+      private$callCount <- private$callCount + 1
+      self$capturedPayloads[[private$callCount]] <- payload
+      if (private$callCount > length(self$mockResponses)) {
+        stop("Test Error: Ran out of mock responses.")
+      }
+      return(self$mockResponses[[private$callCount]])
+    }
+  )
+)
+
+# Canned Chat Completions API bodies
+azureTextResponse <- function(text, finishReason = "stop", usage = list(prompt_tokens = 1L, completion_tokens = 1L)) {
+  list(
+    id = "chatcmpl-1",
+    choices = list(list(
+      index = 0L, finish_reason = finishReason,
+      message = list(role = "assistant", content = text)
+    )),
+    usage = usage
+  )
+}
+
+azureToolResponse <- function(name, arguments, callId = "call_1",
+                              usage = list(prompt_tokens = 1L, completion_tokens = 1L)) {
+  list(
+    id = "chatcmpl-1",
+    choices = list(list(
+      index = 0L, finish_reason = "tool_calls",
+      message = list(role = "assistant", content = NULL, tool_calls = list(list(
+        id = callId, type = "function", `function` = list(name = name, arguments = arguments)
+      )))
+    )),
+    usage = usage
+  )
+}
+
+newAzureProvider <- function(entry = azureEntry(), model = "gpt4o-prod") {
+  config <- MiroAiAssistant$new(config = list(apiKeys = list(entry)))$apiKeys$azure
+  MockAzureCapture$new(model, config)
+}
+
+test_that("MiroAiAssistant parses an Azure entry alongside a plain-key provider", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(
+    list(provider = "openai", key = "sk-fake-openai"),
+    azureEntry()
+  )))
+
+  expect_equal(assistant$apiKeys$openai$key, "sk-fake-openai")
+  expect_equal(assistant$apiKeys$azure$endpoint, "https://res.services.ai.azure.com")
+  expect_equal(assistant$apiKeys$azure$authMode, "apikey")
+  expect_length(assistant$apiKeys$azure$models, 2L)
+})
+
+test_that("Azure endpoint is normalised and its models reach supportedModels", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(
+    azureEntry(endpoint = "https://res.services.ai.azure.com/")
+  )))
+
+  # a trailing slash would otherwise produce a double slash in the request URL
+  expect_equal(assistant$apiKeys$azure$endpoint, "https://res.services.ai.azure.com")
+  expect_equal(
+    assistant$supportedModels[["Azure AI Foundry"]],
+    c("GPT-4o" = "azure/gpt4o-prod", "Llama 3.3 70B" = "azure/llama-33-70b")
+  )
+  # the display name must not leak into the provider id
+  expect_s3_class(assistant$getProvider("azure", "gpt4o-prod"), "MiroAiAzureProvider")
+})
+
+test_that("Azure models survive the rebuild the mirai worker performs", {
+  # The worker only ever receives $apiKeys and rebuilds the assistant from it.
+  # If the Azure group were registered on the config branch alone, the dropdown
+  # would look right while every request failed as an unknown model.
+  fromConfig <- MiroAiAssistant$new(config = list(apiKeys = list(azureEntry())))
+  inWorker <- MiroAiAssistant$new(apiKeys = fromConfig$apiKeys)
+
+  expect_identical(inWorker$supportedModels, fromConfig$supportedModels)
+  expect_s3_class(inWorker$getProvider("azure", "llama-33-70b"), "MiroAiAzureProvider")
+})
+
+test_that("Azure config validation rejects malformed entries", {
+  expectAzureError <- function(regexp, ...) {
+    expect_error(
+      suppressWarnings(MiroAiAssistant$new(config = list(apiKeys = list(azureEntry(...))))),
+      regexp
+    )
+  }
+  expectAzureError("must be an https", endpoint = "http://insecure.example.com")
+  expectAzureError("must be an https", endpoint = "")
+  expectAzureError("authMode", authMode = "oauth")
+  expectAzureError("tenantId and clientId", authMode = "workloadIdentity", key = NULL, tenantId = NULL)
+  # the endpoint receives the credential: no userinfo, query or fragment
+  expectAzureError("without credentials", endpoint = "https://user@res.openai.azure.com")
+  expectAzureError("without credentials", endpoint = "https://res.openai.azure.com/?x=1")
+  expectAzureError("without credentials", endpoint = "https://res.openai.azure.com/#x")
+  expectAzureError("tenantId and clientId", authMode = "userSignIn", key = NULL, clientId = "")
+  expectAzureError("No usable AI models", models = list())
+
+  # a model entry without an id is dropped rather than trusted
+  expect_warning(
+    expect_error(
+      MiroAiAssistant$new(config = list(apiKeys = list(azureEntry(models = list(list(label = "x")))))),
+      "No usable AI models"
+    ),
+    "no model deployments"
+  )
+})
+
+test_that("Azure accepts every documented endpoint form", {
+  urlFor <- function(endpoint) {
+    newAzureProvider(azureEntry(endpoint = endpoint))$url()
+  }
+  # whatever the admin entered is tried as long as it is https: ports, IPs and
+  # internal names are all fine (e.g. a gateway or a Private Link endpoint)
+  expect_equal(urlFor("https://10.0.0.5:8443"), "https://10.0.0.5:8443/openai/v1/chat/completions")
+  expect_equal(urlFor("https://foundry.internal"), "https://foundry.internal/openai/v1/chat/completions")
+  expected <- "https://res.openai.azure.com/openai/v1/chat/completions"
+  expect_equal(urlFor("https://res.openai.azure.com"), expected)
+  expect_equal(urlFor("https://res.openai.azure.com/openai/v1/"), expected)
+  expect_equal(urlFor("https://res.openai.azure.com/openai/v1/chat/completions"), expected)
+  expect_equal(urlFor("https://res.openai.azure.com/openai/v1/responses"), expected)
+  # a custom domain, e.g. an API Management gateway, keeps its path too
+  expect_equal(
+    urlFor("https://ai-gateway.contoso.com/foundry/openai/v1"),
+    "https://ai-gateway.contoso.com/foundry/openai/v1/chat/completions"
+  )
+  # a Foundry project endpoint keeps its project path
+  expect_equal(
+    urlFor("https://res.services.ai.azure.com/api/projects/my-project"),
+    "https://res.services.ai.azure.com/api/projects/my-project/openai/v1/chat/completions"
+  )
+})
+
+test_that("Entra tenant ids are percent-encoded into the token URL", {
+  capturedUrl <- NULL
+  testthat::local_mocked_bindings(
+    POST = function(url, ...) {
+      capturedUrl <<- url
+      structure(list(), class = "response")
+    },
+    status_code = function(resp) 200L,
+    content = function(...) list(access_token = "tok", expires_in = 3600),
+    .package = "httr"
+  )
+  tokenFile <- tempfile()
+  writeLines("jwt", tokenFile)
+  MiroAzureEntraTokenProvider$new("contoso.onmicrosoft.com/x", "c", tokenFile)$getToken()
+  expect_equal(
+    capturedUrl,
+    "https://login.microsoftonline.com/contoso.onmicrosoft.com%2Fx/oauth2/v2.0/token"
+  )
+})
+
+test_that("retry waits prefer retry-after-ms, then retry-after, then backoff", {
+  withHeaders <- function(h) structure(list(headers = h), class = "response")
+  testthat::local_mocked_bindings(headers = function(resp) resp$headers, .package = "httr")
+  expect_equal(retryWaitSeconds(withHeaders(list(`retry-after-ms` = "1500", `retry-after` = "9")), 1L), 1.5)
+  expect_equal(retryWaitSeconds(withHeaders(list(`retry-after` = "3")), 1L), 3)
+  # an HTTP-date retry-after falls back to exponential backoff with jitter
+  wait <- retryWaitSeconds(withHeaders(list(`retry-after` = "Wed, 21 Oct 2026 07:28:00 GMT")), 2L)
+  expect_gte(wait, 2)
+  expect_lt(wait, 3)
+})
+
+test_that("a retry-after beyond the cap fails fast instead of blocking", {
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    POST = function(...) {
+      calls <<- calls + 1L
+      structure(list(), class = "response")
+    },
+    status_code = function(resp) 429L,
+    headers = function(resp) list(`retry-after` = "60"),
+    content = function(...) list(message = "slow down"),
+    .package = "httr"
+  )
+  expect_error(
+    httpPostWithRetry("https://x", NULL, list(), "Err: ", function(body, code) body$message),
+    "Err: slow down"
+  )
+  expect_equal(calls, 1L)
+})
+
+test_that("Azure duplicate model labels are disambiguated", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(azureEntry(models = list(
+    list(label = "GPT-4o", id = "gpt4o-prod"),
+    list(label = "GPT-4o", id = "gpt4o-test"),
+    list(id = "no-label")
+  )))))
+
+  # selectInput collapses duplicate choice names, which would silently hide a deployment
+  expect_equal(
+    assistant$supportedModels[["Azure AI Foundry"]],
+    c(
+      "GPT-4o (gpt4o-prod)" = "azure/gpt4o-prod",
+      "GPT-4o (gpt4o-test)" = "azure/gpt4o-test",
+      "no-label" = "azure/no-label"
+    )
+  )
+})
+
+test_that("Azure builds a Chat Completions payload", {
+  provider <- newAzureProvider()
+  provider$mockResponses <- list(azureTextResponse("Hello."))
+
+  result <- provider$sendMessage(
+    "What is the demand?", "SYSTEM INSTRUCTIONS",
+    tools = list(list(name = "getData", description = "d", parameters = list(type = "object")))
+  )
+
+  payload <- provider$capturedPayloads[[1]]
+  expect_equal(result$text, "Hello.")
+  expect_equal(payload$model, "gpt4o-prod")
+  expect_equal(payload$messages[[1]], list(role = "system", content = "SYSTEM INSTRUCTIONS"))
+  expect_equal(payload$messages[[2]], list(role = "user", content = "What is the demand?"))
+  expect_equal(payload$tools[[1]]$type, "function")
+  expect_equal(payload$tools[[1]]$`function`$name, "getData")
+  expect_null(payload$max_completion_tokens)
+  # no api-version query param: the v1 path is self-versioning
+  expect_equal(provider$url(), "https://res.services.ai.azure.com/openai/v1/chat/completions")
+})
+
+test_that("Azure surfaces truncation and content filtering", {
+  provider <- newAzureProvider()
+  provider$mockResponses <- list(azureTextResponse("partial", finishReason = "length"))
+  result <- provider$sendMessage("q", "sys")
+  expect_match(result$text, "truncated")
+
+  provider <- newAzureProvider()
+  provider$mockResponses <- list(azureTextResponse("", finishReason = "content_filter"))
+  result <- provider$sendMessage("q", "sys")
+  expect_match(result$text, "content safety policy")
+})
+
+test_that("Azure tool arguments reach the dispatcher simplified", {
+  provider <- newAzureProvider()
+  rawArguments <- '{"symbolName":"demand","scenarioNames":["Base","High Demand"],"filters":[{"column":"region","operator":"=","value":"EU"}]}'
+  provider$mockResponses <- list(
+    azureToolResponse("queryScenarioDatabase", rawArguments),
+    azureTextResponse("Done.")
+  )
+
+  received <- NULL
+  provider$sendMessage("q", "sys",
+    tools = list(list(name = "queryScenarioDatabase", description = "d", parameters = list())),
+    toolDispatcher = list(queryScenarioDatabase = function(args) {
+      received <<- args
+      toJSON(list(ok = TRUE), auto_unbox = TRUE)
+    })
+  )
+
+  # arguments arrive as a JSON string, so fromJSON() simplifies them in one step;
+  # simplifyToolArguments() would hand the dispatcher a bare string instead
+  expect_equal(received$symbolName, "demand")
+  expect_equal(received$scenarioNames, c("Base", "High Demand"))
+  expect_true(is.data.frame(received$filters))
+  expect_equal(received$filters$column, "region")
+})
+
+test_that("Azure passes tool output through as the original raw JSON string", {
+  # Same regression this guards against for OpenAI: fromJSON()-then-toJSON()
+  # would silently drop a literal "NA" cell (jsonlite's NA handling).
+  provider <- newAzureProvider()
+  rawArguments <- '{"symbolName":"demand"}'
+  provider$mockResponses <- list(
+    azureToolResponse("getData", rawArguments, callId = "call_abc"),
+    azureTextResponse("Done.")
+  )
+
+  toolOutput <- toJSON(data.frame(region = "NA", value = 42), dataframe = "rows", auto_unbox = TRUE)
+  provider$sendMessage("q", "sys",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(args) toolOutput)
+  )
+
+  sentMessages <- provider$capturedPayloads[[2]]$messages
+  # the assistant turn is replayed with its tool call, followed by the result
+  expect_equal(sentMessages[[3]]$tool_calls[[1]]$id, "call_abc")
+  toolMessage <- sentMessages[[4]]
+  expect_equal(toolMessage$role, "tool")
+  expect_equal(toolMessage$tool_call_id, "call_abc")
+  expect_equal(as.character(toolMessage$content), as.character(toolOutput))
+  expect_match(as.character(toolMessage$content), '"region":"NA"', fixed = TRUE)
+})
+
+test_that("Azure accumulates token usage across tool iterations", {
+  provider <- newAzureProvider()
+  provider$mockResponses <- list(
+    azureToolResponse("getData", "{}"),
+    azureTextResponse("Done.", usage = list(prompt_tokens = 7L, completion_tokens = 3L))
+  )
+
+  result <- provider$sendMessage("q", "sys",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(args) "{}")
+  )
+  expect_equal(result$inputTokens, 8L)
+  expect_equal(result$outputTokens, 4L)
+})
+
+test_that("Azure restores a prior chat history, then replays the full history", {
+  provider <- newAzureProvider()
+  provider$mockResponses <- list(azureTextResponse("Hi."), azureTextResponse("Again."))
+
+  provider$chatHistory <- list(
+    list(role = "user", text = "first"),
+    list(role = "model", text = "answer"),
+    list(role = "user", text = "second")
+  )
+  provider$sendMessage("second", "SYS ONE")
+
+  # the trailing entry is the message being sent, so it must not appear twice
+  firstMessages <- provider$capturedPayloads[[1]]$messages
+  expect_equal(vapply(firstMessages, function(m) m$role, character(1L)), c("system", "user", "assistant", "user"))
+  expect_equal(firstMessages[[2]]$content, "first")
+  expect_equal(firstMessages[[4]]$content, "second")
+
+  # Chat Completions keeps no server-side state: the next turn resends
+  # everything, with the system prompt of that request
+  provider$sendMessage("third", "SYS TWO")
+  secondMessages <- provider$capturedPayloads[[2]]$messages
+  expect_equal(secondMessages[[1]], list(role = "system", content = "SYS TWO"))
+  expect_equal(
+    vapply(secondMessages[-1], function(m) m$content, character(1L)),
+    c("first", "answer", "second", "Hi.", "third")
+  )
+  expect_null(provider$sessionId)
+})
+
+test_that("Azure selects the right auth header per mode", {
+  expect_equal(newAzureProvider()$authHeaders(), list(`api-key` = "secret-value"))
+
+  entraProvider <- newAzureProvider(azureEntry(authMode = "workloadIdentity", key = NULL))
+  fakeToken <- R6Class("FakeToken", public = list(getToken = function() "tok-123"))$new()
+  entraProvider$.__enclos_env__$private$tokenProvider <- fakeToken
+  expect_equal(entraProvider$authHeaders(), list(Authorization = "Bearer tok-123"))
+})
+
+test_that("Azure surfaces the varying error body shapes", {
+  provider <- newAzureProvider()
+  expect_equal(provider$errorMessage(list(error = list(message = "quota")), 429L), "quota")
+  expect_equal(provider$errorMessage(list(message = "bad deployment"), 404L), "bad deployment")
+  expect_equal(provider$errorMessage("plain text", 400L), "plain text")
+  expect_equal(provider$errorMessage(NULL, 500L), "HTTP 500")
+})
+
+test_that("Entra tokens are cached per instance and refreshed before they expire", {
+  MockToken <- R6Class("MockToken",
+    inherit = MiroAzureEntraTokenProvider,
+    public = list(fetchCount = 0, expiresIn = 3600),
+    private = list(
+      fetchEntraToken = function() {
+        self$fetchCount <- self$fetchCount + 1
+        list(access_token = paste0("tok-", self$fetchCount), expires_in = self$expiresIn)
+      }
+    )
+  )
+
+  provider <- MockToken$new("tenant", "client")
+  # one sendMessage can make up to 10 HTTP calls; each must not re-authenticate
+  tokens <- replicate(5, provider$getToken())
+  expect_equal(provider$fetchCount, 1L)
+  expect_equal(unique(tokens), "tok-1")
+
+  # an expired entry is refetched rather than handed out. Seed it directly:
+  # the five minute early refresh is floored at 60s, so no expires_in the
+  # token endpoint could return would make an entry stale straight away.
+  expiring <- MockToken$new("tenant2", "client2")
+  expect_equal(expiring$getToken(), "tok-1")
+  expiring$.__enclos_env__$private$expiresAt <- Sys.time() - 1
+  expect_equal(expiring$getToken(), "tok-2")
+  expect_equal(expiring$fetchCount, 2L)
+})
+
+test_that("workload identity needs no key but a tenant and client id", {
+  wiEntry <- azureEntry(authMode = "workloadIdentity", key = NULL)
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(wiEntry)))
+  expect_equal(assistant$apiKeys$azure$authMode, "workloadidentity")
+  expect_null(assistant$apiKeys$azure$key)
+  # a stale key left in the entry is dropped rather than kept around
+  withKey <- MiroAiAssistant$new(config = list(apiKeys = list(
+    azureEntry(authMode = "workloadIdentity", key = "leftover")
+  )))
+  expect_null(withKey$apiKeys$azure$key)
+
+  expect_error(
+    MiroAiAssistant$new(config = list(apiKeys = list(
+      azureEntry(authMode = "workloadIdentity", key = NULL, clientId = NULL)
+    ))),
+    "tenantId and clientId"
+  )
+  # only Azure workload identity is secretless
+  expect_error(
+    MiroAiAssistant$new(config = list(apiKeys = list(azureEntry(key = NULL)))),
+    "Invalid API key"
+  )
+})
+
+test_that("workload identity sends the projected token as client assertion", {
+  tokenFile <- tempfile()
+  writeLines("header.payload.signature", tokenFile)
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    POST = function(url, body, ...) {
+      captured <<- list(url = url, body = body)
+      structure(list(), class = "response")
+    },
+    status_code = function(resp) 200L,
+    content = function(...) list(access_token = "tok", expires_in = 3600),
+    .package = "httr"
+  )
+  provider <- MiroAzureEntraTokenProvider$new(
+    "11111111-2222-3333-4444-555555555555", "66666666-7777-8888-9999-000000000000",
+    federatedTokenFile = tokenFile
+  )
+  expect_equal(provider$getToken(), "tok")
+  expect_equal(captured$body$client_assertion, "header.payload.signature")
+  expect_equal(
+    captured$body$client_assertion_type,
+    "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+  )
+  expect_null(captured$body$client_secret)
+  expect_equal(captured$body$scope, "https://ai.azure.com/.default")
+})
+
+test_that("workload identity retries a failed federated token request", {
+  tokenFile <- tempfile()
+  writeLines("jwt", tokenFile)
+  calls <- 0L
+  testthat::local_mocked_bindings(
+    POST = function(...) {
+      calls <<- calls + 1L
+      structure(list(ok = calls > 1L), class = "response")
+    },
+    status_code = function(resp) if (resp$ok) 200L else 400L,
+    content = function(resp, ...) {
+      if (resp$ok) list(access_token = "tok") else list(error = "invalid_client")
+    },
+    .package = "httr"
+  )
+  provider <- MiroAzureEntraTokenProvider$new("t.onmicrosoft.com", "c", federatedTokenFile = tokenFile)
+  expect_equal(provider$getToken(), "tok")
+  expect_equal(calls, 2L)
+})
+
+test_that("workload identity without a mounted token fails with a clear message", {
+  provider <- MiroAzureEntraTokenProvider$new("t", "c", federatedTokenFile = tempfile())
+  expect_error(provider$getToken(), "not configured on this server")
+})
+
+test_that("the workload identity provider authenticates with a bearer token", {
+  provider <- newAzureProvider(azureEntry(authMode = "workloadIdentity", key = NULL))
+  fakeToken <- R6Class("FakeToken", public = list(getToken = function() "wi-tok"))$new()
+  provider$.__enclos_env__$private$tokenProvider <- fakeToken
+  expect_equal(provider$authHeaders(), list(Authorization = "Bearer wi-tok"))
+})
+
+test_that("desktop Microsoft sign-in reads the launcher's access token file", {
+  tokenFile <- tempfile()
+  writeToken <- function(expiresIn) {
+    writeLines(jsonlite::toJSON(list(
+      accessToken = "user-tok",
+      expiresOn = format(Sys.time() + expiresIn, "%Y-%m-%dT%H:%M:%OS3Z", tz = "UTC")
+    ), auto_unbox = TRUE), tokenFile)
+  }
+  writeToken(3600)
+  provider <- MiroAzureAccessTokenFileProvider$new(tokenFile)
+  expect_equal(provider$getToken(), "user-tok")
+  # the launcher replaces the file, so every call must see the current one
+  writeToken(30)
+  expect_error(provider$getToken(), "has expired")
+  expect_error(MiroAzureAccessTokenFileProvider$new(tempfile())$getToken(), "not signed in")
+  expect_error(MiroAzureAccessTokenFileProvider$new("")$getToken(), "not signed in")
+})
+
+test_that("desktop Microsoft sign-in is secretless and authenticates as the user", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(
+    azureEntry(authMode = "userSignIn", key = NULL)
+  )))
+  expect_equal(assistant$apiKeys$azure$authMode, "usersignin")
+  expect_null(assistant$apiKeys$azure$key)
+
+  tokenFile <- tempfile()
+  writeLines(jsonlite::toJSON(list(
+    accessToken = "user-tok",
+    expiresOn = format(Sys.time() + 3600, "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC")
+  ), auto_unbox = TRUE), tokenFile)
+  withr::local_envvar(MIRO_AZURE_ACCESS_TOKEN_FILE = tokenFile)
+  provider <- newAzureProvider(azureEntry(authMode = "userSignIn", key = NULL))
+  expect_equal(provider$authHeaders(), list(Authorization = "Bearer user-tok"))
+})
+
+test_that("Entra authentication failures surface the AADSTS code, not the assertion", {
+  tokenFile <- tempfile()
+  writeLines("assertion-jwt", tokenFile)
+  testthat::local_mocked_bindings(
+    POST = function(...) structure(list(), class = "response"),
+    status_code = function(resp) 400L,
+    content = function(...) list(error_description = "AADSTS70021: No matching federated identity record found."),
+    .package = "httr"
+  )
+  err <- tryCatch(MiroAzureEntraTokenProvider$new("t.onmicrosoft.com", "c", tokenFile)$getToken(),
+    error = function(e) conditionMessage(e)
+  )
+  expect_match(err, "AADSTS70021")
+  expect_false(grepl("assertion-jwt", err, fixed = TRUE))
 })

@@ -499,6 +499,263 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
   )
 )
 
+azureFederatedTokenFile <- function() {
+  return(Sys.getenv(
+    "AZURE_FEDERATED_TOKEN_FILE",
+    "/var/run/secrets/azure/tokens/azure-identity-token"
+  ))
+}
+
+MiroAzureEntraTokenProvider <- R6Class("MiroAzureEntraTokenProvider",
+  public = list(
+    initialize = function(tenantId, clientId,
+                          federatedTokenFile = azureFederatedTokenFile(),
+                          scope = "https://ai.azure.com/.default") {
+      private$tenantId <- tenantId
+      private$clientId <- clientId
+      private$federatedTokenFile <- federatedTokenFile
+      private$scope <- scope
+      return(self)
+    },
+    getToken = function() {
+      if (!is.null(private$cachedToken) && private$expiresAt > Sys.time()) {
+        return(private$cachedToken)
+      }
+      tokenInfo <- private$fetchEntraToken()
+      # Refresh five minutes early so a long tool loop can never hand out a
+      # token that expires halfway through the conversation.
+      private$cachedToken <- tokenInfo$access_token
+      private$expiresAt <- Sys.time() + max(as.numeric(tokenInfo$expires_in %||% 3600) - 300, 60)
+      return(private$cachedToken)
+    }
+  ), private = list(
+    tenantId = NULL,
+    clientId = NULL,
+    federatedTokenFile = NULL,
+    scope = NULL,
+    cachedToken = NULL,
+    expiresAt = NULL,
+    buildCredentialFields = function() {
+      # read on every request: the kubelet rotates the projected token
+      if (!file.exists(private$federatedTokenFile)) {
+        stop(sprintf(
+          "Azure workload identity is not configured on this server (no token at %s).",
+          private$federatedTokenFile
+        ), call. = FALSE)
+      }
+      return(list(
+        client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+        client_assertion = trimws(paste(readLines(private$federatedTokenFile, warn = FALSE), collapse = ""))
+      ))
+    },
+    requestToken = function() {
+      # evaluated up front, so a missing token fails before any request is made
+      credentialFields <- private$buildCredentialFields()
+      return(POST(
+        sprintf(
+          "https://login.microsoftonline.com/%s/oauth2/v2.0/token",
+          utils::URLencode(private$tenantId, reserved = TRUE)
+        ),
+        body = c(
+          list(grant_type = "client_credentials", client_id = private$clientId, scope = private$scope),
+          credentialFields
+        ),
+        encode = "form",
+        timeout(30L)
+      ))
+    },
+    fetchEntraToken = function() {
+      # Microsoft recommends retrying federated token requests: a freshly
+      # added federated credential takes a while to propagate (AADSTS70021)
+      attempts <- 3L
+      for (attempt in seq_len(attempts)) {
+        resp <- private$requestToken()
+        resBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"),
+          error = function(e) NULL
+        )
+        if (status_code(resp) == 200 && length(resBody$access_token)) {
+          return(resBody)
+        }
+        if (attempt < attempts) {
+          Sys.sleep(attempt)
+        }
+      }
+      errMsg <- resBody$error_description %||% resBody$error %||%
+        sprintf("HTTP %d", status_code(resp))
+      stop("Azure Entra ID authentication failed: ", errMsg, call. = FALSE)
+    }
+  )
+)
+
+#' Desktop only: the MIRO launcher signs the user in with their own Microsoft
+#' account and keeps their current access token in the file named by
+#' MIRO_AZURE_ACCESS_TOKEN_FILE (see components/azure-user-auth.cjs). R never
+#' sees a refresh token or any other credential, and re-reads the file on
+#' every call since the launcher replaces it before the token expires.
+MiroAzureAccessTokenFileProvider <- R6Class("MiroAzureAccessTokenFileProvider",
+  public = list(
+    initialize = function(tokenFile = Sys.getenv("MIRO_AZURE_ACCESS_TOKEN_FILE")) {
+      private$tokenFile <- tokenFile
+      return(self)
+    },
+    getToken = function() {
+      signInAgain <- "Open the MIRO settings and sign in with Microsoft again."
+      tokenInfo <- if (nzchar(private$tokenFile) && file.exists(private$tokenFile)) {
+        tryCatch(fromJSON(private$tokenFile, simplifyVector = FALSE), error = function(e) NULL)
+      }
+      if (!length(tokenInfo$accessToken)) {
+        stop("You are not signed in to Azure AI Foundry. ", signInAgain, call. = FALSE)
+      }
+      expiresAt <- suppressWarnings(as.POSIXct(tokenInfo$expiresOn %||% NA_character_,
+        format = "%Y-%m-%dT%H:%M:%OS", tz = "UTC"
+      ))
+      if (is.na(expiresAt) || expiresAt <= Sys.time() + 60) {
+        stop("Your Microsoft sign-in for Azure AI Foundry has expired. ", signInAgain, call. = FALSE)
+      }
+      return(tokenInfo$accessToken)
+    }
+  ), private = list(
+    tokenFile = NULL
+  )
+)
+
+#' ==========================================================================
+#' Concrete Provider: Azure AI Foundry (Chat Completions API)
+#' ==========================================================================
+# where MIRO sends the API key or Entra token: TLS only, and no userinfo,
+# query or fragment that would change where or how it is sent
+isValidAzureEndpoint <- function(endpoint) {
+  return(grepl("^https://[^/?#@[:space:]]+(/[^?#@[:space:]]*)?$", endpoint))
+}
+
+# Accepts what admins paste: the resource root, a Foundry project endpoint,
+# the documented `.../openai/v1/` base URL or a full `/chat/completions` (or
+# `/responses`) route.
+normalizeAzureEndpoint <- function(endpoint) {
+  endpoint <- sub("/+$", "", trimws(endpoint %||% ""))
+  return(sub("/openai(/v1(/chat/completions|/responses)?)?$", "", endpoint))
+}
+MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
+  inherit = MiroAiBaseProvider,
+  public = list(
+    initialize = function(modelName, azureConfig, debugFile = NULL) {
+      super$initialize(modelName, azureConfig$key, debugFile = debugFile)
+      private$endpoint <- azureConfig$endpoint
+      private$authMode <- azureConfig$authMode
+      if (identical(private$authMode, "usersignin")) {
+        private$tokenProvider <- MiroAzureAccessTokenFileProvider$new()
+      } else if (identical(private$authMode, "workloadidentity")) {
+        private$tokenProvider <- MiroAzureEntraTokenProvider$new(
+          tenantId = azureConfig$tenantId,
+          clientId = azureConfig$clientId
+        )
+      }
+      return(self)
+    }
+  ),
+  private = list(
+    replaysHistory = TRUE,
+    errorPrefix = "Azure AI Foundry API Error: ",
+    endpoint = NULL,
+    authMode = NULL,
+    tokenProvider = NULL,
+    systemInstructions = NULL,
+    toolsPayload = NULL,
+    buildUrl = function() {
+      return(paste0(normalizeAzureEndpoint(private$endpoint), "/openai/v1/chat/completions"))
+    },
+    buildAuthHeaders = function() {
+      if (!is.null(private$tokenProvider)) {
+        return(list(Authorization = paste("Bearer", private$tokenProvider$getToken())))
+      }
+      return(list(`api-key` = private$apiKey))
+    },
+    buildPayload = function() {
+      # the system prompt is rebuilt for every request, so it is not part of the stored history;
+      # no max_completion_tokens on purpose: left out, each model defaults to its own maximum
+      payload <- list(
+        model = private$modelName,
+        messages = c(list(list(role = "system", content = private$systemInstructions)), self$history)
+      )
+      if (!is.null(private$toolsPayload)) {
+        payload$tools <- private$toolsPayload
+      }
+      return(payload)
+    },
+    prepareInitialPayload = function(userInput, systemInstructions, tools) {
+      private$systemInstructions <- systemInstructions
+      self$history[[length(self$history) + 1L]] <- private$historyMessage(TRUE, userInput)
+      if (!is.null(tools) && length(tools) > 0) {
+        private$toolsPayload <- lapply(tools, function(f) {
+          list(type = "function", `function` = list(name = f$name, description = f$description, parameters = f$parameters))
+        })
+      }
+      return(private$buildPayload())
+    },
+    parseApiResponse = function(resContent) {
+      choice <- resContent$choices[[1L]]
+      message <- choice$message
+      assistantMessage <- list(role = "assistant")
+      if (!is.null(message$content)) {
+        assistantMessage$content <- message$content
+      }
+      # replayed verbatim: every tool result must refer to a tool call id the model emitted
+      if (length(message$tool_calls)) {
+        assistantMessage$tool_calls <- message$tool_calls
+      }
+      self$history[[length(self$history) + 1L]] <- assistantMessage
+
+      toolCalls <- lapply(message$tool_calls, function(toolCall) {
+        list(
+          id = toolCall$id,
+          name = toolCall$`function`$name,
+          arguments = fromJSON(toolCall$`function`$arguments %||% "{}")
+        )
+      })
+      hasToolCalls <- length(toolCalls) > 0L
+      finalText <- message$content %||% message$refusal %||% ""
+
+      return(list(
+        hasToolCalls = hasToolCalls,
+        toolCalls = toolCalls,
+        text = private$finalizeText(finalText, hasToolCalls,
+          truncated = identical(choice$finish_reason, "length"),
+          filteredBy = if (identical(choice$finish_reason, "content_filter")) "Azure AI Foundry"
+        ),
+        tokens = list(
+          input = resContent$usage$prompt_tokens,
+          output = resContent$usage$completion_tokens
+        )
+      ))
+    },
+    prepareNextIterationPayload = function(toolResults) {
+      for (res in toolResults) {
+        self$history[[length(self$history) + 1L]] <- list(role = "tool", tool_call_id = res$id, content = res$output)
+      }
+      return(private$buildPayload())
+    }
+  )
+)
+
+AI_PROVIDER_REGISTRY <- list(
+  openai = list(
+    label = "OpenAI", custom = FALSE,
+    construct = function(modelId, entry, debugFile) MiroAiOpenAiProvider$new(modelId, entry$key, debugFile = debugFile)
+  ),
+  anthropic = list(
+    label = "Anthropic", custom = FALSE,
+    construct = function(modelId, entry, debugFile) MiroAiAnthropicProvider$new(modelId, entry$key, debugFile = debugFile)
+  ),
+  google = list(
+    label = "Google", custom = FALSE,
+    construct = function(modelId, entry, debugFile) MiroAiGoogleProvider$new(modelId, entry$key, debugFile = debugFile)
+  ),
+  azure = list(
+    label = "Azure AI Foundry", custom = TRUE,
+    construct = function(modelId, entry, debugFile) MiroAiAzureProvider$new(modelId, entry, debugFile = debugFile)
+  )
+)
+
 #' ==========================================================================
 #' MiroAiAssistant
 #' ==========================================================================
@@ -522,7 +779,8 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Gemini 3.8 Flash" = "google/gemini-3.8-flash",
         "Gemini 3.7 Flash" = "google/gemini-3.7-flash",
         "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
-      )
+      ),
+      `Azure AI Foundry` = character(0L)
     ),
     debugFile = NULL,
     initialize = function(config = NULL, apiKeys = NULL) {
@@ -533,6 +791,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       if (length(apiKeys)) {
         # short circuit if API keys are already parsed from config
         self$apiKeys <- setNames(apiKeys, tolower(names(apiKeys)))
+        private$registerAllCustomProviderModels()
         return(self)
       }
       self$apiKeys <- list()
@@ -543,29 +802,26 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       return(self)
     },
     getProvider = function(provider, modelId) {
-      providerId <- match(provider, tolower(names(self$supportedModels)))
-      if (length(providerId) != 1L || is.na(providerId)) {
+      provider <- tolower(provider)
+      if (!provider %in% names(self$apiKeys)) {
         stop(sprintf("Unknown provider: %s specified", provider), call. = FALSE)
       }
-      if (!paste0(provider, "/", modelId) %in% self$supportedModels[[providerId]]) {
+      if (!paste0(provider, "/", modelId) %in% unlist(self$supportedModels, use.names = FALSE)) {
         stop(sprintf("Unknown model: %s specified", modelId), call. = FALSE)
       }
-      if (provider == "google") {
-        return(MiroAiGoogleProvider$new(modelId, self$apiKeys[[provider]], debugFile = self$debugFile))
+      registryEntry <- AI_PROVIDER_REGISTRY[[provider]]
+      if (is.null(registryEntry)) {
+        stop(sprintf("Provider: %s not found (getProvider). Please report to support@gams.com.", provider), call. = FALSE)
       }
-      if (provider == "openai") {
-        return(MiroAiOpenAiProvider$new(modelId, self$apiKeys[[provider]], debugFile = self$debugFile))
-      }
-      if (provider == "anthropic") {
-        return(MiroAiAnthropicProvider$new(modelId, self$apiKeys[[provider]], debugFile = self$debugFile))
-      }
-      stop(sprintf("Provider: %s not found (getProvider). Please report to support@gams.com.", provider), call. = FALSE)
+      return(registryEntry$construct(modelId, self$apiKeys[[provider]], self$debugFile))
     }
   ), active = list(
     supportedModels = function(value) {
       if (missing(value)) {
         if (is.null(private$`.supportedModels`)) {
-          private$`.supportedModels` <- self$allModels[tolower(names(self$allModels)) %in% names(self$apiKeys)]
+          models <- self$allModels[private$providerIds[names(self$allModels)] %in% names(self$apiKeys)]
+          # a provider with no models would render as an empty <optgroup>
+          private$`.supportedModels` <- models[lengths(models) > 0L]
         }
         return(private$`.supportedModels`)
       }
@@ -573,21 +829,92 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     }
   ), private = list(
     .supportedModels = NULL,
+    providerIds = setNames(
+      names(AI_PROVIDER_REGISTRY),
+      vapply(AI_PROVIDER_REGISTRY, `[[`, character(1L), "label")
+    ),
     validateConfig = function(config) {
       if (!length(config$apiKeys)) {
         stop("Invalid or no api key", call. = FALSE)
       }
       for (apiKey in config$apiKeys) {
-        providerId <- match(tolower(apiKey$provider), tolower(names(self$allModels)))
-        if (length(providerId) != 1L || is.na(providerId)) {
+        providerId <- tolower(apiKey$provider %||% "")
+        if (!providerId %in% private$providerIds) {
           stop(sprintf("AI Provider: %s currently not supported", apiKey$provider), call. = FALSE)
         }
-        if (!length(apiKey$key) || nchar(apiKey$key) < 1L) {
+        isSecretless <- identical(providerId, "azure") &&
+          tolower(apiKey$authMode %||% "") %in% c("workloadidentity", "usersignin")
+        if (!isSecretless && (!length(apiKey$key) || nchar(apiKey$key) < 1L)) {
           stop(sprintf("Invalid API key for provider: %s", apiKey$provider), call. = FALSE)
         }
-        self$apiKeys[[tolower(apiKey$provider)]] <- apiKey$key
+        self$apiKeys[[providerId]] <- switch(providerId,
+          azure = private$validateAzureConfig(apiKey),
+          list(key = apiKey$key)
+        )
+      }
+      private$registerAllCustomProviderModels()
+      if (!length(self$supportedModels)) {
+        stop("No usable AI models configured.", call. = FALSE)
       }
       return(self)
+    },
+    validateModelsList = function(entry, providerLabel) {
+      models <- Filter(function(m) length(m$id) == 1L && nzchar(m$id), entry$models %||% list())
+      if (!length(models)) {
+        warning(sprintf(
+          "%s is configured but no model deployments are cached in the config.", providerLabel
+        ), call. = FALSE)
+      }
+      return(models)
+    },
+    validateAzureConfig = function(entry) {
+      endpoint <- normalizeAzureEndpoint(entry$endpoint)
+      if (!isValidAzureEndpoint(endpoint)) {
+        stop("Azure AI Foundry endpoint must be an https:// URL without credentials, query or fragment.", call. = FALSE)
+      }
+      authMode <- tolower(entry$authMode %||% "apikey")
+      if (!authMode %in% c("apikey", "workloadidentity", "usersignin")) {
+        stop("Azure authMode must be one of 'apiKey', 'workloadIdentity' or 'userSignIn'.", call. = FALSE)
+      }
+      if (authMode %in% c("workloadidentity", "usersignin")) {
+        if (!nzchar(entry$tenantId %||% "") || !nzchar(entry$clientId %||% "")) {
+          stop("Azure Entra ID authentication requires both tenantId and clientId.", call. = FALSE)
+        }
+      }
+      return(list(
+        key = if (authMode %in% c("workloadidentity", "usersignin")) NULL else entry$key,
+        endpoint = endpoint,
+        authMode = authMode, tenantId = entry$tenantId, clientId = entry$clientId,
+        models = private$validateModelsList(entry, "Azure AI Foundry")
+      ))
+    },
+    registerCustomProviderModels = function(providerId) {
+      providerLabel <- AI_PROVIDER_REGISTRY[[providerId]]$label
+      entry <- self$apiKeys[[providerId]]
+      # the memo would otherwise hide the models we are about to register
+      private$`.supportedModels` <- NULL
+      if (!length(entry) || !length(entry$models)) {
+        self$allModels[[providerLabel]] <- character(0L)
+        return(invisible(self))
+      }
+      ids <- vapply(entry$models, function(m) as.character(m$id), character(1L))
+      labels <- vapply(entry$models, function(m) {
+        label <- as.character(m$label %||% "")
+        if (nzchar(label)) label else as.character(m$id)
+      }, character(1L))
+      # selectInput silently collapses duplicate choice names, so disambiguate
+      # with the deployment id, which is unique per resource
+      dupes <- labels %in% labels[duplicated(labels)]
+      labels[dupes] <- sprintf("%s (%s)", labels[dupes], ids[dupes])
+      self$allModels[[providerLabel]] <- setNames(paste0(providerId, "/", ids), labels)
+      return(invisible(self))
+    },
+    registerAllCustomProviderModels = function() {
+      customProviderIds <- names(Filter(function(p) isTRUE(p$custom), AI_PROVIDER_REGISTRY))
+      for (providerId in customProviderIds) {
+        private$registerCustomProviderModels(providerId)
+      }
+      return(invisible(self))
     }
   )
 )
