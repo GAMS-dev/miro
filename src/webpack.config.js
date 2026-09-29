@@ -26,7 +26,7 @@ module.exports = () => ({
     },
     optimization: {
       minimize: true,
-      minimizer: [new TerserJSPlugin({}), new CssMinimizerPlugin({})],
+      minimizer: [new TerserJSPlugin({ parallel: false }), new CssMinimizerPlugin({ parallel: false })],
     },
     devtool: 'source-map',
     output: {

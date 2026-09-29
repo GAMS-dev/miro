@@ -770,6 +770,55 @@ textarea:focus {
     margin: 6px -6px;
   }
 }
+// the sticky search field of long dropdowns: pinned to the menu's edge rather than
+// inside its padding, so the list does not show through above it while scrolling
+.dropdown-menu > .search-field-wrapper {
+  top: -6px;
+  margin: -6px -6px 2px;
+  padding: 8px 8px 4px;
+  border-radius: @modern-radius @modern-radius 0 0;
+  background-color: inherit;
+}
+// an entry with inline action buttons (e.g. MIRO Pivot's saved views): the
+// whole row is highlighted rather than each of its links separately
+.dropdown-menu > li.dropdown-item-wrapper {
+  align-items: center;
+  border-radius: @modern-radius-sm;
+  transition: background-color @modern-ease;
+  > a,
+  > a:hover,
+  > a:focus {
+    background-color: transparent;
+  }
+  > .miro-pivot-view-button {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 6px 8px;
+    opacity: 0.7;
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
+  &:hover {
+    .responsiveDark({
+      background-color: @modern-hover;
+    },
+    {
+      background-color: @modern-hover-dark;
+    });
+  }
+  &.active,
+  &.active:hover {
+    .modern-cta();
+    > a,
+    > a:hover,
+    > a:focus {
+      color: inherit;
+      background-color: transparent;
+    }
+  }
+}
 .open > .dropdown-menu {
   transform-origin: top;
   animation: modern-pop-in 140ms @modern-ease-out;
