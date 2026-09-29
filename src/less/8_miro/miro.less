@@ -2019,6 +2019,10 @@ li.drop-index-item[data-col-hidden="true"] {
   });
   border-radius: 10px;
 }
+// where a horizontal and a vertical scrollbar meet; the browser default is white
+:not(.wtHolder)::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 /* Handle on hover */
 // the selection outline and its corner handle are drawn a few pixels past the last row and

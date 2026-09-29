@@ -977,12 +977,201 @@ textarea:focus {
           color: @primary-color !important;
         },
         {
-          .modern-tint(background-color; @primary-color-dark; 30%) !important;
+          .modern-filled(@primary-color-dark) !important;
           border-color: transparent !important;
-          color: #fff !important;
         });
         font-weight: 600;
       }
+      &.disabled,
+      &.disabled:hover {
+        cursor: default;
+        .responsiveDark({
+          color: @modern-muted !important;
+        },
+        {
+          color: @modern-muted-dark !important;
+        });
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// rows sit on the table's surface, opaque because fixed columns are cloned tables drawn
+// over the scrolling part; the "Table style" classes (config mode) are honored with
+// subtle, opaque tints that the clones share, so their rows stay in line
+.dataTables_wrapper {
+  table.dataTable tbody tr {
+    .responsiveDark({
+      background-color: @modern-surface;
+    },
+    {
+      background-color: @modern-surface-dark;
+    });
+  }
+  table.dataTable.stripe tbody tr.odd,
+  table.dataTable.display tbody tr.odd {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 3%; @modern-surface) !important;
+    },
+    {
+      .modern-mix(background-color; #fff; 4%; @modern-surface-dark) !important;
+    });
+  }
+  table.dataTable.hover tbody tr:hover,
+  table.dataTable.display tbody tr:hover {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 6%; @modern-surface) !important;
+    },
+    {
+      .modern-mix(background-color; #fff; 8%; @modern-surface-dark) !important;
+    });
+  }
+  table.dataTable.display tbody tr > .sorting_1,
+  table.dataTable.display tbody tr > .sorting_2,
+  table.dataTable.display tbody tr > .sorting_3,
+  table.dataTable.order-column tbody tr > .sorting_1,
+  table.dataTable.order-column tbody tr > .sorting_2,
+  table.dataTable.order-column tbody tr > .sorting_3 {
+    .responsiveDark({
+      .modern-tint(background-color; @primary-color; 5%);
+    },
+    {
+      .modern-tint(background-color; @primary-color-dark; 10%);
+    });
+  }
+  // lines between rows only where asked for ("display" includes them)
+  table.dataTable:not(.row-border):not(.cell-border):not(.display) tbody td,
+  table.dataTable:not(.row-border):not(.cell-border):not(.display) tbody th {
+    border-top: 0;
+  }
+  table.dataTable.cell-border tbody td,
+  table.dataTable.cell-border tbody th,
+  table.dataTable.cell-border thead th,
+  table.dataTable.cell-border tfoot th {
+    .responsiveDark({
+      border-right: 1px solid @modern-border;
+    },
+    {
+      border-right: 1px solid @modern-border-dark;
+    });
+  }
+  table.dataTable.compact thead th,
+  table.dataTable.compact thead td,
+  table.dataTable.compact tbody td,
+  table.dataTable.compact tbody th,
+  table.dataTable.compact tfoot th,
+  table.dataTable.compact tfoot td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+  }
+  table.DTFC_Cloned tr,
+  .DTFC_LeftHeadWrapper table,
+  .DTFC_RightHeadWrapper table,
+  .DTFC_LeftFootWrapper table,
+  .DTFC_RightFootWrapper table,
+  .DTFC_Blocker {
+    .responsiveDark({
+      background-color: @modern-surface !important;
+    },
+    {
+      background-color: @modern-surface-dark !important;
+    });
+  }
+  // a hairline instead of a grey block marks where the fixed columns end. It is drawn
+  // on the head, body and foot wrappers: a cell border would widen the cloned table
+  // (giving it a scrollbar), the body clone is wider than shown to hide its own
+  // scrollbar, and the outer DTFC_*Wrapper is only 1px tall
+  .DTFC_LeftHeadWrapper,
+  .DTFC_LeftBodyWrapper,
+  .DTFC_LeftFootWrapper,
+  .DTFC_RightHeadWrapper,
+  .DTFC_RightBodyWrapper,
+  .DTFC_RightFootWrapper {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      z-index: 3;
+      pointer-events: none;
+      // opaque (unlike @modern-border-strong), so where segments overlap they do not darken
+      .responsiveDark({
+        .modern-mix(background-color; #101828; 18%; @modern-surface);
+      },
+      {
+        .modern-mix(background-color; #fff; 18%; @modern-surface-dark);
+      });
+    }
+  }
+  .DTFC_LeftHeadWrapper,
+  .DTFC_LeftBodyWrapper,
+  .DTFC_LeftFootWrapper {
+    &::after {
+      right: 0;
+    }
+  }
+  .DTFC_RightHeadWrapper,
+  .DTFC_RightBodyWrapper,
+  .DTFC_RightFootWrapper {
+    &::after {
+      left: 0;
+    }
+  }
+  // with a footer, the horizontal scrollbar is shown below the footer rather than between
+  // the rows and the footer, so rows (the fixed columns' included) scroll right up to it;
+  // see the scroll handler in miro.js. Firefox cannot hide one axis' scrollbar only.
+  @supports selector(::-webkit-scrollbar) {
+    .dataTables_scroll:has(> .dataTables_scrollFoot) {
+      > .dataTables_scrollBody::-webkit-scrollbar {
+        height: 0;
+      }
+      > .dataTables_scrollFoot {
+        overflow-x: auto !important;
+      }
+    }
+  }
+  // room for the sort indicator, so it never touches the column name
+  table.dataTable thead .sorting,
+  table.dataTable thead .sorting_asc,
+  table.dataTable thead .sorting_desc,
+  table.dataTable thead .sorting_asc_disabled,
+  table.dataTable thead .sorting_desc_disabled {
+    padding-right: 28px;
+    background-position: right 6px center;
+  }
+  table.dataTable tfoot th,
+  table.dataTable tfoot td {
+    padding: 10px 12px;
+    font-weight: 600;
+    .responsiveDark({
+      border-top: 1px solid @modern-border-strong;
+    },
+    {
+      border-top: 1px solid @modern-border-strong-dark;
+    });
+  }
+  .dataTables_filter {
+    label {
+      font-weight: 400;
+      .responsiveDark({
+        color: @modern-muted;
+      },
+      {
+        color: @modern-muted-dark;
+      });
+    }
+    input {
+      margin-left: 8px;
+      font-weight: 400;
+      .responsiveDark({
+        color: @text-color;
+      },
+      {
+        color: @text-color-dark;
+      });
     }
   }
 }

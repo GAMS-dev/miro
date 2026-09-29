@@ -227,6 +227,43 @@ export function resetDropdownFilter(that) {
   });
 }
 
+// DataTables with a footer show their horizontal scrollbar below the footer (see
+// modern.less); DataTables itself only syncs header and footer to the body
+$(document).on('init.dt', (e, settings) => {
+  const foot = settings.nScrollFoot;
+  const body = settings.nScrollBody;
+  if (!foot || !body) {
+    return;
+  }
+  foot.addEventListener('scroll', () => {
+    if (body.scrollLeft !== foot.scrollLeft) {
+      body.scrollLeft = foot.scrollLeft;
+    }
+  });
+});
+
+// ... and FixedColumns then must not leave room for that (hidden) scrollbar below the
+// fixed columns. Patched on the first table init, once its script has been loaded.
+let fixedColumnsPatched = false;
+$(document).on('preInit.dt', () => {
+  const fixedColumns = $.fn.dataTable?.FixedColumns?.prototype;
+  /* eslint-disable no-underscore-dangle -- FixedColumns' own (internal) method */
+  if (fixedColumnsPatched || !fixedColumns?._fnDTOverflow) {
+    return;
+  }
+  const dtOverflow = fixedColumns._fnDTOverflow;
+  fixedColumns._fnDTOverflow = function () {
+    const overflow = dtOverflow.call(this);
+    const body = this.s.dt.nTable.parentNode;
+    if (overflow.x && body.offsetHeight === body.clientHeight) {
+      overflow.x = false;
+    }
+    return overflow;
+  };
+  /* eslint-enable no-underscore-dangle */
+  fixedColumnsPatched = true;
+});
+
 const shortcutManager = new ShortcutManager(50);
 $(document).on('keyup', (event) => {
   shortcutManager.handleKeyPressEvent(event);
