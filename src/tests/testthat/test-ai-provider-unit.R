@@ -1259,3 +1259,45 @@ test_that("Entra authentication failures surface the AADSTS code, not the assert
   expect_match(err, "AADSTS70021")
   expect_false(grepl("assertion-jwt", err, fixed = TRUE))
 })
+
+test_that("every provider sends its request through the shared HTTP call", {
+  calls <- list()
+  testthat::local_mocked_bindings(
+    POST = function(url, config, ...) {
+      calls[[length(calls) + 1L]] <<- list(url = url, headers = config$headers)
+      structure(list(code = if (length(calls) == 1L) 429L else 200L), class = "response")
+    },
+    status_code = function(resp) resp$code,
+    headers = function(resp) list(`retry-after-ms` = "1"),
+    content = function(resp, ...) list(ok = TRUE),
+    .package = "httr"
+  )
+  anthropic <- MiroAiAnthropicProvider$new("claude-opus-5-5", "sk-ant")
+  # a 429 is retried once, then the 200 reply is returned
+  expect_equal(anthropic$.__enclos_env__$private$executeHttpCall(list()), list(ok = TRUE))
+  expect_length(calls, 2L)
+  expect_equal(calls[[2]]$url, "https://api.anthropic.com/v1/messages")
+  expect_equal(calls[[2]]$headers[["x-api-key"]], "sk-ant")
+  expect_match(calls[[2]]$headers[["anthropic-beta"]], "server-side-fallback", fixed = TRUE)
+
+  calls <- list(list())
+  MiroAiOpenAiProvider$new("gpt-6.1-sol", "sk-oai")$.__enclos_env__$private$executeHttpCall(list())
+  expect_equal(calls[[2]]$url, "https://api.openai.com/v1/responses")
+  expect_equal(calls[[2]]$headers[["Authorization"]], "Bearer sk-oai")
+
+  calls <- list(list())
+  MiroAiGoogleProvider$new("gemini-3.8-flash", "g-key")$.__enclos_env__$private$executeHttpCall(list())
+  expect_equal(calls[[2]]$url, "https://generativelanguage.googleapis.com/v1beta/interactions")
+  expect_equal(calls[[2]]$headers[["x-goog-api-key"]], "g-key")
+})
+
+test_that("provider errors carry the provider's prefix and message", {
+  testthat::local_mocked_bindings(
+    POST = function(...) structure(list(code = 401L), class = "response"),
+    status_code = function(resp) resp$code,
+    content = function(resp, ...) list(error = list(message = "invalid x-api-key")),
+    .package = "httr"
+  )
+  provider <- MiroAiAnthropicProvider$new("claude-sonnet-5-5", "bad")
+  expect_error(provider$.__enclos_env__$private$executeHttpCall(list()), "Claude API Error: invalid x-api-key", fixed = TRUE)
+})
