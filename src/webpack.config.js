@@ -2,7 +2,7 @@ const path = require('path');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const RemovePlugin = require('remove-files-webpack-plugin');
+const fs = require('fs');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const plugins = [
    new MiniCssExtractPlugin({
@@ -15,6 +15,22 @@ const plugins = [
   new ESLintPlugin({
     fix: true
   })]
+class RemoveFilesPlugin {
+  constructor(targets) {
+    this.targets = targets;
+  }
+  apply(compiler) {
+    compiler.hooks.afterEmit.tap('RemoveFilesPlugin', () => {
+      for (const { folder, test } of this.targets) {
+        if (!fs.existsSync(folder)) continue;
+        for (const file of fs.readdirSync(folder)) {
+          const filePath = path.join(folder, file);
+          if (test(filePath) && fs.statSync(filePath).isFile()) fs.rmSync(filePath);
+        }
+      }
+    });
+  }
+}
 module.exports = () => ({
     entry: {
       default_browser: './less/skins/default/browser.js',
@@ -39,24 +55,20 @@ module.exports = () => ({
     },
     plugins: [
       ...plugins,
-      new RemovePlugin({
-          after: {
-            test: [{
-              folder: path.resolve(__dirname, "www"),
-              method: (filePath) => {
-                  return new RegExp(/default_.+\.js(\.map)?$/, 'm').test(filePath) ||
-                    filePath.endsWith('.js.LICENSE.txt');
-              }
-            },
-            {
-              folder: path.resolve(__dirname, "..", "server", "proxy", "templates", "2col", "assets", "css", "themes"),
-              method: (filePath) => {
-                  return new RegExp(/.js(\.map)?$/, 'm').test(filePath);
-              }
-            }],
-            allowRootAndOutside: true
-          }
-      })
+      new RemoveFilesPlugin([{
+        folder: path.resolve(__dirname, "www"),
+        test: (filePath) => {
+            return /default_.+\.js(\.map)?$/.test(filePath) ||
+              filePath.endsWith('.js.LICENSE.txt');
+        }
+      },
+      {
+        folder: path.resolve(__dirname, "..", "server", "proxy", "templates", "2col", "assets", "css"),
+        test: (filePath) => {
+            return /\.js(\.map)?$/.test(filePath) ||
+              filePath.endsWith('.js.LICENSE.txt');
+        }
+      }])
     ],
     module: {
         rules: [

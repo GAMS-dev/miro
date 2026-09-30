@@ -30,7 +30,7 @@
     "@babel/preset-env": "^7.24.5",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
-    "css-minimizer-webpack-plugin": "^7.0.2",
+    "css-minimizer-webpack-plugin": "^8.0.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
@@ -39,8 +39,8 @@
     "less-loader": "^12.3.0",
     "mini-css-extract-plugin": "^2.9.4",
     "postcss": "^8.5.6",
-    "remove-files-webpack-plugin": "^1.5.0",
     "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.6.1",
     "uglify-js": "^3.19.3",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1"
