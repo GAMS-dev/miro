@@ -188,8 +188,16 @@
                       provider on our behalf, so before it shows up in any app
                       we first have to tell MIRO which provider to use and give
                       it an API key for that provider. MIRO currently supports
-                      OpenAI, Anthropic (Claude), and Google (Gemini) - we only
-                      need a key for the provider(s) we intend to use.
+                      OpenAI, Anthropic (Claude), Google (Gemini) and Azure AI
+                      Foundry - we only need a key for the provider(s) we
+                      intend to use. Microsoft Foundry runs models inside our
+                      own cloud tenant, so instead of a single key it needs our
+                      resource endpoint and the names of the model deployments
+                      we created there. On Microsoft Foundry, GAMS MIRO talks
+                      to Claude models via the Anthropic Messages API and to
+                      all other models via Chat Completions. It recognises a
+                      Claude deployment by its name, so the name must contain
+                      "claude" (the default name does).
                     </p>
                     <p>
                       Where we configure this key depends on how our MIRO app
@@ -201,7 +209,36 @@
                         <i>Settings</i> dialog, enable <i>AI Features</i>, and
                         enter the API key for the provider(s) we want to use.
                         MIRO validates the key against the provider before
-                        saving it.
+                        saving it. For Microsoft Foundry, we recommend
+                        <i>Sign in with Microsoft</i> instead of an API key:
+                        each user signs in with their own work account in the
+                        browser, no secret is stored, and access follows the
+                        user's role on the Foundry resource (<i
+                          >Cognitive Services User</i
+                        >). This needs an app registration in our Entra tenant,
+                        set up once by our IT:
+                        <ul>
+                          <li>
+                            Platform
+                            <i>Mobile and desktop applications</i> with the
+                            redirect URI <code>http://localhost</code>.
+                          </li>
+                          <li>
+                            Under <i>API permissions</i> (<i
+                              >APIs my organization uses</i
+                            >), the delegated permission
+                            <code>user_impersonation</code> of
+                            <i>Azure Machine Learning Services</i>
+                            (application ID
+                            <code>18a66f5f-dbdf-4c17-9dd7-1634712a9cbe</code>),
+                            which issues the tokens for
+                            <code>https://ai.azure.com</code>. Without it,
+                            sign-in fails with <code>AADSTS650057</code>. Then
+                            select <i>Grant admin consent</i>.
+                          </li>
+                        </ul>
+                        We then enter its tenant ID and application (client) ID
+                        in MIRO.
                       </li>
                       <li>
                         <b>GAMS MIRO Server:</b> an administrator opens the

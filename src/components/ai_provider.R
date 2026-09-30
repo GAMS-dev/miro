@@ -604,13 +604,13 @@ MiroAzureAccessTokenFileProvider <- R6Class("MiroAzureAccessTokenFileProvider",
         tryCatch(fromJSON(private$tokenFile, simplifyVector = FALSE), error = function(e) NULL)
       }
       if (!length(tokenInfo$accessToken)) {
-        stop("You are not signed in to Azure AI Foundry. ", signInAgain, call. = FALSE)
+        stop("You are not signed in to Microsoft Foundry. ", signInAgain, call. = FALSE)
       }
       expiresAt <- suppressWarnings(as.POSIXct(tokenInfo$expiresOn %||% NA_character_,
         format = "%Y-%m-%dT%H:%M:%OS", tz = "UTC"
       ))
       if (is.na(expiresAt) || expiresAt <= Sys.time() + 60) {
-        stop("Your Microsoft sign-in for Azure AI Foundry has expired. ", signInAgain, call. = FALSE)
+        stop("Your Microsoft sign-in for Microsoft Foundry has expired. ", signInAgain, call. = FALSE)
       }
       return(tokenInfo$accessToken)
     }
@@ -620,7 +620,7 @@ MiroAzureAccessTokenFileProvider <- R6Class("MiroAzureAccessTokenFileProvider",
 )
 
 #' ==========================================================================
-#' Concrete Provider: Azure AI Foundry (Chat Completions API)
+#' Concrete Provider: Microsoft Foundry (Chat Completions API)
 #' ==========================================================================
 # where MIRO sends the API key or Entra token: TLS only, and no userinfo,
 # query or fragment that would change where or how it is sent
@@ -669,7 +669,7 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
   ),
   private = list(
     replaysHistory = TRUE,
-    errorPrefix = "Azure AI Foundry API Error: ",
+    errorPrefix = "Microsoft Foundry API Error: ",
     endpoint = NULL,
     tokenProvider = NULL,
     systemInstructions = NULL,
@@ -730,7 +730,7 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
         toolCalls = toolCalls,
         text = private$finalizeText(finalText, hasToolCalls,
           truncated = identical(choice$finish_reason, "length"),
-          filteredBy = if (identical(choice$finish_reason, "content_filter")) "Azure AI Foundry"
+          filteredBy = if (identical(choice$finish_reason, "content_filter")) "Microsoft Foundry"
         ),
         tokens = list(
           input = resContent$usage$prompt_tokens,
@@ -758,7 +758,7 @@ MiroAiAzureAnthropicProvider <- R6Class("MiroAiAzureAnthropicProvider",
     }
   ),
   private = list(
-    errorPrefix = "Azure AI Foundry API Error: ",
+    errorPrefix = "Microsoft Foundry API Error: ",
     endpoint = NULL,
     tokenProvider = NULL,
     # server-side fallbacks are not available on Foundry
@@ -786,7 +786,7 @@ AI_PROVIDER_REGISTRY <- list(
     construct = function(modelId, entry, debugFile) MiroAiGoogleProvider$new(modelId, entry$key, debugFile = debugFile)
   ),
   azure = list(
-    label = "Azure AI Foundry", custom = TRUE,
+    label = "Microsoft Foundry", custom = TRUE,
     construct = function(modelId, entry, debugFile) {
       if (isAzureClaudeDeployment(modelId)) {
         return(MiroAiAzureAnthropicProvider$new(modelId, entry, debugFile = debugFile))
@@ -820,7 +820,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Gemini 3.7 Flash" = "google/gemini-3.7-flash",
         "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
       ),
-      `Azure AI Foundry` = character(0L)
+      `Microsoft Foundry` = character(0L)
     ),
     debugFile = NULL,
     initialize = function(config = NULL, apiKeys = NULL) {
@@ -910,7 +910,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     validateAzureConfig = function(entry) {
       endpoint <- normalizeAzureEndpoint(entry$endpoint)
       if (!isValidAzureEndpoint(endpoint)) {
-        stop("Azure AI Foundry endpoint must be an https:// URL without credentials, query or fragment.", call. = FALSE)
+        stop("Microsoft Foundry endpoint must be an https:// URL without credentials, query or fragment.", call. = FALSE)
       }
       authMode <- tolower(entry$authMode %||% "apikey")
       if (!authMode %in% c("apikey", "workloadidentity", "usersignin")) {
@@ -925,7 +925,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         key = if (authMode %in% c("workloadidentity", "usersignin")) NULL else entry$key,
         endpoint = endpoint,
         authMode = authMode, tenantId = entry$tenantId, clientId = entry$clientId,
-        models = private$validateModelsList(entry, "Azure AI Foundry")
+        models = private$validateModelsList(entry, "Microsoft Foundry")
       ))
     },
     registerCustomProviderModels = function(providerId) {

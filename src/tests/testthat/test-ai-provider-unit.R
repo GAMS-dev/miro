@@ -698,7 +698,7 @@ test_that("MiroAiGoogleProvider sends userInput, not the raw last turn, after a 
 })
 
 # ==============================================================================
-# Azure AI Foundry
+# Microsoft Foundry
 # ==============================================================================
 
 azureEntry <- function(authMode = "apiKey",
@@ -790,7 +790,7 @@ test_that("Azure endpoint is normalised and its models reach supportedModels", {
   # a trailing slash would otherwise produce a double slash in the request URL
   expect_equal(assistant$apiKeys$azure$endpoint, "https://res.services.ai.azure.com")
   expect_equal(
-    assistant$supportedModels[["Azure AI Foundry"]],
+    assistant$supportedModels[["Microsoft Foundry"]],
     c("GPT-4o" = "azure/gpt4o-prod", "Llama 3.3 70B" = "azure/llama-33-70b")
   )
   # the display name must not leak into the provider id
@@ -920,7 +920,7 @@ test_that("Azure duplicate model labels are disambiguated", {
 
   # selectInput collapses duplicate choice names, which would silently hide a deployment
   expect_equal(
-    assistant$supportedModels[["Azure AI Foundry"]],
+    assistant$supportedModels[["Microsoft Foundry"]],
     c(
       "GPT-4o (gpt4o-prod)" = "azure/gpt4o-prod",
       "GPT-4o (gpt4o-test)" = "azure/gpt4o-test",

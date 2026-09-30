@@ -2356,7 +2356,7 @@ ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
     }
   }
 });
-// Microsoft sign-in for the AI assistant's Azure AI Foundry provider. Only the
+// Microsoft sign-in for the AI assistant's Microsoft Foundry provider. Only the
 // settings window may use it: these hand out access tokens, and MIRO app
 // windows show app content.
 const handleAzureUserAuth = (channel, handler) => {
