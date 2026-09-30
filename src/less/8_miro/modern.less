@@ -921,14 +921,23 @@ textarea:focus {
         border-bottom: 1px solid @modern-border-dark;
       });
     }
-    // column filters (DT filter = "top")
+    // column filters (DT filter = "top" or "bottom")
     thead td input,
-    thead td .form-control {
+    thead td .form-control,
+    tfoot td input,
+    tfoot td .form-control {
       height: 28px;
-      padding: 2px 8px;
+      padding: 2px 20px 2px 8px;
       font-size: 12px;
       font-weight: 400;
       border-radius: @modern-radius-sm;
+    }
+    thead td .form-control-feedback,
+    tfoot td .form-control-feedback {
+      width: 20px;
+      height: 28px;
+      line-height: 28px;
+      font-size: 11px;
     }
   }
   &.no-footer .dataTables_scrollBody {
@@ -1039,6 +1048,10 @@ textarea:focus {
     {
       .modern-tint(background-color; @primary-color-dark; 10%);
     });
+  }
+  // sticky group cells of MIRO Pivot's row headers must be opaque, but follow the row
+  table.dataTable tbody tr > .tableScrollCell {
+    background: inherit !important;
   }
   // lines between rows only where asked for ("display" includes them)
   table.dataTable:not(.row-border):not(.cell-border):not(.display) tbody td,
@@ -1153,6 +1166,45 @@ textarea:focus {
       border-top: 1px solid @modern-border-strong-dark;
     });
   }
+  .dt-buttons {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    .dt-button {
+      margin: 0;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 20px;
+      border-radius: @modern-radius-sm;
+      background-image: none;
+      box-shadow: none;
+      transition: background-color @modern-ease, border-color @modern-ease;
+      .responsiveDark({
+        background-color: @modern-surface;
+        border: 1px solid @modern-border-strong;
+        color: @text-color;
+      },
+      {
+        background-color: transparent;
+        border: 1px solid @modern-border-strong-dark;
+        color: @text-color-dark;
+      });
+      &:hover:not(.disabled),
+      &:focus:not(.disabled) {
+        background-image: none;
+        .responsiveDark({
+          background-color: @modern-hover;
+          border-color: @modern-border-strong;
+        },
+        {
+          background-color: @modern-hover-dark;
+          border-color: @modern-border-strong-dark;
+        });
+      }
+    }
+  }
   .dataTables_filter {
     label {
       font-weight: 400;
@@ -1247,6 +1299,46 @@ textarea:focus {
     {
       color: @modern-muted-dark;
     });
+  }
+  td.htDimmed:not(.currentRow):not(.currentCol):not(.listbox td) {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 7%; #fff);
+    },
+    {
+      .modern-mix(background-color; #000; 18%; @darken-41c1769c);
+    });
+  }
+  // the dropdown list of dropdown/autocomplete cells is sized for Handsontable's own row
+  // heights: keep them, or the last items get clipped
+  &.autocompleteEditor td {
+    height: 22px;
+    line-height: 21px;
+    padding: 0 8px;
+  }
+  // ... and must stand out from the grid it is drawn over
+  &.autocompleteEditor {
+    .responsiveDark({
+      filter: drop-shadow(0 4px 10px rgba(16, 24, 40, 0.16));
+    },
+    {
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+    });
+    .ht_master table.htCore {
+      border-radius: @modern-radius-sm;
+      overflow: hidden;
+      .responsiveDark({
+        .modern-mix(border-color; #101828; 28%; #fff);
+      },
+      {
+        .modern-mix(border-color; #fff; 28%; @main-bg-dark);
+      });
+    }
+    td {
+      border-color: transparent !important;
+    }
+    .wtHolder {
+      overscroll-behavior: contain;
+    }
   }
   .wtBorder.current,
   .wtBorder.area {

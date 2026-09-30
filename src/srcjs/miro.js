@@ -264,6 +264,16 @@ $(document).on('preInit.dt', () => {
   fixedColumnsPatched = true;
 });
 
+// Handsontable scrolls the table on wheel events reaching its root (high-DPI screens and
+// non-Chrome browsers), including those from the dropdown list rendered inside it
+document.addEventListener('wheel', (e) => {
+  const listbox = e.target.closest?.('.autocompleteEditor');
+  if (listbox && !listbox.dataset.wheelContained) {
+    listbox.dataset.wheelContained = 'true';
+    listbox.addEventListener('wheel', (event) => event.stopPropagation());
+  }
+}, { capture: true, passive: true });
+
 const shortcutManager = new ShortcutManager(50);
 $(document).on('keyup', (event) => {
   shortcutManager.handleKeyPressEvent(event);
