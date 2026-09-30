@@ -248,8 +248,6 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         await this.azureUserAuth.refreshTokenFile(aiAssistantConfigRaw);
         procEnv.MIRO_AZURE_ACCESS_TOKEN_FILE = this.azureUserAuth.tokenFile;
       }
-      // TODO: Disable debug logging by default
-      procEnv.MIRO_AI_ASSISTANT_DEBUG_FILE_PATH = path.join(this.miroWorkspaceDir, 'ai_assistant_trace.log');
     }
 
     if (process.platform === 'linux') {
