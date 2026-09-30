@@ -18,13 +18,20 @@ observe({
       return()
     }
     newIsSandbox <- isTRUE(dialogState$isSandbox)
-    if (!identical(newSids, aiAssistantState$activeSids) ||
-      !identical(newIsSandbox, aiAssistantState$contextIsSandbox)) {
+    # every sandbox snapshot gets a new sid, so for the sandbox only its label tells
+    # whether the user sees a different context
+    contextChanged <- !identical(newIsSandbox, aiAssistantState$contextIsSandbox) ||
+      !identical(dialogState$chatContext, aiAssistantState$contextLabel) ||
+      (!newIsSandbox && !identical(newSids, aiAssistantState$activeSids))
+    if (!identical(newSids, aiAssistantState$activeSids) || contextChanged) {
       if (!is.null(aiAssistantState$activeSids)) {
         aiAssistantState$pendingContextNote <<- dialogState$chatContext
       }
       aiAssistantState$activeSids <<- newSids
       aiAssistantState$contextIsSandbox <<- newIsSandbox
+    }
+    if (contextChanged) {
+      aiAssistantState$contextLabel <<- dialogState$chatContext
       if (!newIsSandbox) {
         for (changeIdx in aiAssistantState$changeIndex) {
           if (identical(aiAssistantState$chatHistory[[changeIdx]]$change$status, "pending")) {

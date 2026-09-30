@@ -1853,6 +1853,8 @@ if (!is.null(errMsg)) {
           snapshotRevision = NULL,
           activeSids = NULL,
           contextIsSandbox = FALSE,
+          # the context divider last shown in the chat
+          contextLabel = NULL,
           # proposed input data changes: changeId -> index in chatHistory
           changeIndex = list(),
           # proposals from one answer that can be applied together:
