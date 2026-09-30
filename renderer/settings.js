@@ -913,7 +913,9 @@ function registerCustomProvider({
         aiKeyValidation = Promise.allSettled([aiKeyValidation, validate()]);
       } catch (err) {
         __electronLog.warn(`Microsoft sign-in failed: ${err.message}`);
-        signInStatus.textContent = lang['ai-azure-sign-in-failed'] ?? 'Sign-in failed.';
+        // strip Electron's "Error invoking remote method '...': Error: " prefix
+        const reason = String(err.message).replace(/^Error invoking remote method '[^']*': (\w*Error: )?/, '');
+        signInStatus.textContent = `${lang['ai-azure-sign-in-failed'] ?? 'Sign-in failed.'} ${reason}`;
       } finally {
         signInButton.disabled = false;
       }

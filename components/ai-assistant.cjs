@@ -108,11 +108,13 @@ const probeCustomProviderDeployments = async (providerLabel, deployments, buildR
         __electronLog.warn(`${providerLabel} rejected the credential. Status: ${status}`);
         return { status: KEY_INVALID, models: [] };
       }
-      if (status === 429 || status >= 500) {
-        __electronLog.warn(`Could not validate ${providerLabel} deployment ${id}. Status: ${status}`);
+      const detail = extractProbeErrorMessage(error);
+      if (status === 408 || status === 429 || status >= 500) {
+        __electronLog.warn(
+          `Could not validate ${providerLabel} deployment ${id}. Status: ${status}${detail ? ` - ${detail}` : ''}`,
+        );
         return { status: KEY_UNREACHABLE, models: [] };
       }
-      const detail = extractProbeErrorMessage(error);
       __electronLog.warn(
         `${providerLabel} deployment ${id} is not usable. Status: ${status}${detail ? ` - ${detail}` : ''}`,
       );
