@@ -805,12 +805,12 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     allModels = list(
       OpenAI = c(
         "GPT-6 Astra" = "openai/gpt-6-astra",
-        "GPT-6 Sol" = "openai/gpt-6-sol",
+        "GPT-6.1 Sol" = "openai/gpt-6.1-sol",
         "GPT-6 Luna" = "openai/gpt-6-luna"
       ),
       Anthropic = c(
         "Claude Opus 5.5" = "anthropic/claude-opus-5-5",
-        "Claude Sonnet 5" = "anthropic/claude-sonnet-5",
+        "Claude Sonnet 5.5" = "anthropic/claude-sonnet-5-5",
         "Claude Fable 5.1" = "anthropic/claude-fable-5-1",
         "Claude Haiku 4.5" = "anthropic/claude-haiku-4-5"
       ),

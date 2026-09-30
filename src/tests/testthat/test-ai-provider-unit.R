@@ -41,7 +41,7 @@ test_that("MiroAiAssistant getProvider returns correct R6 instances", {
   ))
 
   # Valid providers
-  openai_provider <- assistant$getProvider("openai", "gpt-6-sol")
+  openai_provider <- assistant$getProvider("openai", "gpt-6.1-sol")
   google_provider <- assistant$getProvider("google", "gemini-3.6-flash")
 
   expect_true(inherits(openai_provider, "MiroAiOpenAiProvider"))
@@ -217,7 +217,7 @@ test_that("MiroAiAnthropicProvider formats history correctly across iterations",
     )
   )
 
-  anthropic <- MockAnthropicProvider$new("claude-sonnet-5", "key")
+  anthropic <- MockAnthropicProvider$new("claude-sonnet-5-5", "key")
 
   anthropic$sendMessage("Hello Claude", "System text")
 
@@ -257,7 +257,7 @@ test_that("MiroAiAnthropicProvider passes tool output through as the original ra
   # drops fields whose value is the literal string "NA" (jsonlite's NA
   # handling), so a scenario using "NA" as a region code would vanish from
   # what the model actually sees.
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   provider$mockResponses <- list(
     list(
       content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
@@ -292,7 +292,7 @@ test_that("MiroAiAnthropicProvider passes tool output through as the original ra
 })
 
 test_that("MiroAiAnthropicProvider surfaces max_tokens truncation instead of hiding it", {
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   provider$mockResponses <- list(
     list(
       content = list(list(type = "text", text = "partial answer")),
@@ -321,7 +321,7 @@ test_that("MiroAiAnthropicProvider reports refusals instead of returning an empt
 })
 
 test_that("MiroAiAnthropicProvider errors instead of continuing when a tool call is truncated", {
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   provider$mockResponses <- list(
     list(
       content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
@@ -353,7 +353,7 @@ test_that("MiroAiAnthropicProvider keeps prompt-cache breakpoints bounded across
     n
   }
 
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   toolTurn <- function(i) {
     list(
       content = list(list(type = "tool_use", id = paste0("t", i), name = "getData", input = list())),
@@ -538,7 +538,7 @@ test_that("MiroAiAnthropicProvider hands tool arguments to the dispatcher simpli
   # list("Base") and filters as a list of lists, which made queryScenarioDatabase fail
   # with "invalid subscript type 'list'" and reject every filter -- the tool was
   # unusable on Anthropic while working fine on OpenAI.
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   provider$mockResponses <- list(
     list(
       content = list(list(
@@ -616,7 +616,7 @@ test_that("MiroAiBaseProvider keeps counting tokens after a response without usa
   # Regression test: `0L + NULL` is a zero-length vector, and it stays zero-length
   # however much is added to it afterwards. One turn whose response carried no usage
   # block therefore blanked the session's token counters permanently.
-  provider <- MockAnthropicCapture$new("claude-sonnet-5", "key")
+  provider <- MockAnthropicCapture$new("claude-sonnet-5-5", "key")
   provider$mockResponses <- list(
     list(
       content = list(list(type = "tool_use", id = "call_1", name = "getData", input = list())),
