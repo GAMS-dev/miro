@@ -29,7 +29,7 @@ expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant .miro-ai-chat-
 expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').text().includes('Sandbox scenario:');"))
 
 # model dropdown defaults to the (only) configured provider/model
-expect_equal(app$get_value(input = "miroAiModel"), "anthropic/claude-sonnet-5-5")
+expect_equal(app$get_value(input = "miroAiModel"), "anthropic/claude-opus-5-5")
 
 # disclaimer is always shown
 expect_equal(app$get_js("$('.miro-ai-disclaimer').length;"), 1)
