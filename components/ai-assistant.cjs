@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const REQUEST_TIMEOUT = 10000;
 const DEPLOYMENT_PROBE_TIMEOUT = 60000;
+const PROBE_MAX_TOKENS = 2048;
 
 // Callers must be able to tell "the provider rejected this key" apart from "we could
 // not reach the provider": the first means the key is bad and must not be stored, the
@@ -146,12 +147,20 @@ const testAzureFoundryConnection = async (config, deployments = [], { accessToke
   }
   const headers = buildAzureAuthHeaders(config, accessToken);
 
-  const url = `${endpoint}/openai/v1/chat/completions`;
-  return probeCustomProviderDeployments('Azure', deployments, (deployment) => ({
-    url,
-    headers,
-    body: { model: deployment.id, messages: [{ role: 'user', content: 'ping' }] },
-  }));
+  const messages = [{ role: 'user', content: 'ping' }];
+  // Claude deployments only speak the Anthropic Messages API
+  return probeCustomProviderDeployments('Azure', deployments, (deployment) => (
+    /claude/i.test(deployment.id)
+      ? {
+        url: `${endpoint}/anthropic/v1/messages`,
+        headers: { ...headers, 'anthropic-version': '2023-06-01' },
+        body: { model: deployment.id, max_tokens: PROBE_MAX_TOKENS, messages },
+      }
+      : {
+        url: `${endpoint}/openai/v1/chat/completions`,
+        headers,
+        body: { model: deployment.id, messages },
+      }));
 };
 
 module.exports = {

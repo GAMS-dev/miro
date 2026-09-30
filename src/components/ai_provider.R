@@ -635,21 +635,35 @@ normalizeAzureEndpoint <- function(endpoint) {
   endpoint <- sub("/+$", "", trimws(endpoint %||% ""))
   return(sub("/openai(/v1(/chat/completions|/responses)?)?$", "", endpoint))
 }
+newAzureTokenProvider <- function(azureConfig) {
+  if (identical(azureConfig$authMode, "usersignin")) {
+    return(MiroAzureAccessTokenFileProvider$new())
+  }
+  if (identical(azureConfig$authMode, "workloadidentity")) {
+    return(MiroAzureEntraTokenProvider$new(tenantId = azureConfig$tenantId, clientId = azureConfig$clientId))
+  }
+  return(NULL)
+}
+
+azureAuthHeaders <- function(tokenProvider, apiKey) {
+  if (!is.null(tokenProvider)) {
+    return(list(Authorization = paste("Bearer", tokenProvider$getToken())))
+  }
+  return(list(`api-key` = apiKey))
+}
+
+# Claude models on Foundry are served via the Anthropic Messages API only, not chat/completions
+isAzureClaudeDeployment <- function(deploymentName) {
+  return(grepl("claude", deploymentName, ignore.case = TRUE))
+}
+
 MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
   inherit = MiroAiBaseProvider,
   public = list(
     initialize = function(modelName, azureConfig, debugFile = NULL) {
       super$initialize(modelName, azureConfig$key, debugFile = debugFile)
       private$endpoint <- azureConfig$endpoint
-      private$authMode <- azureConfig$authMode
-      if (identical(private$authMode, "usersignin")) {
-        private$tokenProvider <- MiroAzureAccessTokenFileProvider$new()
-      } else if (identical(private$authMode, "workloadidentity")) {
-        private$tokenProvider <- MiroAzureEntraTokenProvider$new(
-          tenantId = azureConfig$tenantId,
-          clientId = azureConfig$clientId
-        )
-      }
+      private$tokenProvider <- newAzureTokenProvider(azureConfig)
       return(self)
     }
   ),
@@ -657,7 +671,6 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
     replaysHistory = TRUE,
     errorPrefix = "Azure AI Foundry API Error: ",
     endpoint = NULL,
-    authMode = NULL,
     tokenProvider = NULL,
     systemInstructions = NULL,
     toolsPayload = NULL,
@@ -665,10 +678,7 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
       return(paste0(normalizeAzureEndpoint(private$endpoint), "/openai/v1/chat/completions"))
     },
     buildAuthHeaders = function() {
-      if (!is.null(private$tokenProvider)) {
-        return(list(Authorization = paste("Bearer", private$tokenProvider$getToken())))
-      }
-      return(list(`api-key` = private$apiKey))
+      return(azureAuthHeaders(private$tokenProvider, private$apiKey))
     },
     buildPayload = function() {
       # the system prompt is rebuilt for every request, so it is not part of the stored history;
@@ -737,6 +747,31 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
   )
 )
 
+MiroAiAzureAnthropicProvider <- R6Class("MiroAiAzureAnthropicProvider",
+  inherit = MiroAiAnthropicProvider,
+  public = list(
+    initialize = function(modelName, azureConfig, debugFile = NULL) {
+      super$initialize(modelName, azureConfig$key, debugFile = debugFile)
+      private$endpoint <- azureConfig$endpoint
+      private$tokenProvider <- newAzureTokenProvider(azureConfig)
+      return(self)
+    }
+  ),
+  private = list(
+    errorPrefix = "Azure AI Foundry API Error: ",
+    endpoint = NULL,
+    tokenProvider = NULL,
+    # server-side fallbacks are not available on Foundry
+    fallbackModels = character(0L),
+    buildUrl = function() {
+      return(paste0(normalizeAzureEndpoint(private$endpoint), "/anthropic/v1/messages"))
+    },
+    buildAuthHeaders = function() {
+      return(c(azureAuthHeaders(private$tokenProvider, private$apiKey), list(`anthropic-version` = "2023-06-01")))
+    }
+  )
+)
+
 AI_PROVIDER_REGISTRY <- list(
   openai = list(
     label = "OpenAI", custom = FALSE,
@@ -752,7 +787,12 @@ AI_PROVIDER_REGISTRY <- list(
   ),
   azure = list(
     label = "Azure AI Foundry", custom = TRUE,
-    construct = function(modelId, entry, debugFile) MiroAiAzureProvider$new(modelId, entry, debugFile = debugFile)
+    construct = function(modelId, entry, debugFile) {
+      if (isAzureClaudeDeployment(modelId)) {
+        return(MiroAiAzureAnthropicProvider$new(modelId, entry, debugFile = debugFile))
+      }
+      return(MiroAiAzureProvider$new(modelId, entry, debugFile = debugFile))
+    }
   )
 )
 

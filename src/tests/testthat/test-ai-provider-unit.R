@@ -950,6 +950,30 @@ test_that("Azure builds a Chat Completions payload", {
   expect_equal(provider$url(), "https://res.services.ai.azure.com/openai/v1/chat/completions")
 })
 
+test_that("Claude deployments on Azure use the Anthropic Messages API", {
+  entry <- azureEntry(models = list(
+    list(label = "Claude Sonnet", id = "claude-sonnet-4-5"), list(label = "GPT-4o", id = "gpt4o-prod")
+  ))
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(entry)))
+  provider <- assistant$getProvider("azure", "claude-sonnet-4-5")
+  expect_s3_class(provider, "MiroAiAzureAnthropicProvider")
+  expect_s3_class(assistant$getProvider("azure", "gpt4o-prod"), "MiroAiAzureProvider")
+
+  private <- provider$.__enclos_env__$private
+  expect_equal(private$buildUrl(), "https://res.services.ai.azure.com/anthropic/v1/messages")
+  expect_equal(
+    private$buildAuthHeaders(),
+    list(`api-key` = "secret-value", `anthropic-version` = "2023-06-01")
+  )
+  private$modelName <- "claude-opus-5-5"
+  payload <- private$prepareInitialPayload("q", "sys", NULL)
+  expect_equal(payload$model, "claude-opus-5-5")
+  expect_equal(payload$messages[[1]]$content, "q")
+  # server-side fallbacks do not exist on Foundry
+  expect_null(payload$fallbacks)
+  expect_null(private$buildAuthHeaders()$`anthropic-beta`)
+})
+
 test_that("Azure surfaces truncation and content filtering", {
   provider <- newAzureProvider()
   provider$mockResponses <- list(azureTextResponse("partial", finishReason = "length"))
