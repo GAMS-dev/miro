@@ -112,7 +112,7 @@ mockModifyIoConfig <- list(
   modelOut = list()
 )
 
-setup_modify_test_env <- function(inputModificationEnabled = TRUE) {
+setup_modify_test_env <- function(inputModificationEnabled = TRUE, ioConfig = mockModifyIoConfig) {
   conn <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
   DBI::dbWriteTable(conn, "scen_meta", tibble::tibble(
@@ -153,7 +153,7 @@ setup_modify_test_env <- function(inputModificationEnabled = TRUE) {
   ))
 
   adapter <- AIToolAdapter$new(
-    dbSchema = MockModifyDbSchema$new(), conn = conn, ioConfig = mockModifyIoConfig,
+    dbSchema = MockModifyDbSchema$new(), conn = conn, ioConfig = ioConfig,
     inputModificationEnabled = inputModificationEnabled
   )
   adapter$setAllowedSids(1)
@@ -289,6 +289,22 @@ test_that("getSystemMetadata advertises modifiable columns of writable symbols o
   expect_null(meta$databaseSymbols$label$modifiable)
   expect_null(meta$databaseSymbols$markets$modifiable)
 
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("a widget drawn by a custom widget is modifiable only if that renderer is reactive", {
+  ioConfig <- mockModifyIoConfig
+  ioConfig$modelIn$maxstock$definedByExternalSymbol <- "stockwidget"
+  ioConfig$modelIn$stockwidget <- list(alias = "Stock", type = "custom", apiVersion = 2L)
+  env <- setup_modify_test_env(ioConfig = ioConfig)
+  meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
+  expect_equal(meta$databaseSymbols$maxstock$modifiable, list(kind = "numeric", columns = list("maxstock")))
+  DBI::dbDisconnect(env$conn)
+
+  ioConfig$modelIn$stockwidget$apiVersion <- NULL
+  env <- setup_modify_test_env(ioConfig = ioConfig)
+  meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
+  expect_null(meta$databaseSymbols$maxstock$modifiable)
   DBI::dbDisconnect(env$conn)
 })
 
