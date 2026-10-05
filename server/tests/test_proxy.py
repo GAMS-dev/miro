@@ -67,7 +67,29 @@ def remove_groups():
         response.raise_for_status()
 
 
+def remove_engine_models():
+    # leftover models trigger a "Discrepancy with GAMS Engine" alert in the admin panel
+    response = requests.get(
+        f"{ENGINE_URL}/namespaces/{ENGINE_NS}",
+        headers={"X-Fields": "name"},
+        timeout=20,
+        auth=(ENGINE_USER, ENGINE_PASSWORD),
+    )
+    response.raise_for_status()
+    for model in response.json():
+        response = requests.delete(
+            f"{ENGINE_URL}/namespaces/{ENGINE_NS}/models/{model['name']}",
+            timeout=20,
+            auth=(ENGINE_USER, ENGINE_PASSWORD),
+        )
+        response.raise_for_status()
+
+
 class UITests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        remove_engine_models()
+
     def setUp(self):
         self.ui_url = UI_URL
         test_browser = os.getenv("TEST_BROWSER", "chrome")
