@@ -250,8 +250,8 @@ renderMiroPlotly <- function(id, data, options = NULL, path = NULL,
             if (!is.null(options$ydata[[j]]$marker$size)) {
               sizevalues <- dataTmp[[options$ydata[[j]]$marker$size]]
             }
-            if (!is.null(maxsize) && !is.null(sizevalues)) {
-              sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
+            if (!is.null(maxsize) && any(!is.na(sizevalues))) {
+              sizeref <- 2.0 * max(sizevalues, na.rm = TRUE) / (maxsize**2)
             }
             if (j == 1) {
               p <<- plot_ly(dataTmp,
