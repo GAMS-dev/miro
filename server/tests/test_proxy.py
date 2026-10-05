@@ -129,7 +129,9 @@ class UITests(unittest.TestCase):
         )
         user_dropdown_toggle.click()
         sign_out_button = wait.until(
-            EC.visibility_of_element_located((By.XPATH, "//a[text()='Sign Out']"))
+            EC.visibility_of_element_located(
+                (By.XPATH, "//*[@aria-labelledby='userDropdown']//a[text()='Sign Out']")
+            )
         )
         sign_out_button.click()
 
@@ -207,7 +209,7 @@ class UITests(unittest.TestCase):
         else:
             logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # pragma: allowlist secret
         self.assertEqual(
-            get_image_hash(self.driver, ".branding img"),
+            get_image_hash(self.driver, ".form-signin img.auth-logo"),
             logo_hash,
             "Custom logo not visible",
         )
@@ -506,14 +508,16 @@ class UITests(unittest.TestCase):
 
         self.assertTrue(
             "active"
-            in self.driver.find_element(By.LINK_TEXT, "My Apps")
+            in self.driver.find_element(
+                By.CSS_SELECTOR, "#navbar a.navbar-brand.nav-home"
+            )
             .get_attribute("class")
             .split(),
             "My Apps link did not have class 'active'",
         )
         self.assertFalse(
             "active"
-            in self.driver.find_element(By.LINK_TEXT, "Admin Panel")
+            in self.driver.find_element(By.ID, "navAdminPanel")
             .get_attribute("class")
             .split(),
             "Admin Panel link should not have class 'active' on My Apps",
@@ -523,14 +527,16 @@ class UITests(unittest.TestCase):
         self.driver.find_element(By.ID, "navAdminPanel").click()
         self.assertTrue(
             "active"
-            in self.driver.find_element(By.LINK_TEXT, "Admin Panel")
+            in self.driver.find_element(By.ID, "navAdminPanel")
             .get_attribute("class")
             .split(),
             "Admin Panel link did not have class 'active'",
         )
         self.assertFalse(
             "active"
-            in self.driver.find_element(By.LINK_TEXT, "My Apps")
+            in self.driver.find_element(
+                By.CSS_SELECTOR, "#navbar a.navbar-brand.nav-home"
+            )
             .get_attribute("class")
             .split(),
             "My Apps link should not have class 'active' on Admin Panel",
