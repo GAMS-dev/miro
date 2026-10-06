@@ -2647,7 +2647,8 @@
       "enum": [
         "de",
         "en",
-        "cn"
+        "cn",
+        "es"
       ]
     },
     "customLanguage": {

@@ -128,7 +128,7 @@ const schema = {
   },
   language: {
     type: 'string',
-    enum: ['en', 'de', 'cn'],
+    enum: ['en', 'de', 'cn', 'es'],
   },
   colorTheme: {
     type: 'string',

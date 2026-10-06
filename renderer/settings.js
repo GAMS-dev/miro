@@ -79,6 +79,7 @@ const optionAliasMap = {
     English: 'en',
     Deutsch: 'de',
     中文: 'cn',
+    Español: 'es',
   },
   colorTheme: {
     colorThemeOptionDefault: 'default',

@@ -1,6 +1,6 @@
 context("Unit tests - language files")
 
-langsToTest <- c("en", "de", "cn")
+langsToTest <- c("en", "de", "cn", "es")
 miroRootDir <- file.path(getwd(), "..", "..")
 source(file.path(miroRootDir, "components", "json.R"))
 

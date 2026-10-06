@@ -2,7 +2,7 @@ test_that(
   "Language tests work",
   try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     modelsToTest <- c("pickstock")
-    langsToTest <- c("en", "de", "cn")
+    langsToTest <- c("en", "de", "cn", "es")
 
     createTestDb()
     # END setup
