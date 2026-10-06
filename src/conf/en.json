@@ -570,6 +570,7 @@
       "welcomeMessageCustomRenderer": "Hi there! I'm Mira, your AI assistant. I'm here to help you create your custom renderer code. Just let me know how you would like to visualize your data.",
       "currentContextSandbox": "Sandbox scenario: %s",
       "currentContextCompare": "Comparison of %d scenarios",
+      "backToSandbox": "Back to sandbox",
       "requestAbortedMessage": "Request aborted.",
       "sandboxSyncFailedMessage": "Mira could not access the current sandbox data, so your message was not sent. Please try again.",
       "chatBubbleUserHeader": "User:",

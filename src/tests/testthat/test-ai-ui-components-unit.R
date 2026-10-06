@@ -242,6 +242,27 @@ test_that("renderAiChatItem dispatches on the chat log item type", {
   expect_match(bubble, "miro-ai-chat-user", fixed = TRUE)
 })
 
+test_that("renderAiChatLogContent offers to go back to the sandbox only on the active comparison context", {
+  # the spinner at the end of the log is defined elsewhere in the app
+  if (!exists("genSpinner", envir = globalenv())) {
+    assign("genSpinner", function(...) NULL, envir = globalenv())
+    withr::defer(rm("genSpinner", envir = globalenv()))
+  }
+  backLang <- c(mockLang, list(backToSandbox = "Back to sandbox"))
+  chatHistory <- list(
+    list("Sandbox scenario: foo"),
+    list(role = "user", text = "hi"),
+    list("Comparison of 2 scenarios <b>")
+  )
+  html <- as.character(renderAiChatLogContent(chatHistory, backLang, contextIsSandbox = FALSE))
+  expect_identical(lengths(regmatches(html, gregexpr("miro-ai-context-back-btn", html, fixed = TRUE))), 1L)
+  expect_match(html, "Comparison of 2 scenarios &lt;b&gt;</span>\\s*<button", fixed = FALSE)
+  expect_match(html, "btAiBackToSandbox", fixed = TRUE)
+
+  html <- as.character(renderAiChatLogContent(chatHistory, backLang, contextIsSandbox = TRUE))
+  expect_false(grepl("miro-ai-context-back-btn", html, fixed = TRUE))
+})
+
 test_that("renderAiInputChangeProposal leaves out an empty preview table", {
   change <- mockTableChange(status = "failed", statusDetail = "no matching row")
   change$preview <- list(

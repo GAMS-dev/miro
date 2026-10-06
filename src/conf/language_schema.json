@@ -2229,6 +2229,10 @@
               "type": "string",
               "minLength": 1
             },
+            "backToSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
             "requestAbortedMessage": {
               "type": "string",
               "minLength": 1
@@ -2482,7 +2486,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 68
+          "minProperties": 69
         },
         "hcubeMode": {
           "type": "object",

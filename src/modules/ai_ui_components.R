@@ -66,10 +66,24 @@ renderAiChatBubble <- function(msg, lang, charLimit = 300) {
     )
   ))
 }
-renderAiChatDivider <- function(contextText) {
+renderAiChatDivider <- function(contextText, backToSandboxLabel = NULL) {
+  if (is.null(backToSandboxLabel)) {
+    return(tags$div(
+      class = "miro-ai-chat-context-divider",
+      contextText
+    ))
+  }
   tags$div(
-    class = "miro-ai-chat-context-divider",
-    contextText
+    class = "miro-ai-chat-context-divider miro-ai-chat-context-divider-action",
+    tags$span(class = "miro-ai-chat-context-label", contextText),
+    tags$button(
+      type = "button",
+      class = "miro-ai-context-back-btn",
+      title = backToSandboxLabel,
+      onclick = "Shiny.setInputValue('btAiBackToSandbox', 1, {priority: 'event'})",
+      tags$i(class = "fas fa-arrow-left", `aria-hidden` = "true"),
+      backToSandboxLabel
+    )
   )
 }
 aiInputChangeOperationLabel <- function(change, lang) {
@@ -342,7 +356,7 @@ renderAiToolActivity <- function(activity, lang) {
     )
   ))
 }
-renderAiChatItem <- function(item, lang) {
+renderAiChatItem <- function(item, lang, isActiveCompareContext = FALSE) {
   if (identical(item$role, "inputChange")) {
     return(renderAiInputChangeProposal(item$change, lang))
   }
@@ -353,7 +367,7 @@ renderAiChatItem <- function(item, lang) {
     return(renderAiToolActivity(item$activity, lang))
   }
   if (is.null(item$role)) {
-    return(renderAiChatDivider(item))
+    return(renderAiChatDivider(item, if (isActiveCompareContext) lang$backToSandbox))
   }
   return(renderAiChatBubble(item, lang))
 }
@@ -385,9 +399,19 @@ renderMiraIcon <- function() {
     "</svg>"
   ))
 }
-renderAiChatLogContent <- function(chatHistory, lang) {
+renderAiChatLogContent <- function(chatHistory, lang, contextIsSandbox = TRUE) {
+  # when comparing scenarios, the latest context divider offers to go back to the sandbox
+  activeContextIdx <- if (!isTRUE(contextIsSandbox)) {
+    max(c(0L, which(vapply(chatHistory, function(item) is.null(item$role), logical(1L)))))
+  } else {
+    0L
+  }
   tagList(
-    lapply(chatHistory, function(item) renderAiChatItem(item, lang)),
+    lapply(seq_along(chatHistory), function(itemIdx) {
+      renderAiChatItem(chatHistory[[itemIdx]], lang,
+        isActiveCompareContext = identical(itemIdx, activeContextIdx)
+      )
+    }),
     genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
   )
 }

@@ -3827,6 +3827,72 @@ body.miro-ai-drawer-resizing {
     border: 1px solid #5a5b5f;
   });
 }
+// comparison context: the divider also offers to switch back to the sandbox scenario
+.miro-ai-chat-context-divider-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 4px 4px 4px 15px;
+}
+.miro-ai-chat-context-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.miro-ai-context-back-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 11px 3px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: inherit;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  .responsiveDark({
+    .modern-mix(background-color; @primary-color; 12%; transparent);
+    color: @primary-color;
+  },
+  {
+    .modern-mix(background-color; @primary-color-dark; 24%; transparent);
+    color: @text-color-dark;
+  });
+  .fa-arrow-left {
+    font-size: 0.9em;
+    transition: transform 150ms ease;
+  }
+  &:hover {
+    transform: translateY(-1px);
+    .responsiveDark({
+      .modern-filled(@primary-color);
+      box-shadow: ~"0 2px 6px color-mix(in srgb, @{primary-color} 35%, transparent)";
+    },
+    {
+      .modern-filled(@primary-color-dark);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    });
+    .fa-arrow-left {
+      transform: translateX(-2px);
+    }
+  }
+  &:active {
+    transform: none;
+  }
+  &:focus-visible {
+    outline: none;
+    .responsiveDark({
+      .modern-focus-ring(@primary-color);
+    },
+    {
+      .modern-focus-ring(@primary-color-dark);
+    });
+  }
+}
 .miro-ai-change-proposal .miro-ai-change-card {
   width: 100%;
   .responsiveDark({

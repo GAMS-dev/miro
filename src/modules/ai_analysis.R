@@ -47,7 +47,9 @@ observe({
       aiAssistantState$chatHistory[[historyIdx]] <<- list(dialogState$chatContext)
     }
     setContent(session, "#miroAiChatLog",
-      as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog)),
+      as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog,
+        contextIsSandbox = aiAssistantState$contextIsSandbox
+      )),
       sanitizeHTML = TRUE
     )
     if (!is.null(aiAssistantState$model)) {
@@ -71,6 +73,14 @@ setAiTokenInfo <- function() {
 
 observeEvent(input$btAIOutput, {
   flog.debug("AI Output Analysis button clicked.")
+  openAiSandboxContext()
+})
+observeEvent(input$btAiBackToSandbox, {
+  flog.debug("AI Assistant: switch context back to sandbox scenario requested.")
+  openAiSandboxContext()
+})
+
+openAiSandboxContext <- function() {
   tempScenName <- lang$nav$dialogNewScen$newScenName
   tempScenTags <- NULL
   sidToLoad <- NULL
@@ -102,7 +112,7 @@ observeEvent(input$btAIOutput, {
     sidsToLoad = sidToLoad, scenIdNameMap = NULL, isSandbox = TRUE,
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
-})
+}
 
 setAiTempScen <- function(tempScen, scenName = NULL) {
   oldTempScen <- aiAssistantState$tempScen
@@ -939,7 +949,9 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$changeGroupOf <<- list()
   aiAssistantState$changeNotes <<- character(0L)
   setContent(session, "#miroAiChatLog",
-    as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog)),
+    as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog,
+      contextIsSandbox = aiAssistantState$contextIsSandbox
+    )),
     sanitizeHTML = TRUE
   )
   aiAssistantState$history <<- list()
