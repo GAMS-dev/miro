@@ -624,8 +624,8 @@ export function expandAddAppForm() {
                         <div class="app-logo-wrapper">
                            <div class="drag-drop-area app-window input-group" id="newAppFiles">
                               <label for="miroAppFile" style="width:100%;height:100%;">
+                                <i class="fas fa-circle-plus drag-drop-plus-icon"></i>
                                 <div class="drag-drop-area-text empty">
-                                <div><i class="fas fa-circle-plus drag-drop-area-icon"></i></div>
                                    ${PLACEHOLDERS.appFiles}
                                 </div>
                               </label>

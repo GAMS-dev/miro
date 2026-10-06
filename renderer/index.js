@@ -207,7 +207,7 @@ $(() => {
                                      ${
                                        appData.length === 0
                                          ? `
-                                       <div class="empty small">or</div>
+                                       <div class="empty small">${lang.orSeparator}</div>
                                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btAddExamplesInForm">${lang.btAddExamples}</button>
                                      ` : ''
                                     }

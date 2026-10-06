@@ -1569,6 +1569,11 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
   box-shadow: none;
   transition: border-color var(--m-ease), box-shadow var(--m-ease);
 }
+/* the Microsoft Foundry fields are stacked in one input group: keep each one rounded */
+.input-group > .miro-launcher-input.ai-azure-input {
+  margin-left: 0;
+  border-radius: var(--m-radius) !important;
+}
 .form-control:focus,
 .custom-select:focus,
 .custom-file-input:focus ~ .custom-file-label,

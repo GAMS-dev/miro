@@ -501,6 +501,10 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        orSeparator: {
+          type: 'string',
+          minLength: 1,
+        },
         appNamePlaceholder: {
           type: 'string',
           minLength: 1,
@@ -674,6 +678,7 @@ const schema = {
         'btEditDone',
         'btAddExamples',
         'appFilesPlaceholder',
+        'orSeparator',
         'appNamePlaceholder',
         'appDescPlaceholder',
         'appDbPathPlaceholder',
@@ -1601,6 +1606,7 @@ const en = {
     btEditDone: 'Save',
     btAddExamples: 'Add example apps',
     appFilesPlaceholder: 'Drop your MIRO app here or click to browse.',
+    orSeparator: 'or',
     appNamePlaceholder: 'App title',
     appDescPlaceholder: 'Short model description (optional)',
     appDbPathPlaceholder: 'MIRO database path (optional)',
@@ -1953,6 +1959,7 @@ const de = {
     btAddExamples: 'Beispiel-Apps hinzufügen',
     appFilesPlaceholder:
       'Legen Sie Ihre MIRO-App hier ab oder klicken Sie zum Durchsuchen.',
+    orSeparator: 'oder',
     appNamePlaceholder: 'App-Titel',
     appDescPlaceholder: 'Kurze Modellbeschreibung (optional)',
     appDbPathPlaceholder: 'MIRO-Datenbankpfad (optional)',
@@ -2292,6 +2299,7 @@ const cn = {
     btEditDone: '完成',
     btAddExamples: '添加示例应用程序',
     appFilesPlaceholder: '将MIRO应用程序放在此处或单击以浏览。',
+    orSeparator: '或',
     appNamePlaceholder: '应用程序标题',
     appDescPlaceholder: '缩短模型的说明（可选）',
     appDbPathPlaceholder: 'MIRO数据库路径（可选）',

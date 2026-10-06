@@ -1650,6 +1650,8 @@ body:has(.app-box-expanded) .app-box:hover,
 
 /* --- admin panel specifics ------------------------------------------------------ */
 .miro-version-wrapper {
+  position: static;
+  padding: 0;
   margin: 12px 0 0;
   text-align: right;
   font-size: 12px;
@@ -2084,6 +2086,31 @@ body:has(.app-box-expanded) .app-box:hover,
 }
 .drag-drop-area-dragover .drag-drop-area-icon {
   transform: translateY(-3px);
+}
+/* new app drop zone: faint plus as a watermark behind the text, like in MIRO Desktop */
+#newAppFiles > label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+.drag-drop-plus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  font-size: 4rem;
+  color: var(--m-text);
+  opacity: 0.1;
+}
+#newAppFiles .drag-drop-area-text {
+  position: relative;
+  z-index: 1;
+}
+.app-box-expanded .app-logo-wrapper {
+  margin-bottom: 1rem;
 }
 /* upload progress: a thin bar inside the bottom of the zone, taking no space while hidden */
 .app-logo-wrapper {
