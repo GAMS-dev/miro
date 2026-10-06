@@ -213,11 +213,12 @@ Sys.sleep(0.5)
 
 ################# Start general permission tests #################
 
-# user2 loads scenario with permissions rwx
+# user2 loads scenario with permissions rwx (user1Scenario2)
 app2$set_inputs(btImport = "click")
 app2$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 Sys.sleep(0.1)
-app2$set_inputs(selLoadScen = paste0("5_", user1))
+app2$set_inputs(selLoadScen = paste0("6_", user1))
+expect_identical(app2$get_value(input = "selLoadScen"), paste0("6_", user1))
 app2$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 # expect permissions section visible in edit metadata
