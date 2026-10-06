@@ -375,7 +375,7 @@
     "readme": {
         "enableMath": false,
         "filename": "README.md",
-        "tabTitle": "Crop plant alloction problem with stochastic crop yield"
+        "tabTitle": "Crop plant allocation problem with stochastic crop yield"
     },
     "roundingDecimals": 2,
     "saveTraceFile": true,
