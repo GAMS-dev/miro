@@ -1542,7 +1542,7 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
   } else if (length(hcubeMeta) && nrow(hcubeMeta)) {
     jobIds <- hcubeMeta[[1]]
     jobOwners <- hcubeMeta[[2]]
-    jobTimes <- hcubeMeta[[4]]
+    jobTimes <- format(as.POSIXct(hcubeMeta[[4]]), "%Y-%m-%d %H:%M:%S")
     jStatuses <- hcubeMeta[[3]]
     content <- tags$table(
       class = "miro-table cJob-wrapper",

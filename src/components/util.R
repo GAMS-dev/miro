@@ -1809,7 +1809,7 @@ formatScenList <- function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 
         USE.NAMES = FALSE
       ),
       scenList[["_sname"]], " (",
-      scenList[["_stime"]], ")"
+      format(as.POSIXct(scenList[["_stime"]]), "%Y-%m-%d %H:%M:%S"), ")"
     )
   ))
 }
