@@ -238,6 +238,7 @@
       "viewsInvalidError": "Einige der Views, die Sie zu importieren versuchten, wurden nicht importiert, da sie für Symbole definiert sind, die nicht existieren: '%s'.",
       "viewsNoneSelected": "Keine Views ausgewählt. Wählen Sie Views aus, indem Sie auf die Zeile klicken.",
       "noViewData": "Keine Views",
+      "noAttachments": "Keine Anhänge",
       "selectAllViews": "Alle auswählen",
       "selectNoViews": "Keine auswählen",
       "viewsAdd": "Views hinzufügen",
@@ -569,6 +570,7 @@
       "welcomeMessageCustomRenderer": "Hallo, hier ist Mira – Ihre KI-Unterstützung! Ich bin hier, um Ihnen bei der Erstellung Ihres benutzerdefinierten Renderer-Codes zu helfen. Lassen Sie mich einfach wissen, wie Sie Ihre Daten visualisieren möchten.",
       "currentContextSandbox": "Sandbox-Szenario: %s",
       "currentContextCompare": "Vergleich von %d Szenarien",
+      "backToSandbox": "Zurück zur Sandbox",
       "requestAbortedMessage": "Anfrage abgebrochen.",
       "sandboxSyncFailedMessage": "Mira konnte nicht auf die aktuellen Daten des Sandbox-Szenarios zugreifen, daher wurde Ihre Nachricht nicht gesendet. Bitte versuchen Sie es erneut.",
       "chatBubbleUserHeader": "Benutzer:",
@@ -2008,7 +2010,7 @@
           "title": "Optionen für die Ebenensteuerung",
           "baseGroups": "Auswählbare Basisgruppen",
           "overlayGroups": "Auswählbare Overlay-Gruppen",
-          "position": "Gitterlinien angezeigen",
+          "position": "Position der Ebenensteuerung",
           "positionChoices": ["Oben rechts", "Unten rechts", "Unten links", "Oben links"],
           "collapsed": "Ebenenauswahlmenü einklappen"
         }

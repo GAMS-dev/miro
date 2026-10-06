@@ -120,7 +120,7 @@ export function confirmModalShow({
 }
 
 export function removeAttachment(elId) {
-  $(`#btRemoveAttachment_${elId}`).parent().parent().remove();
+  $(`#btRemoveAttachment_${elId}`).closest('.attachment-line').remove();
   Shiny.setInputValue(`btRemoveAttachment_${elId}`, 1, {
     priority: 'event',
   });
@@ -884,30 +884,35 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     const name = $.makeArray(el.name);
 
     for (let i = 0; i < id.length; i += 1) {
-      let checkBoxHTML = '';
+      const $line = $('<div class="attachment-line">').append(
+        '<i class="fa fa-file-lines attachment-icon" role="presentation"></i>',
+        $('<a href="#" class="attachment-name">')
+          .attr({ title: name[i], onclick: `Miro.downloadAttachment(${id[i]});return false;` })
+          .text(name[i]),
+      );
       if (el.allowExec) {
-        checkBoxHTML = `<div class="col-sm-6">
-        <div class="form-group shiny-input-container">
-          <div class="checkbox-simple">
-            <label>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" \
-  onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),\
-  {priority:'event'});" checked="checked">
-                  <span></span>
-                </label>
-              </div>
-              <span class="label-span">${el.labelCb}</span>
-            </label>
-          </div>
-        </div>
-      </div>`;
+        const $checkbox = $('<input type="checkbox" checked="checked">').attr(
+          'onchange',
+          `Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),{priority:'event'});`,
+        );
+        $line.append(
+          $('<div class="attachment-exec">').attr('title', el.labelCb).append(
+            $('<div class="form-group shiny-input-container">').append(
+              $('<div class="checkbox-simple">').append(
+                $('<label>').append(
+                  $('<div class="checkbox">').append($('<label>').append($checkbox, '<span></span>')),
+                ),
+              ),
+            ),
+          ),
+        );
       }
-
-      $(
-        `<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`,
-      ).insertBefore('#endAttachList');
+      $line.append(
+        `<button class="btn btn-default bt-icon attachment-remove" id="btRemoveAttachment_${id[i]}" type="button" \
+title="Remove attachment" onclick="Miro.removeAttachment(${id[i]})">\
+<i class="fa fa-trash-can" role="presentation" aria-label="Remove attachment"></i></button>`,
+      );
+      $line.insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {

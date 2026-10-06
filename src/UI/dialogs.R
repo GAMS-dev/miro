@@ -288,6 +288,34 @@ showRemoveExistingOutputDataDialog <- function() {
     fade = TRUE, easyClose = TRUE
   ))
 }
+attachmentLine <- function(id, name, execPerm = NULL, execPermLabel = NULL) {
+  # one row of the attachment list in the edit metadata dialog
+  # (keep in sync with the gms-updateAttachList handler in miro.js)
+  tags$div(
+    class = "attachment-line",
+    tags$i(class = "fa fa-file-lines attachment-icon", role = "presentation"),
+    tags$a(
+      href = "#", class = "attachment-name", title = name,
+      onclick = paste0("Miro.downloadAttachment(", id, ");return false;"), name
+    ),
+    if (!is.null(execPerm)) {
+      tags$div(
+        class = "attachment-exec", title = execPermLabel,
+        checkboxInput_SIMPLE(
+          label = NULL,
+          value = execPerm,
+          onChange = paste0("Shiny.setInputValue('execPermAttachment_", id, "',$(this).is(':checked'),{priority:'event'})")
+        )
+      )
+    },
+    tags$button(
+      class = "btn btn-default bt-icon attachment-remove", id = paste0("btRemoveAttachment_", id),
+      type = "button", onclick = paste0("Miro.removeAttachment(", id, ")"),
+      title = "Remove attachment",
+      tags$i(class = "fa fa-trash-can", role = "presentation", `aria-label` = "Remove attachment")
+    )
+  )
+}
 getLoadDbPanel <- function(title, scenList, tagList, iconName) {
   content <- tagList(
     tags$div(class = "space"),
@@ -874,38 +902,30 @@ showEditMetaDialog <- function(metadata,
       tags$div(class = "space"),
       downloadLink("downloadAttachmentData", "", style = "visibility:hidden;"),
       tags$div(
-        class = "input-form-mobile",
+        class = "attachment-upload",
         fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd,
           multiple = TRUE, width = "100%"
         )
       ),
-      if (length(attachmentMetadata[["name"]])) {
-        lapply(seq_along(attachmentMetadata[["name"]]), function(i) {
+      tags$div(
+        class = "attachment-list",
+        if (attachAllowExec) {
           tags$div(
-            class = "row attachment-line",
-            column(
-              width = 6,
-              HTML(paste0(
-                '<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button>
-                                                                   <a href="#" onclick="Miro.downloadAttachment(', i, ')">',
-                htmltools::htmlEscape(attachmentMetadata[["name"]][[i]]), "</a>"
-              ))
-            ),
-            if (attachAllowExec) {
-              column(
-                width = 6,
-                checkboxInput_SIMPLE(
-                  label = lang$nav$dialogEditMeta$attachmentsExecPerm,
-                  value = attachmentMetadata[["execPerm"]][[i]],
-                  onChange = paste0("Shiny.setInputValue('execPermAttachment_", i, "',$(this).is(':checked'),{priority:'event'})")
-                )
-              )
-            }
+            class = "attachment-list-header",
+            tags$span(class = "attachment-exec", lang$nav$dialogEditMeta$attachmentsExecPerm)
           )
-        })
-      },
-      tags$div(id = "endAttachList", class = "small-space"),
+        },
+        if (length(attachmentMetadata[["name"]])) {
+          lapply(seq_along(attachmentMetadata[["name"]]), function(i) {
+            attachmentLine(i, attachmentMetadata[["name"]][[i]],
+              execPerm = if (attachAllowExec) attachmentMetadata[["execPerm"]][[i]],
+              execPermLabel = lang$nav$dialogEditMeta$attachmentsExecPerm
+            )
+          })
+        },
+        tags$div(id = "endAttachList")
+      ),
+      tags$div(class = "attachment-list-empty", lang$nav$dialogEditMeta$noAttachments),
       genSpinner(
         id = "addAttachLoading", hidden = TRUE, absolute = FALSE,
         extraClasses = "gen-spinner-black"
@@ -933,33 +953,52 @@ showEditMetaDialog <- function(metadata,
       ),
       tags$div(class = "space"),
       tags$div(
-        class = "input-form-mobile",
+        class = "attachment-upload",
         fileInput("file_addViews", lang$nav$dialogEditMeta$viewsAdd,
           multiple = TRUE, width = "100%"
         )
       ),
       tags$div(
         id = "currentViewsTable-noData",
-        style = paste0(
-          "padding:20px;text-align:center;",
-          if (length(viewsMetadata[["id"]])) "display:none;"
-        ),
+        class = "views-list-empty",
+        style = if (length(viewsMetadata[["id"]])) "display:none;",
         lang$nav$dialogEditMeta$noViewData
       ),
+      downloadLink("downloadViews", "", style = "visibility:hidden;"),
       tags$div(
         id = "currentViewsTable-wrapper",
+        class = "views-list",
         style = if (!length(viewsMetadata[["id"]])) "display:none;",
-        tags$a(
-          onClick = "Miro.selectAllRows('currentViewsTable')",
-          href = "#", lang$nav$dialogEditMeta$selectAllViews
-        ),
-        tags$a(
-          onClick = "Miro.selectNoRow('currentViewsTable')",
-          href = "#", lang$nav$dialogEditMeta$selectNoViews,
-          style = "margin-left:30px;"
+        tags$div(
+          class = "views-list-toolbar",
+          tags$a(
+            onClick = "Miro.selectAllRows('currentViewsTable');return false;",
+            href = "#", lang$nav$dialogEditMeta$selectAllViews
+          ),
+          tags$a(
+            onClick = "Miro.selectNoRow('currentViewsTable');return false;",
+            href = "#", lang$nav$dialogEditMeta$selectNoViews
+          ),
+          tags$div(
+            class = "views-list-actions",
+            tags$button(
+              class = "btn btn-default btn-sm",
+              type = "button",
+              onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
+              icon("download"),
+              lang$nav$dialogEditMeta$viewsDownload
+            ),
+            tags$button(
+              class = "btn btn-default btn-sm bt-remove",
+              type = "button",
+              onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+              icon("trash"),
+              lang$nav$dialogEditMeta$viewsRemove
+            )
+          )
         ),
         tags$div(
-          style = "max-height:300px;overflow-y:auto;",
+          class = "views-list-scroll",
           tags$table(
             id = "currentViewsTable",
             class = "miro-table",
@@ -983,25 +1022,6 @@ showEditMetaDialog <- function(metadata,
               )
             })))
           )
-        )
-      ),
-      tags$div(class = "small-space"),
-      downloadLink("downloadViews", "", style = "visibility:hidden;"),
-      tags$div(
-        class = "input-form-mobile buttons-mobile-wrapper",
-        tags$button(
-          class = "btn btn-default buttons-mobile-left",
-          type = "button",
-          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
-          icon("download"),
-          lang$nav$dialogEditMeta$viewsDownload
-        ),
-        tags$button(
-          class = "btn btn-default bt-remove buttons-mobile-right",
-          type = "button",
-          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
-          icon("trash"),
-          lang$nav$dialogEditMeta$viewsRemove
         )
       ),
       genSpinner(

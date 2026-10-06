@@ -236,7 +236,8 @@
       "viewsInvalidData": "您上传的数据不是有效的视图数据。请确认该文件是JSON文件，且语法正确。",
       "viewsDuplicateError": "以下视图没有被导入，因为该符号已经存在相同名称的视图。'%s'.",
       "viewsInvalidError": "您尝试导入的某些视图未导入，因为它们是为不存在的符号定义的：'%s'.",
-      "noViewData": "没有意见",
+      "noViewData": "没有视图",
+      "noAttachments": "没有附件",
       "selectAllViews": "选择所有",
       "selectNoViews": "选择无",
       "viewsNoneSelected": "没有选择视图。点击行选择视图。",
@@ -424,7 +425,7 @@
     },
     "dialogHcube":{
       "title":"Hypercube配置",
-      "desc":"选中%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
+      "desc":"您选择了%d个场景以Hypercube模式求解。其中%s个场景已由您或他人求解。",
       "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
 	  "descJobSubmission": "正在提交作业，请等待",
       "newTags":"为作业分配一个或多个标签:",
@@ -699,7 +700,7 @@
       "incompatibleTypeWarning": "必须将现有数据转换为数字以适合新的数据库表。 无法转换的值变为0！",
       "dialogConfirmDataLoss": {
         "title": "警告：数据丢失",
-        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'％s'！",
+        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'%s'！",
         "descTableCols": "注意力。 您当前的迁移配置将删除表“%s”中的列“%s”！",
         "cbConfirmDataLoss": "我确定",
         "btCancel": "取消",
@@ -809,7 +810,7 @@
       "errPivotDuplicate": "数据中包含重复的记录，因此无法进行枢纽。",
       "errPivot": "数据无法透视。 这可能是因为您的数据太大。",
       "errorTitle": "错误",
-      "duplicateRecordError": "记录：'％s'已经存在。 请删除它，然后重试。",
+      "duplicateRecordError": "记录：'%s'已经存在。 请删除它，然后重试。",
       "newView": {
         "tabGeneral": "常规",
         "tabScales": "轴",
@@ -1042,7 +1043,7 @@
     },
     "renderSlider":{
       "title":"滑动条的输入数据不正确",
-      "desc":"滑动条的值'%s'不是数字类型。"
+      "desc":"滑动条'%2$s'的值'%1$s'不是数字类型。"
     },
     "saveInput":{
       "title":"保存输入数据时出错",
@@ -1063,14 +1064,14 @@
     "fetchDataset":{
       "title":"读取数据集时出错",
       "desc":"从数据库中获取数据集时出现错误：'%s'来自数据库。",
-      "badColName":"在数据集中找不到列'%s'",
+      "badColName":"在数据集'%2$s'中找不到列'%1$s'",
       "noData":"数据集'%s'无法加载。请确保该数据集包含数据。"
     },
     "GAMSInput":{
       "title":"保存输入文件时出错",
       "desc":"编写GAMS输入文件时出现错误。",
       "excelRead":"读取文件时出现错误：'%s'。",
-      "badColName":"在数据集中找不到列'%s'",
+      "badColName":"在数据集'%2$s'中找不到列'%1$s'",
       "noData":"数据集'%s'无法加载。请确保数据集实际包含数据。",
       "badInputData":"GAMS输入数据集：'%s'无效。请检查导入数据的格式。",
       "writeCsv":"编写csv文件时出现错误：'%s'。"
@@ -1501,7 +1502,7 @@
 		"noGraph": "不要显示图形。 只显示表格。",
         "saveJson":{
           "warnTitle": "数据存在",
-          "warnContent": "根据配置，不应显示该符号的图形：'％s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
+          "warnContent": "根据配置，不应显示该符号的图形：'%s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
           "cancel": "取消",
           "overwrite": "确定覆盖"
         }
@@ -1597,7 +1598,7 @@
         "val56": "这个文件名的附件已经存在!",
         "val57": "文件名包含无效字符。不支持子目录中的附件!",
         "val58": "小数分隔符和千组分隔符不能完全相同!",
-        "val59": "GAMS符号：％s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。",
+        "val59": "GAMS符号：%s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。",
         "val60": "每个元素只能出现在一组中！",
         "val61": "GAMS选项不得为保留选项之一：“%s”。"
       },
@@ -2073,7 +2074,7 @@
       },
       "saveJson":{
         "warnTitle": "数据存在",
-        "warnContent": "该GAMS符号的图形配置已存在：'％s'。 确定要覆盖此配置吗？该操作无法撤消！",
+        "warnContent": "该GAMS符号的图形配置已存在：'%s'。 确定要覆盖此配置吗？该操作无法撤消！",
         "cancel": "取消",
         "overwrite": "确定覆盖"
       },

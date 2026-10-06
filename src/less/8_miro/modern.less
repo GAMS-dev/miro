@@ -744,6 +744,319 @@ textarea:focus {
 .selectize-control.multi .selectize-input > div {
   border-radius: @modern-radius-sm;
 }
+// what's new: the dialog never grows beyond the screen, only its content scrolls
+.modal-dialog:has(.whats-new-dialog) {
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 60px);
+    @media (max-width: 767px) {
+      max-height: calc(100vh - 20px);
+    }
+  }
+  .modal-header,
+  .modal-footer {
+    flex-shrink: 0;
+  }
+  .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+.whats-new-dialog {
+  padding: 0;
+  h4 {
+    margin: 4px 0 12px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  li {
+    line-height: 1.6;
+    & + li {
+      margin-top: 8px;
+    }
+  }
+  hr {
+    margin: 20px 0;
+  }
+  > div:last-child hr {
+    display: none;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: @modern-radius;
+    .responsiveDark({
+      border: 1px solid @modern-border;
+      box-shadow: @modern-shadow-xs;
+    },
+    {
+      border: 1px solid @modern-border-dark;
+      box-shadow: @modern-shadow-xs-dark;
+    });
+  }
+}
+// edit metadata dialog: attachments as a list of files
+.attachment-upload .shiny-input-container {
+  margin-bottom: 16px;
+}
+// the files appearing in the list confirm the upload, so a thin progress line is enough
+#file_addAttachments_progress,
+#file_addViews_progress {
+  height: 3px;
+  margin: 6px 0 0;
+  .progress-bar {
+    font-size: 0;
+  }
+}
+.attachment-list,
+.views-list {
+  border-radius: @modern-radius;
+  overflow: hidden;
+  .responsiveDark({
+    border: 1px solid @modern-border;
+  },
+  {
+    border: 1px solid @modern-border-dark;
+  });
+}
+.attachment-list:not(:has(.attachment-line)) {
+  display: none;
+}
+// the checkbox column (and its heading) has a fixed width so both line up
+.attachment-list .attachment-exec {
+  flex: 0 0 150px;
+  width: 150px;
+}
+.attachment-list-header {
+  display: flex;
+  justify-content: flex-end;
+  // remove button (32px) + gap (12px) + right padding (8px) of a line
+  padding: 8px 52px 8px 16px;
+  font-size: 0.8em;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border-bottom: 1px solid @modern-border;
+    color: @modern-muted;
+  },
+  {
+    background-color: @modern-subtle-dark;
+    border-bottom: 1px solid @modern-border-dark;
+    color: @modern-muted-dark;
+  });
+}
+.attachment-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 8px 6px 16px;
+  transition: background-color @modern-ease;
+  .responsiveDark({
+    &:hover {
+      background-color: @modern-subtle;
+    }
+    & + & {
+      border-top: 1px solid @modern-border;
+    }
+  },
+  {
+    &:hover {
+      background-color: @modern-subtle-dark;
+    }
+    & + & {
+      border-top: 1px solid @modern-border-dark;
+    }
+  });
+  .attachment-icon {
+    flex-shrink: 0;
+    font-size: 1.15em;
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+  }
+  .attachment-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .attachment-exec {
+    display: flex;
+    justify-content: center;
+    .shiny-input-container {
+      width: auto;
+      margin: 0;
+    }
+    .checkbox-simple > label {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    .checkbox {
+      position: static;
+      margin: 0;
+      // the custom box is absolutely positioned: give its label a real size so
+      // that the flex layout can center it in the row
+      label {
+        position: relative;
+        display: block;
+        width: 16px;
+        height: 16px;
+        min-height: 0;
+        padding: 0;
+      }
+      span {
+        top: 0;
+        left: 0;
+      }
+    }
+    .label-span {
+      display: none;
+    }
+  }
+  .attachment-remove {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: @modern-radius-sm;
+    background: transparent;
+    transition: background-color @modern-ease, color @modern-ease;
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+    &:hover,
+    &:focus-visible {
+      color: #d92d20;
+      background-color: rgba(217, 45, 32, 0.1);
+    }
+  }
+}
+// views: a selectable table in the same card as the attachments
+// shown below the (then hidden) attachment list as long as it has no files
+.attachment-list:has(.attachment-line) + .attachment-list-empty {
+  display: none;
+}
+.attachment-list-empty,
+.views-list-empty {
+  padding: 20px;
+  border-radius: @modern-radius;
+  text-align: center;
+  .responsiveDark({
+    border: 1px dashed @modern-border-strong;
+    color: @modern-muted;
+  },
+  {
+    border: 1px dashed @modern-border-strong-dark;
+    color: @modern-muted-dark;
+  });
+}
+.views-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 8px 8px 16px;
+  font-size: 0.9em;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border-bottom: 1px solid @modern-border;
+  },
+  {
+    background-color: @modern-subtle-dark;
+    border-bottom: 1px solid @modern-border-dark;
+  });
+  .views-list-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .btn {
+    padding: 4px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .btn .fa,
+  .btn .fas,
+  .btn svg {
+    margin-right: 4px;
+  }
+}
+.views-list-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.views-list .miro-table {
+  width: 100%;
+  margin: 0;
+  th {
+    padding: 10px 16px;
+    font-size: 0.8em;
+    font-weight: 500;
+    .responsiveDark({
+      background-color: @modern-surface;
+      border-bottom: 1px solid @modern-border;
+      color: @modern-muted;
+    },
+    {
+      background-color: @modern-surface-dark;
+      border-bottom: 1px solid @modern-border-dark;
+      color: @modern-muted-dark;
+    });
+  }
+  td {
+    height: 44px;
+    padding: 6px 16px;
+  }
+  tbody tr {
+    cursor: pointer;
+    transition: background-color @modern-ease;
+    .responsiveDark({
+      background-color: transparent;
+      & + tr {
+        border-top: 1px solid @modern-border;
+      }
+      &:hover {
+        background-color: @modern-subtle;
+      }
+      &.selected {
+        .modern-mix(background-color; @primary-color; 12%; transparent);
+      }
+    },
+    {
+      background-color: transparent;
+      & + tr {
+        border-top: 1px solid @modern-border-dark;
+      }
+      &:hover {
+        background-color: @modern-subtle-dark;
+      }
+      &.selected {
+        .modern-mix(background-color; @primary-color-dark; 24%; transparent);
+      }
+    });
+  }
+}
 .control-label,
 .shiny-input-container > label {
   font-weight: 500;

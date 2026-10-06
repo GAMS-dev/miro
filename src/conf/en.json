@@ -237,6 +237,7 @@
       "viewsDuplicateError": "The following views were not imported as a view with the same name already exists for that symbol: '%s'.",
       "viewsInvalidError": "Some of the views you tried to import were not imported because they are defined for symbols that do not exist: '%s'.",
       "noViewData": "No views",
+      "noAttachments": "No attachments",
       "selectAllViews": "Select all",
       "selectNoViews": "Select none",
       "viewsNoneSelected": "No views selected. Select views by clicking on the row.",
@@ -245,7 +246,7 @@
       "viewsTableHeaderId": "Name",
       "viewsDownload": "Download views",
       "viewsRemove": "Remove views",
-      "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
+      "errMsg": "Problems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
     },
@@ -468,7 +469,7 @@
       "instancePoolLabel": "Instance Pool",
       "instanceLabel": "Instance",
       "scalingUpLabel": "Scaling up…",
-      "scalingDownLabel": "Scaling up…",
+      "scalingDownLabel": "Scaling down…",
       "memoryLabel": "memory",
       "cpuLabel": "cpu",
       "multiplierLabel": "multiplier",
@@ -2009,7 +2010,7 @@
           "title": "Layer control options",
           "baseGroups": "Selectable base groups",
           "overlayGroups": "Selectable overlay groups",
-          "position": "Display grid lines",
+          "position": "Position of the layer control",
           "positionChoices": ["Top right", "Bottom right", "Bottom left", "Top left"],
           "collapsed": "Collapse layer control panel"
         }

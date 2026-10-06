@@ -933,6 +933,10 @@
               "type": "string",
               "minLength": 1
             },
+            "noAttachments": {
+              "type": "string",
+              "minLength": 1
+            },
             "selectAllViews": {
               "type": "string",
               "minLength": 1
@@ -974,7 +978,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 35
+          "minProperties": 36
         },
         "dialogRemoveDuplicates": {
           "type": "object",
