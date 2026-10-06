@@ -11,6 +11,8 @@ expect_identical(
     "<i>&lt;New Scenario&gt;</i>"
   } else if (Sys.getenv("MIRO_LANG") == "de") {
     "<i>&lt;Neues Szenario&gt;</i>"
-  } else if (Sys.getenv("MIRO_LANG") == "cn") "<i>&lt;新建场景&gt;</i>"
+  } else if (Sys.getenv("MIRO_LANG") == "cn") {
+    "<i>&lt;新建场景&gt;</i>"
+  } else if (Sys.getenv("MIRO_LANG") == "es") "<i>&lt;Nuevo escenario&gt;</i>"
 )
 app$stop()
