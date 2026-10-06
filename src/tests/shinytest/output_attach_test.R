@@ -18,9 +18,9 @@ Sys.sleep(2)
 app$run_js("$('[data-value=\\'attachments\\']').get(0)")
 attachmentList <- app$get_js("$('.attachment-line').length")
 expect_identical(attachmentList, 4L)
-expect_true(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(1).checked"))
+expect_true(app$get_js("$('.attachment-line .attachment-exec input[type=checkbox]').get(1).checked"))
 # miro.log as output attachment with execPerm=true
-expect_true(app$get_js("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(0).checked"))
+expect_true(app$get_js("$('.attachment-line .attachment-exec input[type=checkbox]').get(0).checked"))
 
 # solve again to test previous local path allocation bug (Windows) b67fe02c3e959d1ad2a82b4e587e1b92a1c4cdca
 app$set_inputs(btUpdateMeta = "click")
