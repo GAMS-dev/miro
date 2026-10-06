@@ -1813,6 +1813,23 @@ formatScenList <- function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 
     )
   ))
 }
+scenListSelectizeOptions <- function() {
+  render <- "function(d, e) {
+    var owner = d.value.substring(d.value.indexOf('_') + 1);
+    var label = d.label;
+    var html = '';
+    if (owner.length && label.indexOf(owner + ': ') === 0) {
+      html = '<span class=\"scen-owner\"><i class=\"fas fa-user\"></i>' + e(owner) + '</span>';
+      label = label.substring(owner.length + 2);
+    }
+    var time = label.match(/^(.*) \\(([^()]*)\\)$/);
+    if (time) {
+      return '<div>' + html + e(time[1]) + '<span class=\"scen-time\">(' + e(time[2]) + ')</span></div>';
+    }
+    return '<div>' + html + e(label) + '</div>';
+  }"
+  list(render = I(paste0("{option: ", render, ", item: ", render, "}")))
+}
 tabIdToRef <- function(tabId) {
   if (tabId == 0L) {
     return("cmpPivot")

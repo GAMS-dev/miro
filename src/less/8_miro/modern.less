@@ -1057,6 +1057,39 @@ textarea:focus {
     });
   }
 }
+// scenario lists: the owner of a shared scenario as a pill in front of its name
+.scen-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 1.6;
+  vertical-align: 1px;
+  .responsiveDark({
+    background-color: @modern-hover;
+    color: @modern-muted;
+  },
+  {
+    background-color: @modern-hover-dark;
+    color: @modern-muted-dark;
+  });
+  .fa-user {
+    font-size: 0.85em;
+  }
+}
+.scen-time {
+  margin-left: 4px;
+  .responsiveDark({
+    color: @modern-muted;
+  },
+  {
+    color: @modern-muted-dark;
+  });
+}
 .control-label,
 .shiny-input-container > label {
   font-weight: 500;

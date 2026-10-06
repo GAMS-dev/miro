@@ -319,9 +319,10 @@ attachmentLine <- function(id, name, execPerm = NULL, execPermLabel = NULL) {
 getLoadDbPanel <- function(title, scenList, tagList, iconName) {
   content <- tagList(
     tags$div(class = "space"),
-    selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
+    selectizeInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
       scenList,
-      multiple = FALSE, width = "100%"
+      multiple = FALSE, width = "100%",
+      options = scenListSelectizeOptions()
     ),
     if (length(tagList)) {
       tags$div(
@@ -733,10 +734,11 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
           tags$div(class = "small-space")
         )
       },
-      selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
+      selectizeInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
         dbScenList,
         selected = if (isInSplitView) NULL else unname(uiScenList),
-        multiple = if (isInSplitView) FALSE else TRUE, width = "100%"
+        multiple = if (isInSplitView) FALSE else TRUE, width = "100%",
+        options = scenListSelectizeOptions()
       ),
       if (length(dbTagList)) {
         selectInput("selLoadScenTags", lang$nav$dialogLoadScen$selTags,
