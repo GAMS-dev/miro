@@ -2112,8 +2112,10 @@ body:has(.app-box-expanded) .app-box:hover,
 .app-box-expanded .app-logo-wrapper {
   margin-bottom: 1rem;
 }
-/* upload progress: a thin bar inside the bottom of the zone, taking no space while hidden */
-.app-logo-wrapper {
+/* upload progress: a thin bar inside the bottom of the zone, taking no space while hidden.
+   Only positioned in expanded boxes, otherwise the wrapper would cover the
+   app-data-file-input overlay of collapsed boxes (click to edit / drop files) */
+.app-box-expanded .app-logo-wrapper {
   position: relative;
 }
 .app-logo-wrapper > .shiny-file-input-progress {
