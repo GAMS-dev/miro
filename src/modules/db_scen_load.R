@@ -416,6 +416,11 @@ observeEvent(input$btLoadScenConfirm, {
     flog.error("Invalid scenario id(s) selected. This is likely an attempt to tamper with the app!")
     return()
   }
+  # selectize reports an empty string when nothing is selected
+  scenSelected <- scenSelected[nzchar(scenSelected)]
+  if (!length(scenSelected)) {
+    return()
+  }
   sidsSelected <- lapply(strsplit(scenSelected, split = "_", fixed = TRUE), "[[", 1)
   if (!length(scenMetaDb) ||
     !all(unlist(sidsSelected, use.names = FALSE) %in% as.character(scenMetaDb[["_sid"]]))) {
