@@ -1,5 +1,5 @@
 export const PLACEHOLDERS = {
-  appFiles: 'Drop your MIRO app here.',
+  appFiles: 'Drop your MIRO app here or click to browse.',
   appName: 'App title',
   appDesc: 'Short model description (optional)',
   appGroups: 'Access groups (optional)',
