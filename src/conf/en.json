@@ -126,7 +126,6 @@
       "noData":"No data was returned by your query",
       "invalidCsvFilter": "'%s' must not contain ','.",
       "chooseSelectedButton":"Choose selected scenarios",
-      "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "addBlock": "Add block",

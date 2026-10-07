@@ -1,7 +1,6 @@
 {
   "input": {
     "batchLoadAll": 0,
-    "batchLoadCurrent": 0,
     "batchLoadSelected": 0,
     "btClosePivotComp": 0,
     "btCompareScen": 0,

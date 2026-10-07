@@ -529,18 +529,6 @@ observeEvent(input$batchLoadSelected, {
     colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
   )
 })
-observeEvent(input$batchLoadCurrent, {
-  flog.debug("Button to load current page of scenarios (Batch load) clicked.")
-  if (is.null(input$batchLoadResults_rows_current)) {
-    return()
-  }
-  hcubeRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
-})
 observeEvent(input$batchLoadAll, {
   flog.debug("Button to load all scenarios (Batch load) clicked.")
   if (!length(batchLoadData) || !nrow(batchLoadData)) {

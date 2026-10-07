@@ -1327,9 +1327,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
       defCompModeButton$label
     )
     return(tags$div(
-      class = "col-sm-6", style = "margin-bottom: 15px;",
+      class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
       tags$div(
-        class = "btn-group batch-load-content", style = "display: flex; width: 100%;",
+        class = "btn-group", style = "display: flex; width: 100%;",
         defCompModeButton,
         if (length(compareModesList) > 0L) {
           tagList(
@@ -1446,9 +1446,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
             tags$div(
               class = "row",
               tags$div(
-                class = "col-sm-6", style = "margin-bottom: 15px;",
+                class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
                 tags$div(
-                  class = "btn-group batch-load-content", style = "display: flex; width: 100%;",
+                  class = "btn-group", style = "display: flex; width: 100%;",
                   tags$a(
                     class = "btn btn-default shiny-download-link", type = "button",
                     id = "btBatchDownloadGDX", target = "_blank", href = "", download = NA,
@@ -1476,9 +1476,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               if (length(analysisTabset)) {
                 tagList(
                   tags$div(
-                    class = "col-sm-6", style = "margin-bottom: 15px;",
+                    class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
                     actionButton("btAnalysisConfig",
-                      class = "btn-block batch-load-content",
+                      class = "btn-block",
                       lang$nav$dialogBatchLoad$analysisButton
                     )
                   ),
@@ -1498,16 +1498,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               if (identical(length(sidsToLoad), 1L)) {
                 tagList(
                   tags$div(
-                    class = "col-sm-6", style = "margin-bottom: 15px;",
+                    class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
                     actionButton("btBatchLoadSb",
-                      class = "btn-block batch-load-content",
-                      lang$nav$dialogBatchLoad$interactiveButtonSb
-                    )
-                  ),
-                  tags$div(
-                    class = "col-sm-6", style = "display:none; margin-bottom: 15px;",
-                    actionButton("btBatchLoadSbOverwrite",
-                      class = "btn-block bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                      class = "btn-block",
                       lang$nav$dialogBatchLoad$interactiveButtonSb
                     )
                   )
@@ -1516,9 +1509,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               createCompareModesDropdown(length(sidsToLoad)),
               if (config$activateModules$aiAssistant) {
                 tags$div(
-                  class = "col-sm-6", style = "margin-bottom: 15px;",
+                  class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
                   tags$button(
-                    class = "btn btn-default btn-block batch-load-content", type = "button", id = "btAiCompare",
+                    class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
                     onclick = "Shiny.setInputValue('btBatchCompare','aiCompare',{priority:'event'});",
                     lang$nav$dialogBatchLoad$interactiveButtonAi
                   )
@@ -1532,7 +1525,14 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               lang$nav$dialogBatchLoad$removeButton,
               class = "bt-remove batch-load-content batch-load-remove-content pull-left"
             ),
-            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton)
+            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
+            if (identical(length(sidsToLoad), 1L)) {
+              actionButton("btBatchLoadSbOverwrite",
+                lang$nav$dialogBatchLoad$interactiveButtonSb,
+                class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                style = "display:none;"
+              )
+            }
           )
         )
       ),

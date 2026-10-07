@@ -671,12 +671,6 @@ if (buildUI) {
               ),
               tags$div(
                 class = "choose-scen-btn",
-                actionButton("batchLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton,
-                  class = "bt-highlight-1"
-                )
-              ),
-              tags$div(
-                class = "choose-scen-btn",
                 actionButton("batchLoadAll", lang$nav$queryBuilder$chooseAllButton,
                   class = "bt-highlight-1"
                 )

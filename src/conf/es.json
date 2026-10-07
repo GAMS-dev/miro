@@ -126,7 +126,6 @@
       "noData": "Su consulta no ha devuelto datos",
       "invalidCsvFilter": "'%s' no debe contener ','.",
       "chooseSelectedButton": "Elegir escenarios seleccionados",
-      "chooseCurrentButton": "Elegir página actual",
       "chooseAllButton": "Elegir todos",
       "orButton": "O",
       "addBlock": "Añadir bloque",

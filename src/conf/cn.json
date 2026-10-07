@@ -126,7 +126,6 @@
       "noData": "查询未返回任何数据",
       "invalidCsvFilter": "'%s'不得包含','。",
       "chooseSelectedButton": "选择所选场景",
-      "chooseCurrentButton": "选择当前页",
       "chooseAllButton": "全部选择",
       "orButton": "或",
       "addBlock": "添加块",

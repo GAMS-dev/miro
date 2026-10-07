@@ -108,7 +108,8 @@ app$set_inputs(batchLoadResults_rows_selected = 1, allow_no_input_binding_ = TRU
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$set_inputs(btBatchLoadSb = "click")
-Sys.sleep(1L)
+# sandbox has data, so overwriting must be confirmed
+expect_error(app$wait_for_js("$('#btBatchLoadSbOverwrite').is(':visible')", timeout = 5000L), NA)
 app$set_inputs(btBatchLoadSbOverwrite = "click")
 Sys.sleep(2L)
 
@@ -130,7 +131,8 @@ app$set_inputs(batchLoadResults_rows_selected = 1, allow_no_input_binding_ = TRU
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$set_inputs(btBatchLoadSb = "click")
-Sys.sleep(1L)
+# sandbox has data, so overwriting must be confirmed
+expect_error(app$wait_for_js("$('#btBatchLoadSbOverwrite').is(':visible')", timeout = 5000L), NA)
 app$set_inputs(btBatchLoadSbOverwrite = "click")
 Sys.sleep(2L)
 expect_identical(app$get_values()$input[["slider_3"]], 4L)

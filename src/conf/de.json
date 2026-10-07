@@ -126,7 +126,6 @@
       "noData": "Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
       "invalidCsvFilter": "'%s' darf kein ',' enthalten.",
       "chooseSelectedButton": "Markierte auswählen",
-      "chooseCurrentButton": "Aktuelle Seite auswählen",
       "chooseAllButton": "Alle auswählen",
       "orButton": "ODER",
       "addBlock": "Block hinzufügen",
