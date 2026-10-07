@@ -1,6 +1,7 @@
 test_that(
   "Views work",
   {
+    ensureChromote()
     createTestDb()
 
     testModelPath <- file.path(testDir, "model", "transport")

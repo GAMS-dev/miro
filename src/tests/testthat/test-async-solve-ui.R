@@ -1,6 +1,7 @@
 test_that(
   "Asynchronous solve works",
   {
+    ensureChromote()
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping asynchronous solve tests as ENGINE_URL was not set."

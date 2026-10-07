@@ -1,6 +1,7 @@
 test_that(
   "Scenario permissions work",
   {
+    ensureChromote()
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping permissions tests as ENGINE_URL was not set."

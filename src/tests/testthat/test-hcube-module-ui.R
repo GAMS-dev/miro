@@ -1,6 +1,7 @@
 test_that(
   "HC module works",
   {
+    ensureChromote()
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping asynchronous solve tests as no ENGINE_URL was not set."

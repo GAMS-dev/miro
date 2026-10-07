@@ -1,6 +1,7 @@
 test_that(
   "Dashboard renderer works",
   {
+    ensureChromote()
     createTestDb()
 
     modelDir <- file.path(

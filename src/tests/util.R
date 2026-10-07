@@ -77,6 +77,58 @@ selectSelectizeOption <- function(app, selector, value) {
   return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');")))
 }
 
+ensureChromote <- function(timeout = as.numeric(Sys.getenv("MIRO_CHROMOTE_TIMEOUT", "60"))) {
+  # makes sure the shared Chrome instance (used by all AppDrivers) works.
+  # chromote only replaces it when the process died, not when it hangs
+  # (seen on slow Windows runners), so we check it by opening a session
+  # and restart it if needed. If Chrome still does not work, we throw an
+  # error: otherwise, AppDriver would silently skip the test.
+  # Also sets the default timeout for DevTools commands without explicit
+  # timeout (e.g. DOM queries of app$click()); chromote's default of 10s
+  # is too short on slow runners.
+  checkTimeout <- 20
+  isWorking <- function(chromoteObj) {
+    chromoteObj$default_timeout <- checkTimeout
+    tryCatch(
+      {
+        session <- chromoteObj$new_session()
+        session$close()
+        TRUE
+      },
+      error = function(e) {
+        message("Chrome does not respond: ", conditionMessage(e))
+        FALSE
+      }
+    )
+  }
+  killChrome <- function(chromoteObj) {
+    browserProcess <- tryCatch(chromoteObj$get_browser()$get_process(), error = function(e) NULL)
+    try(chromoteObj$close(wait = FALSE), silent = TRUE)
+    if (!is.null(browserProcess) && browserProcess$is_alive()) {
+      try(browserProcess$kill(), silent = TRUE)
+    }
+  }
+  if (chromote::has_default_chromote_object()) {
+    chromoteObj <- chromote::default_chromote_object()
+    if (isWorking(chromoteObj)) {
+      chromoteObj$default_timeout <- timeout
+      return(invisible(TRUE))
+    }
+    message("Restarting Chrome...")
+    killChrome(chromoteObj)
+  }
+  chromoteObj <- tryCatch(chromote::Chromote$new(), error = function(e) {
+    stop("Could not start Chrome: ", conditionMessage(e), call. = FALSE)
+  })
+  chromote::set_default_chromote_object(chromoteObj)
+  if (!isWorking(chromoteObj)) {
+    killChrome(chromoteObj)
+    stop("Chrome was started but does not respond.", call. = FALSE)
+  }
+  chromoteObj$default_timeout <- timeout
+  invisible(TRUE)
+}
+
 retryUiTest <- function(times, code) {
   # like testthat::try_again, but cleans up after a failed attempt so that
   # the next attempt can succeed:
@@ -101,6 +153,7 @@ retryUiTest <- function(times, code) {
     }
   }
   for (i in seq_len(times)) {
+    ensureChromote()
     snapsSavedBefore <- if (is.null(snapshotter)) 0L else length(snapshotter$snap_file_saved)
     succeeded <- tryCatch(
       {
@@ -122,6 +175,7 @@ retryUiTest <- function(times, code) {
     cleanupAttempt(snapsSavedBefore)
   }
   # last attempt: let failures through
+  ensureChromote()
   eval(rlang::quo_get_expr(code), env)
 }
 
