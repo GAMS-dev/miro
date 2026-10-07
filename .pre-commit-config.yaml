@@ -75,5 +75,5 @@ repos:
       - id: fix-dashboard-schema
         name: fix-dashboard-schema
         entry: node ./scripts/fixConfigSchema.js
-        language: node
+        language: system
         files: ^src/conf/config_schema\.json$
