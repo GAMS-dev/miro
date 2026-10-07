@@ -133,6 +133,15 @@ Please check the `release notes <./release.html>`__.
 
                For a complete system integration of the MIRO AppImage (e.g. file associations and custom URL schemes), please install the AppImage via the `AppImageLauncher <https://github.com/TheAssassin/AppImageLauncher>`__.
 
+.. _miro-workspace:
+
+GAMS MIRO workspace
+~~~~~~~~~~~~~~~~~~~
+
+The workspace is the place where `deployed apps <./deployment.html>`__ are stored and cached and logs are written. The MIRO database with all user scenarios is also located there. Furthermore all user settings and `additional R packages <./configuration_advanced.html#additional-r-packages>`__ are kept in the workspace.
+
+On all platforms, the MIRO workspace is located at ``~/.miro``. On MacOS and Linux, ``~`` is resolved to ``$HOME``, on Windows to ``%USERPROFILE%``.
+
 .. _uninstallation-section:
 
 Uninstall GAMS MIRO
@@ -185,8 +194,6 @@ GAMS MIRO Server
          Download GAMS MIRO Server
 
    .. grid-item::
-
-      .. _miro-workspace:
 
       .. image:: ../assets/images/server/miro-server.png
          :alt: GAMS MIRO Server

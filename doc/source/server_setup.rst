@@ -284,7 +284,7 @@ The following settings can be made in the *data/application.yml* file:
 
 - **Language (proxy.miro-lang):**
 
-  With this setting you can set the global language for all deployed MIRO apps. Currently, the languages available are English ('en'), Chinese ('cn') and German ('de'). This global language setting initially applies to all apps. You can still set a different language individually for each app, which overrides the global setting. This allows to host apps in different languages. Read more about `how to change the language for an individual app. <./server_administration.html#app-environment>`__
+  With this setting you can set the global language for all deployed MIRO apps. Currently, the languages available are English ('en'), Chinese ('cn'), German ('de') and Spanish ('es'). This global language setting initially applies to all apps. You can still set a different language individually for each app, which overrides the global setting. This allows to host apps in different languages. Read more about `how to change the language for an individual app. <./server_administration.html#app-environment>`__
 
 .. raw:: html
 

@@ -102,6 +102,7 @@ save it, click on *Save as* and give it a name.
 
    If you want to import data from a spreadsheet, it must either contain an index sheet describing the layout of your data, or it must meet certain criteria regarding the format in which the data is
    provided.
+
    .. rubric:: Workbook without index sheet
 
    If you do not want to create an index sheet, your Excel file must meet strict requirements:
@@ -191,6 +192,7 @@ save it, click on *Save as* and give it a name.
    all options GDXXRW supports: *auto*, *noData*, *YN*, *sparse* and *dense*. See the `related section of the GDXXRW
    documentation <https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT>`__ for more information on the other options. Below you find a list of all options
    supported by MIRO.
+
    .. rubric:: Supported options
 
    .. list-table::
@@ -227,6 +229,7 @@ save it, click on *Save as* and give it a name.
       * - ``dSetText``
         - This controls the reading of explanatory text for set elements of domain sets. By default, no text is read for domain sets. If this option is activated this is changed. If an element appears more than once, the first one defines the explanatory text read.
         - y , 1 , n , 0
+
    .. rubric:: Reading scalars
 
    In addition to reading each scalar individually as supported by GDXXRW, MIRO also supports reading in table form. To read an entire table of scalars, you must do so using the special
@@ -248,6 +251,7 @@ save it, click on *Save as* and give it a name.
       Command line parameters/GAMS options are treated like *normal* input scalars with the special prefixes ``_gmspar_`` and ``_gmsopt_``.
 
    .. _gdxxrw-miro-diff:
+
    .. rubric:: Differences between GDXXRW and MIRO
 
    Below we list the important differences you need to be aware of when migrating from GDXXRW to MIRO or vice versa.

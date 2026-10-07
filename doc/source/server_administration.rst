@@ -53,7 +53,7 @@ the *miro_server* directory:
      - miro_server_anonymous
    * - GMS_MIRO_ENGINE_ANONYMOUS_PWD
      - Password of anonymous user
-     - t@qHwt%3Mh
+     - ``t@qHwt%3Mh``
 
 If you do not provide the credentials of the anonymous
 Engine user, the apps can be launched but not
@@ -183,12 +183,11 @@ Further settings that can be made before adding the app:
   scenario owner will have read, write, and execute
   permissions.
 
-  **AI Assistant**: The *AI Assistant* tab is where you enter API keys for
-  the LLM providers (e.g. OpenAI, Anthropic, Google) this app's `AI
-  Assistant <./ai_assistant.html>`__ should use. MIRO validates each key
+  **Mira**: The *Mira* tab (AI assistant) is where you enter API keys for
+  the LLM providers (e.g. OpenAI, Anthropic, Google) `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, should use. MIRO validates each key
   against the provider as soon as you enter it. Keys are configured per app,
   so different apps on the same MIRO Server can use different providers, or
-  have no AI Assistant at all.
+  not offer Mira at all.
 
   **Language**: While the `global language
   setting <./server_setup.html#global-language>`__ applies to
@@ -197,7 +196,7 @@ Further settings that can be made before adding the app:
   different languages within one MIRO Server instance. The
   environment variable ``MIRO_LANG`` specifies the language.
   Available languages currently are English ('en'), Chinese
-  ('cn') and German ('de').
+  ('cn'), German ('de') and Spanish ('es').
 
 
   .. image:: ../assets/images/server/miro-lang.png

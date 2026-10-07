@@ -73,8 +73,8 @@ When adding the MIRO app to the MIRO library, the user has the option to choose 
 
 
 .. image:: ../assets/images/deployment/custom_logo.png
-   :alt: Custom Logo for MIRO library
-   :class: miro-image-max-height-250pt
+   :alt: Add app dialog with the logo suggested by the app
+   :class: miro-image-max-height-300pt
 
 **Note**: The ``app_logo`` logo described here is located in the same folder, but is independent of the logo `set in the Configuration Mode <./configuration_general.html#app-logo>`__.
 
@@ -345,20 +345,20 @@ To install a new MIRO app, launch GAMS MIRO Desktop. You will see your personal 
 
 
 .. image:: ../assets/images/deployment/gallery.png
-   :alt: MIRO gallery example
+   :alt: GAMS MIRO library with example apps
 
 To add a new app to the library, either double click the app in your file browser (only on Windows/macOS) or click on "Edit" (``Ctrl`` + ``E`` or ``⌘`` + ``E`` on macOS) and drag&drop the app onto the "+" button. Alternatively, you can click on the "+" button and browse to the location of the new app manually.
 
 
 .. image:: ../assets/images/deployment/add-app.png
-   :alt: Add new app
+   :alt: Add app dialog of the GAMS MIRO library
    :class: miro-image-max-height-350pt
 
 Once MIRO validated the new app, you can assign a title, a short description as well as a logo.
 
 
 .. image:: ../assets/images/deployment/edit-app.png
-   :alt: Edit MIRO app
+   :alt: Add app dialog with title, description and logo of the app
    :class: miro-image-max-height-350pt
 
 Once you are happy with the setup, click on *Add app*. Your app is now installed in your library and you can launch it by clicking the *Launch* button.
@@ -371,7 +371,7 @@ Customize your Installed MIRO Apps
 ----------------------------------
 
 
-The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on File → Preferences (or GAMS MIRO → Preferences if you are on macOS). Alternatively, press ``F7`` (or ``⌘`` + ``,`` on macOS). You will notice that settings are grouped into several categories: *General*, *Paths*, *GAMS Engine*, *AI Assistant*, and *Environment*. In the *General* category you can specify whether you want to launch your MIRO apps in a new MIRO Desktop window or in your default browser. You can set the language, the color theme, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).
+The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on File → Preferences (or GAMS MIRO → Preferences if you are on macOS). Alternatively, press ``F7`` (or ``⌘`` + ``,`` on macOS). You will notice that settings are grouped into several categories: *General*, *Paths*, *GAMS Engine*, *Mira* (the AI assistant), and *Environment*. In the *General* category you can specify whether you want to launch your MIRO apps in a new MIRO Desktop window or in your default browser. You can set the language, the color theme, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).
 
 In the *Paths* section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS version or MIRO Desktop was unable to locate GAMS automatically, you can set the path to GAMS here. On Linux, you can also specify the path to the required R installation here.
 
@@ -381,7 +381,7 @@ In the *Paths* section, you can control the location where your MIRO apps are st
 +=================+=====================================+==========================================================================================================================================================================================================================================================================================================================================+
 | **General**     | Launch MIRO apps in your browser?   | If this option is set, MIRO applications are started in the users default web browser. If not set, the internal chromium browser is used instead.                                                                                                                                                                                        |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                 | Language                            | Sets the language. The user can choose between English, German and Chinese. Further languages are planned.                                                                                                                                                                                                                               |
+|                 | Language                            | Sets the language. The user can choose between English, German, Chinese and Spanish. Further languages are planned.                                                                                                                                                                                                                      |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Color theme                         | Sets the color theme for all apps. The following themes are available: "Default theme", "Black and white", "Green forest", "Tawny", "Dark blue", "Red wine". if you have created a `custom theme <./configuration_colors.html#custom-theme-colors>`__ for all apps, another entry "Custom" will appear here.                             |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -407,25 +407,18 @@ In the *Paths* section, you can control the location where your MIRO apps are st
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Login via                           | Login method to use. Options supported by MIRO are: *Username/Password* for logging in with username and password, *JWT* for logging in with an authentication token (can e.g. be generated from the Engine UI) or using an `LDAP/OAuth2/OIDC identity provider <https://www.gams.com/engine/administration.html#identity-providers>`__. |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **AI Assistant**| Enable AI Features?                 | Makes the `AI Assistant <./ai_assistant.html>`__ available for MIRO apps installed on this machine, unless an app has explicitly opted out of it in its own `Configuration Mode <./configuration_general.html>`__.                                                                                                                       |
+| **AI Assistant**| Enable Mira, the AI assistant?      | Makes `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, available for MIRO apps installed on this machine, unless an app has explicitly opted out of it in its own `Configuration Mode <./configuration_general.html>`__.                                                                                                        |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                 | API keys                            | Once AI Features are enabled, enter an API key for each provider you want to make available (OpenAI, Anthropic, Google). MIRO validates each key against the provider as soon as you enter it. See `Enabling the AI Assistant <./ai_assistant.html#enabling-ai-assistant>`__ for details.                                                |
+|                 | API keys                            | Once AI Features are enabled, enter an API key for each provider you want to make available (OpenAI, Anthropic, Google). MIRO validates each key against the provider as soon as you enter it. See `Enabling Mira <./ai_assistant.html#enabling-ai-assistant>`__ for details.                                                            |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. _custom-environments:
 
 **Environment**
 
-In the *Environment* section, you can import a customized environment to be used by your MIRO apps. This is useful, for example, if you want to run custom analysis scripts that require external software not in your PATH or to store credentials to be used by `custom data connectors <./configuration_json_only.html#custom-import-export>`__.
+In the *Environment* section, you can define environment variables to be used by your MIRO apps. This is useful, for example, if you want to run custom analysis scripts that require external software not in your PATH or to store credentials to be used by `custom data connectors <./configuration_json_only.html#custom-import-export>`__.
 
-Environment files are JSON files of the following form:
-
-.. code:: json
-
-   {
-       "ENV_VAR_1": "VAL_1",
-       "ENV_VAR_2": "VAL_2"
-   }
+Click *Add variable* to add a new row, enter the name and value of the variable and click *Apply* to save your changes.
 
 Environment variables names must consist solely of uppercase letters, digits and '\_' (underscore) and must not start with a digit. Note that the ``PATH`` environment variable is special in that MIRO prepends it to the already existing ``PATH``.
 
@@ -459,13 +452,7 @@ As an example, let's say we want to run the analysis script that comes with the 
 
 
 
-Now all we have to do is tell MIRO to use this Python environment by adding it to the ``PATH`` via the following environment file:
-
-.. code:: json
-
-   {
-       "PATH": "<path_to_venv>/venv/bin"
-   }
+Now all we have to do is tell MIRO to use this Python environment by adding it to the ``PATH``: add a variable named ``PATH`` with the value ``<path_to_venv>/venv/bin`` (``<path_to_venv>\venv\Scripts`` on Windows).
 
 .. _db-migration:
 

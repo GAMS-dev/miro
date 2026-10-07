@@ -13,6 +13,11 @@ In this section you can customize the general configuration of input and output 
 Input Tables (global settings)
 ------------------------------
 
+.. figure:: ../assets/images/configuration_mode/tables_config_input.png
+   :alt: Configuration Mode: global settings of input tables
+
+   The numbers refer to the settings described below.
+
 .. _input-table-height:
 
 Height of input tables
@@ -52,6 +57,11 @@ Enabling the context menu (accessible by right-clicking in the table) allows you
 
 Output Tables (global settings)
 -------------------------------
+
+.. figure:: ../assets/images/configuration_mode/tables_config_output.png
+   :alt: Configuration Mode: global settings of output tables
+
+   The numbers refer to the settings described below.
 
 .. _table-style:
 

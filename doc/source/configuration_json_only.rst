@@ -920,8 +920,7 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
 
   .. tip::
 
-     If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Select the desired symbol
-     under "Tables" → "Symbol tables" and click on save. Make sure that "default" is selected as table type to be used.
+     If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as table type to be used (3) and click on save (4).
 
      |Table configuration|
 
@@ -1006,7 +1005,7 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
 
    * The drop-down menu feature is only supported for the default input table type, not for big data tables or pivot tables.
    * User data is validated only during manual edits, i.e. when the user directly edits the values of individual cells. When the data is imported from external files or the database, there is no validation between the data and the drop-down menu choices.
-   * If you have edited the table configuration of a symbol manually in the ``<modelname>.json`` file, you should not use the Configuration mode for this symbol anymore. This could overwrite your manual edits!
+   * If you have edited the table configuration of a symbol manually in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file, you should not use the Configuration mode for this symbol anymore. This could overwrite your manual edits!
 
 .. _table-validate-columns:
 
@@ -1055,7 +1054,7 @@ highlights the corresponding cell in red. In the column 'topeka' only the values
 
 .. tip::
 
-   If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Select the desired symbol under "Tables" → "Symbol tables" and click on save. Make sure that "default" is selected as table type to be used.
+   If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as table type to be used (3) and click on save (4).
 
 .. _dropdownCols-json-schema-2:
 
@@ -1107,7 +1106,7 @@ highlights the corresponding cell in red. In the column 'topeka' only the values
 
    * The column validation feature is only supported for the default input table type, not for big data tables or pivot tables.
    * User data is validated only during manual edits, i.e. when the user directly edits the values of individual cells. Data imported from external files or the database is not validated.
-   * If you have edited the table configuration of a symbol manually in the ``<modelname>.json`` file, you should not use the Configuration Mode for this symbol anymore. This could overwrite your manual edits!
+   * If you have edited the table configuration of a symbol manually in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file, you should not use the Configuration Mode for this symbol anymore. This could overwrite your manual edits!
 
 .. _table-colwidths:
 

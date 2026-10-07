@@ -22,7 +22,7 @@ To create a custom palette, enter the colors listed below; MIRO calculates every
    * - **Primary color**
      - Main brand color; highlights primary actions and guides user focus.
    * - **Secondary color**
-     - Accents the interface, differentiates content and colors standard buttons.
+     - Accent color for warnings, progress bars, validation messages and the hover state of outlined buttons. Filled main actions such as *Solve model* or *OK* in dialogs use the primary color.
    * - **Alert color**
      - Marks destructive operations such as *Delete* or *Clear*.
    * - **Console text color**
@@ -30,13 +30,13 @@ To create a custom palette, enter the colors listed below; MIRO calculates every
    * - **Widgets background color**
 
        (Dark mode only)
-     - Background of tables, dropdowns, sliders, etc. In Light mode this shade is derived from the primary color.
+     - Background of dropdown menus and other controls such as checkboxes, date pickers and scrollbars. Text inputs and tables adapt to the main background automatically. In Light mode this shade is derived from the primary color.
    * - **Main background color**
 
-       (Dark mode only)
-     - Background of the main window. Light mode is always white.
+       (Dark mode)
+     - Background of the main content area, including sections, dialogs and tables.
 
-Three additional surface colors - **Sidebar**, **Header**, **Body background** - are auto-generated from the primary palette unless *Manually set surface colors* is checked. Toggle the checkbox to assume full control or to return to automatic calculation.
+The surface colors **Sidebar** and **Header** are auto-generated from the primary palette unless *Manually set surface colors* is checked. In Light mode, this option additionally lets you set the **Main background color**, which is white by default. Toggle the checkbox to assume full control or to return to automatic calculation. MIRO makes sure that the highlighted sidebar entry stays readable on the chosen sidebar color: if the primary color does not contrast enough with it, a lighter or darker shade of the primary color is used instead.
 
 To reset a single Color, simply delete its hex value in the Color-picker and click anywhere outside the control. The picker immediately reverts to the default defined by the theme hierarchy:
 

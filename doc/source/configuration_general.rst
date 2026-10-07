@@ -239,6 +239,21 @@ Allow users to add and save file attachments to scenarios. Read more
 about this in the *File attachments* section
 `here <./start.html#file-attachments>`__.
 
+.. _protect-model-files:
+
+Protect Model Files
+~~~~~~~~~~~~~~~~~~~
+
+Attachments that can be read by the GAMS model are placed in the model's working directory. If this option is enabled, such attachments must not have the same name as one of your model files (e.g. the main ``.gms`` file or files included by it). This prevents attachments from overwriting model files. The option is disabled by default. In the ``<modelname>.json`` file, it can be enabled as follows:
+
+.. code-block:: json
+
+   {
+     "activateModules": {
+       "protectModelFiles": true
+     }
+   }
+
 .. _general-output-attach:
 
 Output Attachments
@@ -663,28 +678,28 @@ columns <./charts.html#hide-empty-columns>`__ in the table.
 AI Assistant
 ------------
 
-With a provider key configured (see the `AI Assistant <./ai_assistant.html#enabling-ai-assistant>`__ chapter for how to set one up), we can tailor how the assistant behaves for this specific app.
+With a provider key configured (see the `Mira (AI Assistant) <./ai_assistant.html#enabling-ai-assistant>`__ chapter for how to set one up), we can tailor how Mira, GAMS MIRO's AI assistant, behaves for this specific app.
 
 .. _ai-assistant-enable:
 
 Enable AI Assistant
 ~~~~~~~~~~~~~~~~~~~
 
-This checkbox turns the assistant on or off for the current app. It is on by default (existing apps are not locked out of the feature once a provider key is configured), so if we want to keep a specific app free of AI features regardless of the server-wide key, we switch it off here explicitly.
+This checkbox turns Mira on or off for the current app. It is on by default (existing apps are not locked out of the feature once a provider key is configured), so if we want to keep a specific app free of AI features regardless of the server-wide key, we switch it off here explicitly.
 
 .. _ai-assistant-domain-context:
 
 Domain Context
 ~~~~~~~~~~~~~~
 
-Domain Context gives the assistant background knowledge about our model: the business or scientific problem it solves, the terminology we use, and how the model operates. The more context the assistant has, the more relevant and specific its analysis will be. We can use the placeholder ``[[README]]`` anywhere in this field, and MIRO replaces it with the current content of our app's README - so if we already documented the model there, we do not have to duplicate that work.
+Domain Context gives Mira background knowledge about our model: the business or scientific problem it solves, the terminology we use, and how the model operates. The more context Mira has, the more relevant and specific its analysis will be. We can use the placeholder ``[[README]]`` anywhere in this field, and MIRO replaces it with the current content of our app's README - so if we already documented the model there, we do not have to duplicate that work.
 
 .. _ai-assistant-instructions:
 
 General Instructions
 ~~~~~~~~~~~~~~~~~~~~
 
-General Instructions let us set concrete rules for how the assistant should respond - formatting preferences ("Always report monetary values in millions of dollars"), tone, or steps it should take when it spots a data inconsistency ("Flag negative values in the demand table as an error"). Where Domain Context describes our model, General Instructions describe how we want the assistant to talk about it.
+General Instructions let us set concrete rules for how Mira should respond - formatting preferences ("Always report monetary values in millions of dollars"), tone, or steps it should take when it spots a data inconsistency ("Flag negative values in the demand table as an error"). Where Domain Context describes our model, General Instructions describe how we want Mira to talk about it.
 
 .. |Application title| image:: ../assets/images/configuration_mode/general_title.png
    :class: miro-image-max-height-200pt

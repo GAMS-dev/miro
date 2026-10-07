@@ -242,7 +242,7 @@ under Scenario → Edit metadata.
 
 .. image:: ../assets/images/server/edit-metadata.png
    :alt: Edit metadata
-   :class: miro-image-max-height-135pt
+   :class: miro-image-max-height-200pt
 
 In the example below, Rebecca is scenario owner. She gives
 the single user 'rschuchmann' and the group 'group 1' read

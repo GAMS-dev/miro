@@ -8,23 +8,34 @@ GAMS MIRO 2.14
 
 (xxxx-xx-xx)
 
+Security
+~~~~~~~~
+
+- Various security improvements. Updating is recommended, especially for MIRO Server.
+
 New features
 ~~~~~~~~~~~~
 
-- Introduce the `AI Assistant <./ai_assistant.html>`__, a chat-based
+- Introduce `Mira <./ai_assistant.html>`__, a chat-based AI
   assistant that helps you get more out of your app:
 
   - Analyze the currently loaded sandbox scenario or a comparison of
     scenarios, and ask questions about your data directly within the app.
-  - Ask the assistant to `propose changes to your input data
+  - Ask Mira to `propose changes to your input data
     <./ai_assistant.html#changing-input-data>`__, e.g. "increase demand in
     the EU by 10%", and apply them with a single click after reviewing a
     before/after preview.
   - In Configuration Mode, get assistance writing `custom renderers
     <./ai_assistant.html#ai-assisted-custom-renderers>`__.
 
+- New, modern design for MIRO apps, MIRO Desktop and MIRO Server.
+- MIRO Desktop: Environment variables can now be edited directly in the settings window, so exporting and importing them is no longer necessary.
+- Spanish language support.
+
 Minor new features and improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Improved German and Chinese translations.
 
 - Updated documentation with a new design and layout, resulting in clearer
   guides, improved navigation and search, and light/dark theme support.
@@ -45,6 +56,9 @@ Minor new features and improvements
   Dashboard and MIRO Pivot renderers compute a baseline comparison, avoiding
   division-by-zero or inflated percentage/normalized results caused by
   floating-point noise around zero.
+
+- `Custom theme colors <./configuration_colors.html#custom-theme-colors>`__: The main background color can now also be set for Light mode. The body background color has been removed, as the new layout no longer shows it; existing color themes continue to work without changes. The highlighted sidebar entry now automatically adjusts its color to stay readable on dark sidebars.
+- Add option to `prevent attachments from overwriting model files <./configuration_general.html#protect-model-files>`__.
 
 Bug fixes
 ~~~~~~~~~

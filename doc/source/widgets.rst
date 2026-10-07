@@ -834,14 +834,16 @@ The following options are available for a checkbox widget:
 
    - Choices to select from:
 
-   Here, a list of values to select from in the resulting dropdown menu is specified.
+     Here, a list of values to select from in the resulting dropdown menu is specified.
+
    - Aliases for choices:
 
-   If aliases are given, then an alias — rather than the choice — is displayed to the user. Aliases are optional. The choice-alias mapping follows the order in which the elements are specified. If
-   aliases are given, the number of aliases must match the number of choices.
+     If aliases are given, then an alias — rather than the choice — is displayed to the user. Aliases are optional. The choice-alias mapping follows the order in which the elements are specified. If
+     aliases are given, the number of aliases must match the number of choices.
+
    - Default value:
 
-   The default value specifies the initial selection of the dropdown menu. This option is only available for static dropdown menus.
+     The default value specifies the initial selection of the dropdown menu. This option is only available for static dropdown menus.
 
    Example: Configuration of a dropdown menu with static choices:
 
@@ -912,32 +914,6 @@ The following options are available for a checkbox widget:
         fill the dropdown choices.
 
      These two options are sufficient to dynamically fill the choices of the dropdown menu.
-
-   - Should the symbol table(s) be filtered depending on the selection in the dropdown menu?:
-
-     This option is optional.
-
-     .. image:: ../assets/images/configuration_mode/widget_dropdown_dynamic3.png
-        :alt: Table filtering
-        :class: miro-image-max-height-125pt
-
-     When active, it has the following effects: The user selects a stock in the dropdown menu (e.g. *AAPL*).
-
-     .. image:: ../assets/images/configuration_mode/widget_dropdown_dynamic4.png
-        :alt: Filter selection
-        :class: miro-image-max-height-200pt
-
-     This has the consequence that all tables containing stock symbols are filtered according to this selection. Only those rows with *AAPL* are displayed:
-
-     .. image:: ../assets/images/configuration_mode/widget_dropdown_dynamic5.png
-        :alt: Filtered table
-        :class: miro-image-max-height-250pt
-
-     .. admonition:: Tip
-
-        The filter is used exclusively for visual support. A table filtered in this way is always transferred to the GAMS model as a whole, i.e. unfiltered, regardless of what is currently displayed
-        in the interface.
-
 
 .. _dropdown-option-clearvalue:
 
@@ -1291,9 +1267,8 @@ The available options of a date range selector are almost identical to those of 
    Since the widget is used for date *ranges* the date range selector needs two default dates instead of one. The configuration of these does not differ from that of the `standard date
    selector <#date-option-minmaxdef>`__.
 
-   .. image:: ../assets/images/configuration_mode/widget_daterange_separator.png
-    :alt: Date range separator
-    :class: miro-image-max-height-60pt
+   .. image:: ../assets/images/configuration_mode/widget_daterange_default.png
+      :alt: Default start and end date settings of the date range selector
 
 .. _daterange-option-separator:
 
@@ -1305,8 +1280,7 @@ The available options of a date range selector are almost identical to those of 
    Example with two different separators:
 
    .. image:: ../assets/images/configuration_mode/widget_daterange_separator.png
-    :alt: Date range separator
-    :class: miro-image-max-height-60pt
+      :alt: Date range separator
 
 .. _widget-daterange-json:
 

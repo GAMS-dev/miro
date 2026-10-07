@@ -2404,7 +2404,7 @@ In MIRO, each symbol tab provides both a tabular and a graphical data representa
 
 Currently, the Configuration Mode does not offer direct support for implementing custom input widgets, but we can create them the same way we create a custom renderer and then make a few changes to convert it into a widget.
 
-First, we develop a placeholder function that displays both a plot and a data table. For the table we will use R Shinys `DataTables <https://shiny.posit.co/r/articles/build/datatables/>`__. To do this, you must first add ``DT`` <https://www.rdocumentation.org/packages/DT/versions/0.16>`__ to the additional packages and prefix the corresponding functions in the code. To define the output we use ``DT:DTOutput()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableOutput>`__):
+First, we develop a placeholder function that displays both a plot and a data table. For the table we will use R Shinys `DataTables <https://shiny.posit.co/r/articles/build/datatables/>`__. To do this, you must first add `DT <https://www.rdocumentation.org/packages/DT/versions/0.16>`__ to the additional packages and prefix the corresponding functions in the code. To define the output we use ``DT:DTOutput()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableOutput>`__):
 
 .. code:: R
 

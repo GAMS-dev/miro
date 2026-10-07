@@ -57,7 +57,7 @@ The GAMS symbol that contains the flow data is called optSched. Thus, our initia
 
 Both functions take a number of parameters. Let's start with the placeholder function: Each custom renderer has its own ID. In order to avoid `name
 collisions <https://en.wikipedia.org/wiki/Name_collision>`__ with other custom renderers or functions of GAMS MIRO, we need to prefix our input and output elements with this ID. How should we
-prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: ``NS()``. This function takes the ID of our custom renderer as its input and returns a
+prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: `NS() <https://shiny.rstudio.com/reference/shiny/0.13.1/NS.html>`__. This function takes the ID of our custom renderer as its input and returns a
 function (functions that return functions are often called *closures* in R) that does the prefixing for us. Thus, whenever we want to specify a new input or output element, we simply hand the ID we
 would like to use for this element over to this prefixing function (which in our case is bound to the ``ns`` variable). We can also specify a height for our renderer as well as the path
 where the renderer files are located. We can also pass additional options to our renderer functions.
@@ -1058,13 +1058,14 @@ to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use eith
 The resulting interface in MIRO now looks as follows:
 
 |Input widgets for command line parameters|
+
 .. _language-files:
 
 Language Files
 --------------
 
 GAMS MIRO comes with the ability to change the preferred language. Setting your preferred language results in MIRO embedding the corresponding language file where all the language specific
-components are specified via JSON syntax. MIRO currently ships with three of those language files: English, German and Chinese. If you would like to add another language to this list, you are more
+components are specified via JSON syntax. MIRO currently ships with four of those language files: English, German, Chinese and Spanish. If you would like to add another language to this list, you are more
 than welcome to translate one of the existing language files. The language files are located at: <MIRORoot>/miro/conf/en.json and are validated against the `JSON
 Schema <https://json-schema.org/>`__ file: <MIRORoot>/miro/conf/language_schema.json. Note that there are sometimes placeholders in the language files. Let's take the error message:
 ``"The value '%s' for the slider: '%s' is not of numeric type."`` for example. ``%s`` will then be replaced with the value and name of the slider by MIRO. Thus, if you create a new language file, be sure to include these placeholders

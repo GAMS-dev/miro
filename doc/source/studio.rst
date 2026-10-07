@@ -111,7 +111,7 @@ In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If th
 
 But: This option should be used with caution!
 
-If the model execution is skipped, the GAMS/MIRO `data contract <./start.html#data-concept>`__ is not created or refreshed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option `*a=c* <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction>`__ (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only the data that is available after the compilation phase (most of the time only input data).
+If the model execution is skipped, the GAMS/MIRO `data contract <./start.html#data-concept>`__ is not created or refreshed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option `a=c <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction>`__ (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only the data that is available after the compilation phase (most of the time only input data).
 
 .. _studio-create-assembly:
 

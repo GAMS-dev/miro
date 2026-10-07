@@ -20,8 +20,7 @@ The section *Symbol and Column Names* lets you customize the names of GAMS symbo
   Change the labels that appear on the symbol tabs.
 
   .. image:: ../assets/images/configuration_mode/general_naming_tab.png
-     :alt: Symbol alias
-     :class: miro-image-max-height-150pt
+     :alt: Symbol alias in Configuration Mode and the resulting tab label
 
 - *Specify column headers:*
 
@@ -35,8 +34,7 @@ Symbol Order
 Here you can adjust the tab order in which the symbols are to be displayed in MIRO. To do this, simply drag and drop the symbols into the desired order.
 
 .. image:: ../assets/images/configuration_mode/general_ordering.png
-   :alt: Ordering
-   :class: miro-image-max-height-300pt
+   :alt: Symbol order in Configuration Mode and the resulting tab order
 
 .. admonition:: Note:
    :class: warning
@@ -62,13 +60,11 @@ For the input data of the transport model, one might want to group the symbols w
 
 .. image:: ../assets/images/configuration_mode/general_inputGroups.png
    :alt: Specify input groups
-   :class: miro-image-max-height-200pt
 
 Which is displayed in the MIRO App as follows:
 
 .. image:: ../assets/images/configuration_mode/general_inputGroups2.png
    :alt: Input group in MIRO
-   :class: miro-image-max-height-325pt
 
 .. _aggregate-widgets:
 
@@ -93,7 +89,6 @@ You can use data of scalar output symbols in some charts, while not displaying t
 
 .. image:: ../assets/images/hidden_scalars.png
    :alt: Scalar value in graph
-   :class: miro-image-max-height-325pt
 
 In this case you may not want to see the value in the scalars table, but it is required for this chart. With this option you can do exactly that, i.e. use scalar values in charts that are otherwise not visible in MIRO.
 

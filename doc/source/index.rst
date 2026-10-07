@@ -99,9 +99,9 @@ Welcome!
 
       .. raw:: html
 
-         <i class="miro-card-icon fa-solid fa-robot" aria-hidden="true"></i>
+         <svg class="miro-card-icon" viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M10 3.2Q11.9 10.1 18.8 12Q11.9 13.9 10 20.8Q8.1 13.9 1.2 12Q8.1 10.1 10 3.2ZM10 10.3A1.7 1.7 0 1 0 10 13.7A1.7 1.7 0 1 0 10 10.3Z"/><path d="M18.5 1.8Q19 5 22.2 5.5Q19 6 18.5 9.2Q18 6 14.8 5.5Q18 5 18.5 1.8Z"/><circle cx="19.4" cy="18.8" r="1.35"/></svg>
 
-      AI Assistant
+      Mira (AI Assistant)
       ^^^
 
       Explore scenario data and spot inconsistencies by asking questions

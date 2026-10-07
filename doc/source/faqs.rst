@@ -25,8 +25,8 @@ model folder and import the data from this file into GAMS using the
 What languages are supported?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently GAMS MIRO ships with language files for English, German and
-Chinese. If you would like to add another language, we are more than
+Currently GAMS MIRO ships with language files for English, German, Chinese and
+Spanish. If you would like to add another language, we are more than
 happy to add more languages to this list. For more information about how
 to generate language files see the section on `Language
 Files <./configuration_advanced.html#language-files>`__

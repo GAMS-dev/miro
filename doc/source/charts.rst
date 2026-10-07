@@ -1104,27 +1104,35 @@ The following options are available:
 
 - **Event line**
 
-  .. image:: ../assets/images/configuration_mode/timeseries_event.png
+  .. figure:: ../assets/images/configuration_mode/timeseries_event.png
      :alt: Vertical event
      :class: miro-image-responsive
 
+     1 symbol with the event date, 2 label, 3 label position, 4 line color, 5 stroke pattern, 6 resulting event line.
+
 - **Limit line**
 
-  .. image:: ../assets/images/configuration_mode/timeseries_limit.png
+  .. figure:: ../assets/images/configuration_mode/timeseries_limit.png
      :alt: Horizontal line
      :class: miro-image-responsive
 
+     1 limit value, 2 label, 3 label position, 4 line color, 5 stroke pattern, 6 resulting limit line.
+
 - **Annotation**
 
-  .. image:: ../assets/images/configuration_mode/timeseries_annotation.png
+  .. figure:: ../assets/images/configuration_mode/timeseries_annotation.png
      :alt: Annotation
      :class: miro-image-responsive
 
+     1 symbol to annotate, 2 label, 3 tooltip, 4 width and height, 5 attach to x axis, 6 resulting annotation.
+
 - **Shading**
 
-  .. image:: ../assets/images/configuration_mode/timeseries_shading.png
+  .. figure:: ../assets/images/configuration_mode/timeseries_shading.png
      :alt: Shading
      :class: miro-image-responsive
+
+     1 lower bound, 2 upper bound, 3 axis, 4 shading color, 5 resulting shaded area.
 
 .. rubric:: JSON example
 
@@ -2301,7 +2309,7 @@ As already mentioned, not all the options available for the different graphs are
       :alt: Line chart configuration without Table statement
       :class: miro-image-max-height-250pt
 
-   In the section *Filters & Domains* we can can select a domain we want to pivot internally. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
+   In the category *Y data* we can select a domain we want to pivot internally. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
 
    .. image:: ../assets/images/single-col-line-domain.png
       :alt: Line chart configuration without Table statement
@@ -2321,7 +2329,7 @@ As already mentioned, not all the options available for the different graphs are
 
    Example: Model *Pickstock*, parameter *price*
 
-   The Parameter *price* has the dimensions *date* and *symbol*: ``Parameter price(date,symbol) 'Price';``. With the previous option `Group domain <#group-domain>`__ we made sure that each stock is displayed as a separate line (and the graphic is therefore independent of the data). Now we can activate the checkbox *Should one domain of the symbol be selectable via a dropdown menu?* in the same category *Filters & Domains* and select the dimension *stocks* as filter dimension. In the result a (multi-) dropdown menu appears above the chart, in which we can select the individual stocks. Only those stocks are displayed which are selected in the filter.
+   The Parameter *price* has the dimensions *date* and *symbol*: ``Parameter price(date,symbol) 'Price';``. With the previous option `Group domain <#group-domain>`__ we made sure that each stock is displayed as a separate line (and the graphic is therefore independent of the data). Now we can activate the checkbox *Should one domain of the symbol be selectable via a dropdown menu?* in the category *Filter & Domains* (*Filter* for time series diagrams) and select the dimension *stocks* as filter dimension. In the result a (multi-) dropdown menu appears above the chart, in which we can select the individual stocks. Only those stocks are displayed which are selected in the filter.
 
    .. image:: ../assets/images/configuration_mode/filter-graph.png
       :alt: Filter graph by domain
@@ -2352,7 +2360,7 @@ As already mentioned, not all the options available for the different graphs are
 
 .. dropdown:: Animation
 
-   Chart data can be animated in order to show how the data changes over time. Example: We want to animate a chart that shows the individual stocks of the Dow Jones index over time. The Y axis shows the price of a stock, the X axis shows the date. Now we want to display all stocks one after the other with an animation. For this we select in the category *Y axix* the dimension, which should be used in the animation for the single frames. Since we want to show all stock symbols one after the other, we choose *stock symbol*:
+   Chart data can be animated in order to show how the data changes over time. Example: We want to animate a chart that shows the individual stocks of the Dow Jones index over time. The Y axis shows the price of a stock, the X axis shows the date. Now we want to display all stocks one after the other with an animation. For this we select in the category *Y data* under *Use a data dimension for animation (as frames)* the dimension that should be used for the single frames. Since we want to show all stock symbols one after the other, we choose *stock symbol*:
 
    .. image:: ../assets/images/configuration_mode/animation_y_axis.png
       :alt: Data dimension to animate
