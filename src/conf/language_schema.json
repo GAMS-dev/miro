@@ -497,10 +497,6 @@
               "type": "string",
               "minLength": 1
             },
-            "chooseCurrentButton": {
-              "type": "string",
-              "minLength": 1
-            },
             "chooseAllButton": {
               "type": "string",
               "minLength": 1
@@ -596,7 +592,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 14
+          "minProperties": 13
         },
         "hcubeAnalyze": {
           "type": "object",
