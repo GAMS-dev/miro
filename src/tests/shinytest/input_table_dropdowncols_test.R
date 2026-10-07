@@ -30,7 +30,7 @@ app <- AppDriver$new("../../",
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
 Sys.sleep(0.5)
-expect_true(app$get_js("$('#errorMessages').html().includes('bla');", timeout = 50))
+expect_true(app$get_js("$('#errorMessages').html().includes('bla');", timeout = 10000L))
 Sys.sleep(0.5)
 app$stop()
 

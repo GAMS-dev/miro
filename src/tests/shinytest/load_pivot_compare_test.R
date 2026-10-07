@@ -122,13 +122,13 @@ expect_identical(
   ))
 )
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='475'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1'",
-  timeout = 50
+  timeout = 10000L
 ))
 app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)

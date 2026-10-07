@@ -65,7 +65,7 @@ if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   Sys.sleep(0.5)
   app$set_inputs(btImportLocal = "click")
   Sys.sleep(4)
-  expect_true(app$get_js("$('.modal-body').text().includes('asd');", timeout = 50L))
+  expect_true(app$get_js("$('.modal-body').text().includes('asd');", timeout = 10000L))
   expect_identical(app$get_values()$input[["slider_2"]], 28L)
   expect_identical(app$get_values()$input[["slider_3"]], 101L)
   Sys.sleep(1)

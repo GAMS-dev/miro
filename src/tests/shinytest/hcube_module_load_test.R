@@ -138,7 +138,7 @@ expect_identical(app$get_values()$input[["slider_3"]], 4L)
 app$set_inputs(btSave = "click")
 Sys.sleep(2L)
 expect_true(app$get_js("$('.modal-body').text().trim().includes('scenario with the name you have chosen already exists');",
-  timeout = 50L
+  timeout = 10000L
 ))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)

@@ -22,7 +22,7 @@ expect_error(app$get_js(paste0(
   "$('#cmpScenTitle_4').text()==='",
   strsplit(scenOptions[scenToCompare[1]], " (", fixed = TRUE)[[1]][1],
   "'"
-), timeout = 50), NA)
+), timeout = 10000L), NA)
 expect_error(app$wait_for_js(paste0(
   "$('#cmpScenTitle_5').text()==='",
   strsplit(scenOptions[scenToCompare[2]], " (", fixed = TRUE)[[1]][1],

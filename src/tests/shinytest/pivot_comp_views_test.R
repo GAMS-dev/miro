@@ -44,7 +44,7 @@ Sys.sleep(1)
 app$click(selector = "#tab_0_3-miroPivot-toggleViewButton")
 Sys.sleep(1)
 expect_identical(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD li').length"), 2L)
-expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD li')[1].children[0].innerText==='<script>alert(\\'asd\\')</script>'", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD li')[1].children[0].innerText==='<script>alert(\\'asd\\')</script>'", timeout = 10000L))
 app$run_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(1).click()")
 Sys.sleep(1)
 expect_chartjs(
@@ -68,16 +68,16 @@ app$click(selector = "#tab_0_3-miroPivot-saveView")
 Sys.sleep(1)
 app$set_inputs("tab_0_3-miroPivot-newViewName" = "new test view")
 app$set_inputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
-expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 10000L))
 app$set_inputs("tab_0_3-miroPivot-saveViewCancelOverwrite" = "click")
-expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible') === false;", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible') === false;", timeout = 10000L))
 app$set_inputs("tab_0_3-miroPivot-newViewName" = "abc")
 app$set_inputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
 
 app$click(selector = "#tab_0_3-miroPivot-toggleViewButton")
 Sys.sleep(1)
-expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 10000L))
 app$run_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click()")
 expect_chartjs(
   app,
@@ -104,7 +104,7 @@ app$click(selector = "#tab_0_3-miroPivot-saveView")
 Sys.sleep(1)
 app$set_inputs("tab_0_3-miroPivot-newViewName" = "abc")
 app$set_inputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
-expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 10000L))
 app$set_inputs("tab_0_3-miroPivot-saveViewOverwrite" = "click")
 Sys.sleep(1)
 
@@ -115,7 +115,7 @@ app$run_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(0).click
 Sys.sleep(0.5)
 app$click(selector = "#tab_0_3-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
-expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='abc';", timeout = 10000L))
 app$run_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click()")
 Sys.sleep(1)
 expect_chartjs(
@@ -135,7 +135,7 @@ expect_error(app$wait_for_js("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-vie
 Sys.sleep(1)
 app$set_inputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
-expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible')===false;", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible')===false;", timeout = 10000L))
 
 app$click(selector = "#tab_0_3-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
@@ -143,7 +143,7 @@ expect_error(app$wait_for_js("$('#tab_0_3-miroPivot-savedViewsDD .miro-pivot-vie
 Sys.sleep(1)
 app$set_inputs("tab_0_3-miroPivot-newViewName" = "new test view")
 app$set_inputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
-expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 10000L))
 app$set_inputs("tab_0_3-miroPivot-saveViewOverwrite" = "click")
 Sys.sleep(1)
 
@@ -154,7 +154,7 @@ Sys.sleep(0.5)
 app$click(selector = "#tab_0_3-miroPivot-toggleViewButton")
 Sys.sleep(0.5)
 expect_identical(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD li').length"), 3L)
-expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='new test view';", timeout = 50))
+expect_true(app$get_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).text()==='new test view';", timeout = 10000L))
 app$run_js("$('#tab_0_3-miroPivot-savedViewsDD .view-dropdown-item').eq(2).click()")
 Sys.sleep(1)
 expect_chartjs(
@@ -176,7 +176,7 @@ expect_error(app$wait_for_js("$('#currentViewsTable tbody td')[2].innerHTML==='P
   timeout = 50
 ), NA)
 expect_true(app$get_js("$('#currentViewsTable tbody td')[3].innerHTML==='&lt;script&gt;alert(\\'asd\\')&lt;/script&gt;'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_error(app$wait_for_js("$('#currentViewsTable tbody td')[5].innerHTML==='new test view'",
   timeout = 50

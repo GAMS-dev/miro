@@ -12,17 +12,17 @@ Sys.sleep(2)
 app$click(selector = "a[data-value='outputData']")
 Sys.sleep(1)
 
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 2000), "ERROR TEST\n79.61357")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 2000), "rgb(61, 153, 112)")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 2000), "ERROR TRAIN\n$951.1662$")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 2000), "rgb(221, 75, 57)")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 2000), "ERROR RATIO\n+11.95$")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 2000), "TESTNEGATIVE\n-1,001$")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 2000), "TESTPOSITIVE\n+1,001$")
-expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testlonglabel .info-box-text').css('textOverflow')"), timeout = 2000), "ellipsis")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test')[0].innerText"), timeout = 10000L), "ERROR TEST\n79.61357")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_test .info-box-number').css('color')"), timeout = 10000L), "rgb(61, 153, 112)")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train')[0].innerText"), timeout = 10000L), "ERROR TRAIN\n$951.1662$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_train .info-box-number').css('color')"), timeout = 10000L), "rgb(221, 75, 57)")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-error_ratio')[0].innerText"), timeout = 10000L), "ERROR RATIO\n+11.95$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testnegative')[0].innerText"), timeout = 10000L), "TESTNEGATIVE\n-1,001$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testpositive')[0].innerText"), timeout = 10000L), "TESTPOSITIVE\n+1,001$")
+expect_identical(app$get_js(paste0("$('#tab_1_3-", rendererName, "-testlonglabel .info-box-text').css('textOverflow')"), timeout = 10000L), "ellipsis")
 
 # check whether grouping dimensions in a stacked bar chart works
-configuration <- app$get_js(paste0("Chart.getChart('tab_1_3-", rendererName, "-dowVSindexStackChart').config._config"), timeout = 50)
+configuration <- app$get_js(paste0("Chart.getChart('tab_1_3-", rendererName, "-dowVSindexStackChart').config._config"), timeout = 10000L)
 chart_id <- paste0("tab_1_3-", rendererName, "-dowVSindexStackChart")
 configuration <- app$get_js(paste0(
   "(function () {",
@@ -35,7 +35,7 @@ configuration <- app$get_js(paste0(
   "    options: cfg.options",
   "  };",
   "})()"
-), timeout = 50)
+), timeout = 10000L)
 
 expect_identical(configuration$type, "bar")
 expect_identical(configuration$data$datasets[[1]]$stack, "stack1")

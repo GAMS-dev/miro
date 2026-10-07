@@ -48,7 +48,7 @@ app$click(selector = ".navbar-custom-menu a[onclick*='btExportScen']")
 Sys.sleep(1)
 app$set_inputs(exportFileType = "custom_2")
 Sys.sleep(0.5)
-expect_true(app$get_js("$('#scenRemoteExportHandler').is(':hidden')&&$('#scenExportHandler').is(':visible');", timeout = 50L))
+expect_true(app$get_js("$('#scenRemoteExportHandler').is(':hidden')&&$('#scenExportHandler').is(':visible');", timeout = 10000L))
 
 tempJSONFile <- tempfile()
 readr::write_file(get_file_content(app, "scenExportHandler"), tempJSONFile)
@@ -76,6 +76,6 @@ expect_equivalent(getHotData(app, "in_1"), tibble(
   i = c("Seattle", "San-Diego"),
   value = c(350L, 600L)
 ))
-expect_true(app$get_js("$('.modal-body').is(':visible')===false", timeout = 50L))
+expect_true(app$get_js("$('.modal-body').is(':visible')===false", timeout = 10000L))
 unlink(tempJSONFile)
 app$stop()

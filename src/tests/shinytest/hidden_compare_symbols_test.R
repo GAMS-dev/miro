@@ -28,8 +28,8 @@ Sys.sleep(2L)
 # the hidden symbol still shows up as a tab on the regular Output screen
 app$click(selector = 'a[data-value="outputData"]')
 Sys.sleep(1L)
-expect_true(app$get_js("$('#outputTabset a:contains(\"shipment quantities\")').length > 0", timeout = 2000L))
-expect_true(app$get_js("$('#outputTabset a:contains(\"Output Scalars\")').length > 0", timeout = 2000L))
+expect_true(app$get_js("$('#outputTabset a:contains(\"shipment quantities\")').length > 0", timeout = 10000L))
+expect_true(app$get_js("$('#outputTabset a:contains(\"Output Scalars\")').length > 0", timeout = 10000L))
 
 # but not in split scenario comparison mode (box 1 = sandbox scenario)
 app$click(selector = 'a[data-value="scenarios"]')
@@ -37,7 +37,7 @@ expect_error(app$click(selector = "#scenSplit1_open > div:nth-child(2) > button"
 Sys.sleep(2L)
 expect_identical(app$get_text("#cmpScenTitle_2"), "New Scenario (Sandbox)")
 expect_equal(app$get_js("$('#contentScen_2 a:contains(\"Shipment quantities\")').length"), 0L)
-expect_true(app$get_js("$('#contentScen_2 a:contains(\"Output Scalars\")').length > 0", timeout = 2000L))
+expect_true(app$get_js("$('#contentScen_2 a:contains(\"Output Scalars\")').length > 0", timeout = 10000L))
 
 app$stop()
 

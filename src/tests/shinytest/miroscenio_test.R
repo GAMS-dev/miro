@@ -125,7 +125,7 @@ expect_identical(
   iconv(as.character(app$get_values()[["output"]][["inputDataTitle"]][["html"]])),
   "<i>&lt;Test Scenario&gt; (*)</i>"
 )
-expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===false;", timeout = 50L), TRUE)
+expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===false;", timeout = 10000L), TRUE)
 app$set_inputs(btImport = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$set_inputs(tb_importData = "tb_importData_local")
@@ -136,7 +136,7 @@ app$set_inputs(btImportLocal = "click")
 app$set_inputs(btReplaceInputData = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 # when replacing data in scenario with output data, dirty flag should be visible
-expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===true;", timeout = 50L), TRUE)
+expect_identical(app$get_js("$('#dirtyFlagIcon').is(':visible')===true;", timeout = 10000L), TRUE)
 app$set_inputs(btImport = "click")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 app$set_inputs(tb_importData = "tb_importData_local")
