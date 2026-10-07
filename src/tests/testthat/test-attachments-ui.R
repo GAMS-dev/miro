@@ -1,6 +1,6 @@
 test_that(
   "Save as dialog (attachments) works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
 
     Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_with_data", "pickstock_with_data.gms"))

@@ -1,6 +1,6 @@
 test_that(
   "Loading and comparing scenarios works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     for (modelToTest in c("pickstock", "transport")) {
       testModelPath <- file.path(testDir, "model", modelToTest)
       createTestDb()

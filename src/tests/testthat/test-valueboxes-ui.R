@@ -1,6 +1,6 @@
 test_that(
   "Valuebox settings works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
 
     modelToTest <- "pickstock_with_data"

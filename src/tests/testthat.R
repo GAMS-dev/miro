@@ -89,6 +89,13 @@ if (platform == "Darwin") {
   }
   Sys.setenv(CHROMOTE_CHROME = chromePath)
 }
+# default timeout (seconds) for Chrome DevTools commands without
+# explicit timeout (e.g. DOM queries of app$click()). chromote's
+# default of 10s is too short on slow runners. AppDriver sessions
+# inherit it from the default Chromote object.
+chromoteObj <- chromote::default_chromote_object()
+chromoteObj$default_timeout <- as.numeric(Sys.getenv("MIRO_CHROMOTE_TIMEOUT", "60"))
+rm(chromoteObj)
 
 if (is.na(Sys.getenv("GAMSPY_INTERPRETER_PATH", NA_character_))) {
   runGAMSPyTests <- FALSE

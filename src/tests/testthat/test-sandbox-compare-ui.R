@@ -1,6 +1,6 @@
 test_that(
   "Loading sandbox scenarios works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
     testModelPath <- file.path(testDir, "model", "transport")
     Sys.setenv(MIRO_MODEL_PATH = file.path(

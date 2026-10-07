@@ -77,6 +77,54 @@ selectSelectizeOption <- function(app, selector, value) {
   return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');")))
 }
 
+retryUiTest <- function(times, code) {
+  # like testthat::try_again, but cleans up after a failed attempt so that
+  # the next attempt can succeed:
+  # - snapshots taken in the failed attempt are forgotten (otherwise
+  #   expect_values() fails with "Snapshot file names must be unique")
+  # - apps (R process + Chromium) started in the failed attempt are stopped
+  code <- rlang::enquo(code)
+  env <- rlang::quo_get_env(code)
+  snapshotter <- getOption("testthat.snapshotter")
+  if (!is.null(snapshotter) && !snapshotter$is_active()) {
+    snapshotter <- NULL
+  }
+  cleanupAttempt <- function(snapsSavedBefore) {
+    for (objName in ls(env, all.names = TRUE)) {
+      obj <- get0(objName, envir = env, inherits = FALSE)
+      if (inherits(obj, "AppDriver")) {
+        try(suppressWarnings(obj$stop()), silent = TRUE)
+      }
+    }
+    if (!is.null(snapshotter)) {
+      snapshotter$snap_file_saved <- snapshotter$snap_file_saved[seq_len(snapsSavedBefore)]
+    }
+  }
+  for (i in seq_len(times)) {
+    snapsSavedBefore <- if (is.null(snapshotter)) 0L else length(snapshotter$snap_file_saved)
+    succeeded <- tryCatch(
+      {
+        eval(rlang::quo_get_expr(code), env)
+        TRUE
+      },
+      expectation_failure = function(cnd) {
+        message(sprintf("Expectation failed; trying again (%d)...", i))
+        FALSE
+      },
+      error = function(cnd) {
+        message(sprintf("Expectation errored; trying again (%d): %s", i, conditionMessage(cnd)))
+        FALSE
+      }
+    )
+    if (succeeded) {
+      return(invisible(TRUE))
+    }
+    cleanupAttempt(snapsSavedBefore)
+  }
+  # last attempt: let failures through
+  eval(rlang::quo_get_expr(code), env)
+}
+
 expect_download <- function(app, id, filename) {
   i <- 1L
   repeat {
