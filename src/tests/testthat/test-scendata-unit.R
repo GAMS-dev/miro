@@ -335,4 +335,13 @@ test_that("Remapping scenario names works", {
   expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
 })
 
+test_that("Ordering scenarios of a ref ID works", {
+  scenData$addRefId("cmpTestOrder", c("3", "sb", "5"))
+  expect_identical(scenData$getRefScenMap("cmpTestOrder"), c("3", "sb_cmpTestOrder", "5"))
+  scenData$orderRef("cmpTestOrder", c("sb", "5", "3"))
+  expect_identical(scenData$getRefScenMap("cmpTestOrder"), c("sb_cmpTestOrder", "5", "3"))
+  scenData$orderRef("cmpTestOrder", "5")
+  expect_identical(scenData$getRefScenMap("cmpTestOrder")[1], "5")
+})
+
 db$destroy()

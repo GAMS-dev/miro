@@ -71,6 +71,14 @@ ScenData <- R6Class("ScenData", public = list(
     private$refScenMap[[refId]] <- unique(c(private$refScenMap[[refId]], as.character(scenIds)))
     return(invisible(self))
   },
+  orderRef = function(refId, scenIds) {
+    stopifnot(is.character(refId))
+    scenIds <- as.character(scenIds)
+    scenIds[scenIds == "sb"] <- paste0("sb_", refId)
+    refScenIds <- private$refScenMap[[refId]]
+    private$refScenMap[[refId]] <- refScenIds[order(match(refScenIds, scenIds))]
+    return(invisible(self))
+  },
   getSandboxOutputWithDataCount = function() {
     return(sum(vapply(names(ioConfig$modelOut), function(dsName) {
       as.integer(private$datasetHasData(dsName))
