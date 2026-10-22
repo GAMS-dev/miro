@@ -2690,6 +2690,7 @@ if (is.null(errMsg)) {
       compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
       compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
       compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+      compareModuleConfigs[[compareModuleConfig$id]][["options"]][["_selectBaseline"]] <- isTRUE(compareModuleConfig$selectBaseline)
     }
     noCompareModules <- compareModuleIdx
   }

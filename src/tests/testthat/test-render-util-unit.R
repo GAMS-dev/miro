@@ -4,6 +4,7 @@ library(tibble)
 library(futile.logger)
 
 source("../../components/render_util.R")
+baselineScenPlaceholder <- "_baseline"
 
 # ==============================================================================
 # dashboardPrepareData: baseline comparison numerical tolerance
@@ -74,4 +75,27 @@ test_that("dashboardPrepareData leaves an ordinary (non-near-zero) baseline unto
   # (25 - 20) / 20 * 100 = 25; (20 - 20) / 20 * 100 = 0 -- unaffected by the
   # zero-tolerance snap since the baseline (20) is nowhere near zero.
   expect_equal(sort(result$data$value), c(0, 25))
+})
+
+test_that("dashboardPrepareData resolves the baseline scenario placeholder", {
+  viewData <- tibble(
+    `_scenName` = c("Base", "Target"),
+    value = c(10, 50)
+  )
+  configWithRecord <- function(record) {
+    list(baselineComparison = list(
+      domain = "_scenName",
+      record = record,
+      metrics = list("percentage difference")
+    ))
+  }
+
+  expect_identical(
+    dashboardPrepareData(configWithRecord("_baseline"), viewData, baselineScenName = "Base")$data,
+    dashboardPrepareData(configWithRecord("Base"), viewData)$data
+  )
+  expect_identical(
+    dashboardPrepareData(configWithRecord("_baseline"), viewData)$data,
+    dashboardPrepareData(list(), viewData)$data
+  )
 })

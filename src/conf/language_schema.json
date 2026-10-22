@@ -3320,6 +3320,10 @@
                     "type": "string",
                     "minLength": 1
                   },
+                  "baselineScen": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "selMetrics": {
                     "type": "string",
                     "minLength": 1

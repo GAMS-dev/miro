@@ -810,6 +810,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (sum(numericCols) > 1L) {
         setIndexAliases[length(setIndices)] <- "Header"
       }
+      baselineScenName <- options[["_baselineScenName"]]
+      getBaselineRecordChoices <- function(domain) {
+        recordChoices <- as.character(unique(data[[domain]]))
+        if (identical(domain, "_scenName") && length(baselineScenName)) {
+          recordChoices <- c(
+            setNames(baselineScenPlaceholder, lang$renderers$miroPivot$settings$baselineComparison$baselineScen),
+            recordChoices
+          )
+        }
+        return(recordChoices)
+      }
       baselineComparisonConfigDefault <- list(
         enabled = FALSE,
         domainChoices = setNames(setIndices, setIndexAliases),
@@ -827,7 +838,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         baselineComparisonConfigDefault$enabled <- TRUE
         baselineComparisonConfigDefault$metricsSelected <- options$baselineComparison$metrics[options$baselineComparison$metrics %in% baselineComparisonConfigDefault$metricsChoices]
         baselineComparisonConfigDefault$domainSelected <- options$baselineComparison$domain
-        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        baselineComparisonConfigDefault$recordChoices <- getBaselineRecordChoices(baselineComparisonConfigDefault$domainSelected)
         if (options$baselineComparison$record %in% baselineComparisonConfigDefault$recordChoices) {
           baselineComparisonConfigDefault$recordSelected <- options$baselineComparison$record
         } else {
@@ -836,7 +847,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       } else {
         baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[1]
         baselineComparisonConfigDefault$domainSelected <- baselineComparisonConfigDefault$domainChoices[1]
-        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        baselineComparisonConfigDefault$recordChoices <- getBaselineRecordChoices(baselineComparisonConfigDefault$domainSelected)
         baselineComparisonConfigDefault$recordSelected <- baselineComparisonConfigDefault$recordChoices[1]
       }
       baselineComparisonConfig <- reactiveVal(baselineComparisonConfigDefault)
@@ -1022,7 +1033,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           length(viewOptions[["baselineComparison"]][["metrics"]]) >= 1L &&
           length(viewOptions[["baselineComparison"]][["metrics"]]) <= 2L &&
           all(viewOptions[["baselineComparison"]][["metrics"]] %in% newBaselineCompConfig$metricsChoices)) {
-          recordChoicesTmp <- as.character(unique(data[[viewOptions[["baselineComparison"]][["domain"]]]]))
+          recordChoicesTmp <- getBaselineRecordChoices(viewOptions[["baselineComparison"]][["domain"]])
           if (identical(length(viewOptions[["baselineComparison"]][["record"]]), 1L) &&
             viewOptions[["baselineComparison"]][["record"]] %in% recordChoicesTmp) {
             newBaselineCompConfig$enabled <- TRUE
@@ -2489,7 +2500,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               stop("Attempt to tamper with the app detected!", call. = FALSE)
             }
             newBaselineCompConfig$domainSelected <- input$baselineCompDomain
-            newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
+            newBaselineCompConfig$recordChoices <- getBaselineRecordChoices(newBaselineCompConfig$domainSelected)
             if (!input$baselineCompRecord %in% newBaselineCompConfig$recordChoices) {
               flog.error("Selected baseline record: %s not in domain records. Attempt to tamper with app!", input$baselineCompRecord)
               stop("Attempt to tamper with the app detected!", call. = FALSE)
@@ -2753,7 +2764,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       rendererEnv[[ns("baselineCompRecordObs")]] <- observe({
         req(input$enableBaselineComparison, input$baselineCompDomain %in% setIndices)
-        baselineRecordChoices <- unique(data[[input$baselineCompDomain]])
+        baselineRecordChoices <- getBaselineRecordChoices(input$baselineCompDomain)
         baselineRecordSelected <- baselineRecordChoices[1]
         currBaselineCompConfig <- isolate(baselineComparisonConfig())
         if (currBaselineCompConfig$enabled &&
@@ -2952,6 +2963,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
           zeroTolerance <- numericalTolerance
+          if (identical(baselineCompConfig$record, baselineScenPlaceholder)) {
+            baselineCompConfig$record <- baselineScenName
+          }
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(

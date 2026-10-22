@@ -859,6 +859,7 @@
           "cbEnable": "Habilitar comparación con referencia",
           "selDomain": "Dominio",
           "selRecord": "Registro de referencia",
+          "baselineScen": "Escenario base",
           "selMetrics": "Métricas de comparación (máx. 2)",
           "errorAggregated": "El dominio de referencia no se puede agregar. La comparación con referencia se ha desactivado; se muestran los valores sin procesar.",
           "metrics": {

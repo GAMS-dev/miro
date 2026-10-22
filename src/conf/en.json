@@ -848,6 +848,7 @@
           "cbEnable": "Enable baseline comparison",
           "selDomain": "Domain",
           "selRecord": "Baseline record",
+          "baselineScen": "Baseline scenario",
           "selMetrics": "Comparison metrics (max 2)",
           "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off - showing raw values instead.",
           "metrics": {

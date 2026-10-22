@@ -371,6 +371,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               }
               return(paste0(scenMeta[["_uid"]][1], ": ", scenMeta[["_sname"]][1]))
             }, character(1L), USE.NAMES = FALSE)
+            graphConfig$options[["_baselineScenName"]] <- names(dataToRender)[1]
             dataToRender <- bind_rows(dataToRender, .id = "_scenName")
             callModule(renderData, paste0(tabsetIdChar, "_", tabId),
               type = "miroPivot",

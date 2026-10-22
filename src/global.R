@@ -61,6 +61,8 @@ DEFAULT_SCEN_PERM <- lapply(
 defInType <- "miroPivot"
 # default height of pivot table
 pivotDefaultHeight <- 800
+# record placeholder for the baseline scenario in baseline comparisons
+baselineScenPlaceholder <- "_baseline"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName <- "_scalars"
 scalarsOutName <- "_scalars_out"

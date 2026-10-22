@@ -973,6 +973,15 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                         A <span class="code">"label"</span> is assigned which
                         is displayed when you select the scenario comparison
                         mode (next to split view, tab view, pivot view).
+                      </li>
+                      <li>
+                        Set <span class="code">"selectBaseline": true</span> to
+                        let users select a baseline scenario when loading
+                        scenarios into the dashboard comparison. In a
+                        <span class="code">baselineComparison</span> with
+                        domain <span class="code">_scenName</span>, use the
+                        record <span class="code">_baseline</span> to compare
+                        all scenarios against the selected baseline scenario.
                         <p></p>
                         Example: dashboard and dashboard comparison
                         configuration

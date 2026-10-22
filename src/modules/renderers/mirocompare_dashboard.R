@@ -69,6 +69,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
   }
 
   scenarioNames <- bind_rows(data$getMetadata())[["_sname"]]
+  baselineScenName <- if (isTRUE(options[["_selectBaseline"]])) scenarioNames[1]
 
   dataViewsConfig <- dashboardPreprocessDataViewsConfig(options$dataViewsConfig)
 
@@ -380,7 +381,10 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         viewData <- combineData(data$get(currentConfig$data), scenarioNames)
 
         rawData[[view]] <- viewData
-        preparedData <- dashboardPrepareData(currentConfig, viewData, zeroTolerance = numericalTolerance)
+        preparedData <- dashboardPrepareData(currentConfig, viewData,
+          zeroTolerance = numericalTolerance,
+          baselineScenName = baselineScenName
+        )
         dashboardChartData[[view]] <- preparedData$data
         filterWarnings[[view]] <- preparedData$warnings
 
