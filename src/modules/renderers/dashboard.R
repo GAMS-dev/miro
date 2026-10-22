@@ -608,28 +608,7 @@ renderDashboard <- function(id, data, options = NULL, path = NULL, rendererEnv =
             )
           })
 
-          customColors <- c(
-            "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
-            "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
-            "#cab2d6", "#6a3d9a", "#ffff99", "#b15928",
-            "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7",
-            "#e2546b", "#66101F", "#E0ABD7", "#c45ab3",
-            "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70",
-            "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42",
-            "#50caf3", "#086788", "#eee49d", "#E0CA3C",
-            "#dbcac7", "#BA9790", "#f69e84", "#EB4511",
-            "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a",
-            "#8dadd0", "#38618c", "#fcebea", "#fad8d6",
-            "#a6b474", "#373d20", "#a248ce", "#210b2c",
-            "#f37ea9", "#d81159", "#68f7f7", "#08bdbd",
-            "#98feb1", "#35ff69", "#d27193", "#6d213c",
-            "#edfab1", "#dcf763", "#feb46f", "#e06c00",
-            "#f3ebaa", "#e9d758", "#c0c7c7", "#829191",
-            "#f3cac5", "#E8998D", "#c7dac9", "#91b696",
-            "#BE99A4", "#714955", "#7c7ccf", "#2a2a72",
-            "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c",
-            "#df7192", "#8b1e3f", "#95D86B", "#3E721D"
-          )
+          customColors <- defaultChartColors
 
           # charts output
           output[[paste0(indicator, "Chart")]] <- chartjs::renderChartjs({
