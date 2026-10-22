@@ -2073,6 +2073,8 @@ if (!is.null(errMsg)) {
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       pivotCompRefreshAll <- FALSE
+      loadScenSandboxOptionShown <- FALSE
+      loadScenBaselineShown <- FALSE
 
       # initially set rounding precision to default
       roundPrecision <- config$roundingDecimals

@@ -58,10 +58,8 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     numericColumnNames <- names(Filter(is.numeric, data[[1]]))
 
     # GAMS Tables need to be lengthened to only have one value column
-    # Remove sandbox scenario
-    dataTmp <- data[-1]
-    names(dataTmp) <- scenarioNames
-    combinedData <- bind_rows(dataTmp, .id = "_scenName")
+    names(data) <- scenarioNames
+    combinedData <- bind_rows(data, .id = "_scenName")
 
     if (length(numericColumnNames) > 1) {
       combinedData <- removeTableHeader(combinedData)
@@ -70,7 +68,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
     return(combinedData)
   }
 
-  scenarioNames <- bind_rows(data$getMetadata()[-1])[["_sname"]]
+  scenarioNames <- bind_rows(data$getMetadata())[["_sname"]]
 
   dataViewsConfig <- dashboardPreprocessDataViewsConfig(options$dataViewsConfig)
 

@@ -26,6 +26,54 @@ checkIfInputDataExists <- function(inputIdsToLoad = seq_along(modelIn), manualIm
     }
   }
 }
+isMultiScenCompMode <- function(compMode) {
+  return(compMode %in% c("pivot", names(config[["customCompareModules"]])))
+}
+getMultiCompRefId <- function(compMode) {
+  if (identical(compMode, "pivot")) {
+    return("cmpPivot")
+  }
+  return(paste0("cmpCustom_", config[["customCompareModules"]][[compMode]][["id"]]))
+}
+normalizeSandboxSids <- function(sids) {
+  sids <- as.character(sids)
+  sids[startsWith(sids, "sb")] <- "sb"
+  return(sids)
+}
+parseBaselineSid <- function(value) {
+  if (length(value) != 1L || !is.character(value) || !nzchar(value)) {
+    return(NULL)
+  }
+  return(sub("_.*$", "", value))
+}
+loadCompViews <- function(refId, viewsId, compMode) {
+  baselineSid <- scenData$getRefScenMap(refId)[1]
+  if (!compModeHasBaseline(compMode) || is.na(baselineSid) || startsWith(baselineSid, "sb")) {
+    views$duplicateSandboxConf(viewsId)
+    views$setCompViewsScenId(viewsId, "1")
+    return(invisible())
+  }
+  baselineSid <- as.integer(baselineSid)
+  inputDataSid <- scenData$getInputDataSids(baselineSid)
+  inputDataSid[is.na(inputDataSid)] <- baselineSid
+  views$loadConf(
+    db$importDataset(tableName = "_scenViews", subsetSids = inputDataSid),
+    FALSE, viewsId, inputDataSid
+  )
+  views$setCompViewsScenId(viewsId, viewsId)
+  return(invisible())
+}
+orderByBaseline <- function(sids, baselineSid) {
+  if (!length(baselineSid)) {
+    return(sids)
+  }
+  baselineIdx <- match(baselineSid, as.character(unlist(sids, use.names = FALSE)))
+  if (is.na(baselineIdx)) {
+    flog.warn("Baseline scenario: '%s' is not among the selected scenarios. Ignoring it.", baselineSid)
+    return(sids)
+  }
+  return(c(sids[baselineIdx], sids[-baselineIdx]))
+}
 observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1L)
@@ -102,11 +150,14 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   # fetch only those scenarios that are not already loaded into the ui
   uiSidList <- scenData$getRefScenMap()
   uiSidList[["sb"]] <- NULL
-  includeSandboxScen <- FALSE
-  if (identical(currentCompMode, "pivot")) {
-    baseScenName <- paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix)
-  } else {
-    baseScenName <- NULL
+  isInMultiCompMode <- isMultiScenCompMode(currentCompMode)
+  compRefId <- if (isInMultiCompMode) getMultiCompRefId(currentCompMode)
+  sandboxOption <- NULL
+  if (!identical(currentCompMode, "split")) {
+    sandboxOption <- list(
+      name = paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix),
+      checked = FALSE
+    )
   }
   if (length(names(uiSidList))) {
     if (identical(currentCompMode, "split")) {
@@ -117,61 +168,42 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       uiSidList <- unique(unlist(uiSidList[!splitCompRefIds],
         use.names = FALSE
       ))
-    } else if (identical(currentCompMode, "pivot")) {
-      sidsLoadedInPivotMode <- uiSidList[["cmpPivot"]]
-      if (length(sidsLoadedInPivotMode)) {
-        uiSidList <- sidsLoadedInPivotMode
+    } else if (isInMultiCompMode) {
+      sidsLoadedInRef <- uiSidList[[compRefId]]
+      if (length(sidsLoadedInRef)) {
+        sandboxOption$checked <- "sb" %in% normalizeSandboxSids(sidsLoadedInRef)
+        uiSidList <- sidsLoadedInRef
       } else {
-        scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% uiSidList[["cmpPivot"]], ]
-        uiSidList <- unique(unlist(uiSidList[names(uiSidList) != "cmpPivot"],
+        uiSidList <- unique(unlist(uiSidList[names(uiSidList) != compRefId],
           use.names = FALSE
         ))
       }
     } else {
       tabRefs <- startsWith(names(uiSidList), "cmpTab_")
       sidsAlreadyLoaded <- unlist(uiSidList[tabRefs], use.names = FALSE)
-      includeSandboxScen <- !any(startsWith(as.character(sidsAlreadyLoaded), "sb"))
+      if ("sb" %in% normalizeSandboxSids(sidsAlreadyLoaded)) {
+        sandboxOption <- NULL
+      }
       scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsAlreadyLoaded, ]
       uiSidList <- unique(unlist(uiSidList[!tabRefs], use.names = FALSE))
     }
   } else {
     uiSidList <- integer()
-    includeSandboxScen <- identical(currentCompMode, "tab")
   }
 
   maxNoScenExceeded <- FALSE
   dbTagList <- scenMetaDb[["_stag"]]
   dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
-  if (includeSandboxScen) {
-    sandboxMeta <- tibble(
-      `_sid` = "sb",
-      `_uid` = uid,
-      `_sname` = paste(
-        activeScen$getScenName(),
-        lang$nav$scen$scenNameSandboxSuffix
-      ),
-      `_stime` = Sys.time(),
-      `_stag` = "",
-      `_accessr` = paste0(",", uid, ","),
-      `_accessw` = paste0(",", uid, ","),
-      `_accessx` = paste0(",", uid, ","),
-      `_scode` = 0
-    )
-    if (is.character(scenMetaDb[["_stime"]])) {
-      sandboxMeta[["_stime"]] <- as.character(sandboxMeta[["_stime"]])
-    }
-    scenMetaDb <<- bind_rows(
-      mutate(scenMetaDb, `_sid` = as.character(`_sid`)),
-      sandboxMeta
+  baselineOption <- NULL
+  if (compModeHasBaseline(currentCompMode)) {
+    baselineOption <- list(
+      choices = if (isTRUE(sandboxOption$checked)) setNames("sb", sandboxOption$name) else character()
     )
   }
   if (!is.null(uiSidList)) {
     uiSidList <- uiSidList[!startsWith(as.character(uiSidList), "sb")]
     if (length(uiSidList)) {
       uiSidList <- bind_rows(scenData$getById("meta", scenIds = uiSidList))
-      if (includeSandboxScen) {
-        uiSidList <- mutate(uiSidList, `_sid` = as.character(`_sid`))
-      }
       scenMetaDb <<- bind_rows(
         scenMetaDb,
         uiSidList[uiSidList[["_scode"]] != SCODEMAP["scen"], ]
@@ -182,11 +214,19 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
           desc = TRUE
         )
       } else {
+        if (length(baselineOption)) {
+          baselineOption$choices <- c(baselineOption$choices, formatScenList(uiSidList, uid))
+        }
         uiSidList <- paste0(uiSidList[["_sid"]], "_", uiSidList[["_uid"]])
       }
     } else {
       uiSidList <- NULL
     }
+  }
+  if (length(baselineOption) && length(scenData$getRefScenMap(compRefId))) {
+    refSids <- normalizeSandboxSids(scenData$getRefScenMap(compRefId))
+    baselineOption$choices <- baselineOption$choices[order(match(sub("_.*$", "", baselineOption$choices), refSids))]
+    baselineOption$selected <- baselineOption$choices[1]
   }
   if (nrow(scenMetaDb) > maxNoScenToShow) {
     scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]],
@@ -199,9 +239,13 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   # by default, put most recently saved scenario first
   dbSidList <- formatScenList(scenMetaDbSubset, uid, "_stime", desc = TRUE)
-  if (length(dbSidList) || length(uiSidList)) {
+  loadScenSandboxOptionShown <<- FALSE
+  loadScenBaselineShown <<- FALSE
+  if (length(dbSidList) || length(uiSidList) || length(sandboxOption)) {
+    loadScenSandboxOptionShown <<- !is.null(sandboxOption)
+    loadScenBaselineShown <<- !is.null(baselineOption)
     showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
-      dbTagList = dbTagList, baseScenName = baseScenName
+      dbTagList = dbTagList, sandboxOption = sandboxOption, baselineOption = baselineOption
     )
     if (maxNoScenExceeded) {
       showHideEl(session, "#importScenMaxNoScen", 4000L)
@@ -335,7 +379,9 @@ observeEvent(input$btRefreshComp, {
     )) {
       return()
     }
-    views$duplicateSandboxConf(tabsetId)
+    if (tabsetId > 0L) {
+      views$duplicateSandboxConf(tabsetId)
+    }
   }
   sidsToLoad <- as.integer(scenIds[!sbScenId])
   if (length(config$scripts$base) && tabsetId > 0L) {
@@ -362,7 +408,10 @@ observeEvent(input$btRefreshComp, {
   )) {
     return()
   }
-  if (length(sidsToLoad)) {
+  if (tabsetId <= 0L) {
+    compMode <- if (tabsetId == 0L) "pivot" else config[["customCompareModules"]][[-tabsetId]][["id"]]
+    loadCompViews(refId, tabsetId, compMode)
+  } else if (length(sidsToLoad)) {
     inputDataSids <- scenData$getInputDataSids(sidsToLoad)
     inputDataSids[is.na(inputDataSids)] <- sidsToLoad[is.na(inputDataSids)]
     views$loadConf(
@@ -402,30 +451,35 @@ observeEvent(input$btRefreshComp, {
 # load scenario confirmed
 observeEvent(input$btLoadScenConfirm, {
   flog.debug("Confirm load scenario button clicked.")
-  sandboxScenId <- NULL
+  includeSandbox <- FALSE
   if (identical(isolate(input$miroSidebar), "scenarios") &&
     identical(isolate(input$tabsetLoadScen), "loadScenUI")) {
     scenSelected <- isolate(input$selLoadScenUI)
   } else {
     scenSelected <- isolate(input$selLoadScen)
+    includeSandbox <- !isInSolveMode && loadScenSandboxOptionShown &&
+      isTRUE(isolate(input$cbLoadScenSandbox))
   }
-  if (!length(scenSelected)) {
-    return()
-  }
-  if (!is.character(scenSelected)) {
+  if (length(scenSelected) && !is.character(scenSelected)) {
     flog.error("Invalid scenario id(s) selected. This is likely an attempt to tamper with the app!")
     return()
   }
   # selectize reports an empty string when nothing is selected
   scenSelected <- scenSelected[nzchar(scenSelected)]
-  if (!length(scenSelected)) {
+  if (!length(scenSelected) && !includeSandbox) {
     return()
   }
   sidsSelected <- lapply(strsplit(scenSelected, split = "_", fixed = TRUE), "[[", 1)
-  if (!length(scenMetaDb) ||
-    !all(unlist(sidsSelected, use.names = FALSE) %in% as.character(scenMetaDb[["_sid"]]))) {
+  if (length(sidsSelected) && (!length(scenMetaDb) ||
+    !all(unlist(sidsSelected, use.names = FALSE) %in% as.character(scenMetaDb[["_sid"]])))) {
     flog.error("Invalid scenario id(s) selected. This is likely an attempt to tamper with the app!")
     return()
+  }
+  if (includeSandbox) {
+    sidsSelected <- c(list("sb"), sidsSelected)
+  }
+  if (!isInSolveMode && loadScenBaselineShown) {
+    sidsSelected <- orderByBaseline(sidsSelected, parseBaselineSid(isolate(input$selLoadScenBaseline)))
   }
   loadIntoSandbox <<- FALSE
   sidsToLoad <<- sidsSelected
@@ -493,39 +547,56 @@ observeEvent(input$btBatchLoadSb, {
 })
 
 observeEvent(input$btBatchCompare, {
-  disableEl(session, "#btBatchCompare")
-  if (identical(input$btBatchCompare, "pivot")) {
+  batchCompare(input$btBatchCompare)
+})
+observeEvent(input$btBatchCompareConfirm, {
+  batchCompare(input$btBatchCompareConfirm,
+    includeSandbox = isTRUE(input$cbBatchCompareSandbox),
+    baselineSid = parseBaselineSid(input$selBatchCompareBaseline)
+  )
+})
+batchCompare <- function(compareMode, includeSandbox = FALSE, baselineSid = NULL) {
+  if (!is.character(compareMode) || length(compareMode) != 1L) {
+    flog.error("Invalid batch compare mode selected. This is likely an attempt to tamper with the app!")
+    return()
+  }
+  compareOptions <- getBatchCompareOptions(compareMode, length(sidsToLoad))
+  includeSandbox <- includeSandbox && compareOptions$sandbox && !"sb" %in% sidsToLoad
+  noScenToLoad <- length(sidsToLoad) + includeSandbox
+  if (identical(compareMode, "pivot")) {
     viewMode <- "pivotView"
     currentCompMode <<- "pivot"
-  } else if (identical(input$btBatchCompare, "tab")) {
+  } else if (identical(compareMode, "tab")) {
     viewMode <- "tabView"
     currentCompMode <<- "tab"
-  } else if (identical(input$btBatchCompare, "split")) {
+  } else if (identical(compareMode, "split")) {
     viewMode <- "splitView"
     currentCompMode <<- "split"
     sidInLeftSplit <- length(scenData$getRefScenMap("cmpSplitL"))
     sidInRightSplit <- length(scenData$getRefScenMap("cmpSplitR"))
-    if (length(sidsToLoad) > (2L - sum(sidInLeftSplit, sidInRightSplit))) {
+    if (noScenToLoad > (2L - sum(sidInLeftSplit, sidInRightSplit))) {
       flog.info("Closing currently open scenarios in split comparison mode to load new ones.")
       loadInLeftBoxSplit <<- TRUE
       closeScenSplitBox(2L)
-      if (identical(length(sidsToLoad), 2L)) {
+      if (identical(noScenToLoad, 2L)) {
         closeScenSplitBox(3L)
       }
     } else {
       loadInLeftBoxSplit <<- identical(sidInLeftSplit, 0L)
     }
-  } else if (identical(input$btBatchCompare, "aiCompare")) {
+  } else if (identical(compareMode, "aiCompare")) {
     viewMode <- "aiCompare"
     removeModal()
   } else {
-    viewMode <- input$btBatchCompare
+    viewMode <- compareMode
     if (!viewMode %in% names(config[["customCompareModules"]])) {
       flog.error("Invalid batch compare mode selected. This is likely an attempt to tamper with the app!")
       return()
     }
     currentCompMode <<- viewMode
   }
+  disableEl(session, "#btBatchCompare")
+  disableEl(session, "#btBatchCompareConfirm")
   scenIdNameMap <- character(0L)
   if (length(input$batchCompareNameCols)) {
     if (tryCatch(
@@ -577,12 +648,18 @@ observeEvent(input$btBatchCompare, {
   } else {
     scenData$setScenIdNameMap(scenIdNameMap)
   }
+  if (includeSandbox) {
+    sidsToLoad <<- c("sb", sidsToLoad)
+  }
+  if (compareOptions$baseline) {
+    sidsToLoad <<- orderByBaseline(sidsToLoad, baselineSid)
+  }
   pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   switchCompareMode(session, viewMode, length(sidsToLoad), config[["customCompareModules"]])
   rv$btOverwriteScen <- rv$btOverwriteScen + 1L
-})
+}
 
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug(
@@ -596,10 +673,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if (!length(sidsToLoad)) {
     return()
   }
-  isInMultiCompMode <- currentCompMode %in% c("pivot", names(config[["customCompareModules"]]))
-  if (!isInSolveMode && isInMultiCompMode && !"sb" %in% sidsToLoad) {
-    sidsToLoad <<- c("sb", sidsToLoad)
-  }
+  isInMultiCompMode <- !isInSolveMode && isMultiScenCompMode(currentCompMode)
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
 
   if (sum(!occupiedSidSlots) < length(sidsToLoad)) {
@@ -654,7 +728,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       sidsInTabComp[["sb"]] <- NULL
       if (length(sidsInTabComp)) {
         tabRefs <- startsWith(names(sidsInTabComp), "cmpTab_")
-        sidsInTabComp <- sidsToLoadVector %in% unlist(sidsInTabComp[tabRefs], use.names = FALSE)
+        sidsInTabComp <- sidsToLoadVector %in% normalizeSandboxSids(unlist(sidsInTabComp[tabRefs], use.names = FALSE))
         sidsToLoad <- sidsToLoad[!sidsInTabComp]
         sidsToLoadVector <- sidsToLoadVector[!sidsInTabComp]
       }
@@ -683,7 +757,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab, split nor a custom analysis mode. Please contact GAMS!.")
       return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
     } else {
-      refId <- paste0("cmpCustom_", config[["customCompareModules"]][[currentCompMode]][["id"]])
+      refId <- getMultiCompRefId(currentCompMode)
       viewsSids <- -config[["customCompareModules"]][[currentCompMode]][["idx"]]
       scenData$clear(refId)
       if (!is.null(dynamicUILoaded$dynamicTabsets[[refId]])) {
@@ -726,12 +800,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         }
         sandboxId <- which("sb" == sidsToLoadVector)[1]
         sidsToLoadVector <- sidsToLoadVector[-sandboxId]
-        views$duplicateSandboxConf(viewsSids[sandboxId])
+        if (!isInMultiCompMode) {
+          views$duplicateSandboxConf(viewsSids[sandboxId])
+        }
         if (length(config$scripts$base)) {
           scriptDataTmp <- scriptOutput$getResults()
         }
-        if (length(refId)) {
-          # for tab compare mode, we skip sandbox id in loop
+        if (length(refId) && !isInMultiCompMode) {
           viewsSids <- viewsSids[-sandboxId]
         }
         snameTmp <- paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix)
@@ -743,19 +818,21 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
             refId = refId,
             symNames = symToFetch
           )
-          if (identical(refId, "sb")) {
-            inputDataSids <- sidsToLoadVector
-          } else {
-            inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
-            inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
+          if (!isInMultiCompMode) {
+            if (identical(refId, "sb")) {
+              inputDataSids <- sidsToLoadVector
+            } else {
+              inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
+              inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
+            }
+            views$loadConf(
+              db$importDataset(
+                tableName = "_scenViews",
+                subsetSids = inputDataSids
+              ), isInSolveMode,
+              viewsSids, inputDataSids
+            )
           }
-          views$loadConf(
-            db$importDataset(
-              tableName = "_scenViews",
-              subsetSids = inputDataSids
-            ), isInSolveMode,
-            viewsSids, inputDataSids
-          )
         }
         scriptDataTmp <- append(
           db$loadScriptResults(sidsToLoadVector,
@@ -763,6 +840,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           ),
           scriptDataTmp, sandboxId - 1
         )
+      }
+      if (isInMultiCompMode) {
+        scenData$orderRef(refId, unlist(sidsToLoad, use.names = FALSE))
+        loadCompViews(refId, viewsSids, currentCompMode)
       }
     },
     error = function(e) {

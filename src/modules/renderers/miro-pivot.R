@@ -1232,6 +1232,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (readonlyViews) {
           disableEl(session, paste0("#", ns("saveView")))
         } else {
+          enableEl(session, paste0("#", ns("saveView")))
           views$registerUpdateCallback(session, updateViewList)
         }
 

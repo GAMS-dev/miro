@@ -516,6 +516,15 @@ output$batchLoadResults <- renderDT(
   }
 )
 
+showBatchLoadDialogWithCompareOptions <- function() {
+  scenRows <- match(sidsToLoad, batchLoadData[[1]])
+  showBatchLoadDialog(length(sidsToLoad),
+    customScripts = config$scripts$hcube,
+    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1]),
+    sandboxName = paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix),
+    baselineChoices = setNames(as.character(sidsToLoad), batchLoadData[[3L]][scenRows])
+  )
+}
 observeEvent(input$batchLoadSelected, {
   flog.debug("Button to load selected scenarios (Batch load) clicked.")
   if (!length(input$batchLoadResults_rows_selected)) {
@@ -524,10 +533,7 @@ observeEvent(input$batchLoadSelected, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
+  showBatchLoadDialogWithCompareOptions()
 })
 observeEvent(input$batchLoadAll, {
   flog.debug("Button to load all scenarios (Batch load) clicked.")
@@ -536,10 +542,7 @@ observeEvent(input$batchLoadAll, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
+  showBatchLoadDialogWithCompareOptions()
 })
 downloadBatchData <- function(file, sids, type) {
   if (!length(sids)) {

@@ -21,6 +21,10 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
       }
       private$updateCallbacks[[symName[[2]]]][[symName[[1]]]] <- callback
     },
+    setCompViewsScenId = function(viewsId, scenId) {
+      private$compViewsScenIds[[as.character(viewsId)]] <- as.character(scenId)
+      return(invisible(self))
+    },
     isReadonly = function(session) {
       symName <- private$getSymbolName(session)
       if (length(symName) == 2) {
@@ -40,6 +44,14 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
     rv = NULL,
     scenData = NULL,
     updateCallbacks = list("1" = list()),
+    compViewsScenIds = list(),
+    getCompViewsScenId = function(viewsId) {
+      scenId <- private$compViewsScenIds[[as.character(viewsId)]]
+      if (is.null(scenId)) {
+        return("1")
+      }
+      return(scenId)
+    },
     getSymbolName = function(session) {
       if (is.character(session) && identical(length(session), 1L)) {
         if (!tolower(session) %in% c(private$inputSymbols, private$outputSymbols)) {
@@ -67,7 +79,7 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
             "_customcomp_",
             customCompModeId
           ),
-          "1"
+          private$getCompViewsScenId(-private$customCompareModeConfig[[customCompModeId]][["idx"]])
         ))
       }
       id <- strsplit(id[1], "_", fixed = TRUE)[[1]]
@@ -98,7 +110,7 @@ ScenarioExtensions <- R6Class("ScenarioExtensions",
           }
           prefix <- ""
           if (identical(scenId, 0L)) {
-            scenId <- "1"
+            scenId <- private$getCompViewsScenId("0")
             prefix <- "_pivotcomp_"
           }
           return(c(
