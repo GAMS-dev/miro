@@ -58,6 +58,66 @@ export function evaluateBaselineCompData(refData, data, tableId, sessionId) {
   baselineCompareErrorManager.evaluateData(refData, data, tableId, sessionId);
 }
 
+export function refreshCompBaseline(wrapperSelector) {
+  const wrapper = $(wrapperSelector)[0];
+  const baselineSelect = wrapper ? $(wrapper).find('select')[0]?.selectize : undefined;
+  if (!baselineSelect) {
+    return;
+  }
+  const {
+    sbInput, sbLabel, scenInput, scenChoices,
+  } = wrapper.dataset;
+  const choices = [];
+  if (sbInput && $(`#${sbInput}`).is(':checked')) {
+    choices.push({ value: 'sb', label: sbLabel });
+  }
+  if (scenInput) {
+    const scenSelect = $(`#${scenInput}`)[0]?.selectize;
+    if (scenSelect) {
+      scenSelect.items.forEach((value) => {
+        choices.push({ value, label: scenSelect.options[value]?.label ?? value });
+      });
+    }
+  } else if (scenChoices) {
+    choices.push(...JSON.parse(scenChoices));
+  }
+  const previousValue = baselineSelect.getValue();
+  const newValue = choices.some((choice) => choice.value === previousValue)
+    ? previousValue : choices[0]?.value;
+  baselineSelect.clear(true);
+  baselineSelect.clearOptions(true);
+  baselineSelect.addOption(choices);
+  baselineSelect.refreshOptions(false);
+  baselineSelect.setValue(newValue ?? '');
+  $(wrapper).toggle(choices.length > 1);
+}
+
+export function batchCompareSelectMode(el) {
+  const {
+    mode, sandbox, baseline, title,
+  } = el.dataset;
+  if (sandbox !== 'true') {
+    Shiny.setInputValue('btBatchCompare', mode, { priority: 'event' });
+    return;
+  }
+  const $modal = $('#batchLoadModal');
+  $modal.find('.batch-load-content:visible').addClass('batch-compare-step1').hide();
+  $('#batchCompareSettingsTitle').text(title);
+  $('#batchCompareBaselineOuter').toggle(baseline === 'true');
+  $('#btBatchCompareConfirm').attr('data-mode', mode);
+  $modal.find('.batch-load-compare-content').show();
+}
+
+export function batchCompareBack() {
+  const $modal = $('#batchLoadModal');
+  $modal.find('.batch-load-compare-content').hide();
+  $modal.find('.batch-compare-step1').removeClass('batch-compare-step1').show();
+}
+
+export function batchCompareConfirm(el) {
+  Shiny.setInputValue('btBatchCompareConfirm', el.dataset.mode, { priority: 'event' });
+}
+
 export function slideToggleEl(data) {
   if (data.toggleIconDiv !== undefined) {
     if ($(data.id).is(':visible')) {
@@ -383,6 +443,12 @@ $(() => {
       }());
     });
   }
+  $(document).on('change', '#selLoadScen, #cbLoadScenSandbox', () => {
+    refreshCompBaseline('#loadScenBaselineWrapper');
+  });
+  $(document).on('change', '#cbBatchCompareSandbox', () => {
+    refreshCompBaseline('#batchCompareBaselineWrapper');
+  });
   $(document).on('click', '.activate-pivot-controls', function () {
     activateMiroPivotPresentation(this.dataset.id);
   });

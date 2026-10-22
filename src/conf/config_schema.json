@@ -4663,6 +4663,11 @@
           "options": {
             "description": "Additional options",
             "type": "object"
+          },
+          "selectBaseline": {
+            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario (default: false).",
+            "type": "boolean",
+            "default": false
           }
         },
         "required": [

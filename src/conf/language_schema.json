@@ -1321,7 +1321,15 @@
               "type": "string",
               "minLength": 1
             },
-            "baseScenLabel": {
+            "includeSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selBaseline": {
+              "type": "string",
+              "minLength": 1
+            },
+            "baselineDesc": {
               "type": "string",
               "minLength": 1
             },
@@ -1378,7 +1386,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 21
+          "minProperties": 23
         },
         "dialogNewCol": {
           "type": "object",
@@ -2110,6 +2118,18 @@
               "type": "string",
               "minLength": 1
             },
+            "compareSettingsTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "compareButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backButton": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenNameCols": {
               "type": "string",
               "minLength": 1
@@ -2199,7 +2219,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 24
+          "minProperties": 27
         },
         "aiBotDialog": {
           "type": "object",

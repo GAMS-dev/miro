@@ -702,8 +702,36 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
     }
   ))
 }
+genCompSandboxCheckbox <- function(id, sandboxName, checked = FALSE) {
+  checkboxInput(id,
+    sprintf(lang$nav$dialogLoadScen$includeSandbox, sandboxName),
+    value = checked, width = "100%"
+  )
+}
+genCompBaselineSelect <- function(wrapperId, inputId, choices, selected = NULL,
+                                  sandboxInputId = NULL, sandboxName = NULL,
+                                  scenInputId = NULL, scenChoices = NULL) {
+  tags$div(
+    id = wrapperId, class = "comp-baseline-wrapper",
+    style = if (length(choices) < 2L) "display:none;",
+    `data-sb-input` = sandboxInputId,
+    `data-sb-label` = sandboxName,
+    `data-scen-input` = scenInputId,
+    `data-scen-choices` = if (length(scenChoices)) {
+      toJSON(lapply(seq_along(scenChoices), function(i) {
+        list(value = unname(scenChoices[[i]]), label = names(scenChoices)[[i]])
+      }), auto_unbox = TRUE)
+    },
+    selectizeInput(inputId, lang$nav$dialogLoadScen$selBaseline,
+      choices,
+      selected = selected, multiple = FALSE, width = "100%",
+      options = scenListSelectizeOptions()
+    ),
+    tags$p(class = "help-block", lang$nav$dialogLoadScen$baselineDesc)
+  )
+}
 showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE,
-                               dbTagList = NULL, baseScenName = NULL) {
+                               dbTagList = NULL, sandboxOption = NULL, baselineOption = NULL) {
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if (isInSplitView && length(uiScenList)) {
@@ -717,22 +745,13 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       )
     )
   }
-  if (!noDBPanel && length(dbScenList)) {
+  if (!noDBPanel && (length(dbScenList) || length(sandboxOption))) {
     tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB,
       icon = icon("database"),
       value = "loadScenDb",
       tags$div(class = "space"),
-      if (length(baseScenName)) {
-        tagList(
-          tags$div(
-            tags$label(
-              class = "label-base-scen",
-              lang$nav$dialogLoadScen$baseScenLabel
-            ),
-            tags$span(class = "label label-default base-scen", baseScenName)
-          ),
-          tags$div(class = "small-space")
-        )
+      if (length(sandboxOption)) {
+        genCompSandboxCheckbox("cbLoadScenSandbox", sandboxOption$name, sandboxOption$checked)
       },
       selectizeInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
         dbScenList,
@@ -759,7 +778,19 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
           icon = icon("arrow-down-1-9"),
           class = "scen-sort-by scen-sort-by-selected"
         )
-      )
+      ),
+      if (length(baselineOption)) {
+        tagList(
+          tags$div(class = "space"),
+          genCompBaselineSelect("loadScenBaselineWrapper", "selLoadScenBaseline",
+            baselineOption$choices,
+            selected = baselineOption$selected,
+            sandboxInputId = "cbLoadScenSandbox",
+            sandboxName = sandboxOption$name,
+            scenInputId = "selLoadScen"
+          )
+        )
+      }
     )
   }
   showModal(modalDialog(
@@ -1282,7 +1313,24 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
   ))
 }
 # Batch Load module
-showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesForNaming = NULL) {
+compModeHasBaseline <- function(compMode) {
+  return(identical(compMode, "pivot") ||
+    isTRUE(config[["customCompareModules"]][[compMode]][["selectBaseline"]]))
+}
+getBatchCompareOptions <- function(compareModeId, noScen) {
+  showSandbox <- switch(compareModeId,
+    split = noScen < 2L,
+    tab = noScen < 10L,
+    aiCompare = FALSE,
+    TRUE
+  )
+  return(list(
+    sandbox = showSandbox,
+    baseline = showSandbox && compModeHasBaseline(compareModeId)
+  ))
+}
+showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesForNaming = NULL,
+                                sandboxName = NULL, baselineChoices = NULL) {
   if (length(customScripts)) {
     analysisTabset <- selectInput("selHcubeAnalysisScript", lang$nav$dialogBatchLoad$selAnalysisScript,
       setNames(
@@ -1313,6 +1361,20 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
         compareModesList[["tab"]] <- NULL
       }
     }
+    genCompareModeAttribs <- function(compareModeId) {
+      compareOptions <- getBatchCompareOptions(compareModeId, noScenariosToCompare)
+      list(
+        `data-mode` = compareModeId,
+        `data-sandbox` = tolower(compareOptions$sandbox),
+        `data-baseline` = tolower(compareOptions$baseline),
+        `data-title` = sprintf(
+          lang$nav$dialogBatchLoad$compareSettingsTitle,
+          noScenariosToCompare, compareModesList[[compareModeId]]
+        ),
+        onclick = "Miro.batchCompareSelectMode(this)"
+      )
+    }
+    compareModeAttribs <- setNames(lapply(names(compareModesList), genCompareModeAttribs), names(compareModesList))
     if (length(config$defCompMode) && config$defCompMode %in% names(compareModesList)) {
       defCompModeButton <- list(id = config$defCompMode, label = compareModesList[[config$defCompMode]])
       compareModesList[[config$defCompMode]] <- NULL
@@ -1320,12 +1382,11 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
       defCompModeButton <- list(id = "pivot", label = compareModesList[["pivot"]])
       compareModesList[["pivot"]] <- NULL
     }
-    defCompModeButton <- tags$button(
+    defCompModeButton <- do.call(tags$button, c(list(
       class = "btn btn-default", type = "button", id = "btBatchCompare",
       style = "flex-grow: 1;", # Removed inline margins breaking the group
-      onclick = paste0("Shiny.setInputValue('btBatchCompare','", defCompModeButton$id, "',{priority:'event'});"),
       defCompModeButton$label
-    )
+    ), compareModeAttribs[[defCompModeButton$id]]))
     return(tags$div(
       class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
       tags$div(
@@ -1343,11 +1404,10 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
               lapply(names(compareModesList), function(compareModeId) {
                 tags$li(
-                  tags$a(
-                    href = "#",
-                    onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModeId, "',{priority:'event'});"),
-                    compareModesList[[compareModeId]]
-                  )
+                  do.call(tags$a, c(
+                    list(href = "#", compareModesList[[compareModeId]]),
+                    compareModeAttribs[[compareModeId]]
+                  ))
                 )
               })
             )
@@ -1426,6 +1486,23 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               class = "batch-load-sb-content", style = "display:none;",
               lang$nav$dialogImport$descClearSandbox
             ),
+            if (length(sidsToLoad) <= 50L) {
+              tags$div(
+                class = "batch-load-compare-content", style = "display:none;",
+                tags$p(tags$strong(id = "batchCompareSettingsTitle")),
+                genCompSandboxCheckbox("cbBatchCompareSandbox", sandboxName),
+                tags$div(
+                  id = "batchCompareBaselineOuter",
+                  genCompBaselineSelect("batchCompareBaselineWrapper", "selBatchCompareBaseline",
+                    baselineChoices,
+                    selected = baselineChoices[1],
+                    sandboxInputId = "cbBatchCompareSandbox",
+                    sandboxName = sandboxName,
+                    scenChoices = baselineChoices
+                  )
+                )
+              )
+            },
             if (length(analysisTabset)) {
               tagList(
                 tags$div(
@@ -1526,6 +1603,18 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               class = "bt-remove batch-load-content batch-load-remove-content pull-left"
             ),
             actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
+            tags$button(
+              class = "btn btn-default batch-load-compare-content", type = "button",
+              style = "display:none;", onclick = "Miro.batchCompareBack()",
+              lang$nav$dialogBatchLoad$backButton
+            ),
+            tags$button(
+              id = "btBatchCompareConfirm",
+              class = "btn btn-default bt-highlight-1 bt-gms-confirm batch-load-compare-content",
+              type = "button", style = "display:none;",
+              onclick = "Miro.batchCompareConfirm(this)",
+              lang$nav$dialogBatchLoad$compareButton
+            ),
             if (identical(length(sidsToLoad), 1L)) {
               actionButton("btBatchLoadSbOverwrite",
                 lang$nav$dialogBatchLoad$interactiveButtonSb,

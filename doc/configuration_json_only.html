@@ -1411,7 +1411,12 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                       <span class="code">externalRendererId</span> field.
                       Additional R packages required for your comparison module
                       can be specified via the
-                      <span class="code">packages</span> field.
+                      <span class="code">packages</span> field. Set
+                      <span class="code">selectBaseline</span> to
+                      <span class="code">true</span> to let users select a
+                      baseline scenario when loading scenarios into your
+                      comparison module. The baseline scenario is always the
+                      first scenario passed to your renderer function.
                     </p>
                     <p>
                       Below is the full schema used to validate the
@@ -1469,6 +1474,11 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
         &quot;options&quot;:{
             &quot;description&quot;:&quot;Additional options&quot;,
             &quot;type&quot;:&quot;object&quot;
+        },
+        &quot;selectBaseline&quot;:{
+            &quot;description&quot;:&quot;Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario (default: false).&quot;,
+            &quot;type&quot;:&quot;boolean&quot;,
+            &quot;default&quot;:false
         }
       },
       &quot;required&quot;: [&quot;id&quot;, &quot;label&quot;]
@@ -1538,13 +1548,14 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                     <h6 class="api-header">Description</h6>
                     <p>
                       This method allows you to retrieve the data of the
-                      specified symbol for all loaded scenarios. The first
-                      element is always the sandbox scenario. To get the
-                      metadata (e.g. scenario name, scenario owner, etc.) of
-                      the different scenarios, use the
-                      <span class="code">getMetadata()</span> method. The order
-                      of the scenarios is the same for all symbols and the
-                      metadata.
+                      specified symbol for all loaded scenarios. If
+                      <span class="code">selectBaseline</span> is enabled for
+                      your module, the first element is the baseline scenario
+                      selected by the user. To get the metadata (e.g. scenario
+                      name, scenario owner, etc.) of the different scenarios,
+                      use the <span class="code">getMetadata()</span> method.
+                      The order of the scenarios is the same for all symbols
+                      and the metadata.
                     </p>
                     <h5>Get metadata</h5>
                     <div class="code-block">
