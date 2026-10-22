@@ -34,6 +34,7 @@ expect_error(app$get_js("$('#btBatchCompare+.dropdown-toggle').click()"), NA)
 Sys.sleep(1L)
 expect_true(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').text()==='Dashboard comparison view'"))
 expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').click();"), NA)
+confirmBatchCompareSettings(app)
 Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))

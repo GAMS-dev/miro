@@ -181,8 +181,9 @@ app$click(selector = "#btLoadScen")
 Sys.sleep(0.5)
 expect_options(
   getSelectizeOptions(app, "#selLoadScen"),
-  paste0(c("2_", "4_", "sb_"), currentUser)
+  paste0(c("2_", "4_"), currentUser)
 )
+expect_true(app$get_js("$('#cbLoadScenSandbox').is(':visible')"))
 app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 

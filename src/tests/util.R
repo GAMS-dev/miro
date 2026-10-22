@@ -645,3 +645,13 @@ registerModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName
   )
   stopifnot(identical(httr::status_code(resp), 201L))
 }
+confirmBatchCompareSettings <- function(app, includeSandbox = FALSE, baseline = NULL) {
+  app$wait_for_js("$('#btBatchCompareConfirm').is(':visible')", timeout = 5000L)
+  if (includeSandbox) {
+    app$set_inputs(cbBatchCompareSandbox = TRUE)
+  }
+  if (length(baseline)) {
+    app$set_inputs(selBatchCompareBaseline = baseline)
+  }
+  app$click(selector = "#btBatchCompareConfirm")
+}
