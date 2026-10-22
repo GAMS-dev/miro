@@ -144,6 +144,47 @@
                         importing them is no longer necessary.
                       </li>
                       <li>Spanish language support.</li>
+                      <li>
+                        Scenario comparison: Select a baseline scenario.
+                        <ul>
+                          <li>
+                            The sandbox scenario is no longer automatically
+                            included in the
+                            <a href="./start.html#compare-pivot">pivot view</a>
+                            and in custom comparison modes. Instead, include it
+                            explicitly when loading scenarios, also from the
+                            batch load module.
+                          </li>
+                          <li>
+                            Select one of the loaded scenarios as the baseline
+                            scenario. In the pivot view, views are taken from
+                            the baseline scenario.
+                          </li>
+                          <li>
+                            Use the new record
+                            <a href="./charts.html#baseline-comparison"
+                              ><span class="code">_baseline</span></a
+                            >
+                            in baseline comparisons of MIRO Pivot and
+                            dashboards to compare against the selected baseline
+                            scenario.
+                          </li>
+                          <li>
+                            <a
+                              href="./configuration_json_only.html#custom-compare-mode"
+                              >Custom</a
+                            >
+                            and
+                            <a
+                              href="./configuration_json_only.html#dashboard-compare"
+                              >dashboard</a
+                            >
+                            comparison modules can enable baseline selection
+                            via the new
+                            <span class="code">selectBaseline</span> option.
+                          </li>
+                        </ul>
+                      </li>
                     </ul>
                     <h3>Minor new features and improvements</h3>
                     <ul>
