@@ -649,6 +649,9 @@ batchCompare <- function(compareMode, includeSandbox = FALSE, baselineSid = NULL
   if (compareOptions$baseline) {
     sidsToLoad <<- orderByBaseline(sidsToLoad, baselineSid)
   }
+  loadScenariosIntoCompareMode(viewMode)
+}
+loadScenariosIntoCompareMode <- function(viewMode) {
   pivotCompRefreshAll <<- TRUE
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
@@ -657,6 +660,10 @@ batchCompare <- function(compareMode, includeSandbox = FALSE, baselineSid = NULL
 }
 
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
+  on.exit({
+    pivotCompSheetToOpen <<- NULL
+    pivotCompViewOverrides <<- list()
+  })
   flog.debug(
     "Loading and rendering scenarios: '%s'.",
     paste(sidsToLoad, collapse = ", ")
@@ -717,6 +724,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           tabId <- 1
         }
         symToFetch <- getSheetnamesByTabsetId("0")
+      }
+      if (length(pivotCompSheetToOpen)) {
+        symToFetch <- pivotCompSheetToOpen
       }
     } else if (identical(currentCompMode, "tab")) {
       sidsInTabComp <- scenData$getRefScenMap()
@@ -967,6 +977,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       {
         isInRefreshMode$set(TRUE)
         loadDynamicTabContent(session, 0L, symToFetch, initEnv = TRUE)
+        if (length(pivotCompSheetToOpen)) {
+          tabValues <- getCompareTabValues(pivotCompSheetToOpen)
+          updateTabsetPanel(session, "contentScen_0", tabValues[1])
+          if (length(tabValues) > 1L) {
+            updateTabsetPanel(session, tabValues[1], tabValues[2])
+          }
+        }
         hideEl(session, "#pivotCompBtWrapper")
         showEl(session, "#pivotCompScenWrapper")
         switchTab(session, "scenComp")

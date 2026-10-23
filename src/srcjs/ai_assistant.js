@@ -2,6 +2,7 @@
 
 import DOMPurify from 'dompurify';
 import { parseKatex } from './util';
+import { replaceAiChartBlocks, renderAiChartsIn } from './ai_chart';
 
 function copyTextWithFeedback(button, text) {
   navigator.clipboard.writeText(text).then(() => {
@@ -245,10 +246,14 @@ function hydrateAiMessageContent(el) {
   delete el.dataset.rawHtml;
   openAiMessageLinksInNewTab(el);
   parseKatex(el, { delimiters: AI_KATEX_DELIMITERS });
+  replaceAiChartBlocks(el);
   addCodeCopyButtons(el);
 }
 export function hydrateAiMessagesIn(root) {
   root.querySelectorAll('[data-raw-html]').forEach(hydrateAiMessageContent);
+  if (root.isConnected) {
+    renderAiChartsIn(root);
+  }
 }
 
 // drawer width: user-adjustable, remembered per browser (a convenience only, so
@@ -398,6 +403,10 @@ export function registerAiHandlers() {
   Shiny.addCustomMessageHandler('gms-showAiDrawer', (_message) => {
     showAiDrawer();
   });
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-hideAiDrawer', (_message) => {
+    hideAiDrawer();
+  });
   // re-run whenever the drawer (re)opens, and by tests to re-hydrate injected messages
   $(document).on('miro:aiDrawerShown', '#miroAiChatDrawer', function () {
     onAiChatShown(this);
@@ -465,6 +474,7 @@ export function registerAiHandlers() {
     const $newElement = $(content.html);
     hydrateAiMessagesIn($newElement.get(0));
     $('#miroAiChatSpinner').before($newElement);
+    renderAiChartsIn($newElement.get(0));
 
     const $chatLog = $('#miroAiChatLog');
     const textarea = document.getElementById('miroAiUserText');

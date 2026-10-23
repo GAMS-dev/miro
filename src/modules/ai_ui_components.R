@@ -17,6 +17,10 @@ renderMarkdownPreservingKatexDelimiters <- function(text) {
     vectorize_all = FALSE
   )
 }
+aiChartIdsIn <- function(text) {
+  chartIds <- stringi::stri_match_all_regex(text, "```mirachart[ \\t]*\\n\\s*(aichart_[a-z0-9]+)\\s*\\n[ \\t]*```")[[1]][, 2]
+  return(unique(chartIds[!is.na(chartIds)]))
+}
 renderAiChatBubble <- function(msg, lang, charLimit = 300) {
   isUser <- msg$role == "user"
   wrapperClass <- if (isUser) "miro-ai-chat-bubble-wrapper miro-ai-chat-user" else "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant"
@@ -47,6 +51,21 @@ renderAiChatBubble <- function(msg, lang, charLimit = 300) {
           NULL
         } else {
           renderMarkdownPreservingKatexDelimiters(msg$text)
+        },
+        `data-charts` = if (length(msg$charts)) {
+          jsonlite::toJSON(unname(lapply(msg$charts, function(chart) {
+            list(
+              id = chart$id, title = chart$title, type = chart$type, labels = I(chart$labels),
+              canOpenInPivot = isTRUE(chart$canOpenInPivot),
+              datasets = lapply(chart$datasets, function(dataset) {
+                c(
+                  list(label = dataset$label, data = I(dataset$data)),
+                  if (length(dataset$color)) list(color = dataset$color),
+                  if (length(dataset$colors)) list(colors = I(dataset$colors))
+                )
+              })
+            )
+          })), auto_unbox = TRUE, na = "null", digits = NA)
         },
         if (isUser) {
           msg$text
@@ -417,8 +436,8 @@ renderAiChatLogContent <- function(chatHistory, lang, contextIsSandbox = TRUE) {
 }
 # Base mode: chat drawer that slides in from the right and overlays the content.
 # The chat log is filled by the server whenever the drawer is opened.
-renderAiChatDrawer <- function(lang, supportedModels) {
-  tags$aside(
+renderAiChatDrawer <- function(lang, supportedModels, chartPalette = defaultChartColors) {
+  htmltools::attachDependencies(tags$aside(
     id = "miroAiChatDrawer",
     class = "miro-ai-assistant-drawer miro-ai-drawer-overlay",
     role = "dialog",
@@ -460,17 +479,22 @@ renderAiChatDrawer <- function(lang, supportedModels) {
     ),
     tags$div(
       class = "miro-ai-assistant-drawer-body",
-      renderAiChatWindow(lang, supportedModels)
+      renderAiChatWindow(lang, supportedModels, chartPalette = chartPalette)
     )
-  )
+  ), htmlwidgets::getDependency("chartjs", "chartjs"))
 }
-renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL, userInputPlaceholderKey = "userTextPlaceholder") {
+renderAiChatWindow <- function(lang, supportedModels, chatHistory = NULL, renderApplyCodeBtn = FALSE, selectedModel = NULL,
+                               userInputPlaceholderKey = "userTextPlaceholder", chartPalette = defaultChartColors) {
   tagList(
     tags$div(
       id = "miroAiChatLog",
       class = "miro-ai-chat-log",
       `data-activity-group-label` = lang$toolActivityGroupCount,
       `data-copy-label` = lang$btCopy,
+      `data-chart-download-label` = lang$btDownloadChart,
+      `data-chart-unavailable-label` = lang$chartUnavailable,
+      `data-chart-open-label` = lang$btOpenChartInPivot,
+      `data-chart-palette` = jsonlite::toJSON(chartPalette),
       lapply(chatHistory, function(item) renderAiChatItem(item, lang)),
       genSpinner("miroAiChatSpinner",
         hidden = TRUE, absolute = FALSE,

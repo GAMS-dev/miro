@@ -370,7 +370,8 @@ Use `createChart` where a chart clarifies a comparison or trend.
           outputTokens = result$outputTokens,
           newSessionId = aiProvider$sessionId,
           newHistory = aiProvider$history,
-          pendingInputChanges = aiAdapter$getPendingInputChanges()
+          pendingInputChanges = aiAdapter$getPendingInputChanges(),
+          charts = aiAdapter$getCharts()
         ))
       },
       userInput = userInput,
@@ -454,6 +455,7 @@ observeEvent(input$miroAiUserText, {
   mAiActivityFile <<- tempfile(pattern = "miro_ai_activity_", fileext = ".json")
   aiActivityCursor <<- 0L
   aiTaskRunning(TRUE)
+  aiAssistantState$requestIsSandbox <<- isTRUE(aiAssistantState$contextIsSandbox)
   aiTask$invoke(
     userInput = modelInput,
     dbConnProvider = dbConnProvider,
@@ -501,13 +503,22 @@ observe({
   # catch any activity written between the last poll and completion, so it
   # is never missing from the chat even though the request already finished
   flushAiActivity()
-  aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "model", text = aiOutput)
+  modelMessage <- list(role = "model", text = aiOutput)
+  if (length(result$charts)) {
+    aiAssistantState$charts[names(result$charts)] <<- lapply(result$charts, function(chart) {
+      chart$isSandbox <- aiAssistantState$requestIsSandbox
+      chart$canOpenInPivot <- !is.null(getAiChartPivotTarget(chart))
+      return(chart)
+    })
+  }
+  chartIds <- intersect(aiChartIdsIn(aiOutput), names(aiAssistantState$charts))
+  if (length(chartIds)) {
+    modelMessage$charts <- aiAssistantState$charts[chartIds]
+  }
+  aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- modelMessage
   session$sendCustomMessage(
     "gms-addAiChatBubble",
-    list(html = as.character(renderAiChatBubble(
-      list(role = "model", text = aiOutput),
-      lang$nav$aiBotDialog
-    )), role = "model")
+    list(html = as.character(renderAiChatBubble(modelMessage, lang$nav$aiBotDialog)), role = "model")
   )
   if (!is.null(result)) {
     if (length(result$pendingInputChanges)) {
@@ -518,6 +529,70 @@ observe({
     aiAssistantState$inputTokens <<- aiAssistantState$inputTokens + result$inputTokens
     aiAssistantState$outputTokens <<- aiAssistantState$outputTokens + result$outputTokens
     setAiTokenInfo()
+  }
+})
+getAiChartPivotTarget <- function(chart) {
+  sheetName <- chart$symbolName
+  view <- chart$view
+  isScalar <- sheetName %in% c(ioConfig$modelOut[[scalarsOutName]]$symnames, ioConfig$modelIn[[scalarsFileName]]$symnames) ||
+    (sheetName %in% names(modelIn) && !length(modelIn[[sheetName]]$headers))
+  if (isScalar && is.null(getCompareTabValues(sheetName))) {
+    sheetName <- if (sheetName %in% ioConfig$modelOut[[scalarsOutName]]$symnames) scalarsOutName else scalarsFileName
+    view$filter$scalar <- chart$symbolName
+    view$aggregations <- c(view$aggregations, list(description = NULL))
+  }
+  if (is.null(getCompareTabValues(sheetName))) {
+    return(NULL)
+  }
+  return(list(sheetName = sheetName, view = view))
+}
+openAiChartInPivot <- function(chart) {
+  pivotTarget <- getAiChartPivotTarget(chart)
+  if (is.null(pivotTarget)) {
+    return(showErrorMsg(lang$nav$aiBotDialog$btOpenChartInPivot, lang$nav$aiBotDialog$chartNotInPivot))
+  }
+  sheetName <- pivotTarget$sheetName
+  view <- pivotTarget$view
+  sidsToLoad <<- if (isTRUE(chart$isSandbox)) list("sb") else as.list(as.character(chart$sids))
+  if (length(chart$baselineSid) && !isTRUE(chart$isSandbox)) {
+    sidsToLoad <<- orderByBaseline(sidsToLoad, as.character(chart$baselineSid))
+    view$baselineComparison$record <- baselineScenPlaceholder
+  }
+  pivotCompViewOverrides[[sheetName]] <<- view
+  pivotCompSheetToOpen <<- sheetName
+  currentCompMode <<- "pivot"
+  scenData$setScenIdNameMap(character(0L))
+  session$sendCustomMessage("gms-hideAiDrawer", list())
+  loadScenariosIntoCompareMode("pivotView")
+}
+observeEvent(input$miroAiOpenChart, {
+  chartId <- input$miroAiOpenChart
+  if (!is.character(chartId) || length(chartId) != 1L || is.null(aiAssistantState$charts[[chartId]])) {
+    flog.error("AI assistant: Invalid chart id received. This is likely an attempt to tamper with the app!")
+    return()
+  }
+  flog.debug("AI assistant: open chart in pivot view requested.")
+  if (!length(scenData$getRefScenMap("cmpPivot"))) {
+    return(openAiChartInPivot(aiAssistantState$charts[[chartId]]))
+  }
+  aiAssistantState$pendingChartId <<- chartId
+  showModal(modalDialog(
+    title = lang$nav$aiBotDialog$btOpenChartInPivot,
+    lang$nav$aiBotDialog$openChartReplaceDesc,
+    footer = tagList(
+      modalButton(lang$nav$dialogLoadScen$cancelButton),
+      actionButton("btAiOpenChartConfirm", lang$nav$aiBotDialog$btOpenChartReplace,
+        class = "bt-highlight-1 bt-gms-confirm"
+      )
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+})
+observeEvent(input$btAiOpenChartConfirm, {
+  chartId <- aiAssistantState$pendingChartId
+  aiAssistantState$pendingChartId <<- NULL
+  if (length(chartId) && !is.null(aiAssistantState$charts[[chartId]])) {
+    openAiChartInPivot(aiAssistantState$charts[[chartId]])
   }
 })
 updateAiInputChangeCard <- function(historyIdx, status, statusDetail = NULL) {
@@ -969,6 +1044,7 @@ observeEvent(input$btMiroAiClearChat, {
   aiAssistantState$changeGroupIndex <<- list()
   aiAssistantState$changeGroupOf <<- list()
   aiAssistantState$changeNotes <<- character(0L)
+  aiAssistantState$charts <<- list()
   setContent(session, "#miroAiChatLog",
     as.character(renderAiChatLogContent(aiAssistantState$chatHistory, lang$nav$aiBotDialog,
       contextIsSandbox = aiAssistantState$contextIsSandbox

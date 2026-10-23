@@ -41,8 +41,32 @@ getSheetnamesByTabsetId <- function(tabsetId) {
   }
   return(sheetNames[tabId])
 }
+getCompareTabValues <- function(sheetName, tabsetId = 0L) {
+  if (sheetName %in% config[["hiddenCompareSymbols"]]) {
+    return(NULL)
+  }
+  sheetId <- match(sheetName, names(modelOut))
+  tabGroups <- outputTabs
+  groupOffset <- 0L
+  if (is.na(sheetId)) {
+    sheetId <- if (identical(sheetName, scalarsFileName)) 0L else match(sheetName, names(modelIn))
+    tabGroups <- scenInputTabs
+    groupOffset <- length(outputTabs)
+  }
+  groupIdx <- match(TRUE, vapply(tabGroups, function(ids) sheetId %in% ids, logical(1L)))
+  if (is.na(groupIdx)) {
+    return(NULL)
+  }
+  groupValue <- paste0("contentScen_", tabsetId, "_", groupIdx + groupOffset)
+  if (!isGroupOfSheets[[groupIdx + groupOffset]]) {
+    return(groupValue)
+  }
+  return(c(groupValue, paste0(groupValue, "_", match(sheetId, tabGroups[[groupIdx]]))))
+}
 getPivotCompGraphConfig <- function(sheetName) {
-  if (sheetName %in% names(config$pivotCompSettings$symbolConfig)) {
+  if (length(pivotCompViewOverrides[[sheetName]])) {
+    graphOptionsTmp <- c(pivotCompViewOverrides[[sheetName]], list(resetOnInit = TRUE))
+  } else if (sheetName %in% names(config$pivotCompSettings$symbolConfig)) {
     graphOptionsTmp <- config$pivotCompSettings$symbolConfig[[sheetName]]
   } else {
     graphOptionsTmp <- NULL

@@ -1864,6 +1864,10 @@ if (!is.null(errMsg)) {
           changeGroupOf = list(),
           # what the user did with them, relayed to the model on the next message
           changeNotes = character(0L),
+          # charts created by the assistant: chartId -> chart
+          charts = list(),
+          pendingChartId = NULL,
+          requestIsSandbox = FALSE,
           chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
         )
       } else {
@@ -2074,6 +2078,8 @@ if (!is.null(errMsg)) {
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       pivotCompRefreshAll <- FALSE
+      pivotCompViewOverrides <- list()
+      pivotCompSheetToOpen <- NULL
       loadScenSandboxOptionShown <- FALSE
       loadScenBaselineShown <- FALSE
 
@@ -2517,7 +2523,9 @@ if (!is.null(errMsg)) {
 
     ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
     if (isTRUE(config$activateModules$aiAssistant)) {
-      ui <- tagAppendChild(ui, renderAiChatDrawer(lang$nav$aiBotDialog, config$aiAssistant$supportedModels))
+      ui <- tagAppendChild(ui, renderAiChatDrawer(lang$nav$aiBotDialog, config$aiAssistant$supportedModels,
+        chartPalette = if (length(config$pivotCompSettings$customChartColors)) config$pivotCompSettings$customChartColors else defaultChartColors
+      ))
     }
 
     app <- shinyApp(ui = ui, server = server)
