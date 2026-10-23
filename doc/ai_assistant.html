@@ -517,6 +517,47 @@
                 </section>
                 <!--//doc-section-->
 
+                <section id="charts" class="doc-section">
+                  <h2 class="section-title">Charts</h2>
+                  <div class="section-block">
+                    <p>
+                      Where a chart makes a comparison or trend easier to grasp
+                      - e.g. "compare the shipments per plant across all
+                      scenarios" - Mira adds one to its answer. Charts work
+                      like a
+                      <a href="./charts.html#pivot-chart">MIRO Pivot</a>: Mira
+                      only decides which symbol and scenarios to show, how to
+                      arrange the dimensions (categories and series), which
+                      values to filter and which dimensions to aggregate. The
+                      values themselves are always read from the scenario
+                      database by MIRO, never written by the model, so a chart
+                      shows exactly what is in our data.
+                    </p>
+                    <p>
+                      Charts use the colors configured for the pivot view
+                      comparison mode (or the MIRO default palette). We can
+                      also ask Mira for specific colors, e.g. "show the oil
+                      price shock scenario in red". These colors are kept when
+                      the chart is opened in the pivot view.
+                    </p>
+                    <p>
+                      Each chart can be downloaded as PNG. For symbols shown in
+                      the pivot view comparison mode, the
+                      <i>Open in pivot view</i> button loads the same scenarios
+                      into the
+                      <a href="./start.html#compare-pivot">pivot view</a>
+                      comparison mode and opens the chart's symbol with the
+                      same layout, so we can explore the data further - change
+                      filters, switch the chart type or look at the underlying
+                      table. A comparison against a baseline scenario is
+                      carried over as well. If scenarios are already loaded in
+                      the pivot view, we are asked before they are replaced.
+                    </p>
+                  </div>
+                  <!--//section-block-->
+                </section>
+                <!--//doc-section-->
+
                 <section id="how-it-works" class="doc-section">
                   <h2 class="section-title">How Mira Works</h2>
                   <div class="section-block">
@@ -565,7 +606,10 @@
                       symbol, optionally filtered, grouped, or aggregated),
                       reads the result, and either answers or queries again -
                       so it only ever sees the specific slices of data it asked
-                      for, not the scenario as a whole.
+                      for, not the scenario as a whole. Charts are created the
+                      same way: the model describes the chart, MIRO reads and
+                      aggregates the data, and the values are passed straight
+                      to the chart without going through the model.
                     </p>
                     <p>
                       Every query is checked against the scenarios we currently
@@ -691,6 +735,7 @@
                   <a class="nav-link scrollto" href="#changing-input-data"
                     >Changing Input Data</a
                   >
+                  <a class="nav-link scrollto" href="#charts">Charts</a>
                   <a class="nav-link scrollto" href="#how-it-works"
                     >How Mira Works</a
                   >

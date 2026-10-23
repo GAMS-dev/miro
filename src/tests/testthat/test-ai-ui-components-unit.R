@@ -475,3 +475,47 @@ test_that("renderAiChatItem dispatches group items", {
   html <- as.character(renderAiChatItem(list(role = "inputChangeGroup", group = mockGroup()), mockGroupLang))
   expect_match(html, "miro-ai-change-group", fixed = TRUE)
 })
+
+test_that("aiChartIdsIn finds the charts embedded in an answer", {
+  expect_identical(
+    aiChartIdsIn("A\n```mirachart\naichart_abc123\n```\nB\n```mirachart\naichart_abc123\n```\n```r\naichart_x\n```"),
+    "aichart_abc123"
+  )
+  expect_identical(aiChartIdsIn("no charts"), character(0L))
+})
+
+getBubbleCharts <- function(bubble) {
+  chartsJson <- tagQuery(bubble)$find(".miro-ai-chat-content-html")$selectedTags()[[1]]$attribs[["data-charts"]]
+  return(if (length(chartsJson)) jsonlite::fromJSON(chartsJson, simplifyVector = FALSE))
+}
+test_that("renderAiChatBubble passes the chart data of an answer to the client", {
+  chart <- list(
+    id = "aichart_abc123", title = "Cost", type = "bar", labels = "EU",
+    datasets = list(list(label = "Base", data = NA_real_, color = "#d62728")), view = list(rows = "region"), sids = 1L
+  )
+  bubble <- renderAiChatBubble(
+    list(role = "model", text = "```mirachart\naichart_abc123\n```", charts = list(aichart_abc123 = chart)),
+    mockLang
+  )
+  charts <- getBubbleCharts(bubble)
+  expect_identical(charts[[1]]$id, "aichart_abc123")
+  expect_identical(charts[[1]]$labels, list("EU"))
+  expect_identical(charts[[1]]$datasets[[1]]$data, list(NULL))
+  expect_identical(charts[[1]]$datasets[[1]]$color, "#d62728")
+  expect_null(charts[[1]]$view)
+  expect_false(charts[[1]]$canOpenInPivot)
+  chart$datasets[[1]]$colors <- c(NA, "#d62728")
+  bubble <- renderAiChatBubble(list(role = "model", text = "", charts = list(aichart_abc123 = chart)), mockLang)
+  charts <- getBubbleCharts(bubble)
+  expect_identical(charts[[1]]$datasets[[1]]$colors, list(NULL, "#d62728"))
+  bubble <- renderAiChatBubble(list(role = "model", text = "No chart"), mockLang)
+  expect_null(getBubbleCharts(bubble))
+})
+
+test_that("renderAiChatWindow passes the chart palette to the client", {
+  chartPalette <- function(...) {
+    jsonlite::fromJSON(renderAiChatWindow(mockLang, list(), ...)[[1]]$attribs[["data-chart-palette"]])
+  }
+  expect_identical(chartPalette(), defaultChartColors)
+  expect_identical(chartPalette(chartPalette = c("#111111", "#222222")), c("#111111", "#222222"))
+})

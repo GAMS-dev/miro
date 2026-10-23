@@ -161,6 +161,47 @@ expect_equal(app$get_js("$('#miroAiChatLog [data-raw-html]').length;"), 0)
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex').length;"), 3)
 expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex-error').length;"), 0)
 
+app$run_js(
+  "window.__miroAddChartBubble = function (canOpenInPivot) {
+    var $bubble = $(
+      '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
+      '<div class=\"miro-ai-chat-bubble\">' +
+      '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
+      '</div></div>'
+    );
+    $bubble.find('.miro-ai-chat-content-html')
+      .attr('data-raw-html', '<pre><code class=\"language-mirachart\">aichart_test\\n</code></pre>' +
+        '<pre><code class=\"language-mirachart\">aichart_unknown</code></pre>')
+      .attr('data-charts', JSON.stringify([{ id: 'aichart_test', title: 'Cost', type: 'stackedbar', canOpenInPivot: canOpenInPivot,
+        labels: ['<img src=x onerror=\"window.__miroXssFired=true\">', 'b'],
+        datasets: [{ label: 'Base', data: [1, null] }, { label: 'High', data: [2, 3] }] }]));
+    $('#miroAiChatLog').prepend($bubble);
+  };
+  $('#miroAiChatLog').empty();
+  window.__miroAddChartBubble(true);
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart-unavailable').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog pre').length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart .bt-export-canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart button').length;"), 1)
+expect_true(app$get_js("Chart.getChart($('#miroAiChatLog .miro-ai-chart canvas')[0]).options.scales.y.stacked;"))
+expect_equal(app$get_js("Chart.getChart($('#miroAiChatLog .miro-ai-chart canvas')[0]).data.datasets.length;"), 2)
+expect_false(app$get_js("window.__miroXssFired;"))
+expect_equal(app$get_js("document.querySelectorAll('#miroAiChatLog img').length;"), 0)
+
+app$run_js(
+  "$('#miroAiChatLog').empty();
+  window.__miroAddChartBubble(false);
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("Object.values(Chart.instances).filter(function (chart) { return !chart.canvas.isConnected; }).length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart button').length;"), 0)
+
 # closing the drawer does not error out and leaves the chat ready for the next request
 app$click(selector = "#miroAiChatDrawer .miro-ai-close-drawer-btn")
 Sys.sleep(1)
