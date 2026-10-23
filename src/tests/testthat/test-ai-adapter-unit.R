@@ -3,7 +3,11 @@ library(DBI)
 library(RSQLite)
 library(jsonlite)
 
+library(dplyr)
+library(tidyr)
+
 source("../../components/ai_adapter.R")
+source("../../components/render_util.R")
 
 # Mock DbSchema class to simulate the schema behavior
 MockDbSchema <- R6Class("MockDbSchema",
@@ -1278,5 +1282,232 @@ test_that("describeToolCall returns NULL when the tool arguments cannot be parse
 
   expect_null(adapter$describeToolCall("queryScenarioDatabase", "not-json{{", "{}"))
 
+  DBI::dbDisconnect(env$conn)
+})
+
+setup_chart_env <- function() {
+  env <- setup_test_env()
+  env$adapter$setAllowedSids(c(1, 2, 3))
+  env$adapter$getSystemMetadata()
+  env
+}
+
+test_that("createChart pivots and aggregates the data of the requested scenarios", {
+  env <- setup_chart_env()
+  res <- jsonlite::fromJSON(env$adapter$createChart(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"),
+    chartType = "bar", rows = list("region"), cols = list("_scenName")
+  )))
+  expect_equal(res$series, c("Base", "High Demand"))
+  chart <- env$adapter$getCharts()[[res$chartId]]
+  expect_identical(chart$labels, c("EU", "NA"))
+  expect_equal(chart$datasets[[1]]$data, c(150, 100))
+  expect_equal(chart$datasets[[2]]$data, c(NA, 200))
+  expect_identical(names(chart$view$aggregations), "year")
+  expect_identical(chart$sids, c(1L, 2L))
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart filters dimensions and compares against a baseline scenario", {
+  env <- setup_chart_env()
+  res <- jsonlite::fromJSON(env$adapter$createChart(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"),
+    chartType = "bar", rows = list("_scenName"),
+    filters = list(list(column = "region", values = list("NA"))),
+    baselineScenarioName = "Base", baselineMetric = "absolute difference"
+  )))
+  chart <- env$adapter$getCharts()[[res$chartId]]
+  expect_identical(chart$labels, c("Base", "High Demand"))
+  expect_equal(chart$datasets[[1]]$data, c(0, 100))
+  expect_identical(chart$view$filter, list(region = "NA"))
+  expect_identical(chart$baselineSid, 1L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart rejects invalid charts with helpful errors", {
+  env <- setup_chart_env()
+  createChartError <- function(args) {
+    jsonlite::fromJSON(env$adapter$createChart(modifyList(
+      list(symbolName = "demand", scenarioNames = "Base", chartType = "bar"), args
+    )))$error
+  }
+  expect_match(createChartError(list(rows = list("country"))), "Unknown dimension")
+  expect_match(createChartError(list(rows = list("region"), cols = list("region"))), "either in `rows` or in `cols`")
+  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "_scenName", values = list("Base"))))), "scenarioNames")
+  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "region", values = list("Asia"))))), "No data for value")
+  expect_match(createChartError(list(rows = list("region"), chartType = "radar")), "chartType")
+  env$adapter$setAllowedSids(1)
+  expect_match(createChartError(list(rows = list("region"), scenarioNames = "High Demand")), "Access Denied")
+  expect_length(env$adapter$getCharts(), 0L)
+  DBI::dbDisconnect(env$conn)
+})
+
+createChartAdapter <- function(data, headers, sids = c(1, 2)) {
+  ChartDbSchema <- R6Class("ChartDbSchema",
+    inherit = MockDbSchema,
+    public = list(getDbTableNames = function() "sym")
+  )
+  env <- setup_test_env()
+  DBI::dbWriteTable(env$conn, "data_sym", data)
+  env$adapter <- AIToolAdapter$new(
+    dbSchema = ChartDbSchema$new(), conn = env$conn,
+    ioConfig = list(modelIn = list(), modelOut = list(sym = list(alias = "Sym", symtype = "parameter", headers = headers)))
+  )
+  env$adapter$setAllowedSids(sids)
+  env$adapter$getSystemMetadata()
+  env
+}
+createTestChart <- function(env, args) {
+  res <- jsonlite::fromJSON(env$adapter$createChart(modifyList(
+    list(symbolName = "sym", scenarioNames = c("Base", "High Demand"), chartType = "bar"), args
+  )))
+  if (length(res$error)) {
+    return(res$error)
+  }
+  return(c(env$adapter$getCharts()[[res$chartId]], list(rowsUsed = res$rows)))
+}
+yearHeaders <- list(region = list(type = "set"), year = list(type = "set"), quantity = list(type = "numeric"))
+yearData <- tibble::tibble(
+  `_sid` = c(1, 1, 1, 1, 2, 2),
+  region = c("EU", "EU", "NA", "NA", "EU", "NA"),
+  year = c("2024", "2025", "2024", "2025", "2024", "2025"),
+  quantity = c(1, 2, 3, 4, 10, 20)
+)
+
+test_that("createChart aggregates and filters like MIRO Pivot", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chart <- createTestChart(env, list(rows = list("region"), aggregationFunction = "mean", scenarioNames = "Base"))
+  expect_equal(chart$datasets[[1]]$data, c(1.5, 3.5))
+  expect_identical(chart$datasets[[1]]$label, "Sym")
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"),
+    filters = list(list(column = "year", values = list("2025")))
+  ))
+  expect_equal(chart$datasets[[1]]$data, c(2, 4))
+  expect_equal(chart$datasets[[2]]$data, c(NA, 20))
+  expect_identical(chart$view$filter, list(year = "2025"))
+  chart <- createTestChart(env, list(
+    rows = list("year", "region"), scenarioNames = "Base",
+    filters = list(list(column = "year", values = list("2024", "2025")))
+  ))
+  expect_identical(chart$rowsUsed, c("region", "year"))
+  expect_identical(chart$labels, c("EU\u20242024", "EU\u20242025", "NA\u20242024", "NA\u20242025"))
+  chart <- createTestChart(env, list(rows = list(), cols = list("region"), scenarioNames = "Base"))
+  expect_identical(chart$labels, "Sym")
+  expect_identical(vapply(chart$datasets, "[[", character(1L), "label"), c("EU", "NA"))
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart compares symbols with any value column name against a baseline", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"),
+    baselineScenarioName = "Base", baselineMetric = "percentage difference"
+  ))
+  expect_equal(chart$datasets[[2]]$data, c(700 / 3, 1300 / 7))
+  expect_identical(chart$baselineSid, 1L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart applies custom series colors and passes them to the pivot view", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"), title = "Demand", colors = list(`High Demand` = "#d62728")
+  ))
+  expect_null(chart$datasets[[1]]$color)
+  expect_identical(chart$datasets[[2]]$color, "#d62728")
+  expect_identical(chart$view$chartOptions, list(
+    title = "Demand", customChartColors = list(`High Demand` = c("#d62728", "#d62728"))
+  ))
+  expect_length(createTestChart(env, list(rows = list("region"), scenarioNames = "Base"))$view$chartOptions, 0L)
+  expect_match(createTestChart(env, list(rows = list("region"), colors = list(Unknown = "#d62728"))), "Valid series: Sym.", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), colors = list(Sym = "red"))), "#rrggbb", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), colors = list("#d62728"))), "#rrggbb", fixed = TRUE)
+  chart <- createTestChart(env, list(rows = list("region"), scenarioNames = "Base", colors = list(Sym = "#d62728")))
+  expect_identical(chart$datasets[[1]]$color, "#d62728")
+  expect_length(chart$view$chartOptions$customChartColors, 1L)
+  expect_false(is.na(names(chart$view$chartOptions$customChartColors)))
+  chart <- createTestChart(env, list(
+    rows = list("region", "year"), scenarioNames = "Base", chartType = "pie", colors = setNames(list("#d62728"), "NA\u20242025")
+  ))
+  expect_identical(chart$datasets[[1]]$colors, c(NA, NA, NA, "#d62728"))
+  expect_identical(chart$view$chartOptions$customChartColors, list(NA.2025 = c("#d62728", "#d62728")))
+  expect_match(createTestChart(env, list(rows = list("region"), chartType = "pie", colors = list(Sym = "#d62728"))), "Valid categories: EU, NA.", fixed = TRUE)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart charts symbols with several numeric columns via the Hdr dimension", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = c(1, 1), arc = c("a", "b"), level = c(5, 7), marginal = c(0, 1)),
+    list(arc = list(type = "set"), level = list(type = "numeric"), marginal = list(type = "numeric")),
+    sids = 1
+  )
+  chart <- createTestChart(env, list(scenarioNames = "Base", rows = list("arc"), cols = list("Hdr")))
+  expect_identical(vapply(chart$datasets, "[[", character(1L), "label"), c("level", "marginal"))
+  expect_equal(chart$datasets[[2]]$data, c(0, 1))
+  chart <- createTestChart(env, list(
+    scenarioNames = "Base", rows = list("arc"),
+    filters = list(list(column = "Hdr", values = list("level")))
+  ))
+  expect_equal(chart$datasets[[1]]$data, c(5, 7))
+  expect_identical(chart$view$filter, list(Hdr = "level"))
+  expect_match(createTestChart(env, list(scenarioNames = "Base", rows = list("arc"))), "several numeric columns")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart rejects symbols whose dimension names clash with the pivot columns", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = 1, value = "a", quantity = 1),
+    list(value = list(type = "set"), quantity = list(type = "numeric"))
+  )
+  expect_match(createTestChart(env, list(rows = list("value"), scenarioNames = "Base")), "clash", fixed = TRUE)
+  DBI::dbDisconnect(env$conn)
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = 1, Hdr = "a", level = 1, marginal = 2),
+    list(Hdr = list(type = "set"), level = list(type = "numeric"), marginal = list(type = "numeric"))
+  )
+  expect_match(createTestChart(env, list(rows = list("Hdr"), scenarioNames = "Base")), "clash", fixed = TRUE)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart charts scalars per scenario and validates baseline arguments", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = c(1, 2), sym = c(3, 5)),
+    list(sym = list(type = "numeric"))
+  )
+  chart <- createTestChart(env, list(rows = list("_scenName")))
+  expect_identical(chart$labels, c("Base", "High Demand"))
+  expect_equal(chart$datasets[[1]]$data, c(3, 5))
+  expect_match(createTestChart(env, list(rows = list("_scenName"), baselineMetric = "normalization")), "must be one of `scenarioNames`")
+  chart <- createTestChart(env, list(rows = list("_scenName"), baselineScenarioName = "Base", baselineMetric = "none"))
+  expect_equal(chart$datasets[[1]]$data, c(3, 5))
+  expect_null(chart$view$baselineComparison)
+  expect_match(createTestChart(env, list(rows = list("_scenName"), baselineScenarioName = "Low Demand", baselineMetric = "normalization")), "must be one of `scenarioNames`")
+  expect_match(createTestChart(env, list(rows = list(), baselineScenarioName = "Base", baselineMetric = "normalization")), "requires `_scenName`")
+  expect_match(createTestChart(env, list(rows = list("_scenName"), baselineScenarioName = "Base", baselineMetric = "ratio")), "baselineMetric")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart rejects charts that are too large or have duplicate filters", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = 1, region = paste0("r", 1:40), quantity = 1),
+    list(region = list(type = "set"), quantity = list(type = "numeric")),
+    sids = 1
+  )
+  expect_match(createTestChart(env, list(scenarioNames = "Base", rows = list("region"), chartType = "pie")), "40 categories")
+  expect_match(createTestChart(env, list(
+    scenarioNames = "Base", rows = list("region"),
+    filters = list(list(column = "region", values = list("r1")), list(column = "region", values = list("r2")))
+  )), "unique `column`")
+  expect_match(createTestChart(env, list(
+    scenarioNames = "Base", rows = list(), cols = list("region"), chartType = "pie"
+  )), "single series")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("getToolSchema offers the chart tool", {
+  env <- setup_chart_env()
+  toolNames <- vapply(env$adapter$getToolSchema(), "[[", character(1L), "name")
+  expect_true("createChart" %in% toolNames)
   DBI::dbDisconnect(env$conn)
 })

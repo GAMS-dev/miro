@@ -239,6 +239,16 @@ buildAiInputChangePreview <- function(data, change, changeResult,
   ))
 }
 
+aiChartTypes <- c(
+  "bar", "stackedbar", "horizontalbar", "horizontalstackedbar",
+  "line", "area", "stackedarea", "pie", "doughnut"
+)
+aiChartBaselineMetrics <- c("absolute difference", "percentage difference", "normalization")
+aiChartAggregationFunctions <- c("sum", "mean", "median", "min", "max", "count", "sd")
+aiChartMaxSeries <- 30L
+aiChartMaxCategories <- 500L
+aiChartMaxSlices <- 30L
+aiChartMaxRows <- 500000L
 AIToolAdapter <- R6Class("AIToolAdapter",
   public = list(
     initialize = function(dbSchema, conn, ioConfig, inputModificationEnabled = FALSE) {
@@ -261,6 +271,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     },
     getPendingInputChanges = function() {
       return(private$pendingInputChanges)
+    },
+    getCharts = function() {
+      return(private$charts)
     },
     setAllowedSids = function(allowedSids) {
       private$allowedSids <- as.integer(allowedSids)[!is.na(as.integer(allowedSids))]
@@ -520,10 +533,178 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           )
         )
       )
+      toolSchema[[length(toolSchema) + 1L]] <- private$getChartToolSchema()
       if (private$inputModificationEnabled) {
         toolSchema[[length(toolSchema) + 1L]] <- private$getModifyInputToolSchema()
       }
       return(toolSchema)
+    },
+    createChart = function(argumentsJson) {
+      args <- private$parseToolArguments(argumentsJson)
+      if (is.null(args)) {
+        return(private$toolError("Invalid JSON argument format."))
+      }
+      symName <- args$symbolName
+      if (length(symName) != 1L || !is.character(symName) || is.null(private$symbols[[symName]])) {
+        return(private$toolError("`symbolName` must be the name of a symbol in databaseSymbols."))
+      }
+      chartType <- args$chartType
+      if (length(chartType) != 1L || !chartType %in% aiChartTypes) {
+        return(private$toolError(sprintf("`chartType` must be one of: %s.", paste(aiChartTypes, collapse = ", "))))
+      }
+      scenarioNames <- private$asCharVector(args$scenarioNames)
+      sids <- suppressWarnings(as.integer(private$scenarioMap[scenarioNames]))
+      if (!length(sids) || anyNA(sids) || !all(sids %in% private$allowedSids)) {
+        return(private$toolError("Access Denied: Requested `scenarioNames` are not available or loaded in the current active session context."))
+      }
+      symColumns <- private$symbols[[symName]]$columns
+      valueCols <- symColumns$names[symColumns$types == "numeric"]
+      indexCols <- symColumns$names[symColumns$types != "numeric"]
+      if (!length(valueCols)) {
+        return(private$toolError(sprintf("Symbol '%s' cannot be charted.", symName)))
+      }
+      dims <- c("_scenName", indexCols, if (length(valueCols) > 1L) "Hdr")
+      rows <- private$asCharVector(args$rows)
+      cols <- private$asCharVector(args$cols)
+      filters <- private$parseChartFilters(args$filters)
+      if (is.null(filters)) {
+        return(private$toolError("`filters` must be an array of objects with a unique `column` and `values`."))
+      }
+      invalidDims <- setdiff(c(rows, cols, names(filters)), dims)
+      if (length(invalidDims)) {
+        return(private$toolError(sprintf(
+          "Unknown dimension(s): %s. Valid dimensions of '%s': %s.",
+          paste(invalidDims, collapse = ", "), symName, paste(dims, collapse = ", ")
+        )))
+      }
+      if (length(intersect(rows, cols))) {
+        return(private$toolError("A dimension can be used either in `rows` or in `cols`, not both."))
+      }
+      if (length(valueCols) > 1L && !"Hdr" %in% c(rows, cols) && length(filters$Hdr) != 1L) {
+        return(private$toolError(sprintf(
+          "Symbol '%s' has several numeric columns: put `Hdr` in `rows` or `cols` or filter it to one of: %s.",
+          symName, paste(valueCols, collapse = ", ")
+        )))
+      }
+      if ("_scenName" %in% names(filters)) {
+        return(private$toolError("Select scenarios via `scenarioNames` instead of filtering `_scenName`."))
+      }
+      aggregationFunction <- if (length(args$aggregationFunction)) args$aggregationFunction else "sum"
+      if (length(aggregationFunction) != 1L || !aggregationFunction %in% aiChartAggregationFunctions) {
+        return(private$toolError(sprintf("`aggregationFunction` must be one of: %s.", paste(aiChartAggregationFunctions, collapse = ", "))))
+      }
+      baselineComparison <- NULL
+      baselineSid <- NULL
+      baselineMetric <- if (length(args$baselineMetric)) args$baselineMetric else "none"
+      if (length(baselineMetric) != 1L || !baselineMetric %in% c("none", aiChartBaselineMetrics)) {
+        return(private$toolError(sprintf("`baselineMetric` must be one of: none, %s.", paste(aiChartBaselineMetrics, collapse = ", "))))
+      }
+      if (!identical(baselineMetric, "none")) {
+        if (length(args$baselineScenarioName) != 1L || !args$baselineScenarioName %in% scenarioNames) {
+          return(private$toolError("`baselineScenarioName` must be one of `scenarioNames`."))
+        }
+        if (!"_scenName" %in% c(rows, cols)) {
+          return(private$toolError("Comparing against a baseline scenario requires `_scenName` in `rows` or `cols`."))
+        }
+        baselineSid <- as.integer(private$scenarioMap[[args$baselineScenarioName]])
+        baselineComparison <- list(domain = "_scenName", record = args$baselineScenarioName, metrics = list(baselineMetric))
+      }
+
+      data <- private$fetchChartData(symName, sids, indexCols, valueCols, filters)
+      if (is.character(data)) {
+        return(private$toolError(data))
+      }
+      for (filterCol in names(filters)) {
+        missingValues <- setdiff(filters[[filterCol]], data[[filterCol]])
+        if (length(missingValues)) {
+          return(private$toolError(sprintf(
+            "No data for value(s) %s of dimension '%s'.",
+            paste(missingValues, collapse = ", "), filterCol
+          )))
+        }
+      }
+      if (!nrow(data)) {
+        return(private$toolError("No data found for the requested scenarios."))
+      }
+      view <- private$buildChartView(dims, rows, cols, filters, aggregationFunction, baselineComparison)
+      prepared <- tryCatch(dashboardPrepareData(view, data)$data, error = function(err) {
+        return(conditionMessage(err))
+      })
+      if (is.character(prepared)) {
+        return(private$toolError(sprintf("Could not prepare chart data: %s", prepared)))
+      }
+      if (!nrow(prepared) || is.null(attr(prepared, "noRowHeaders"))) {
+        return(private$toolError("The chart would be empty."))
+      }
+      symAlias <- private$symbols[[symName]]$alias %||% symName
+      noLabelCols <- attr(prepared, "noRowHeaders")
+      labelCols <- lapply(prepared[seq_len(noLabelCols)], as.character)
+      labels <- if (noLabelCols > 0L) do.call(paste, c(labelCols, sep = "\u2024")) else symAlias
+      seriesCols <- names(prepared)[seq_along(prepared) > noLabelCols]
+      isPie <- chartType %in% c("pie", "doughnut")
+      if (isPie && length(seriesCols) > 1L) {
+        return(private$toolError("Pie and doughnut charts support a single series only: leave `cols` empty."))
+      }
+      maxLabels <- if (isPie) aiChartMaxSlices else aiChartMaxCategories
+      if (length(labels) > maxLabels || length(seriesCols) > aiChartMaxSeries) {
+        return(private$toolError(sprintf(
+          "The chart would have %d categories and %d series (max. %d and %d). Use filters, aggregate more dimensions or move dimensions between `rows` and `cols`.",
+          length(labels), length(seriesCols), maxLabels, aiChartMaxSeries
+        )))
+      }
+      chartTitle <- if (length(args$title)) as.character(args$title)[[1L]] else ""
+      seriesNames <- if (length(cols)) seriesCols else symAlias
+      colorKeys <- if (isPie) labels else seriesNames
+      colors <- unlist(args$colors)
+      if (length(colors)) {
+        if (!is.character(colors) || is.null(names(colors)) || !all(names(colors) %in% colorKeys) ||
+          !all(grepl("^#[0-9A-Fa-f]{6}$", colors))) {
+          return(private$toolError(sprintf(
+            "`colors` must map %1$s to #rrggbb colors. Valid %1$s: %2$s.",
+            if (isPie) "categories" else "series", paste(colorKeys, collapse = ", ")
+          )))
+        }
+      }
+      pivotColorKeys <- if (!isPie) {
+        seriesCols
+      } else if (noLabelCols > 0L) {
+        do.call(paste, c(labelCols, sep = "."))
+      } else {
+        "value"
+      }
+      chartId <- private$generateId("aichart_")
+      private$charts[[chartId]] <- list(
+        id = chartId,
+        title = chartTitle,
+        type = chartType,
+        labels = labels,
+        datasets = lapply(seq_along(seriesCols), function(seriesIdx) {
+          values <- prepared[[seriesCols[[seriesIdx]]]]
+          values[!is.finite(values)] <- NA
+          c(
+            list(label = seriesNames[[seriesIdx]], data = values),
+            if (isPie && length(colors)) list(colors = unname(colors[labels])),
+            if (!isPie && seriesNames[[seriesIdx]] %in% names(colors)) list(color = colors[[seriesNames[[seriesIdx]]]])
+          )
+        }),
+        symbolName = symName,
+        sids = sids,
+        baselineSid = baselineSid,
+        view = c(view, list(pivotRenderer = chartType, chartOptions = Filter(length, list(
+          title = if (nzchar(chartTitle)) chartTitle,
+          customChartColors = setNames(
+            lapply(as.list(unname(colors)), function(color) c(color, color)),
+            pivotColorKeys[match(names(colors), colorKeys)]
+          )
+        ))))
+      )
+      return(jsonlite::toJSON(list(
+        chartId = chartId,
+        rows = I(c(view$rows, names(view$filter)[lengths(view$filter) > 1L])),
+        categories = length(labels),
+        series = seriesNames,
+        embed = sprintf("```mirachart\n%s\n```", chartId)
+      ), auto_unbox = TRUE))
     },
     modifySandboxInputData = function(argumentsJson) {
       if (!private$inputModificationEnabled) {
@@ -532,14 +713,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (length(private$allowedSids) != 1L) {
         return(private$toolError("Input data can only be modified when a single sandbox scenario is in context."))
       }
-      args <- tryCatch(
-        {
-          parsed <- if (is.character(argumentsJson)) jsonlite::fromJSON(argumentsJson) else argumentsJson
-          if (!is.list(parsed)) stop("Parsed arguments are not a JSON object.", call. = FALSE)
-          parsed
-        },
-        error = function(e) NULL
-      )
+      args <- private$parseToolArguments(argumentsJson)
       if (is.null(args)) {
         return(private$toolError("Invalid JSON argument format."))
       }
@@ -620,7 +794,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       change <- list(
-        changeId = private$generateChangeId(),
+        changeId = private$generateId("aichg_"),
         symbolName = symName,
         symbolAlias = if (length(symConfig$alias)) symConfig$alias else symName,
         isScalar = isScalar,
@@ -693,14 +867,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       ), dataframe = "rows", auto_unbox = TRUE, na = "null"))
     },
     queryScenarioDatabase = function(argumentsJson) {
-      args <- tryCatch(
-        {
-          parsed <- if (is.character(argumentsJson)) jsonlite::fromJSON(argumentsJson) else argumentsJson
-          if (!is.list(parsed)) stop("Parsed arguments are not a JSON object.", call. = FALSE)
-          parsed
-        },
-        error = function(e) NULL
-      )
+      args <- private$parseToolArguments(argumentsJson)
       if (is.null(args)) {
         return(jsonlite::toJSON(list(error = "Invalid JSON argument format."), auto_unbox = TRUE))
       }
@@ -1001,6 +1168,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     symbols = NULL,
     inputModificationEnabled = FALSE,
     pendingInputChanges = list(),
+    charts = list(),
     allowedSids = NULL,
     customscenIdNameMap = character(),
     scenarioMap = NULL,
@@ -1008,8 +1176,144 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     toolError = function(message) {
       return(jsonlite::toJSON(list(error = message), auto_unbox = TRUE))
     },
-    generateChangeId = function() {
-      return(paste0("aichg_", paste(sample(c(letters, 0:9), 12L, replace = TRUE), collapse = "")))
+    asCharVector = function(x) {
+      return(unique(as.character(unlist(x, use.names = FALSE))))
+    },
+    parseChartFilters = function(filters) {
+      if (!length(filters)) {
+        return(list())
+      }
+      if (is.data.frame(filters)) {
+        filters <- lapply(seq_len(nrow(filters)), function(rowIdx) as.list(filters[rowIdx, , drop = FALSE]))
+      } else if (length(filters$column)) {
+        filters <- list(filters)
+      }
+      parsed <- list()
+      for (filter in filters) {
+        if (!is.list(filter) || length(filter$column) != 1L || !length(filter$values) ||
+          as.character(filter$column) %in% names(parsed)) {
+          return(NULL)
+        }
+        parsed[[as.character(filter$column)]] <- private$asCharVector(filter$values)
+      }
+      return(parsed)
+    },
+    fetchChartData = function(symName, sids, indexCols, valueCols, filters) {
+      escCol <- function(colName) DBI::dbQuoteIdentifier(private$conn, colName)
+      whereClauses <- sprintf("%s IN (%s)", escCol("_sid"), paste(sids, collapse = ","))
+      for (filterCol in intersect(names(filters), indexCols)) {
+        whereClauses <- c(whereClauses, sprintf(
+          "%s IN (%s)", escCol(filterCol),
+          paste(DBI::dbQuoteString(private$conn, filters[[filterCol]]), collapse = ",")
+        ))
+      }
+      query <- sprintf(
+        "SELECT %s FROM %s WHERE %s LIMIT %d",
+        paste(vapply(c("_sid", indexCols, valueCols), escCol, character(1L)), collapse = ", "),
+        escCol(private$dbSchema$getDbTableName(symName)),
+        paste(whereClauses, collapse = " AND "), aiChartMaxRows + 1L
+      )
+      data <- tryCatch(DBI::dbGetQuery(private$conn, query), error = function(err) {
+        return(sprintf("Database Engine Interface Error: %s", conditionMessage(err)))
+      })
+      if (is.character(data)) {
+        return(data)
+      }
+      if (nrow(data) > aiChartMaxRows) {
+        return("Too much data for a chart. Narrow it down with `filters`.")
+      }
+      data <- tibble::as_tibble(data)
+      data[["_sid"]] <- unname(private$scenarioMapById[as.character(data[["_sid"]])])
+      names(data)[1L] <- "_scenName"
+      if (length(valueCols) > 1L) {
+        data <- tidyr::pivot_longer(data, all_of(valueCols), names_to = "Hdr", values_to = "value", names_repair = "minimal")
+        if (length(filters$Hdr)) {
+          data <- data[data$Hdr %in% filters$Hdr, ]
+        }
+      } else {
+        names(data)[length(data)] <- "value"
+      }
+      if (anyDuplicated(names(data))) {
+        return(sprintf("Symbol '%s' cannot be charted: its dimension names clash with the pivot columns.", symName))
+      }
+      return(data)
+    },
+    buildChartView = function(dims, rows, cols, filters, aggregationFunction, baselineComparison) {
+      otherDims <- setdiff(dims, c(rows, cols))
+      singleValueFilters <- names(filters)[lengths(filters) == 1L]
+      filterDims <- c(intersect(rows, names(filters)), intersect(otherDims, singleValueFilters))
+      aggregationDims <- setdiff(otherDims, filterDims)
+      return(list(
+        rows = setdiff(rows, filterDims),
+        cols = setNames(lapply(cols, function(dim) filters[[dim]]), cols),
+        filter = setNames(lapply(filterDims, function(dim) filters[[dim]]), filterDims),
+        aggregations = setNames(lapply(aggregationDims, function(dim) filters[[dim]]), aggregationDims),
+        aggregationFunction = aggregationFunction,
+        baselineComparison = baselineComparison
+      ))
+    },
+    getChartToolSchema = function() {
+      properties <- list(
+        symbolName = list(type = "string"),
+        scenarioNames = list(type = "array", items = list(type = "string")),
+        chartType = list(type = "string", enum = aiChartTypes),
+        title = list(type = "string"),
+        rows = list(
+          type = "array", items = list(type = "string"),
+          description = "Category dimensions: symbol columns, `_scenName` (scenario) or `Hdr` (if several numeric columns; values are their names)."
+        ),
+        cols = list(type = "array", items = list(type = "string"), description = "Series dimensions."),
+        filters = list(
+          type = "array",
+          description = "Keep only these values of a dimension (scenarios: use `scenarioNames`).",
+          items = list(
+            type = "object",
+            properties = list(
+              column = list(type = "string"),
+              values = list(type = "array", items = list(type = "string"))
+            ),
+            required = c("column", "values")
+          )
+        ),
+        aggregationFunction = list(
+          type = "string", enum = aiChartAggregationFunctions,
+          description = "Aggregates dimensions not in `rows`/`cols` unless filtered to one value (default: sum)."
+        ),
+        colors = list(
+          type = "object", additionalProperties = list(type = "string"),
+          description = "Only if asked: series name (pie/doughnut: category) -> #rrggbb."
+        )
+      )
+      if (length(private$allowedSids) > 1L) {
+        properties$baselineMetric <- list(
+          type = "string", enum = c("none", aiChartBaselineMetrics),
+          description = "none (default): absolute values. Otherwise values relative to `baselineScenarioName`; needs `_scenName` in `rows` or `cols`."
+        )
+        properties$baselineScenarioName <- list(type = "string")
+      }
+      return(list(
+        name = "createChart",
+        type = "function",
+        description = "Charts symbol data, pivoted like MIRO Pivot. Returns an id; embed it in your answer as a fenced `mirachart` code block containing only the id.",
+        parameters = list(
+          type = "object",
+          properties = properties,
+          required = c("symbolName", "scenarioNames", "chartType", "rows")
+        )
+      ))
+    },
+    parseToolArguments = function(argumentsJson) {
+      return(tryCatch(
+        {
+          parsed <- if (is.character(argumentsJson)) jsonlite::fromJSON(argumentsJson) else argumentsJson
+          if (!is.list(parsed)) stop("Parsed arguments are not a JSON object.", call. = FALSE)
+          parsed
+        },
+        error = function(e) NULL
+      ))
+    },
+    generateId = function(prefix) {
+      return(paste0(prefix, paste(sample(c(letters, 0:9), 12L, replace = TRUE), collapse = "")))
     },
     describeSymbols = function() {
       outputScalars <- private$ioConfig$modelOut[[scalarsOutName]]
@@ -1240,7 +1544,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
 
       change <- list(
-        changeId = private$generateChangeId(),
+        changeId = private$generateId("aichg_"),
         symbolName = symName,
         symbolAlias = if (length(symConfig$alias)) symConfig$alias else symName,
         isScalar = TRUE, isChoice = TRUE,

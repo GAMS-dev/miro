@@ -244,9 +244,13 @@ aiTask <- ExtendedTask$new(
         library(R6)
         library(httr)
         library(jsonlite)
+        library(dplyr)
+        library(tidyr)
+        library(futile.logger)
         source("global.R")
         source("components/ai_provider.R")
         source("components/ai_adapter.R")
+        source("components/render_util.R")
 
         conn <- dbConnProvider$getConnection()
         on.exit(DBI::dbDisconnect(conn))
@@ -286,6 +290,7 @@ aiTask <- ExtendedTask$new(
             }
             dbRes
           },
+          "createChart" = function(args) aiAdapter$createChart(args),
           "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args)
         )
         roleContext <- "### ROLE
@@ -327,6 +332,7 @@ The database is the sole source of truth. Before calling `queryScenarioDatabase`
 
 ### REPORTING
 Answer directly—concise, quantitative, prioritized. Synthesize into conclusions, don't just restate query output. Separate observation from interpretation. If data is insufficient, say what's missing; don't speculate. For math, use `\\(...\\)` (inline) or `\\[...\\]` (display)—never `$`/`$$`.
+Use `createChart` where a chart clarifies a comparison or trend.
 
 ### SCENARIO RULES
 1. Use exact scenario names (`_scenario_name`, `_target_scenario`, `_baseline_scenario`)—never generic labels like \"Scenario 1\" or \"Base case\".
