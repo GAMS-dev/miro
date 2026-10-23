@@ -29,6 +29,7 @@ observe({
       }
       aiAssistantState$activeSids <<- newSids
       aiAssistantState$contextIsSandbox <<- newIsSandbox
+      aiAssistantState$contextHasSandbox <<- newIsSandbox || isTRUE(dialogState$includesSandbox)
     }
     if (contextChanged) {
       aiAssistantState$contextLabel <<- dialogState$chatContext
@@ -80,37 +81,61 @@ observeEvent(input$btAiBackToSandbox, {
   openAiSandboxContext()
 })
 
-openAiSandboxContext <- function() {
-  tempScenName <- lang$nav$dialogNewScen$newScenName
-  tempScenTags <- NULL
-  sidToLoad <- NULL
-  if (!is.null(activeScen)) {
-    if (isFALSE(rv$sandboxUnsaved)) {
-      sidToLoad <- activeScen$getSid()
-    }
-    tempScenName <- activeScen$getScenName()
-    tempScenTags <- activeScen$getStags()
+getAiSandboxScenName <- function(inCompare = FALSE) {
+  scenName <- if (is.null(activeScen)) lang$nav$dialogNewScen$newScenName else activeScen$getScenName()
+  if (inCompare) {
+    scenName <- paste(scenName, lang$nav$scen$scenNameSandboxSuffix)
   }
-  if (!length(sidToLoad)) {
-    tempScen <- tryCatch(
-      {
-        saveScenDumpTempToDb(tempScenName, tempScenTags)
-      },
-      error = function(err) {
-        flog.error("Unable to open AI Assistant because sandbox scenario could not be dumped to database. Error message: %s", conditionMessage(err))
-        return(NULL)
-      }
-    )
+  return(scenName)
+}
+# Returns the snapshot scenario or NULL if the sandbox could not be dumped.
+snapshotAiSandbox <- function(scenName) {
+  tempScen <- tryCatch(saveScenDumpTempToDb(scenName, if (!is.null(activeScen)) activeScen$getStags()),
+    error = function(err) {
+      flog.error(
+        "Could not dump sandbox scenario to database for AI assistant. Error message: %s",
+        conditionMessage(err)
+      )
+      return(NULL)
+    }
+  )
+  if (!is.null(tempScen)) {
+    setAiTempScen(tempScen, scenName)
+    markAiSnapshotCurrent()
+  }
+  return(tempScen)
+}
+
+openAiSandboxContext <- function() {
+  tempScenName <- getAiSandboxScenName()
+  if (!is.null(activeScen) && isFALSE(rv$sandboxUnsaved) && length(activeScen$getSid())) {
+    sidToLoad <- activeScen$getSid()
+    markAiSnapshotCurrent()
+  } else {
+    tempScen <- snapshotAiSandbox(tempScenName)
     if (is.null(tempScen)) {
       return()
     }
-    setAiTempScen(tempScen, tempScenName)
     sidToLoad <- tempScen$getSid()
   }
-  markAiSnapshotCurrent()
   aiAssistantDialogState(list(
     sidsToLoad = sidToLoad, scenIdNameMap = NULL, isSandbox = TRUE,
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
+  ))
+}
+openAiCompareContext <- function(sids, scenIdNameMap, includeSandbox = FALSE) {
+  if (includeSandbox) {
+    # always snapshot: the sandbox must not share its sid with a selected scenario
+    tempScen <- snapshotAiSandbox(getAiSandboxScenName(inCompare = TRUE))
+    if (is.null(tempScen)) {
+      return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
+    }
+    sids <- c(sids, tempScen$getSid())
+  }
+  aiAssistantDialogState(list(
+    sidsToLoad = sids, isSandbox = FALSE, includesSandbox = includeSandbox,
+    chatContext = sprintf(lang$nav$aiBotDialog$currentContextCompare, length(sids)),
+    scenIdNameMap = scenIdNameMap, timestamp = Sys.time()
   ))
 }
 
@@ -144,7 +169,7 @@ markAiSnapshotCurrent <- function() {
 # Returns TRUE if the assistant now looks at different data, NA if the snapshot is
 # outdated but could not be refreshed.
 syncAiSandboxSnapshot <- function() {
-  if (!isTRUE(aiAssistantState$contextIsSandbox) ||
+  if (!isTRUE(aiAssistantState$contextHasSandbox) ||
     (!isTRUE(rv$inputDataDirty) &&
       identical(scenData$getSandboxRevision(), aiAssistantState$snapshotRevision))) {
     return(FALSE)
@@ -431,8 +456,8 @@ observeEvent(input$miroAiUserText, {
     assistantConfig = config$aiAssistant,
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
-    scenIdNameMap = if (isTRUE(aiAssistantState$contextIsSandbox) && !is.null(aiAssistantState$tempScen)) {
-      setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid())
+    scenIdNameMap = if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
+      c(dialogState$scenIdNameMap, setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid()))
     } else {
       dialogState$scenIdNameMap
     },
@@ -749,29 +774,19 @@ updateAiInputChangeGroupCard <- function(historyIdx, status, statusDetail = NULL
   return(invisible())
 }
 refreshAiSandboxSnapshot <- function() {
-  tempScenName <- lang$nav$dialogNewScen$newScenName
-  tempScenTags <- NULL
-  if (!is.null(activeScen)) {
-    tempScenName <- activeScen$getScenName()
-    tempScenTags <- activeScen$getStags()
-  }
-  tempScen <- tryCatch(saveScenDumpTempToDb(tempScenName, tempScenTags),
-    error = function(err) {
-      flog.error(
-        "Could not refresh the AI assistant sandbox snapshot. Error message: %s",
-        conditionMessage(err)
-      )
-      return(NULL)
-    }
-  )
+  inCompare <- !isTRUE(aiAssistantState$contextIsSandbox)
+  oldSid <- if (!is.null(aiAssistantState$tempScen)) aiAssistantState$tempScen$getSid()
+  tempScen <- snapshotAiSandbox(getAiSandboxScenName(inCompare))
   if (is.null(tempScen)) {
     # forces another attempt before the next request is sent
     aiAssistantState$snapshotRevision <<- NULL
     return(FALSE)
   }
-  setAiTempScen(tempScen, tempScenName)
-  aiAssistantState$activeSids <<- tempScen$getSid()
-  markAiSnapshotCurrent()
+  aiAssistantState$activeSids <<- if (inCompare) {
+    c(setdiff(aiAssistantState$activeSids, oldSid), tempScen$getSid())
+  } else {
+    tempScen$getSid()
+  }
   return(TRUE)
 }
 

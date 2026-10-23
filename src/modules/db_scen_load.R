@@ -639,12 +639,7 @@ batchCompare <- function(compareMode, includeSandbox = FALSE, baselineSid = NULL
   }
   flog.debug("Load batch of scenarios to compare mode (%s) button clicked.", viewMode)
   if (identical(viewMode, "aiCompare")) {
-    return(aiAssistantDialogState(list(
-      sidsToLoad = sidsToLoad,
-      isSandbox = FALSE,
-      chatContext = sprintf(lang$nav$aiBotDialog$currentContextCompare, length(sidsToLoad)),
-      scenIdNameMap = scenIdNameMap, timestamp = Sys.time()
-    )))
+    return(openAiCompareContext(sidsToLoad, scenIdNameMap, includeSandbox))
   } else {
     scenData$setScenIdNameMap(scenIdNameMap)
   }

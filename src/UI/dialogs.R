@@ -1321,7 +1321,7 @@ getBatchCompareOptions <- function(compareModeId, noScen) {
   showSandbox <- switch(compareModeId,
     split = noScen < 2L,
     tab = noScen < 10L,
-    aiCompare = FALSE,
+    aiCompare = noScen <= 50L,
     TRUE
   )
   return(list(
@@ -1342,6 +1342,19 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
   } else {
     analysisTabset <- NULL
   }
+  genCompareModeAttribs <- function(compareModeId, label) {
+    compareOptions <- getBatchCompareOptions(compareModeId, noScenSelected)
+    list(
+      `data-mode` = compareModeId,
+      `data-sandbox` = tolower(compareOptions$sandbox),
+      `data-baseline` = tolower(compareOptions$baseline),
+      `data-title` = sprintf(
+        lang$nav$dialogBatchLoad$compareSettingsTitle,
+        noScenSelected, label
+      ),
+      onclick = "Miro.batchCompareSelectMode(this)"
+    )
+  }
   createCompareModesDropdown <- function(noScenariosToCompare) {
     if (noScenariosToCompare > 50L) {
       return(NULL)
@@ -1361,20 +1374,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
         compareModesList[["tab"]] <- NULL
       }
     }
-    genCompareModeAttribs <- function(compareModeId) {
-      compareOptions <- getBatchCompareOptions(compareModeId, noScenariosToCompare)
-      list(
-        `data-mode` = compareModeId,
-        `data-sandbox` = tolower(compareOptions$sandbox),
-        `data-baseline` = tolower(compareOptions$baseline),
-        `data-title` = sprintf(
-          lang$nav$dialogBatchLoad$compareSettingsTitle,
-          noScenariosToCompare, compareModesList[[compareModeId]]
-        ),
-        onclick = "Miro.batchCompareSelectMode(this)"
-      )
-    }
-    compareModeAttribs <- setNames(lapply(names(compareModesList), genCompareModeAttribs), names(compareModesList))
+    compareModeAttribs <- setNames(lapply(names(compareModesList), function(compareModeId) {
+      genCompareModeAttribs(compareModeId, compareModesList[[compareModeId]])
+    }), names(compareModesList))
     if (length(config$defCompMode) && config$defCompMode %in% names(compareModesList)) {
       defCompModeButton <- list(id = config$defCompMode, label = compareModesList[[config$defCompMode]])
       compareModesList[[config$defCompMode]] <- NULL
@@ -1587,11 +1589,13 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               if (config$activateModules$aiAssistant) {
                 tags$div(
                   class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
-                  tags$button(
-                    class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
-                    onclick = "Shiny.setInputValue('btBatchCompare','aiCompare',{priority:'event'});",
-                    lang$nav$dialogBatchLoad$interactiveButtonAi
-                  )
+                  do.call(tags$button, c(
+                    list(
+                      class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
+                      lang$nav$dialogBatchLoad$interactiveButtonAi
+                    ),
+                    genCompareModeAttribs("aiCompare", lang$nav$dialogBatchLoad$interactiveButtonAi)
+                  ))
                 )
               }
             )
