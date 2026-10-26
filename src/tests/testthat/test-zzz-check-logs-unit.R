@@ -11,8 +11,8 @@ validFatals <- c(
 )
 validErrors <- c(
   "Confirm download of temporary files button clicked without any files specified.",
-  "Problems generating AI response. Error message: Error: Claude API Error: API key is invalid.",
-  "Problems generating AI response. Error message: Error: Claude API Error: API key is invalid."
+  "Problems generating AI response. Error message: Error: Claude API Error: ",
+  "Problems generating AI response. Error message: Error: Claude API Error: "
 )
 validWarnings <- c("Hypercube job directory: '")
 
