@@ -299,8 +299,9 @@ aiChartMaxSlices <- 30L
 aiChartMaxRows <- 500000L
 AIToolAdapter <- R6Class("AIToolAdapter",
   public = list(
-    initialize = function(dbSchema, conn, ioConfig, inputModificationEnabled = FALSE) {
+    initialize = function(dbSchema, conn, ioConfig, inputModificationEnabled = FALSE, emptyUEL = "-") {
       private$dbSchema <- dbSchema
+      private$emptyUEL <- emptyUEL
       private$conn <- conn
       private$ioConfig <- ioConfig
       private$inputModificationEnabled <- isTRUE(inputModificationEnabled)
@@ -573,7 +574,10 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         list(
           name = "queryScenarioDatabase",
           type = "function",
-          description = "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows. `null` is the actual value -- never substitute a neighboring column's value for it.",
+          description = paste0(
+            "Queries the GAMS MIRO database. Use this to calculate metrics, sum values, compare scenarios, or filter rows. `null` is the actual value -- never substitute a neighboring column's value for it.",
+            if (length(private$emptyUEL)) sprintf(" Columns that are '%s' (not applicable) in every returned row are left out of the result.", private$emptyUEL[[1L]])
+          ),
           parameters = list(
             type = "object",
             properties = propertiesList,
@@ -1197,6 +1201,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         resDf <- resDf[seq_len(safeLimit), , drop = FALSE]
         truncated <- TRUE
       }
+      resDf <- private$dropEmptyColumns(resDf, keep = c(groupByCol, selectCol, orderBy, filters$column))
 
       if (!truncated) {
         return(toJSON(resDf, dataframe = "rows", auto_unbox = TRUE, na = "null"))
@@ -1233,6 +1238,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     ioConfig = NULL,
     symbols = NULL,
     inputModificationEnabled = FALSE,
+    emptyUEL = NULL,
     pendingInputChanges = list(),
     charts = list(),
     allowedSids = NULL,
@@ -1241,6 +1247,19 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     scenarioMapById = NULL,
     toolError = function(message) {
       return(jsonlite::toJSON(list(error = message), auto_unbox = TRUE))
+    },
+    dropEmptyColumns = function(data, keep = character(0L)) {
+      if (!nrow(data) || !length(private$emptyUEL)) {
+        return(data)
+      }
+      isEmpty <- vapply(names(data), function(colName) {
+        !colName %in% keep && is.character(data[[colName]]) &&
+          all(data[[colName]] %in% private$emptyUEL)
+      }, logical(1L))
+      if (all(isEmpty)) {
+        return(data)
+      }
+      return(data[, !isEmpty, drop = FALSE])
     },
     asCharVector = function(x) {
       return(unique(as.character(unlist(x, use.names = FALSE))))

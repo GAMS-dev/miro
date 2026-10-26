@@ -1345,7 +1345,10 @@ test_that("createChart rejects invalid charts with helpful errors", {
 createChartAdapter <- function(data, headers, sids = c(1, 2)) {
   ChartDbSchema <- R6Class("ChartDbSchema",
     inherit = MockDbSchema,
-    public = list(getDbTableNames = function() "sym")
+    public = list(
+      getDbTableNames = function() "sym",
+      getDbSchema = function(sym) if (sym == "sym") list(colNames = names(data)) else super$getDbSchema(sym)
+    )
   )
   env <- setup_test_env()
   DBI::dbWriteTable(env$conn, "data_sym", data)
@@ -1565,5 +1568,38 @@ test_that("queryScenarioDatabase supports the shared filter operators", {
   expect_match(query("NOT IN", " , ")$error, "at least one value")
   DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(`_sid` = 1, region = c("100%", "1000"), year = "2024", value = 1))
   expect_identical(query("LIKE", "100\\%")$region, "100%")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase leaves out columns that are empty in every row", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = 1, region = c("EU", "NA"), vintage = "-", sow = c("-", "s1"), quantity = c(1, 2)),
+    list(region = list(type = "set"), vintage = list(type = "set"), sow = list(type = "set"), quantity = list(type = "numeric")),
+    sids = 1
+  )
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(symbolName = "sym", scenarioNames = "Base")))
+  expect_identical(names(res), c("region", "sow", "quantity"))
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "sym", scenarioNames = "Base", selectColumn = "quantity", aggregation = "SUM", groupByColumn = "vintage"
+  )))
+  expect_identical(names(res), c("vintage", "_sum"))
+  expect_match(env$adapter$getToolSchema()[[1L]]$description, "'-' (not applicable)", fixed = TRUE)
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "sym", scenarioNames = "Base", selectColumn = "vintage", aggregation = "MAX"
+  )))
+  expect_identical(names(res), "_max")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase keeps empty columns the model filtered on", {
+  env <- createChartAdapter(
+    tibble::tibble(`_sid` = 1, region = c("EU", "NA"), vintage = "-", quantity = c(1, 2)),
+    list(region = list(type = "set"), vintage = list(type = "set"), quantity = list(type = "numeric")),
+    sids = 1
+  )
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "sym", scenarioNames = "Base", filters = data.frame(column = "vintage", operator = "=", value = "-")
+  )))
+  expect_identical(names(res), c("region", "vintage", "quantity"))
   DBI::dbDisconnect(env$conn)
 })

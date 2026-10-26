@@ -259,7 +259,8 @@ aiTask <- ExtendedTask$new(
 
         assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
         aiAdapter <- AIToolAdapter$new(dbSchema, conn, ioConfig,
-          inputModificationEnabled = allowInputModification
+          inputModificationEnabled = allowInputModification,
+          emptyUEL = assistantConfig$emptyUEL
         )
         if (length(scenIdNameMap)) {
           aiAdapter$setScenIdNameMap(scenIdNameMap)
@@ -461,7 +462,7 @@ observeEvent(input$miroAiUserText, {
     dbConnProvider = dbConnProvider,
     dbSchema = dbSchema,
     ioConfig = ioConfig,
-    assistantConfig = config$aiAssistant,
+    assistantConfig = c(config$aiAssistant, list(emptyUEL = config$pivotCompSettings$emptyUEL %||% "-")),
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
     scenIdNameMap = if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
