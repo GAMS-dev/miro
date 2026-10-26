@@ -913,7 +913,7 @@ test_that("queryScenarioDatabase still accepts these arguments as normal scalars
 
   expect_true(is.null(res_df$error))
   expect_true("_delta" %in% names(res_df))
-  expect_equal(res_df$`_delta`, c(100, NA))
+  expect_equal(res_df$`_delta`, c(100, -150))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -1509,5 +1509,39 @@ test_that("getToolSchema offers the chart tool", {
   env <- setup_chart_env()
   toolNames <- vapply(env$adapter$getToolSchema(), "[[", character(1L), "name")
   expect_true("createChart" %in% toolNames)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("queryScenarioDatabase treats missing records as zero in DIFFERENCE mode", {
+  env <- setup_test_env()
+  env$adapter$setAllowedSids(c(1, 2, 3))
+  env$adapter$getSystemMetadata()
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"), selectColumn = "value",
+    aggregation = "SUM", groupByColumn = "region", analysisMode = "DIFFERENCE",
+    baselineScenarioName = "Base", orderBy = "_baseline_value", sortDirection = "DESC"
+  )))
+  expect_identical(res$region, c("EU", "NA"))
+  expect_equal(res$`_baseline_value`, c(150, 100))
+  expect_equal(res$`_target_value`, c(0, 200))
+  expect_equal(res$`_delta`, c(-150, 100))
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"), selectColumn = "value",
+    aggregation = "SUM", analysisMode = "DIFFERENCE", baselineScenarioName = "Base", orderBy = "_sum"
+  )))
+  expect_match(res$error, "Invalid orderBy column '_sum'. Valid: .*_delta")
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand"), selectColumn = "value",
+    aggregation = "SUM", analysisMode = "DIFFERENCE", baselineScenarioName = "Base",
+    filters = data.frame(column = "region", operator = "=", value = "XX")
+  )))
+  expect_length(res, 0L)
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(`_sid` = 3, region = "AS", year = "2024", value = 10))
+  res <- jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+    symbolName = "demand", scenarioNames = c("Base", "High Demand", "Low Demand"), selectColumn = "value",
+    aggregation = "SUM", groupByColumn = "region", analysisMode = "DIFFERENCE", baselineScenarioName = "Base"
+  )))
+  expect_false(any(res$region == "AS" & res$`_target_scenario` == "High Demand"))
+  expect_equal(res$`_delta`[res$region == "AS"], 10)
   DBI::dbDisconnect(env$conn)
 })

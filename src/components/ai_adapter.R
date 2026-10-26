@@ -490,7 +490,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         ),
         orderBy = list(
           type = "string",
-          description = "Optional. The column to sort results by. CRITICAL: If analysisMode is DIFFERENCE, use '_delta'. If PERCENT_CHANGE, use '_pct_change'. For STANDARD mode aggregation, use the aggregation alias with a leading underscore (e.g., '_sum', '_max', '_count'). Otherwise, use the target column name."
+          description = "Optional. The column to sort results by. CRITICAL: If analysisMode is DIFFERENCE, use '_delta'. If PERCENT_CHANGE, use '_pct_change'. Both modes also allow '_baseline_value' and '_target_value'. For STANDARD mode aggregation, use the aggregation alias with a leading underscore (e.g., '_sum', '_max', '_count'). Otherwise, use the target column name."
         ),
         sortDirection = list(
           type = "string",
@@ -510,7 +510,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         propertiesList$analysisMode <- list(
           type = "string",
           enum = c("STANDARD", "DIFFERENCE", "PERCENT_CHANGE"),
-          description = "Optional. STANDARD returns normal values. DIFFERENCE calculates (Target - Baseline). PERCENT_CHANGE calculates ((Target - Baseline)/Baseline)*100. If scenarioNames contains more than one non-baseline scenario, one row (or one row per distinct combination of groupByColumn values) is returned per target scenario."
+          description = "Optional. STANDARD returns normal values. DIFFERENCE calculates (Target - Baseline). PERCENT_CHANGE calculates ((Target - Baseline)/Baseline)*100. Both also return `_baseline_value` and `_target_value`; with SUM a scenario without matching rows counts as 0. If scenarioNames contains more than one non-baseline scenario, one row (or one row per distinct combination of groupByColumn values) is returned per target scenario."
         )
         propertiesList$baselineScenarioName <- list(
           type = "string",
@@ -988,18 +988,30 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           if (length(targetSids) == 0) targetSids <- baselineSid
 
           aggFunc <- aggregation
+          scenarioAggExpr <- function(sid) {
+            aggExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE NULL END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), sid, escSelect)
+            if (identical(aggFunc, "SUM")) {
+              # GAMS does not store zeros
+              aggExpr <- sprintf("COALESCE(%s, 0)", aggExpr)
+            }
+            return(aggExpr)
+          }
 
-          baseExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE NULL END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), baselineSid, escSelect)
+          baseExpr <- scenarioAggExpr(baselineSid)
 
           # One SELECT branch per target scenario; branches are combined with UNION ALL below.
           selectExprs <- vapply(targetSids, function(tSid) {
-            targExpr <- sprintf("%s(CASE WHEN %s = %d THEN %s ELSE NULL END)", aggFunc, DBI::dbQuoteIdentifier(private$conn, "_sid"), tSid, escSelect)
+            targExpr <- scenarioAggExpr(tSid)
             if (analysisMode == "DIFFERENCE") {
               metricExpr <- sprintf("(%s - %s) AS %s", targExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_delta"))
             } else {
               metricExpr <- sprintf("CASE WHEN %s = 0 THEN NULL ELSE (100.0 * (%s - %s) / %s) END AS %s", baseExpr, targExpr, baseExpr, baseExpr, DBI::dbQuoteIdentifier(private$conn, "_pct_change"))
             }
-            sprintf("%d AS %s, %s", tSid, DBI::dbQuoteIdentifier(private$conn, "_target_sid"), metricExpr)
+            sprintf(
+              "%d AS %s, %s AS %s, %s AS %s, %s", tSid, DBI::dbQuoteIdentifier(private$conn, "_target_sid"),
+              baseExpr, DBI::dbQuoteIdentifier(private$conn, "_baseline_value"),
+              targExpr, DBI::dbQuoteIdentifier(private$conn, "_target_value"), metricExpr
+            )
           }, character(1))
         }
       }
@@ -1062,18 +1074,24 @@ AIToolAdapter <- R6Class("AIToolAdapter",
 
       # Each element of selectExprs becomes its own branch; DIFFERENCE/PERCENT_CHANGE with
       # multiple target scenarios yields one branch per target, combined via UNION ALL.
-      branchQueries <- vapply(selectExprs, function(sel) {
-        sprintf("SELECT %s%s %s%s", groupBySelect, sel, whereClause, groupByClause)
-      }, character(1))
+      havingClauses <- if (isDiffMode) {
+        sprintf(" HAVING COUNT(CASE WHEN %s IN (%d, %d) THEN 1 END) > 0", DBI::dbQuoteIdentifier(private$conn, "_sid"), baselineSid, targetSids)
+      } else {
+        ""
+      }
+      branchQueries <- sprintf("SELECT %s%s %s%s%s", groupBySelect, selectExprs, whereClause, groupByClause, havingClauses)
 
       query <- paste(branchQueries, collapse = " UNION ALL ")
 
       if (!is.null(orderBy) && orderBy != "") {
         aggAlias <- paste0("_", tolower(aggregation))
-        allowedOrderCols <- c(validCols, aggAlias, "_delta", "_pct_change")
+        metricCol <- if (analysisMode == "DIFFERENCE") "_delta" else "_pct_change"
+        allowedOrderCols <- c(validCols, if (isDiffMode) c(metricCol, "_baseline_value", "_target_value") else aggAlias)
 
         if (!(orderBy %in% allowedOrderCols)) {
-          return(jsonlite::toJSON(list(error = "Invalid orderBy column targeted."), auto_unbox = TRUE))
+          return(jsonlite::toJSON(list(error = sprintf(
+            "Invalid orderBy column '%s'. Valid: %s.", orderBy, paste(allowedOrderCols, collapse = ", ")
+          )), auto_unbox = TRUE))
         }
         if (!sortDir %in% c("ASC", "DESC")) sortDir <- "ASC"
 
