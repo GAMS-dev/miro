@@ -1545,3 +1545,25 @@ test_that("queryScenarioDatabase treats missing records as zero in DIFFERENCE mo
   expect_equal(res$`_delta`[res$region == "AS"], 10)
   DBI::dbDisconnect(env$conn)
 })
+
+test_that("queryScenarioDatabase supports the shared filter operators", {
+  env <- setup_test_env()
+  env$adapter$setAllowedSids(1)
+  env$adapter$getSystemMetadata()
+  query <- function(operator, value, column = "region") {
+    jsonlite::fromJSON(env$adapter$queryScenarioDatabase(list(
+      symbolName = "demand", scenarioNames = "Base",
+      filters = data.frame(column = column, operator = operator, value = value)
+    )))
+  }
+  expect_identical(query("LIKE", "e%")$region, "EU")
+  expect_equal(query("NOT IN", "EU, XX")$value, 100)
+  expect_equal(query(">=", "150", "value")$value, 150)
+  expect_equal(query("<=", "100", "value")$value, 100)
+  expect_match(query("LIKE", "EU\\")$error, "unescaped")
+  expect_match(query("BETWEEN", "1")$error, "Invalid filter operator")
+  expect_match(query("NOT IN", " , ")$error, "at least one value")
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(`_sid` = 1, region = c("100%", "1000"), year = "2024", value = 1))
+  expect_identical(query("LIKE", "100\\%")$region, "100%")
+  DBI::dbDisconnect(env$conn)
+})

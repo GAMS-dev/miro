@@ -13,7 +13,9 @@
 #' and the data that ends up in the sandbox cannot drift apart.
 #' ==========================================================================
 AI_INPUT_CHANGE_OPERATIONS <- c("MULTIPLY", "DIVIDE", "ADD", "SUBTRACT", "SET")
-AI_INPUT_CHANGE_FILTER_OPERATORS <- c("=", "!=", ">", ">=", "<", "<=", "IN")
+AI_FILTER_OPERATORS <- c("=", "!=", ">", ">=", "<", "<=", "IN", "NOT IN", "LIKE")
+AI_INPUT_CHANGE_FILTER_OPERATORS <- setdiff(AI_FILTER_OPERATORS, "LIKE")
+AI_LIKE_DESCRIPTION <- "`LIKE` is case-insensitive; `%` matches any text, `_` one character, `\\%`/`\\_` a literal `%`/`_`."
 AI_INPUT_CHANGE_PREVIEW_ROWS <- 50L
 AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS <- 10L
 AI_MAX_LISTED_CHOICES <- 50L
@@ -57,6 +59,44 @@ formatAiInputValue <- function(values) {
   return(formatted)
 }
 
+aiLikePatternError <- function(pattern) {
+  if (!is.character(pattern) || length(pattern) != 1L || is.na(pattern)) {
+    return("A LIKE pattern must be a single string.")
+  }
+  if (grepl("(^|[^\\\\])(\\\\\\\\)*\\\\$", pattern)) {
+    return(sprintf("LIKE pattern '%s' must not end with an unescaped `\\`.", pattern))
+  }
+  return(NULL)
+}
+
+aiParseInTargets <- function(value) {
+  return(trimws(strsplit(value, ",", fixed = TRUE)[[1L]]))
+}
+
+aiFilterValueError <- function(operator, value) {
+  if (!is.character(value) || length(value) != 1L || is.na(value)) {
+    return("A filter value must be a single string.")
+  }
+  if (identical(operator, "LIKE")) {
+    return(aiLikePatternError(value))
+  }
+  if (operator %in% c("IN", "NOT IN") && !length(setdiff(aiParseInTargets(value), ""))) {
+    return(sprintf("`%s` needs a comma-separated list of at least one value.", operator))
+  }
+  return(NULL)
+}
+
+aiFilterSql <- function(conn, escColumn, operator, value, quoteValue = function(v) DBI::dbQuoteLiteral(conn, v)) {
+  if (operator %in% c("IN", "NOT IN")) {
+    targets <- vapply(aiParseInTargets(value), quoteValue, character(1L), USE.NAMES = FALSE)
+    return(sprintf("%s %s (%s)", escColumn, operator, paste(targets, collapse = ", ")))
+  }
+  if (identical(operator, "LIKE")) {
+    return(sprintf("LOWER(CAST(%s AS TEXT)) LIKE LOWER(%s) ESCAPE '\\'", escColumn, DBI::dbQuoteString(conn, value)))
+  }
+  return(sprintf("%s %s %s", escColumn, operator, quoteValue(value)))
+}
+
 computeAiInputChangeValues <- function(values, operation, value) {
   return(switch(operation,
     MULTIPLY = values * value,
@@ -79,9 +119,17 @@ matchAiInputChangeRows <- function(data, filters) {
   rowMask <- rep(TRUE, noRows)
   for (filterSpec in filters) {
     colValues <- data[[filterSpec$columnIdx]]
-    if (identical(filterSpec$operator, "IN")) {
-      targets <- trimws(strsplit(filterSpec$value, ",", fixed = TRUE)[[1L]])
-      comparison <- as.character(colValues) %in% targets
+    if (filterSpec$operator %in% c("IN", "NOT IN")) {
+      targets <- aiParseInTargets(filterSpec$value)
+      comparison <- if (isTRUE(filterSpec$isNumericColumn)) {
+        suppressWarnings(as.numeric(colValues)) %in% as.numeric(targets)
+      } else {
+        as.character(colValues) %in% targets
+      }
+      if (identical(filterSpec$operator, "NOT IN")) {
+        comparison <- !comparison
+      }
+      comparison[is.na(colValues)] <- FALSE
     } else if (filterSpec$operator %in% c("=", "!=")) {
       numericTarget <- suppressWarnings(as.numeric(filterSpec$value))
       if (is.numeric(colValues) && !is.na(numericTarget)) {
@@ -477,12 +525,12 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               ),
               operator = list(
                 type = "string",
-                enum = c("=", "!=", ">", "<", "LIKE", "IN"),
-                description = "The SQL comparison operator."
+                enum = AI_FILTER_OPERATORS,
+                description = paste("The SQL comparison operator.", AI_LIKE_DESCRIPTION)
               ),
               value = list(
                 type = "string",
-                description = "The value to filter by."
+                description = "The value to filter by. `IN`/`NOT IN` take a comma-separated list of values."
               )
             ),
             required = c("column", "operator", "value")
@@ -1031,22 +1079,22 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         for (i in seq_len(nrow(filters))) {
           fCol <- filters$column[i]
           fOp <- filters$operator[i]
-          fVal <- filters$value[i]
+          fVal <- as.character(filters$value[i])
 
           if (!fCol %in% validCols) {
             return(jsonlite::toJSON(list(error = "Forbidden target filter column configuration."), auto_unbox = TRUE))
           }
-          if (!fOp %in% c("=", "!=", ">", "<", "LIKE", "IN")) {
-            return(jsonlite::toJSON(list(error = "Forbidden SQL evaluation operator usage."), auto_unbox = TRUE))
+          if (!fOp %in% AI_FILTER_OPERATORS) {
+            return(jsonlite::toJSON(list(error = sprintf(
+              "Invalid filter operator '%s'. Must be one of: %s.", fOp, paste(AI_FILTER_OPERATORS, collapse = ", ")
+            )), auto_unbox = TRUE))
           }
 
-          if (fOp == "IN") {
-            val_vector <- trimws(unlist(strsplit(fVal, ",")))
-            quoted_vals <- paste(vapply(val_vector, function(v) DBI::dbQuoteLiteral(private$conn, v), character(1)), collapse = ", ")
-            whereClause <- sprintf("%s AND %s IN (%s)", whereClause, DBI::dbQuoteIdentifier(private$conn, fCol), quoted_vals)
-          } else {
-            whereClause <- sprintf("%s AND %s %s %s", whereClause, DBI::dbQuoteIdentifier(private$conn, fCol), fOp, DBI::dbQuoteLiteral(private$conn, fVal))
+          valueError <- aiFilterValueError(fOp, fVal)
+          if (!is.null(valueError)) {
+            return(jsonlite::toJSON(list(error = valueError), auto_unbox = TRUE))
           }
+          whereClause <- sprintf("%s AND %s", whereClause, aiFilterSql(private$conn, DBI::dbQuoteIdentifier(private$conn, fCol), fOp, fVal))
         }
       }
 
@@ -1657,13 +1705,17 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         if (operator %in% c(">", ">=", "<", "<=") && !isNumericCol) {
           return(sprintf("Operator '%s' requires a numeric filter column, but '%s' is not numeric.", operator, symColumns$names[[colIdx]]))
         }
+        valueError <- aiFilterValueError(operator, filterValue)
+        if (!is.null(valueError)) {
+          return(valueError)
+        }
         if (isNumericCol) {
           # comparing a numeric column against text matches nothing in R and is
           # a type error in some databases, so it is rejected up front
           numericValues <- suppressWarnings(as.numeric(
-            if (identical(operator, "IN")) trimws(strsplit(filterValue, ",", fixed = TRUE)[[1L]]) else filterValue
+            if (operator %in% c("IN", "NOT IN")) aiParseInTargets(filterValue) else filterValue
           ))
-          if (!length(numericValues) || anyNA(numericValues)) {
+          if (!length(numericValues) || !all(is.finite(numericValues))) {
             return(sprintf(
               "Filter value '%s' is not a number, but column '%s' is numeric.",
               filterValue, symColumns$names[[colIdx]]
@@ -1689,23 +1741,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       for (filterSpec in change$filters) {
         escCol <- DBI::dbQuoteIdentifier(private$conn, dbColNames[[filterSpec$columnIdx]])
         quoteValue <- function(value) {
-          if (isTRUE(filterSpec$isNumericColumn)) {
-            return(DBI::dbQuoteLiteral(private$conn, as.numeric(value)))
-          }
-          return(DBI::dbQuoteLiteral(private$conn, value))
+          DBI::dbQuoteLiteral(private$conn, if (isTRUE(filterSpec$isNumericColumn)) as.numeric(value) else value)
         }
-        if (identical(filterSpec$operator, "IN")) {
-          targets <- trimws(strsplit(filterSpec$value, ",", fixed = TRUE)[[1L]])
-          whereClause <- sprintf(
-            "%s AND %s IN (%s)", whereClause, escCol,
-            paste(vapply(targets, quoteValue, character(1L), USE.NAMES = FALSE), collapse = ", ")
-          )
-        } else {
-          whereClause <- sprintf(
-            "%s AND %s %s %s", whereClause, escCol,
-            filterSpec$operator, quoteValue(filterSpec$value)
-          )
-        }
+        whereClause <- sprintf("%s AND %s", whereClause, aiFilterSql(private$conn, escCol, filterSpec$operator, filterSpec$value, quoteValue))
       }
       return(whereClause)
     },
@@ -1784,7 +1822,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
                   operator = list(
                     type = "string",
                     enum = AI_INPUT_CHANGE_FILTER_OPERATORS,
-                    description = "`IN` takes a comma-separated list of values. The ordering operators require a numeric column."
+                    description = "`IN`/`NOT IN` take a comma-separated list of values; to change many codes, find them first with a `LIKE` query. The ordering operators require a numeric column."
                   ),
                   value = list(type = "string", description = "Value to compare against.")
                 ),

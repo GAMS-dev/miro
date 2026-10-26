@@ -186,6 +186,56 @@ test_that("matchAiInputChangeRows supports the documented operators", {
   expect_equal(matchAiInputChangeRows(data, list()), rep(TRUE, 3L))
 })
 
+test_that("matchAiInputChangeRows supports NOT IN like SQL", {
+  data <- tibble::tibble(
+    prc = c("EECOA-ST", "eecoa_x", "EEGAS-CC", NA, "100%"),
+    value = c(1, 2, 3, 4, 5)
+  )
+  match <- function(operator, value, columnIdx = 1L, isNumericColumn = FALSE) {
+    matchAiInputChangeRows(data, list(list(
+      columnIdx = columnIdx, operator = operator, value = value, isNumericColumn = isNumericColumn
+    )))
+  }
+  expect_equal(match("NOT IN", "EECOA-ST, 100%"), c(FALSE, TRUE, TRUE, FALSE, FALSE))
+  expect_equal(match("NOT IN", "1.0,3", columnIdx = 2L, isNumericColumn = TRUE), c(FALSE, TRUE, FALSE, TRUE, TRUE))
+})
+
+test_that("modifySandboxInputData selects the same rows in the database as in R", {
+  env <- setup_modify_test_env()
+  DBI::dbAppendTable(env$conn, "data_demand", tibble::tibble(`_sid` = 1, region = NA_character_, year = "2026", value = 5))
+  sandboxData <- DBI::dbGetQuery(env$conn, "SELECT region, year, value FROM data_demand WHERE _sid = 1")
+  for (filter in list(
+    list(column = "year", operator = "NOT IN", value = "2025"),
+    list(column = "region", operator = "NOT IN", value = "NA"),
+    list(column = "value", operator = "NOT IN", value = "150, 5"),
+    list(column = "value", operator = ">=", value = "150"),
+    list(column = "value", operator = "<=", value = "150")
+  )) {
+    res <- jsonlite::fromJSON(env$adapter$modifySandboxInputData(list(
+      symbolName = "demand", targetColumn = "value", operation = "ADD", value = 1,
+      filters = as.data.frame(filter, stringsAsFactors = FALSE)
+    )))
+    change <- env$adapter$getPendingInputChanges()[[length(env$adapter$getPendingInputChanges())]]
+    expect_equal(res$valuesAffected, sum(matchAiInputChangeRows(sandboxData, change$filters)), info = filter$operator)
+  }
+  expect_match(jsonlite::fromJSON(env$adapter$modifySandboxInputData(list(
+    symbolName = "demand", targetColumn = "value", operation = "ADD", value = 1,
+    filters = data.frame(column = "region", operator = "LIKE", value = "E%")
+  )))$error, "Invalid filter operator 'LIKE'")
+  expect_match(jsonlite::fromJSON(env$adapter$modifySandboxInputData(list(
+    symbolName = "demand", targetColumn = "value", operation = "ADD", value = 1,
+    filters = data.frame(column = "region", operator = "IN", value = "")
+  )))$error, "at least one value")
+  expect_match(jsonlite::fromJSON(env$adapter$modifySandboxInputData(
+    '{"symbolName":"demand","targetColumn":"value","operation":"ADD","value":1,"filters":[{"column":"region","operator":"NOT IN","value":null}]}'
+  ))$error, "single string")
+  expect_match(jsonlite::fromJSON(env$adapter$modifySandboxInputData(list(
+    symbolName = "demand", targetColumn = "value", operation = "ADD", value = 1,
+    filters = data.frame(column = "value", operator = ">", value = "Inf")
+  )))$error, "not a number")
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("matchAiInputChangeRows combines several filters with AND", {
   data <- tibble::tibble(
     region = c("EU", "EU", "NA"),
