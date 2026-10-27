@@ -457,6 +457,11 @@ observeEvent(input$miroAiUserText, {
   aiActivityCursor <<- 0L
   aiTaskRunning(TRUE)
   aiAssistantState$requestIsSandbox <<- isTRUE(aiAssistantState$contextIsSandbox)
+  aiAssistantState$requestScenIdNameMap <<- if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
+    c(dialogState$scenIdNameMap, setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid()))
+  } else {
+    dialogState$scenIdNameMap
+  }
   aiTask$invoke(
     userInput = modelInput,
     dbConnProvider = dbConnProvider,
@@ -465,11 +470,7 @@ observeEvent(input$miroAiUserText, {
     assistantConfig = c(config$aiAssistant, list(emptyUEL = config$pivotCompSettings$emptyUEL %||% "-")),
     model = aiAssistantState$model,
     allowedSids = aiAssistantState$activeSids,
-    scenIdNameMap = if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
-      c(dialogState$scenIdNameMap, setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid()))
-    } else {
-      dialogState$scenIdNameMap
-    },
+    scenIdNameMap = aiAssistantState$requestScenIdNameMap,
     history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory),
     allowInputModification = aiCanModifyInput(),
     activityFile = mAiActivityFile
@@ -508,6 +509,7 @@ observe({
   if (length(result$charts)) {
     aiAssistantState$charts[names(result$charts)] <<- lapply(result$charts, function(chart) {
       chart$isSandbox <- aiAssistantState$requestIsSandbox
+      chart$scenIdNameMap <- aiAssistantState$requestScenIdNameMap
       chart$canOpenInPivot <- !is.null(getAiChartPivotTarget(chart))
       return(chart)
     })
@@ -562,7 +564,7 @@ openAiChartInPivot <- function(chart) {
   pivotCompViewOverrides[[sheetName]] <<- view
   pivotCompSheetToOpen <<- sheetName
   currentCompMode <<- "pivot"
-  scenData$setScenIdNameMap(character(0L))
+  scenData$setScenIdNameMap(chart$scenIdNameMap %||% character(0L))
   session$sendCustomMessage("gms-hideAiDrawer", list())
   loadScenariosIntoCompareMode("pivotView")
 }

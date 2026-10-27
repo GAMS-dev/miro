@@ -59,8 +59,12 @@ formatAiInputValue <- function(values) {
   return(formatted)
 }
 
+aiIsString <- function(x) {
+  return(is.character(x) && length(x) == 1L && !is.na(x))
+}
+
 aiLikePatternError <- function(pattern) {
-  if (!is.character(pattern) || length(pattern) != 1L || is.na(pattern)) {
+  if (!aiIsString(pattern)) {
     return("A LIKE pattern must be a single string.")
   }
   if (grepl("(^|[^\\\\])(\\\\\\\\)*\\\\$", pattern)) {
@@ -74,7 +78,7 @@ aiParseInTargets <- function(value) {
 }
 
 aiFilterValueError <- function(operator, value) {
-  if (!is.character(value) || length(value) != 1L || is.na(value)) {
+  if (!aiIsString(value)) {
     return("A filter value must be a single string.")
   }
   if (identical(operator, "LIKE")) {
@@ -296,7 +300,8 @@ aiChartAggregationFunctions <- c("sum", "mean", "median", "min", "max", "count",
 aiChartMaxSeries <- 30L
 aiChartMaxCategories <- 500L
 aiChartMaxSlices <- 30L
-aiChartMaxRows <- 500000L
+aiChartMaxRows <- 100000L
+aiChartSqlAggregations <- c(sum = "SUM", mean = "AVG", min = "MIN", max = "MAX", count = "COUNT")
 AIToolAdapter <- R6Class("AIToolAdapter",
   public = list(
     initialize = function(dbSchema, conn, ioConfig, inputModificationEnabled = FALSE, emptyUEL = "-") {
@@ -597,14 +602,14 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(private$toolError("Invalid JSON argument format."))
       }
       symName <- args$symbolName
-      if (length(symName) != 1L || !is.character(symName) || is.null(private$symbols[[symName]])) {
+      if (!aiIsString(symName) || is.null(private$symbols[[symName]])) {
         return(private$toolError("`symbolName` must be the name of a symbol in databaseSymbols."))
       }
       chartType <- args$chartType
-      if (length(chartType) != 1L || !chartType %in% aiChartTypes) {
+      if (!aiIsString(chartType) || !chartType %in% aiChartTypes) {
         return(private$toolError(sprintf("`chartType` must be one of: %s.", paste(aiChartTypes, collapse = ", "))))
       }
-      scenarioNames <- private$asCharVector(args$scenarioNames)
+      scenarioNames <- private$asStringArray(args$scenarioNames)
       sids <- suppressWarnings(as.integer(private$scenarioMap[scenarioNames]))
       if (!length(sids) || anyNA(sids) || !all(sids %in% private$allowedSids)) {
         return(private$toolError("Access Denied: Requested `scenarioNames` are not available or loaded in the current active session context."))
@@ -616,8 +621,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(private$toolError(sprintf("Symbol '%s' cannot be charted.", symName)))
       }
       dims <- c("_scenName", indexCols, if (length(valueCols) > 1L) "Hdr")
-      rows <- private$asCharVector(args$rows)
-      cols <- private$asCharVector(args$cols)
+      rows <- private$asStringArray(args$rows)
+      cols <- private$asStringArray(args$cols)
+      if (is.null(rows) || is.null(cols)) {
+        return(private$toolError("`rows` and `cols` must be arrays of dimension names."))
+      }
       filters <- private$parseChartFilters(args$filters)
       if (is.null(filters)) {
         return(private$toolError("`filters` must be an array of objects with a unique `column` and `values`."))
@@ -641,18 +649,28 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if ("_scenName" %in% names(filters)) {
         return(private$toolError("Select scenarios via `scenarioNames` instead of filtering `_scenName`."))
       }
+      if (length(sids) > 1L && !"_scenName" %in% c(rows, cols)) {
+        return(private$toolError("Several scenarios requested: put `_scenName` in `rows` or `cols`, or chart a single scenario."))
+      }
+      invalidHdr <- setdiff(filters$Hdr, valueCols)
+      if (length(invalidHdr)) {
+        return(private$toolError(sprintf(
+          "No data for value(s) %s of dimension 'Hdr'. Valid values: %s.",
+          paste(invalidHdr, collapse = ", "), paste(valueCols, collapse = ", ")
+        )))
+      }
       aggregationFunction <- if (length(args$aggregationFunction)) args$aggregationFunction else "sum"
-      if (length(aggregationFunction) != 1L || !aggregationFunction %in% aiChartAggregationFunctions) {
+      if (!aiIsString(aggregationFunction) || !aggregationFunction %in% aiChartAggregationFunctions) {
         return(private$toolError(sprintf("`aggregationFunction` must be one of: %s.", paste(aiChartAggregationFunctions, collapse = ", "))))
       }
       baselineComparison <- NULL
       baselineSid <- NULL
       baselineMetric <- if (length(args$baselineMetric)) args$baselineMetric else "none"
-      if (length(baselineMetric) != 1L || !baselineMetric %in% c("none", aiChartBaselineMetrics)) {
+      if (!aiIsString(baselineMetric) || !baselineMetric %in% c("none", aiChartBaselineMetrics)) {
         return(private$toolError(sprintf("`baselineMetric` must be one of: none, %s.", paste(aiChartBaselineMetrics, collapse = ", "))))
       }
       if (!identical(baselineMetric, "none")) {
-        if (length(args$baselineScenarioName) != 1L || !args$baselineScenarioName %in% scenarioNames) {
+        if (!aiIsString(args$baselineScenarioName) || !args$baselineScenarioName %in% scenarioNames) {
           return(private$toolError("`baselineScenarioName` must be one of `scenarioNames`."))
         }
         if (!"_scenName" %in% c(rows, cols)) {
@@ -662,9 +680,19 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         baselineComparison <- list(domain = "_scenName", record = args$baselineScenarioName, metrics = list(baselineMetric))
       }
 
-      data <- private$fetchChartData(symName, sids, indexCols, valueCols, filters)
+      view <- private$buildChartView(dims, rows, cols, filters, aggregationFunction, baselineComparison)
+      prepareView <- view
+      aggregatedCols <- character(0L)
+      if (length(view$aggregations) && aggregationFunction %in% names(aiChartSqlAggregations)) {
+        aggregatedCols <- names(view$aggregations)
+        prepareView$aggregations <- NULL
+      }
+      data <- private$fetchChartData(symName, sids, indexCols, valueCols, filters, aggregatedCols, aggregationFunction)
       if (is.character(data)) {
         return(private$toolError(data))
+      }
+      if (!nrow(data)) {
+        return(private$toolError("No data matches the requested scenarios and filters."))
       }
       for (filterCol in names(filters)) {
         missingValues <- setdiff(filters[[filterCol]], data[[filterCol]])
@@ -675,11 +703,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           )))
         }
       }
-      if (!nrow(data)) {
-        return(private$toolError("No data found for the requested scenarios."))
-      }
-      view <- private$buildChartView(dims, rows, cols, filters, aggregationFunction, baselineComparison)
-      prepared <- tryCatch(dashboardPrepareData(view, data)$data, error = function(err) {
+      prepared <- tryCatch(dashboardPrepareData(prepareView, data)$data, error = function(err) {
         return(conditionMessage(err))
       })
       if (is.character(prepared)) {
@@ -704,12 +728,13 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           length(labels), length(seriesCols), maxLabels, aiChartMaxSeries
         )))
       }
-      chartTitle <- if (length(args$title)) as.character(args$title)[[1L]] else ""
+      chartTitle <- if (aiIsString(args$title)) args$title else ""
       seriesNames <- if (length(cols)) seriesCols else symAlias
       colorKeys <- if (isPie) labels else seriesNames
-      colors <- unlist(args$colors)
+      colors <- args$colors
       if (length(colors)) {
-        if (!is.character(colors) || is.null(names(colors)) || !all(names(colors) %in% colorKeys) ||
+        colors <- if (is.list(colors) && all(vapply(colors, aiIsString, logical(1L)))) unlist(colors)
+        if (is.null(names(colors)) || !all(names(colors) %in% colorKeys) ||
           !all(grepl("^#[0-9A-Fa-f]{6}$", colors))) {
           return(private$toolError(sprintf(
             "`colors` must map %1$s to #rrggbb colors. Valid %1$s: %2$s.",
@@ -1261,30 +1286,44 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
       return(data[, !isEmpty, drop = FALSE])
     },
-    asCharVector = function(x) {
-      return(unique(as.character(unlist(x, use.names = FALSE))))
+    asStringArray = function(x) {
+      if (is.list(x)) {
+        if (!is.null(names(x)) || !all(vapply(x, function(el) is.atomic(el) && length(el) == 1L, logical(1L)))) {
+          return(NULL)
+        }
+        x <- unlist(x, use.names = FALSE)
+      }
+      if (!is.null(x) && (!(is.character(x) || is.numeric(x)) || anyNA(x))) {
+        return(NULL)
+      }
+      return(unique(as.character(x)))
     },
     parseChartFilters = function(filters) {
       if (!length(filters)) {
         return(list())
       }
       if (is.data.frame(filters)) {
-        filters <- lapply(seq_len(nrow(filters)), function(rowIdx) as.list(filters[rowIdx, , drop = FALSE]))
-      } else if (length(filters$column)) {
+        filters <- lapply(seq_len(nrow(filters)), function(rowIdx) lapply(filters, `[[`, rowIdx))
+      } else if (!is.list(filters)) {
+        return(NULL)
+      } else if (!is.null(names(filters))) {
         filters <- list(filters)
       }
       parsed <- list()
       for (filter in filters) {
-        if (!is.list(filter) || length(filter$column) != 1L || !length(filter$values) ||
-          as.character(filter$column) %in% names(parsed)) {
+        if (!is.list(filter) || !aiIsString(filter$column) || filter$column %in% names(parsed)) {
           return(NULL)
         }
-        parsed[[as.character(filter$column)]] <- private$asCharVector(filter$values)
+        values <- private$asStringArray(filter$values)
+        if (!length(values)) {
+          return(NULL)
+        }
+        parsed[[filter$column]] <- values
       }
       return(parsed)
     },
-    fetchChartData = function(symName, sids, indexCols, valueCols, filters) {
-      escCol <- function(colName) DBI::dbQuoteIdentifier(private$conn, colName)
+    fetchChartData = function(symName, sids, indexCols, valueCols, filters, aggregatedCols, aggregationFunction) {
+      escCol <- function(colName) as.character(DBI::dbQuoteIdentifier(private$conn, colName))
       whereClauses <- sprintf("%s IN (%s)", escCol("_sid"), paste(sids, collapse = ","))
       for (filterCol in intersect(names(filters), indexCols)) {
         whereClauses <- c(whereClauses, sprintf(
@@ -1292,11 +1331,19 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           paste(DBI::dbQuoteString(private$conn, filters[[filterCol]]), collapse = ",")
         ))
       }
+      keyCols <- vapply(c("_sid", setdiff(indexCols, aggregatedCols)), escCol, character(1L))
+      selectedValueCols <- if (length(filters$Hdr)) filters$Hdr else valueCols
+      valueExprs <- vapply(selectedValueCols, escCol, character(1L))
+      groupBy <- ""
+      if (length(aggregatedCols)) {
+        valueExprs <- sprintf("%s(%s) AS %s", aiChartSqlAggregations[[aggregationFunction]], valueExprs, valueExprs)
+        groupBy <- sprintf(" GROUP BY %s", paste(keyCols, collapse = ", "))
+      }
       query <- sprintf(
-        "SELECT %s FROM %s WHERE %s LIMIT %d",
-        paste(vapply(c("_sid", indexCols, valueCols), escCol, character(1L)), collapse = ", "),
+        "SELECT %s FROM %s WHERE %s%s LIMIT %d",
+        paste(c(keyCols, valueExprs), collapse = ", "),
         escCol(private$dbSchema$getDbTableName(symName)),
-        paste(whereClauses, collapse = " AND "), aiChartMaxRows + 1L
+        paste(whereClauses, collapse = " AND "), groupBy, aiChartMaxRows + 1L
       )
       data <- tryCatch(DBI::dbGetQuery(private$conn, query), error = function(err) {
         return(sprintf("Database Engine Interface Error: %s", conditionMessage(err)))
@@ -1308,13 +1355,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return("Too much data for a chart. Narrow it down with `filters`.")
       }
       data <- tibble::as_tibble(data)
+      data[selectedValueCols] <- lapply(data[selectedValueCols], as.numeric)
       data[["_sid"]] <- unname(private$scenarioMapById[as.character(data[["_sid"]])])
       names(data)[1L] <- "_scenName"
       if (length(valueCols) > 1L) {
-        data <- tidyr::pivot_longer(data, all_of(valueCols), names_to = "Hdr", values_to = "value", names_repair = "minimal")
-        if (length(filters$Hdr)) {
-          data <- data[data$Hdr %in% filters$Hdr, ]
-        }
+        data <- tidyr::pivot_longer(data, all_of(selectedValueCols), names_to = "Hdr", values_to = "value", names_repair = "minimal")
       } else {
         names(data)[length(data)] <- "value"
       }
@@ -1350,7 +1395,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         cols = list(type = "array", items = list(type = "string"), description = "Series dimensions."),
         filters = list(
           type = "array",
-          description = "Keep only these values of a dimension (scenarios: use `scenarioNames`).",
+          description = "Keep only these values of a dimension (scenarios: use `scenarioNames`). A `rows` dimension filtered to a single value is dropped from the categories.",
           items = list(
             type = "object",
             properties = list(

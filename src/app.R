@@ -1868,6 +1868,7 @@ if (!is.null(errMsg)) {
           charts = list(),
           pendingChartId = NULL,
           requestIsSandbox = FALSE,
+          requestScenIdNameMap = character(0L),
           chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
         )
       } else {

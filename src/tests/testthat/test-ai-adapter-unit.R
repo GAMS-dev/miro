@@ -1334,7 +1334,7 @@ test_that("createChart rejects invalid charts with helpful errors", {
   expect_match(createChartError(list(rows = list("country"))), "Unknown dimension")
   expect_match(createChartError(list(rows = list("region"), cols = list("region"))), "either in `rows` or in `cols`")
   expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "_scenName", values = list("Base"))))), "scenarioNames")
-  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "region", values = list("Asia"))))), "No data for value")
+  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "region", values = list("Asia"))))), "No data matches")
   expect_match(createChartError(list(rows = list("region"), chartType = "radar")), "chartType")
   env$adapter$setAllowedSids(1)
   expect_match(createChartError(list(rows = list("region"), scenarioNames = "High Demand")), "Access Denied")
@@ -1401,6 +1401,57 @@ test_that("createChart aggregates and filters like MIRO Pivot", {
   DBI::dbDisconnect(env$conn)
 })
 
+test_that("createChart aggregates in the database and falls back to R for median and sd", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chartValues <- function(aggregationFunction) {
+    createTestChart(env, list(rows = list("region"), scenarioNames = "Base", aggregationFunction = aggregationFunction))$datasets[[1]]$data
+  }
+  expect_equal(chartValues("sum"), c(3, 7))
+  expect_equal(chartValues("count"), c(2, 2))
+  expect_equal(chartValues("max"), c(2, 4))
+  expect_equal(chartValues("median"), c(1.5, 3.5))
+  expect_equal(chartValues("sd"), c(sd(1:2), sd(3:4)))
+  chart <- createTestChart(env, list(rows = list("region"), scenarioNames = "Base"))
+  expect_identical(names(chart$view$aggregations), c("_scenName", "year"))
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart requires the scenario dimension when charting several scenarios", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  expect_match(createTestChart(env, list(rows = list("region"))), "Several scenarios requested", fixed = TRUE)
+  expect_match(createTestChart(env, list(
+    rows = list("region"), filters = list(list(column = "year", values = list("2024")))
+  )), "Several scenarios requested", fixed = TRUE)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart rejects malformed arguments with tool errors", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chartArgs <- function(...) modifyList(list(scenarioNames = "Base", rows = list("region")), list(...))
+  expect_match(createTestChart(env, list(symbolName = NULL, scenarioNames = "Base", rows = list("region"))), "`symbolName`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(symbolName = list(name = "sym"))), "`symbolName`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(chartType = list("bar"))), "`chartType`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(scenarioNames = list(name = "Base"))), "Access Denied", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(scenarioNames = list())), "Access Denied", fixed = TRUE)
+  expect_match(createTestChart(env, list(scenarioNames = "Base", rows = list(list("region", "year")))), "`rows` and `cols`", fixed = TRUE)
+  expect_match(createTestChart(env, list(scenarioNames = "Base", rows = list(dim = "region"))), "`rows` and `cols`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(cols = TRUE)), "`rows` and `cols`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(filters = "year")), "`filters`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(filters = list(list(column = list("year"), values = list("2025"))))), "`filters`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(filters = list(list(column = "year", values = list())))), "`filters`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(filters = list(list(column = "year")))), "`filters`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(aggregationFunction = list("sum"))), "`aggregationFunction`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(baselineMetric = list(metric = "none"))), "`baselineMetric`", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(colors = "#d62728")), "#rrggbb", fixed = TRUE)
+  expect_match(createTestChart(env, chartArgs(colors = list(Sym = list("#d62728")))), "#rrggbb", fixed = TRUE)
+  chart <- createTestChart(env, chartArgs(title = list("Demand"), filters = list(column = "year", values = list("2025"))))
+  expect_identical(chart$title, "")
+  expect_equal(chart$datasets[[1]]$data, c(2, 4))
+  expect_identical(chart$view$filter, list(year = "2025"))
+  expect_length(env$adapter$getCharts(), 1L)
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("createChart compares symbols with any value column name against a baseline", {
   env <- createChartAdapter(yearData, yearHeaders)
   chart <- createTestChart(env, list(
@@ -1423,9 +1474,9 @@ test_that("createChart applies custom series colors and passes them to the pivot
     title = "Demand", customChartColors = list(`High Demand` = c("#d62728", "#d62728"))
   ))
   expect_length(createTestChart(env, list(rows = list("region"), scenarioNames = "Base"))$view$chartOptions, 0L)
-  expect_match(createTestChart(env, list(rows = list("region"), colors = list(Unknown = "#d62728"))), "Valid series: Sym.", fixed = TRUE)
-  expect_match(createTestChart(env, list(rows = list("region"), colors = list(Sym = "red"))), "#rrggbb", fixed = TRUE)
-  expect_match(createTestChart(env, list(rows = list("region"), colors = list("#d62728"))), "#rrggbb", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), scenarioNames = "Base", colors = list(Unknown = "#d62728"))), "Valid series: Sym.", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), scenarioNames = "Base", colors = list(Sym = "red"))), "#rrggbb", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), scenarioNames = "Base", colors = list("#d62728"))), "#rrggbb", fixed = TRUE)
   chart <- createTestChart(env, list(rows = list("region"), scenarioNames = "Base", colors = list(Sym = "#d62728")))
   expect_identical(chart$datasets[[1]]$color, "#d62728")
   expect_length(chart$view$chartOptions$customChartColors, 1L)
@@ -1435,7 +1486,7 @@ test_that("createChart applies custom series colors and passes them to the pivot
   ))
   expect_identical(chart$datasets[[1]]$colors, c(NA, NA, NA, "#d62728"))
   expect_identical(chart$view$chartOptions$customChartColors, list(NA.2025 = c("#d62728", "#d62728")))
-  expect_match(createTestChart(env, list(rows = list("region"), chartType = "pie", colors = list(Sym = "#d62728"))), "Valid categories: EU, NA.", fixed = TRUE)
+  expect_match(createTestChart(env, list(rows = list("region"), scenarioNames = "Base", chartType = "pie", colors = list(Sym = "#d62728"))), "Valid categories: EU, NA.", fixed = TRUE)
   DBI::dbDisconnect(env$conn)
 })
 
@@ -1486,7 +1537,7 @@ test_that("createChart charts scalars per scenario and validates baseline argume
   expect_equal(chart$datasets[[1]]$data, c(3, 5))
   expect_null(chart$view$baselineComparison)
   expect_match(createTestChart(env, list(rows = list("_scenName"), baselineScenarioName = "Low Demand", baselineMetric = "normalization")), "must be one of `scenarioNames`")
-  expect_match(createTestChart(env, list(rows = list(), baselineScenarioName = "Base", baselineMetric = "normalization")), "requires `_scenName`")
+  expect_match(createTestChart(env, list(rows = list(), scenarioNames = "Base", baselineScenarioName = "Base", baselineMetric = "normalization")), "requires `_scenName`")
   expect_match(createTestChart(env, list(rows = list("_scenName"), baselineScenarioName = "Base", baselineMetric = "ratio")), "baselineMetric")
   DBI::dbDisconnect(env$conn)
 })
