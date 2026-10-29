@@ -1219,6 +1219,8 @@ upload_helm_chart:
           --only-show-errors;
       done
     - ./ci/update-helm-index.sh
+  after_script:
+    - rm -rf /tmp/priv.asc /tmp/helm-passphrase.txt "${CI_PROJECT_DIR}/.gnupg"
   artifacts:
     paths:
       - '*.tgz'
