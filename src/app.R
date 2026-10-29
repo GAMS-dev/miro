@@ -419,7 +419,7 @@ if (is.null(errMsg)) {
   } else {
     config$activateModules$remoteExecution <- FALSE
   }
-  if (!identical(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"), "")) {
+  if (!miroBuildOnly && !identical(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"), "")) {
     flog.info("AI Assistant config found")
     if (!length(config$aiAssistant)) {
       config$aiAssistant <- list()
