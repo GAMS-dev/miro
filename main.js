@@ -162,6 +162,21 @@ function hideZoomMenu() {
 
 let newAppConf;
 
+function validateAppId(appIdToValidate) {
+  if (
+    typeof appIdToValidate === 'string' ||
+    appIdToValidate instanceof String
+  ) {
+    if (/^[a-z0-9][a-z0-9-_]{0,59}$/.test(appIdToValidate)) {
+      return true;
+    }
+  }
+  log.warn(
+    "The App ID may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters! Invalid app.",
+  );
+  return false;
+}
+
 function validateMIROApp(filePathArg, sendToRendererProc = true) {
   log.debug(`Validating new MIRO app (filePath: ${filePathArg.join(',')}).`);
   return new Promise((resolve) => {
@@ -337,20 +352,6 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
             });
           }
         });
-        const validateAppId = (appIdToValidate) => {
-          if (
-            typeof appIdToValidate === 'string' ||
-            appIdToValidate instanceof String
-          ) {
-            if (/^[a-z0-9][a-z0-9-_]{0,59}$/.test(appIdToValidate)) {
-              return true;
-            }
-          }
-          log.warn(
-            "The App ID may only contain ASCII lowercase letters, digits, '-' and '_', must not start with '-' or '_' and may not be longer than 60 characters! Invalid app.",
-          );
-          return false;
-        };
         if (appMetadata == null) {
           // old app (< MIRO 2.3)
           const miroConfFormat =
@@ -427,6 +428,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
               message: errMsgTemplate,
             });
             resolve(false);
+            return;
           }
           const miroConfFormatBase =
             /(.*)_(\d)_(\d+)_(\d+\.\d+\.\d+)\.miroconf$/;
@@ -469,6 +471,7 @@ function validateMIROApp(filePathArg, sendToRendererProc = true) {
               message: errMsgTemplate,
             });
             resolve(false);
+            return;
           }
           log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
 API version: ${newAppConf.apiversion}, \
@@ -2049,6 +2052,10 @@ ipcMain.on('browse-app', (e, options, callback, id = null) => {
 
 ipcMain.on('add-app', async (e, newApp) => {
   log.debug('Add app request received.');
+  if (!validateAppId(newApp.id)) {
+    mainWindow.send('add-app-progress', -1);
+    return;
+  }
   const appConf = newApp;
   const appDir = path.join(appDataPath, appConf.id);
   try {
