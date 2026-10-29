@@ -15,7 +15,7 @@ RUN chmod +x build.sh
 
 RUN ./build.sh
 
-FROM --platform=linux/amd64 alpine:3.19
+FROM --platform=linux/amd64 alpine:3.24
 
 RUN apk update && \
     apk upgrade --available && \
