@@ -77,6 +77,10 @@ tryCatch(
       appId <- miroAppValidator$getAppId()
     } else {
       appId <- tolower(trimws(appId))
+      tryCatch(miroAppValidator$validateAppId(appId), error = function(e) {
+        write(sprintf("merr:::400:::%s", conditionMessage(e)), stderr())
+        quit("no", 1L, FALSE)
+      })
     }
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
