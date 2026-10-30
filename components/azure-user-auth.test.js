@@ -20,9 +20,12 @@ const silentLog = {
   debug() {}, info() {}, warn() {}, error() {},
 };
 const fakeSafeStorage = (available = true) => ({
-  isEncryptionAvailable: () => available,
-  encryptString: (text) => Buffer.from(`enc:${text}`),
-  decryptString: (buffer) => buffer.toString().replace(/^enc:/, ''),
+  isAsyncEncryptionAvailable: async () => available,
+  encryptStringAsync: async (text) => Buffer.from(`enc:${text}`),
+  decryptStringAsync: async (buffer) => ({
+    shouldReEncrypt: false,
+    result: buffer.toString().replace(/^enc:/, ''),
+  }),
 });
 
 // A stand-in for MSAL's PublicClientApplication that drives the cache plugin
