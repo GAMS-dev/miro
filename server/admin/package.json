@@ -24,14 +24,14 @@
     }
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.5",
-    "eslint": "^10.6.0",
+    "@eslint/eslintrc": "^3.3.7",
+    "eslint": "^10.13.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import-x": "^4.17.1",
     "eslint-webpack-plugin": "^6.0.0",
-    "globals": "^17.7.0",
-    "webpack": "^5.108.4",
-    "webpack-cli": "^7.2.1"
+    "globals": "^17.13.0",
+    "webpack": "^5.112.2",
+    "webpack-cli": "^7.2.3"
   },
   "dependencies": {
     "ajv": "^8.20.0",
