@@ -2052,7 +2052,7 @@ ipcMain.on('browse-app', (e, options, callback, id = null) => {
 
 ipcMain.on('add-app', async (e, newApp) => {
   log.debug('Add app request received.');
-  if (!validateAppId(newApp.id)) {
+  if (!validateAppId(newApp?.id)) {
     mainWindow.send('add-app-progress', -1);
     return;
   }
