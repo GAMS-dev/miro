@@ -78,14 +78,21 @@ class AzureUserAuth {
     return {
       beforeCacheAccess: async (cacheContext) => {
         if (!(await this.#safeStorage.isAsyncEncryptionAvailable())) return;
+        let decrypted;
         try {
           const encrypted = await fs.readFile(this.#cacheFile);
-          const { result } = await this.#safeStorage.decryptStringAsync(encrypted);
-          cacheContext.tokenCache.deserialize(result);
+          decrypted = await this.#safeStorage.decryptStringAsync(encrypted);
+          cacheContext.tokenCache.deserialize(decrypted.result);
         } catch (err) {
           if (err.code !== 'ENOENT') {
             this.#log.warn(`Could not read the Azure sign-in cache: ${err.message}`);
           }
+          return;
+        }
+        if (decrypted.shouldReEncrypt) {
+          await this.#writeCache(decrypted.result).catch((err) => {
+            this.#log.warn(`Could not re-encrypt the Azure sign-in cache: ${err.message}`);
+          });
         }
       },
       afterCacheAccess: async (cacheContext) => {
@@ -94,14 +101,18 @@ class AzureUserAuth {
           this.#log.warn('OS encryption is unavailable: Azure sign-in is kept in memory only.');
           return;
         }
-        await fs.mkdir(path.dirname(this.#cacheFile), { recursive: true });
-        await fs.writeFile(
-          this.#cacheFile,
-          await this.#safeStorage.encryptStringAsync(cacheContext.tokenCache.serialize()),
-          { mode: 0o600 },
-        );
+        await this.#writeCache(cacheContext.tokenCache.serialize());
       },
     };
+  }
+
+  async #writeCache(serialized) {
+    await fs.mkdir(path.dirname(this.#cacheFile), { recursive: true });
+    await fs.writeFile(
+      this.#cacheFile,
+      await this.#safeStorage.encryptStringAsync(serialized),
+      { mode: 0o600 },
+    );
   }
 
   #client({ tenantId, clientId }) {

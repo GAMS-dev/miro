@@ -19,12 +19,13 @@ const aiConfig = { apiKeys: [signInEntry] };
 const silentLog = {
   debug() {}, info() {}, warn() {}, error() {},
 };
+// `old:` marks data encrypted with a key that has since been rotated
 const fakeSafeStorage = (available = true) => ({
   isAsyncEncryptionAvailable: async () => available,
   encryptStringAsync: async (text) => Buffer.from(`enc:${text}`),
   decryptStringAsync: async (buffer) => ({
-    shouldReEncrypt: false,
-    result: buffer.toString().replace(/^enc:/, ''),
+    shouldReEncrypt: buffer.toString().startsWith('old:'),
+    result: buffer.toString().replace(/^(enc|old):/, ''),
   }),
 });
 
@@ -106,6 +107,14 @@ test('the token cache is only persisted encrypted', async () => {
   await auth.signIn(signInEntry);
   const raw = await fs.readFile(path.join(storageDir, 'azure-msal-cache.bin'), 'utf8');
   expect(raw.startsWith('enc:')).toBe(true);
+});
+
+test('a token cache encrypted with an outdated key is re-encrypted on read', async () => {
+  const { auth, storageDir } = await newAuth({ behaviour: { accounts: [{ username: 'u' }] } });
+  const cacheFile = path.join(storageDir, 'azure-msal-cache.bin');
+  await fs.writeFile(cacheFile, 'old:cached');
+  await auth.getAccessToken(signInEntry);
+  expect(await fs.readFile(cacheFile, 'utf8')).toBe('enc:cached');
 });
 
 test('without OS encryption the token cache is never written to disk', async () => {
