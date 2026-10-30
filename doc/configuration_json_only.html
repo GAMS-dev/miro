@@ -982,6 +982,8 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                         domain <span class="code">_scenName</span>, use the
                         record <span class="code">_baseline</span> to compare
                         all scenarios against the selected baseline scenario.
+                        The sandbox scenario is then only included if the user
+                        selects it.
                         <p></p>
                         Example: dashboard and dashboard comparison
                         configuration
@@ -1425,7 +1427,8 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                       <span class="code">true</span> to let users select a
                       baseline scenario when loading scenarios into your
                       comparison module. The baseline scenario is always the
-                      first scenario passed to your renderer function.
+                      first scenario passed to your renderer function, and the
+                      sandbox scenario is only included if the user selects it.
                     </p>
                     <p>
                       Below is the full schema used to validate the
@@ -1485,7 +1488,7 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
             &quot;type&quot;:&quot;object&quot;
         },
         &quot;selectBaseline&quot;:{
-            &quot;description&quot;:&quot;Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario (default: false).&quot;,
+            &quot;description&quot;:&quot;Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario. The sandbox scenario is then only included if selected by the user (default: false).&quot;,
             &quot;type&quot;:&quot;boolean&quot;,
             &quot;default&quot;:false
         }
@@ -1557,14 +1560,15 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                     <h6 class="api-header">Description</h6>
                     <p>
                       This method allows you to retrieve the data of the
-                      specified symbol for all loaded scenarios. If
+                      specified symbol for all loaded scenarios. The first
+                      element is the sandbox scenario or, if
                       <span class="code">selectBaseline</span> is enabled for
-                      your module, the first element is the baseline scenario
-                      selected by the user. To get the metadata (e.g. scenario
-                      name, scenario owner, etc.) of the different scenarios,
-                      use the <span class="code">getMetadata()</span> method.
-                      The order of the scenarios is the same for all symbols
-                      and the metadata.
+                      your module, the baseline scenario selected by the user.
+                      To get the metadata (e.g. scenario name, scenario owner,
+                      etc.) of the different scenarios, use the
+                      <span class="code">getMetadata()</span> method. The order
+                      of the scenarios is the same for all symbols and the
+                      metadata.
                     </p>
                     <h5>Get metadata</h5>
                     <div class="code-block">

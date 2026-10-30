@@ -4616,7 +4616,7 @@
             "$ref": "#/definitions/dashboardOptions"
           },
           "selectBaseline": {
-            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. Use the record _baseline in baselineComparison to compare against the selected baseline scenario (default: false).",
+            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. Use the record _baseline in baselineComparison to compare against the selected baseline scenario. The sandbox scenario is then only included if selected by the user (default: false).",
             "type": "boolean",
             "default": false
           }
@@ -4670,7 +4670,7 @@
             "type": "object"
           },
           "selectBaseline": {
-            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario (default: false).",
+            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario. The sandbox scenario is then only included if selected by the user (default: false).",
             "type": "boolean",
             "default": false
           }

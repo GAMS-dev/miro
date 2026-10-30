@@ -46,7 +46,6 @@ expect_true(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(4)').text()==='Ex
 app$run_js("$('#btBatchCompare+.dropdown-toggle').click()")
 Sys.sleep(0.5)
 app$run_js("$('#btBatchCompare~.dropdown-menu a:eq(2)').click();")
-confirmBatchCompareSettings(app, includeSandbox = TRUE)
 Sys.sleep(4L)
 expect_match(gsub(" ", "", app$get_values()$output[["cmpCustom_test1-maxstockVsErrorTrainTable"]], fixed = TRUE),
   "<tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td></tr>\n<tr><tdalign=\"right\">4.00</td><tdalign=\"right\">0.80</td>",
@@ -64,7 +63,6 @@ Sys.sleep(1L)
 expect_error(app$get_js("$('#btBatchCompare+.dropdown-toggle').click()"), NA)
 Sys.sleep(1L)
 expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(4)').click();"), NA)
-confirmBatchCompareSettings(app, includeSandbox = TRUE)
 Sys.sleep(2L)
 expect_error(app$wait_for_js("$('#cmpCustom_test3-title').text()==='bla blubB'", timeout = 2000L), NA)
 expect_error(app$wait_for_js("$('#btSelectCompareMode').text()==='External renderer'", timeout = 50L), NA)
@@ -133,7 +131,6 @@ Sys.sleep(0.5)
 app$set_inputs(batchLoadAll = "click")
 # first custom analysis
 app$run_js("$('#btBatchCompare+.dropdown-toggle').click()&&$('#btBatchCompare~.dropdown-menu a:eq(4)').click();")
-confirmBatchCompareSettings(app, includeSandbox = TRUE)
 Sys.sleep(2L)
 expect_true(app$get_js("$('.modal-body').is(':visible')===false"))
 
