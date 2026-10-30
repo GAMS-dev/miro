@@ -69,7 +69,7 @@ ARG OPENSSL_VERSION=3.0.3
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     tar -xvzf openssl-${OPENSSL_VERSION}.tar.gz && \
     cd openssl-${OPENSSL_VERSION} && \
-    ./config no-shared && \
+    ./config no-shared no-thread-pool no-quic && \
     make && \
     make install
 
