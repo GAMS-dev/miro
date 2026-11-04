@@ -169,7 +169,7 @@ for artifact in \
     GAMS-MIRO-Demo-Apps-GAMSPy.zip \
     latest.ver \
     miro_server_api.json \
-    assets/plugins/redoc/redoc.standalone.js
+    _static/redoc.standalone.js
 do
     require_output_file "$artifact"
 done

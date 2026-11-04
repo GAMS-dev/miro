@@ -286,27 +286,27 @@ Have a look at our fact sheets:
 
    .. grid-item::
 
-      .. raw:: html
+      .. image:: ../assets/images/cheat_sheets/interface_lowres.png
+         :alt: GAMS MIRO interface
+         :class: miro-fact-sheet-preview
 
-         <a href="assets/images/cheat_sheets/interface.png" download><img src="assets/images/cheat_sheets/interface_lowres.png" alt="GAMS MIRO interface" style="max-height:300px"></a>
-
-      The Interface
-
-   .. grid-item::
-
-      .. raw:: html
-
-         <a href="assets/images/cheat_sheets/development_deployment.png" download><img src="assets/images/cheat_sheets/development_deployment_lowres.png" alt="Development &amp; deployment" style="max-height:300px"></a>
-
-      Development & Deployment
+      :download:`The Interface <../assets/images/cheat_sheets/interface.png>`
 
    .. grid-item::
 
-      .. raw:: html
+      .. image:: ../assets/images/cheat_sheets/development_deployment_lowres.png
+         :alt: Development & deployment
+         :class: miro-fact-sheet-preview
 
-         <a href="assets/images/cheat_sheets/miro_server.png" download><img src="assets/images/cheat_sheets/miro_server_lowres.png" alt="GAMS MIRO Server" style="max-height:300px"></a>
+      :download:`Development & Deployment <../assets/images/cheat_sheets/development_deployment.png>`
 
-      GAMS MIRO Server
+   .. grid-item::
+
+      .. image:: ../assets/images/cheat_sheets/miro_server_lowres.png
+         :alt: GAMS MIRO Server
+         :class: miro-fact-sheet-preview
+
+      :download:`GAMS MIRO Server <../assets/images/cheat_sheets/miro_server.png>`
 
 .. toctree::
    :caption: Getting started

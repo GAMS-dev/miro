@@ -2,7 +2,6 @@
 
 from datetime import datetime
 from pathlib import Path
-import shutil
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -33,7 +32,16 @@ templates_path = ["_templates"]
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
+# Keep the legacy source tree, but publish only the runtime files still used.
+# image/figure directives and download roles track their own files separately.
+html_static_path = [
+    "_static",
+    "../assets/plugins/jquery.min.js",
+    "../assets/plugins/redoc/redoc.standalone.js",
+    "../assets/images/configuration_mode/configuration.mp4",
+    "../assets/images/miro-logo-wordmark-white.svg",
+]
+html_extra_path = ["../miro_server_api.json"]
 html_css_files = ["custom.css"]
 html_js_files = ["image-lightbox.js"]
 html_show_sourcelink = False
@@ -51,8 +59,8 @@ html_theme_options = {
     "navbar_end": [],
     "navbar_persistent": ["search-button-field"],
     "logo": {
-        "image_light": "../assets/images/miro-logo-wordmark.svg",
-        "image_dark": "../assets/images/miro-logo-wordmark-white.svg",
+        "image_light": "miro-logo-wordmark.svg",
+        "image_dark": "miro-logo-wordmark-white.svg",
     },
     "footer_start": [],
     "footer_center": [],
@@ -73,24 +81,6 @@ html_theme_options = {
 highlight_language = "none"
 copybutton_prompt_text = ""
 
-
-def copy_legacy_assets(app, exception):
-    """Keep legacy runtime files without a second checked-in asset tree.
-
-    html_static_path would put these under _static, and html_extra_path pointed
-    at doc/assets would flatten its contents into the output root. Copy only
-    into the build output instead; do not load legacy CSS or JavaScript
-    globally. The API specification is consumed by ReDoc on server_api.html.
-    """
-    if exception is None and app.builder.format == "html":
-        output_dir = Path(app.outdir)
-        shutil.copytree(DOC_DIR / "assets", output_dir / "assets", dirs_exist_ok=True)
-        shutil.copy2(DOC_DIR / "miro_server_api.json", output_dir / "miro_server_api.json")
-
-
-def setup(app):
-    app.connect("build-finished", copy_legacy_assets)
-    return {"parallel_read_safe": True, "parallel_write_safe": True}
 
 # The PyData theme suppresses its default TOC sidebar on the root document;
 # use the same local sidebar template under a distinct name so index retains it.

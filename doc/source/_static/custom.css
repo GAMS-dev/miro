@@ -525,3 +525,9 @@ article.bd-article > redoc pre {
     max-width: 100%;
     overflow-x: auto;
 }
+
+/* Fact-sheet previews use Sphinx-managed images; full-size files are downloads. */
+img.miro-fact-sheet-preview {
+  max-height: 300px;
+  width: auto;
+}

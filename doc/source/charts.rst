@@ -35,7 +35,7 @@ Besides the default tabular format, multidimensional GAMS symbols can be visuali
 .. raw:: html
 
    <video id="configVideo" class="miro-video-responsive" playsinline autoplay muted loop>
-     <source src="assets/images/configuration_mode/configuration.mp4" type="video/mp4">
+     <source src="_static/configuration.mp4" type="video/mp4">
    </video>
 
 The following sections show some examples for different chart types you can use in MIRO. It is not useful to describe all possible options MIRO supports. Instead, you should just explore it yourself! Start the Configuration Mode and play around with the data until you get a satisfactory result.
@@ -2381,15 +2381,23 @@ As already mentioned, not all the options available for the different graphs are
 
       When using animations, it is often useful to define the visible areas for both axes in the corresponding axis categories. Otherwise it can happen that areas are pre-selected in which no data is visible.
 
-.. |Add view| raw:: html
-
-   <img src="assets/images/configuration_mode/miropivot_addview_btn.png" alt="Add view" class="miro-inline-icon" width="25" height="25">
-.. |MIRO Pivot settings button| raw:: html
-
-   <img src="assets/images/pivot-settings-btn.png" alt="MIRO Pivot settings button" class="miro-inline-icon" width="25" height="25">
-.. |Export Show/hide pivot controls| raw:: html
-
-   <img src="assets/images/configuration_mode/miropivot_presentationmode_btn.png" alt="Export Show/hide pivot controls" class="miro-inline-icon" width="25" height="25">
-.. |Switch to tabular view button| raw:: html
-
-   <img src="assets/images/tabular-btn.png" alt="Switch to tabular view button" class="miro-inline-icon" width="25" height="25">
+.. |Add view| image:: ../assets/images/configuration_mode/miropivot_addview_btn.png
+   :alt: Add view
+   :class: miro-inline-icon
+   :width: 25px
+   :height: 25px
+.. |MIRO Pivot settings button| image:: ../assets/images/pivot-settings-btn.png
+   :alt: MIRO Pivot settings button
+   :class: miro-inline-icon
+   :width: 25px
+   :height: 25px
+.. |Export Show/hide pivot controls| image:: ../assets/images/configuration_mode/miropivot_presentationmode_btn.png
+   :alt: Export Show/hide pivot controls
+   :class: miro-inline-icon
+   :width: 25px
+   :height: 25px
+.. |Switch to tabular view button| image:: ../assets/images/tabular-btn.png
+   :alt: Switch to tabular view button
+   :class: miro-inline-icon
+   :width: 25px
+   :height: 25px

@@ -6,4 +6,4 @@ The GAMS MIRO Server REST API can be used to manage (add, remove, update) MIRO a
 .. raw:: html
 
    <redoc spec-url="miro_server_api.json" scroll-y-offset="100" hide-download-button></redoc>
-   <script src="assets/plugins/redoc/redoc.standalone.js"></script>
+   <script src="_static/redoc.standalone.js"></script>
