@@ -194,6 +194,19 @@ miro:
     # (only relevent if global.networkPolicy.enabled is true)
     extraEgress: []
   podAnnotations: {}
+  # Additional JSON patches (RFC 6902) applied to the MIRO app pods after the chart's own,
+  # e.g. to set a service account or add environment variables. The chart already sets
+  # lists such as /spec/volumes: append to them (path ending in /-) instead of replacing them.
+  # podPatches:
+  #   - op: add
+  #     path: /spec/serviceAccountName
+  #     value: my-service-account
+  #   - op: add
+  #     path: /spec/containers/0/env/-
+  #     value:
+  #       name: MY_VARIABLE
+  #       value: my-value
+  podPatches: []
 
 admin:
   image:
@@ -208,6 +221,8 @@ admin:
       cpu: '2000m'
       memory: 1700Mi
   podAnnotations: {}
+  # Additional JSON patches for the admin panel pods (see miro.podPatches)
+  podPatches: []
 
 db:
   image:

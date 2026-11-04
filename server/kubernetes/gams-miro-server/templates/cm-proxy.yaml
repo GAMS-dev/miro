@@ -172,6 +172,9 @@ data:
               privileged: false
               readOnlyRootFilesystem: false
           {{- end }}
+          {{- with .Values.miro.podPatches }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $) | nindent 10 }}
+          {{- end }}
         global-pod-patches-admin: |
           - op: add
             path: /spec/volumes
@@ -249,6 +252,9 @@ data:
                 drop: ["ALL"]
               privileged: false
               readOnlyRootFilesystem: false
+          {{- end }}
+          {{- with .Values.admin.podPatches }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $) | nindent 10 }}
           {{- end }}
 
     spring:
