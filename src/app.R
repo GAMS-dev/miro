@@ -1853,6 +1853,8 @@ if (!is.null(errMsg)) {
           snapshotRevision = NULL,
           activeSids = NULL,
           contextIsSandbox = FALSE,
+          # the last comparison, resumed by the Mira button
+          compareContext = NULL,
           contextHasSandbox = FALSE,
           # the context divider last shown in the chat
           contextLabel = NULL,

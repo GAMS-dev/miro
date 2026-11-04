@@ -14,6 +14,10 @@ observe({
       }
     )
     if (!length(newSids) || !all(newSids %in% readableSids)) {
+      if (isTRUE(dialogState$resumed)) {
+        # a scenario of the last comparison was removed in the meantime
+        return(openAiSandboxContext())
+      }
       flog.error("AI assistant: Invalid scenario id(s) requested. This is likely an attempt to tamper with the app!")
       return()
     }
@@ -22,7 +26,7 @@ observe({
     # whether the user sees a different context
     contextChanged <- !identical(newIsSandbox, aiAssistantState$contextIsSandbox) ||
       !identical(dialogState$chatContext, aiAssistantState$contextLabel) ||
-      (!newIsSandbox && !identical(newSids, aiAssistantState$activeSids))
+      (!newIsSandbox && !isTRUE(dialogState$resumed) && !identical(newSids, aiAssistantState$activeSids))
     if (!identical(newSids, aiAssistantState$activeSids) || contextChanged) {
       if (!is.null(aiAssistantState$activeSids)) {
         aiAssistantState$pendingContextNote <<- dialogState$chatContext
@@ -74,6 +78,9 @@ setAiTokenInfo <- function() {
 
 observeEvent(input$btAIOutput, {
   flog.debug("AI Output Analysis button clicked.")
+  if (isFALSE(aiAssistantState$contextIsSandbox) && length(aiAssistantState$compareContext)) {
+    return(do.call(openAiCompareContext, c(aiAssistantState$compareContext, resumed = TRUE)))
+  }
   openAiSandboxContext()
 })
 observeEvent(input$btAiBackToSandbox, {
@@ -123,7 +130,8 @@ openAiSandboxContext <- function() {
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextSandbox, tempScenName), timestamp = Sys.time()
   ))
 }
-openAiCompareContext <- function(sids, scenIdNameMap, includeSandbox = FALSE) {
+openAiCompareContext <- function(sids, scenIdNameMap, includeSandbox = FALSE, resumed = FALSE) {
+  compareContext <- list(sids = sids, scenIdNameMap = scenIdNameMap, includeSandbox = includeSandbox)
   if (includeSandbox) {
     # always snapshot: the sandbox must not share its sid with a selected scenario
     tempScen <- snapshotAiSandbox(getAiSandboxScenName(inCompare = TRUE))
@@ -132,10 +140,11 @@ openAiCompareContext <- function(sids, scenIdNameMap, includeSandbox = FALSE) {
     }
     sids <- c(sids, tempScen$getSid())
   }
+  aiAssistantState$compareContext <<- compareContext
   aiAssistantDialogState(list(
     sidsToLoad = sids, isSandbox = FALSE, includesSandbox = includeSandbox,
     chatContext = sprintf(lang$nav$aiBotDialog$currentContextCompare, length(sids)),
-    scenIdNameMap = scenIdNameMap, timestamp = Sys.time()
+    scenIdNameMap = scenIdNameMap, resumed = resumed, timestamp = Sys.time()
   ))
 }
 
