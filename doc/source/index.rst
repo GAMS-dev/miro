@@ -1,10 +1,10 @@
-.. image:: ../assets/images/MIRO_Logo_Schriftzug.svg
+.. image:: ../assets/images/miro-logo-wordmark.svg
    :alt: GAMS MIRO
    :height: 100px
    :align: center
    :class: miro-hero-logo only-light
 
-.. image:: ../assets/images/MIRO_Logo_Schriftzug_white.svg
+.. image:: ../assets/images/miro-logo-wordmark-white.svg
    :alt: GAMS MIRO
    :height: 100px
    :align: center

@@ -38,6 +38,7 @@ insert_after_marker() {
     temporary=$(mktemp "${page}.XXXXXX")
     sed "\\|${marker}|r ${content}" "$page" > "$temporary"
     mv "$temporary" "$page"
+    chmod 644 "$page"
 }
 
 html_escape() {
@@ -111,6 +112,7 @@ sed \
     -e "s|__SHA_HASH_LINUX__|${MIRO_SHA_HASH_LINUX}|g" \
     "$download_page" > "$download_temporary"
 mv "$download_temporary" "$download_page"
+chmod 644 "$download_page"
 
 license_escaped=$(mktemp)
 server_license_escaped=$(mktemp)
@@ -142,16 +144,19 @@ awk '
     { print }
 ' "$security_page" > "$security_temporary"
 mv "$security_temporary" "$security_page"
+chmod 644 "$security_page"
 
 release_page="${DOC_OUTPUT_DIR}/release.html"
 release_temporary=$(mktemp "${release_page}.XXXXXX")
 sed "s|(xxxx-xx-xx)|(${MIRO_RELEASE_DATE})|g" "$release_page" > "$release_temporary"
 mv "$release_temporary" "$release_page"
+chmod 644 "$release_page"
 
 index_page="${DOC_OUTPUT_DIR}/index.html"
 index_temporary=$(mktemp "${index_page}.XXXXXX")
 sed -E "s|>Get GAMS MIRO [0-9][^<]*</span>|>Get GAMS MIRO ${MIRO_VERSION_FULL}</span>|g" "$index_page" > "$index_temporary"
 mv "$index_temporary" "$index_page"
+chmod 644 "$index_page"
 
 mv ./server/miro_server.zip "${DOC_OUTPUT_DIR}/GAMS-MIRO-Server-${MIRO_VERSION_FULL}.zip"
 mv ./doc/GAMS-MIRO-Demo-Apps.zip "${DOC_OUTPUT_DIR}/GAMS-MIRO-Demo-Apps.zip"
@@ -169,7 +174,27 @@ do
     require_output_file "$artifact"
 done
 
-if grep -Eq '__VERSION(_FULL)?__|__SHA_HASH_[A-Z_]+__' "$download_page"; then
-    echo "Unresolved release placeholders remain in $download_page" >&2
+for page in "$download_page" "$index_page" "$release_page"; do
+    if grep -Eq '__VERSION(_FULL)?__|__SHA_HASH_[A-Z_]+__|xxxx-xx-xx' "$page"; then
+        echo "Unresolved release placeholders remain in $page" >&2
+        exit 1
+    fi
+done
+
+if ! grep -Fq ">Get GAMS MIRO ${MIRO_VERSION_FULL}</span>" "$index_page"; then
+    echo "Current version ${MIRO_VERSION_FULL} is not advertised in $index_page" >&2
+    exit 1
+fi
+
+# Check the first release, rather than accepting an older entry or TOC link.
+latest_release_heading=$(grep -m 1 '<h2>GAMS MIRO ' "$release_page" || true)
+if ! grep -Fq ">GAMS MIRO ${MIRO_VERSION_SHORT}<" <<< "$latest_release_heading" &&
+    ! grep -Fq ">GAMS MIRO ${MIRO_VERSION_FULL}<" <<< "$latest_release_heading"; then
+    echo "Current version ${MIRO_VERSION_FULL} is not the latest release in $release_page" >&2
+    exit 1
+fi
+latest_release_date=$(awk '/<h2>GAMS MIRO / { release = 1; next } release && /<p>/ { print; exit }' "$release_page")
+if ! grep -Fq "<p>(${MIRO_RELEASE_DATE})</p>" <<< "$latest_release_date"; then
+    echo "Current release date ${MIRO_RELEASE_DATE} is not advertised in $release_page" >&2
     exit 1
 fi

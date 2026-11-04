@@ -13,10 +13,6 @@ pushd server > /dev/null
     rm -rf data models
 popd > /dev/null
 
-python3 -m venv doc/.venv
-doc/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
-doc/.venv/bin/python -m pip install --disable-pip-version-check -r doc/requirements.txt
-
 ./scripts/fix_docs.sh
 
 rsync -rlptvz --no-perms doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/

@@ -40,7 +40,7 @@ html_show_sourcelink = False
 html_show_search_summary = True
 html_last_updated_fmt = ""
 html_title = "GAMS MIRO documentation"
-html_logo = str(DOC_DIR / "assets" / "images" / "MIRO_Logo_Schriftzug.svg")
+html_logo = str(DOC_DIR / "assets" / "images" / "miro-logo-wordmark.svg")
 html_favicon = "_static/gams.ico"
 # Preserve public page names, including configuration_general.html.
 html_file_suffix = ".html"
@@ -51,8 +51,8 @@ html_theme_options = {
     "navbar_end": [],
     "navbar_persistent": ["search-button-field"],
     "logo": {
-        "image_light": "../assets/images/MIRO_Logo_Schriftzug.svg",
-        "image_dark": "../assets/images/MIRO_Logo_Schriftzug_white.svg",
+        "image_light": "../assets/images/miro-logo-wordmark.svg",
+        "image_dark": "../assets/images/miro-logo-wordmark-white.svg",
     },
     "footer_start": [],
     "footer_center": [],

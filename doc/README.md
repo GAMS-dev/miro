@@ -48,3 +48,17 @@ doc/.venv/bin/python -m http.server 8000 --directory doc/_build/html
   build copies it to `doc/_build/html/assets/` for compatibility URLs and
   runtime resources such as ReDoc.
 - `_build/html/` is generated output and must not be committed.
+
+## CI builds
+
+The Linux builder image installs `doc/requirements.txt` into `/opt/miro-docs`
+and exposes its interpreter through `SPHINX_PYTHON`. Both staging and production
+use that environment without installing packages during publication. Changes to
+the requirements trigger a builder image rebuild. When building the image
+manually, first copy `doc/requirements.txt` to `ci/linux/requirements-docs.txt`,
+then use `ci/linux` as the Docker build context.
+
+Production post-processing checks the advertised download version and the latest
+release heading/date, rejects unresolved placeholders, and makes rewritten HTML
+files readable by the web server. Local release builds can override
+`SPHINX_PYTHON` and `DOC_OUTPUT_DIR`.

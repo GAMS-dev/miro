@@ -145,6 +145,7 @@ build_build_image_linux:
   before_script:
     - apk update && apk add jq
   script:
+    - cp doc/requirements.txt ci/linux/requirements-docs.txt
     - cd ci/linux
     - docker build -t $CI_REGISTRY_IMAGE/builder-linux:latest --build-arg R_BASE_VERSION=`jq -r ".rVersion" ../../build-config.json` --build-arg OPENSSL_VERSION=`jq -r ".opensslVersion" ../../build-config.json` --build-arg GAMS_VERSION_FULL=`jq -r ".gamsVersion" ../../build-config.json` .
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
@@ -156,6 +157,7 @@ build_build_image_linux:
     - changes:
         paths:
           - ci/linux/Dockerfile
+          - doc/requirements.txt
         compare_to: develop
 
 build_build_image_windows:
@@ -1301,12 +1303,9 @@ update_doc_job:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_GAMSCOM_STAGING" | tr -d '\r' | DISPLAY=":0.0" SSH_ASKPASS=~/.ssh/.print_ssh_password setsid ssh-add - > /dev/null
   script:
-    - python3 -m venv doc/.venv
-    - doc/.venv/bin/python -m pip install --disable-pip-version-check --upgrade pip
-    - doc/.venv/bin/python -m pip install --disable-pip-version-check -r doc/requirements.txt
     # Staging is a Sphinx source preview; production-only release post-processing is omitted.
     - rm -rf doc/_build/html
-    - doc/.venv/bin/python -m sphinx -b html -n -W --keep-going doc/source doc/_build/html
+    - '"$SPHINX_PYTHON" -m sphinx -b html -n -W --keep-going doc/source doc/_build/html'
     - rsync -Orlptvz --no-perms doc/_build/html/ staging@gams.com:/var/www/html/staging.gams.com/public_html/miro/
   rules:
     - if: $CI_MERGE_REQUEST_ID

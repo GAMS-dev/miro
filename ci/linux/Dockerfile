@@ -90,7 +90,8 @@ RUN apt-get update \
         git \
         gnupg \
         lsb-release \
-        python3-pip
+        python3-pip \
+        python3-venv
 
 RUN mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
@@ -110,3 +111,11 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
         && unzip awscliv2.zip \
         && ./aws/install \
         && rm -rf aws awscliv2
+
+# Documentation dependencies are installed once per builder image.
+# The image build job copies doc/requirements.txt into this build context.
+COPY requirements-docs.txt /opt/miro-docs/requirements.txt
+RUN python3 -m venv /opt/miro-docs \
+        && /opt/miro-docs/bin/python -m pip install --disable-pip-version-check --upgrade pip \
+        && /opt/miro-docs/bin/python -m pip install --disable-pip-version-check -r /opt/miro-docs/requirements.txt
+ENV SPHINX_PYTHON=/opt/miro-docs/bin/python
