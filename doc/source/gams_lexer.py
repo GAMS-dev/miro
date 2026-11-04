@@ -120,18 +120,19 @@ class GamsLexer(RegexLexer):
     _functions = (
         "abs",
         "arccos",
-        "acrcsin",  # kept for compatibility with the legacy Prism grammar
+        "arcsin",
         "arctan",
         "beta",
         "betareg",
         "binomial",
         "card",
-        "ciel",  # kept for compatibility with the legacy Prism grammar
+        "ceil",
         "centropy",
         "cos",
         "diag",
         "edist",
         "exp",
+        "floor",
         "heaplimit",
         "ifthen",
         "log",
@@ -143,6 +144,7 @@ class GamsLexer(RegexLexer):
         "prod",
         "round",
         "sameas",
+        "sign",
         "sin",
         "smax",
         "smin",
@@ -150,6 +152,7 @@ class GamsLexer(RegexLexer):
         "sqrt",
         "sum",
         "tan",
+        "trunc",
         "uniform",
     )
 
