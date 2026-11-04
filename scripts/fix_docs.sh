@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Prepare release artifacts, build the Sphinx documentation, and inject the
-# release-specific values that must not be committed to the RST sources.
+# Persist release metadata, prepare artifacts and build the Sphinx documentation.
+# Artifact versions/hashes are injected into the generated download page only.
 set -euo pipefail
 
 case "$(uname)" in
@@ -79,6 +79,10 @@ MIRO_VERSION_MINOR=$(echo "$MIRO_VERSION_FULL" | cut -f2 -d".")
 MIRO_VERSION_SHORT="${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}"
 MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' src/app.R | cut -f2 -d'"' | xargs -0 "$DATEBIN" +%Y-%m-%d -d )
 
+# Freeze the release date and advertised version in the sources. push_docs.sh
+# commits these files, so future releases cannot re-date historical entries.
+python3 ./scripts/update_docs_release.py --version "$MIRO_VERSION_FULL" --date "$MIRO_RELEASE_DATE"
+
 pushd server > /dev/null
     python3 miro_server.py release -f
 popd > /dev/null
@@ -147,16 +151,7 @@ mv "$security_temporary" "$security_page"
 chmod 644 "$security_page"
 
 release_page="${DOC_OUTPUT_DIR}/release.html"
-release_temporary=$(mktemp "${release_page}.XXXXXX")
-sed "s|(xxxx-xx-xx)|(${MIRO_RELEASE_DATE})|g" "$release_page" > "$release_temporary"
-mv "$release_temporary" "$release_page"
-chmod 644 "$release_page"
-
 index_page="${DOC_OUTPUT_DIR}/index.html"
-index_temporary=$(mktemp "${index_page}.XXXXXX")
-sed -E "s|>Get GAMS MIRO [0-9][^<]*</span>|>Get GAMS MIRO ${MIRO_VERSION_FULL}</span>|g" "$index_page" > "$index_temporary"
-mv "$index_temporary" "$index_page"
-chmod 644 "$index_page"
 
 mv ./server/miro_server.zip "${DOC_OUTPUT_DIR}/GAMS-MIRO-Server-${MIRO_VERSION_FULL}.zip"
 mv ./doc/GAMS-MIRO-Demo-Apps.zip "${DOC_OUTPUT_DIR}/GAMS-MIRO-Demo-Apps.zip"

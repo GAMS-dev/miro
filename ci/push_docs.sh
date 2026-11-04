@@ -17,7 +17,7 @@ popd > /dev/null
 
 rsync -rlptvz --no-perms doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
 
-git add ./doc/miro_server_api.json ./server/image-docs/*
+git add ./doc/source/release.rst ./doc/source/index.rst ./doc/miro_server_api.json ./server/image-docs/*
 
 git commit -m "[CI skip] Update documentation" || true
 

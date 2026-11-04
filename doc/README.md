@@ -64,7 +64,20 @@ the requirements trigger a builder image rebuild. When building the image
 manually, first copy `doc/requirements.txt` to `ci/linux/requirements-docs.txt`,
 then use `ci/linux` as the Docker build context.
 
+Before the production build, `scripts/update_docs_release.py` freezes the date
+of the latest release and the download version label in `source/release.rst` and
+`source/index.rst`. The publishing job commits both sources. Existing release
+dates are never overwritten; unresolved placeholders in older entries fail the
+build instead of being filled with the current date. Staging leaves these
+sources unchanged.
+
 Production post-processing checks the advertised download version and the latest
 release heading/date, rejects unresolved placeholders, and makes rewritten HTML
-files readable by the web server. Local release builds can override
-`SPHINX_PYTHON` and `DOC_OUTPUT_DIR`.
+files readable by the web server. Local release builds update the same sources
+and can override `SPHINX_PYTHON` and `DOC_OUTPUT_DIR`.
+
+Run the release metadata regression checks with:
+
+```sh
+python3 -m unittest discover -s scripts/tests -p 'test_update_docs_release.py'
+```
