@@ -121,7 +121,8 @@ dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselin
 
   if (length(config$baselineComparison)) {
     baselineCompConfig <- config$baselineComparison
-    if (identical(baselineCompConfig$record, baselineScenPlaceholder)) {
+    if (identical(baselineCompConfig$domain, "_scenName") &&
+      identical(baselineCompConfig$record, baselineScenPlaceholder)) {
       baselineCompConfig$record <- baselineScenName
       if (!length(baselineScenName)) {
         baselineCompConfig <- list()

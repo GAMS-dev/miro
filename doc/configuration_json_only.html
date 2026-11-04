@@ -1599,7 +1599,7 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                     <h5>Get attachment (meta)data</h5>
                     <div class="code-block">
                       <pre><code class="language-r">
-  data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE)
+  data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = NULL)
   </code></pre>
                     </div>
                     <!--//code-block-->
@@ -1637,7 +1637,9 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                             boolean specifying whether to include attachments
                             of the sandbox scenario (will be included with
                             scenario ID (<span class="code">_sid</span>) of
-                            <span class="code">0</span>)
+                            <span class="code">0</span>) or
+                            <span class="code">NULL</span> to include them only
+                            if the sandbox scenario is part of the comparison
                           </td>
                         </tr>
                       </tbody>

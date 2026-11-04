@@ -18,7 +18,10 @@ CustomComparisonData <- R6Class("CustomComparisonData", public = list(
     }
     return(private$scenData$getAll(private$refId, symName = symbolName))
   },
-  getAttachmentData = function(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE) {
+  getAttachmentData = function(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = NULL) {
+    if (is.null(includeSandboxScen)) {
+      includeSandboxScen <- any(startsWith(as.character(private$scenData$getRefScenMap(private$refId)), "sb"))
+    }
     if (is.null(scenIds)) {
       scenIds <- vapply(self$getMetadata(), "[[", integer(1L), "_sid")
       scenIds <- scenIds[!is.na(scenIds)]
