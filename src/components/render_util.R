@@ -103,7 +103,27 @@ dashboardGetSelectedValues <- function(choices, selected, multiple) {
   if (!isTRUE(multiple) && length(vals) > 1) vals <- vals[1]
   if (length(vals) == 0) NULL else vals
 }
-dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselineScenName = NULL) {
+# GAMS does not store zeros: when comparing scenarios with sum or count, a record missing
+# in a scenario counts as 0 rather than leaving a gap. `scenNames` also covers scenarios
+# without any record.
+completeBaselineCompData <- function(data, domain, scenNames, aggregationFunction) {
+  if (!identical(domain, "_scenName") || !domain %in% names(data) ||
+    !any(aggregationFunction %in% c("sum", "count"))) {
+    return(data)
+  }
+  scenNames <- scenNames %||% unique(data[[domain]])
+  if (is.factor(data[[domain]])) {
+    scenNames <- factor(scenNames, levels = union(levels(data[[domain]]), scenNames))
+  }
+  valueColName <- names(data)[length(data)]
+  return(tidyr::complete(
+    data, !!rlang::sym(domain) := scenNames,
+    tidyr::nesting(!!!rlang::syms(setdiff(names(data), c(domain, valueColName)))),
+    fill = setNames(list(0), valueColName), explicit = FALSE
+  ))
+}
+dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselineScenName = NULL,
+                                 scenNames = NULL) {
   if (is.null(viewData)) {
     return(NULL)
   }
@@ -220,6 +240,10 @@ dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselin
     if (!identical(valueColName, "value")) {
       names(dataTmp)[length(dataTmp)] <- valueColName
     }
+  }
+
+  if (length(baselineCompConfig)) {
+    dataTmp <- completeBaselineCompData(dataTmp, baselineCompConfig$domain, scenNames, aggregationFunction)
   }
 
   # apply custom labels

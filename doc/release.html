@@ -204,6 +204,13 @@
                     <ul>
                       <li>Improved German and Chinese translations.</li>
                       <li>
+                        Baseline comparisons of scenarios in MIRO Pivot and
+                        dashboards count a record that is missing in one of the
+                        scenarios as 0 if the aggregation function is sum or
+                        count, as GAMS does not store zeros. Previously, such
+                        values were left empty.
+                      </li>
+                      <li>
                         Enhanced how background tasks are managed, ensuring
                         smoother job submissions, progress tracking, and result
                         downloads without interrupting your workflow.

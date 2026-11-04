@@ -99,3 +99,39 @@ test_that("dashboardPrepareData resolves the baseline scenario placeholder", {
     dashboardPrepareData(list(), viewData)$data
   )
 })
+
+test_that("dashboardPrepareData counts records missing in a scenario as 0 when comparing sums", {
+  # Target lacks the seattle/chicago record of Base
+  viewData <- tibble(
+    `_scenName` = c("Base", "Base", "Base", "Target", "Target"),
+    i = c("seattle", "san-diego", "seattle", "san-diego", "seattle"),
+    j = c("chicago", "chicago", "topeka", "chicago", "topeka"),
+    value = c(1.7, 1.8, 1.8, 1.8, 1.8)
+  )
+  config <- list(
+    rows = "i", cols = list(`_scenName` = NULL), filter = list(j = "chicago"), aggregationFunction = "sum",
+    baselineComparison = list(domain = "_scenName", record = "Base", metrics = list("absolute difference"))
+  )
+  expect_equal(dashboardPrepareData(config, viewData)$data$Target, c(0, -1.7))
+  config$aggregationFunction <- "mean"
+  expect_equal(dashboardPrepareData(config, viewData)$data$Target, c(0, NA))
+})
+
+test_that("dashboardPrepareData counts a scenario without any record as 0 when comparing sums", {
+  viewData <- tibble(`_scenName` = c("Base", "Base"), i = c("seattle", "san-diego"), value = c(1.7, 1.8))
+  config <- list(
+    rows = "i", cols = list(`_scenName` = NULL), aggregationFunction = "sum",
+    baselineComparison = list(domain = "_scenName", record = "Base", metrics = list("absolute difference"))
+  )
+  expect_equal(dashboardPrepareData(config, viewData, scenNames = c("Base", "Target"))$data$Target, c(-1.8, -1.7))
+})
+
+test_that("completeBaselineCompData only fills the scenario dimension and keeps factors", {
+  data <- tibble(`_scenName` = factor(c("b", "B")), i = c("x", "y"), value = c(1, 2))
+  completed <- completeBaselineCompData(data, "_scenName", c("b", "B", "c"), "sum")
+  expect_identical(levels(completed$`_scenName`), c("b", "B", "c"))
+  expect_equal(nrow(completed), 6L)
+  expect_identical(completeBaselineCompData(data, "_scenName", NULL, "mean"), data)
+  names(data)[1] <- "category"
+  expect_identical(completeBaselineCompData(data, "category", NULL, "sum"), data)
+})

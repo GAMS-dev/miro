@@ -383,7 +383,7 @@ renderDashboardCompare <- function(input, output, session, data, options = NULL,
         rawData[[view]] <- viewData
         preparedData <- dashboardPrepareData(currentConfig, viewData,
           zeroTolerance = numericalTolerance,
-          baselineScenName = baselineScenName
+          baselineScenName = baselineScenName, scenNames = scenarioNames
         )
         dashboardChartData[[view]] <- preparedData$data
         filterWarnings[[view]] <- preparedData$warnings

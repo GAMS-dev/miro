@@ -2945,6 +2945,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (identical(baselineCompConfig$record, baselineScenPlaceholder)) {
             baselineCompConfig$record <- baselineScenName
           }
+          dataTmp <- completeBaselineCompData(
+            dataTmp, baselineCompConfig$domain, options[["_scenNames"]], input$aggregationFunction
+          )
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(
