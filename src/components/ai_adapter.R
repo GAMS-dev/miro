@@ -791,6 +791,15 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (!nrow(data)) {
         return(private$toolError("No data matches the requested scenarios and filters."))
       }
+      if (length(baselineComparison) && (identical(aggregationFunction, "sum") || length(aggregatedCols) && identical(aggregationFunction, "count"))) {
+        # GAMS does not store zeros, so a record missing in a scenario counts as 0 (like queryScenarioDatabase)
+        data <- tidyr::complete(
+          data,
+          `_scenName` = scenarioNames,
+          tidyr::nesting(!!!rlang::syms(setdiff(names(data), c("_scenName", "value")))),
+          fill = list(value = 0)
+        )
+      }
       prepared <- tryCatch(dashboardPrepareData(prepareView, data)$data, error = function(err) {
         return(conditionMessage(err))
       })
@@ -1595,7 +1604,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (length(private$allowedSids) > 1L) {
         properties$baselineMetric <- list(
           type = "string", enum = c("none", aiChartBaselineMetrics),
-          description = "none (default): absolute values. Otherwise values relative to `baselineScenarioName`; needs `_scenName` in `rows` or `cols`."
+          description = "none (default): absolute values. Otherwise values relative to `baselineScenarioName`; needs `_scenName` in `rows` or `cols`. With sum or count, a record missing in a scenario counts as 0."
         )
         properties$baselineScenarioName <- list(type = "string")
       }

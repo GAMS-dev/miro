@@ -1486,6 +1486,23 @@ test_that("createChart compares symbols with any value column name against a bas
   DBI::dbDisconnect(env$conn)
 })
 
+test_that("createChart counts missing records as 0 when comparing sums or counts against a baseline", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"), filters = list(list(column = "year", values = list("2024"))),
+    baselineScenarioName = "Base", baselineMetric = "absolute difference"
+  ))
+  expect_equal(chart$datasets[[2]]$data, c(9, -3))
+  DBI::dbDisconnect(env$conn)
+  env <- createChartAdapter(yearData[-6, ], yearHeaders)
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"), aggregationFunction = "count",
+    baselineScenarioName = "Base", baselineMetric = "absolute difference"
+  ))
+  expect_equal(chart$datasets[[2]]$data, c(-1, -2))
+  DBI::dbDisconnect(env$conn)
+})
+
 test_that("createChart applies custom series colors and passes them to the pivot view", {
   env <- createChartAdapter(yearData, yearHeaders)
   chart <- createTestChart(env, list(
