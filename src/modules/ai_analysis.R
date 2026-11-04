@@ -460,11 +460,13 @@ observeEvent(input$miroAiUserText, {
   aiActivityCursor <<- 0L
   aiTaskRunning(TRUE)
   aiAssistantState$requestIsSandbox <<- isTRUE(aiAssistantState$contextIsSandbox)
-  aiAssistantState$requestScenIdNameMap <<- if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
-    c(dialogState$scenIdNameMap, setNames(aiAssistantState$sandboxScenName, aiAssistantState$tempScen$getSid()))
-  } else {
-    dialogState$scenIdNameMap
+  aiAssistantState$requestSandboxSid <<- if (isTRUE(aiAssistantState$contextHasSandbox) && !is.null(aiAssistantState$tempScen)) {
+    aiAssistantState$tempScen$getSid()
   }
+  aiAssistantState$requestScenIdNameMap <<- c(
+    dialogState$scenIdNameMap,
+    if (length(aiAssistantState$requestSandboxSid)) setNames(aiAssistantState$sandboxScenName, aiAssistantState$requestSandboxSid)
+  )
   aiTask$invoke(
     userInput = modelInput,
     dbConnProvider = dbConnProvider,
@@ -513,6 +515,7 @@ observe({
     aiAssistantState$charts[names(result$charts)] <<- lapply(result$charts, function(chart) {
       chart$isSandbox <- aiAssistantState$requestIsSandbox
       chart$scenIdNameMap <- aiAssistantState$requestScenIdNameMap
+      chart$sandboxSid <- aiAssistantState$requestSandboxSid
       chart$canOpenInPivot <- !is.null(getAiChartPivotTarget(chart))
       return(chart)
     })
@@ -559,9 +562,15 @@ openAiChartInPivot <- function(chart) {
   }
   sheetName <- pivotTarget$sheetName
   view <- pivotTarget$view
-  sidsToLoad <<- if (isTRUE(chart$isSandbox)) list("sb") else as.list(as.character(chart$sids))
+  # the assistant's copy of the sandbox is deleted once its drawer closes
+  pivotSids <- function(sids) {
+    sids <- as.character(sids)
+    sids[sids %in% chart$sandboxSid] <- "sb"
+    return(sids)
+  }
+  sidsToLoad <<- if (isTRUE(chart$isSandbox)) list("sb") else as.list(pivotSids(chart$sids))
   if (length(chart$baselineSid) && !isTRUE(chart$isSandbox)) {
-    sidsToLoad <<- orderByBaseline(sidsToLoad, as.character(chart$baselineSid))
+    sidsToLoad <<- orderByBaseline(sidsToLoad, pivotSids(chart$baselineSid))
     view$baselineComparison$record <- baselineScenPlaceholder
   }
   pivotCompViewOverrides[[sheetName]] <<- view
