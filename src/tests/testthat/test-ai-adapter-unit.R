@@ -1334,7 +1334,7 @@ test_that("createChart rejects invalid charts with helpful errors", {
   expect_match(createChartError(list(rows = list("country"))), "Unknown dimension")
   expect_match(createChartError(list(rows = list("region"), cols = list("region"))), "either in `rows` or in `cols`")
   expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "_scenName", values = list("Base"))))), "scenarioNames")
-  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "region", values = list("Asia"))))), "No data matches")
+  expect_match(createChartError(list(rows = list("region"), filters = list(list(column = "region", values = list("Asia"))))), "No data for value(s) Asia", fixed = TRUE)
   expect_match(createChartError(list(rows = list("region"), chartType = "radar")), "chartType")
   env$adapter$setAllowedSids(1)
   expect_match(createChartError(list(rows = list("region"), scenarioNames = "High Demand")), "Access Denied")
@@ -1413,6 +1413,29 @@ test_that("createChart aggregates in the database and falls back to R for median
   expect_equal(chartValues("sd"), c(sd(1:2), sd(3:4)))
   chart <- createTestChart(env, list(rows = list("region"), scenarioNames = "Base"))
   expect_identical(names(chart$view$aggregations), c("_scenName", "year"))
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("createChart validates multi-value filters on aggregated dimensions", {
+  env <- createChartAdapter(yearData, yearHeaders)
+  chart <- createTestChart(env, list(
+    rows = list("region"), scenarioNames = "Base",
+    filters = list(list(column = "year", values = list("2024", "2025")))
+  ))
+  expect_equal(chart$datasets[[1]]$data, c(3, 7))
+  expect_identical(chart$view$aggregations, list(`_scenName` = NULL, year = c("2024", "2025")))
+  expect_identical(createTestChart(env, list(
+    rows = list("region"), scenarioNames = "Base",
+    filters = list(list(column = "year", values = list("2024", "2030")))
+  )), "No data for value(s) 2030 of dimension 'year'.")
+  highDemandChart <- function(years) {
+    createTestChart(env, list(
+      rows = list("region"), scenarioNames = "High Demand",
+      filters = list(list(column = "region", values = list("EU")), list(column = "year", values = years))
+    ))
+  }
+  expect_equal(highDemandChart(list("2024", "2025"))$datasets[[1]]$data, 10)
+  expect_match(highDemandChart(list("2025")), "No data matches", fixed = TRUE)
   DBI::dbDisconnect(env$conn)
 })
 

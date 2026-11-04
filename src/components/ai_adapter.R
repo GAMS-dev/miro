@@ -791,15 +791,6 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (!nrow(data)) {
         return(private$toolError("No data matches the requested scenarios and filters."))
       }
-      for (filterCol in names(filters)) {
-        missingValues <- setdiff(filters[[filterCol]], data[[filterCol]])
-        if (length(missingValues)) {
-          return(private$toolError(sprintf(
-            "No data for value(s) %s of dimension '%s'.",
-            paste(missingValues, collapse = ", "), filterCol
-          )))
-        }
-      }
       prepared <- tryCatch(dashboardPrepareData(prepareView, data)$data, error = function(err) {
         return(conditionMessage(err))
       })
@@ -1500,12 +1491,28 @@ AIToolAdapter <- R6Class("AIToolAdapter",
     },
     fetchChartData = function(symName, sids, indexCols, valueCols, filters, aggregatedCols, aggregationFunction) {
       escCol <- function(colName) as.character(DBI::dbQuoteIdentifier(private$conn, colName))
-      whereClauses <- sprintf("%s IN (%s)", escCol("_sid"), paste(sids, collapse = ","))
-      for (filterCol in intersect(names(filters), indexCols)) {
-        whereClauses <- c(whereClauses, sprintf(
-          "%s IN (%s)", escCol(filterCol),
-          paste(DBI::dbQuoteString(private$conn, filters[[filterCol]]), collapse = ",")
-        ))
+      dbQuery <- function(query) {
+        tryCatch(DBI::dbGetQuery(private$conn, query), error = function(err) {
+          return(sprintf("Database Engine Interface Error: %s", conditionMessage(err)))
+        })
+      }
+      fromSids <- sprintf(
+        "FROM %s WHERE %s IN (%s)", escCol(private$dbSchema$getDbTableName(symName)), escCol("_sid"), paste(sids, collapse = ",")
+      )
+      filterCols <- intersect(names(filters), indexCols)
+      filterClauses <- vapply(filterCols, function(filterCol) {
+        sprintf("%s IN (%s)", escCol(filterCol), paste(DBI::dbQuoteString(private$conn, filters[[filterCol]]), collapse = ","))
+      }, character(1L))
+      # validate each filter on its own, so only values without any data in the selected scenarios are rejected
+      for (filterCol in filterCols) {
+        filterValues <- dbQuery(sprintf("SELECT DISTINCT %s %s AND %s", escCol(filterCol), fromSids, filterClauses[[filterCol]]))
+        if (is.character(filterValues)) {
+          return(filterValues)
+        }
+        missingValues <- setdiff(filters[[filterCol]], filterValues[[1L]])
+        if (length(missingValues)) {
+          return(sprintf("No data for value(s) %s of dimension '%s'.", paste(missingValues, collapse = ", "), filterCol))
+        }
       }
       keyCols <- vapply(c("_sid", setdiff(indexCols, aggregatedCols)), escCol, character(1L))
       selectedValueCols <- if (length(filters$Hdr)) filters$Hdr else valueCols
@@ -1515,15 +1522,10 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         valueExprs <- sprintf("%s(%s) AS %s", aiChartSqlAggregations[[aggregationFunction]], valueExprs, valueExprs)
         groupBy <- sprintf(" GROUP BY %s", paste(keyCols, collapse = ", "))
       }
-      query <- sprintf(
-        "SELECT %s FROM %s WHERE %s%s LIMIT %d",
-        paste(c(keyCols, valueExprs), collapse = ", "),
-        escCol(private$dbSchema$getDbTableName(symName)),
-        paste(whereClauses, collapse = " AND "), groupBy, aiChartMaxRows + 1L
-      )
-      data <- tryCatch(DBI::dbGetQuery(private$conn, query), error = function(err) {
-        return(sprintf("Database Engine Interface Error: %s", conditionMessage(err)))
-      })
+      data <- dbQuery(sprintf(
+        "SELECT %s %s%s LIMIT %d", paste(c(keyCols, valueExprs), collapse = ", "),
+        paste(c(fromSids, filterClauses), collapse = " AND "), groupBy, aiChartMaxRows + 1L
+      ))
       if (is.character(data)) {
         return(data)
       }
