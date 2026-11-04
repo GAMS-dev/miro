@@ -10,6 +10,7 @@ library(stringi)
 
 source("../../components/scenario_extensions.R")
 source("../../components/views.R")
+source("../../components/render_util.R")
 source("../../modules/renderers/miro-pivot.R")
 
 lang <<- list(renderers = list(miroPivot = list(
@@ -740,6 +741,43 @@ test_that("MIRO pivot respects a custom, tighter numericalTolerance", {
         "_metadata_" = list(symtype = "parameter")
       ),
       numericalTolerance = 1e-12
+    )
+  )
+})
+test_that("MIRO pivot counts records missing in a scenario as 0 when comparing sums", {
+  testServer(renderMiroPivot,
+    {
+      session$setInputs(
+        rowIndexList = c("i", "_scenName"), colIndexList = character(),
+        filterIndexList = character(), aggregationIndexList = character(),
+        aggregationFunction = "sum"
+      )
+      session$setInputs(
+        enableBaselineComparison = TRUE,
+        baselineCompDomain = "_scenName",
+        baselineCompRecord = "Base",
+        baselineCompMetrics = "absolute difference",
+        updateSettings = 1L
+      )
+      expect_equal(
+        convert_to_df(dataToRender()),
+        data.frame(
+          i = c("San-Diego", "San-Diego", "San-Diego", "Seattle", "Seattle", "Seattle"),
+          X_scenName = c("Base", "Target", "Empty", "Base", "Target", "Empty"),
+          value = c(0, 0.2, -1.8, 0, -1.7, -1.7)
+        )
+      )
+    },
+    args = list(
+      data = tibble(
+        `_scenName` = c("Base", "Base", "Target"),
+        i = c("Seattle", "San-Diego", "San-Diego"),
+        value = c(1.7, 1.8, 2)
+      ),
+      options = list(
+        "_scenNames" = c("Base", "Target", "Empty"),
+        "_metadata_" = list(symtype = "parameter")
+      )
     )
   )
 })
