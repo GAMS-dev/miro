@@ -865,6 +865,23 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       array of your configuration.
                     </p>
                     <p>
+                      MIRO cannot tell from your code whether your widget lets
+                      users edit its data. If it doesn't, set
+                      <code class="language-json">"readonly": true</code> in
+                      the <code class="language-json">"options"</code> of the
+                      widget configuration. The AI assistant
+                      <a href="./ai_assistant.html#changing-input-data"
+                        >Mira</a
+                      >
+                      then never proposes changes to the symbol of the widget
+                      or to any of its
+                      <code class="language-json">"widgetSymbols"</code>. Note
+                      that Mira only proposes changes to
+                      <code class="language-json">"widgetSymbols"</code> of
+                      widgets with
+                      <code class="language-json">"apiVersion": 2</code>.
+                    </p>
+                    <p>
                       Note that custom widgets cannot be automatically expanded
                       to use them for
                       <a href="./hc-module.html">Hypercube jobs</a>. Therefore,

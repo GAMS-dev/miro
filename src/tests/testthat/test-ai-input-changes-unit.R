@@ -371,6 +371,13 @@ test_that("a widget drawn by a custom widget is modifiable only if that renderer
   expect_equal(meta$databaseSymbols$maxstock$modifiable, list(kind = "numeric", columns = list("maxstock")))
   DBI::dbDisconnect(env$conn)
 
+  ioConfig$modelIn$stockwidget$options <- list(readonly = TRUE)
+  env <- setup_modify_test_env(ioConfig = ioConfig)
+  meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
+  expect_null(meta$databaseSymbols$maxstock$modifiable)
+  DBI::dbDisconnect(env$conn)
+
+  ioConfig$modelIn$stockwidget$options <- NULL
   ioConfig$modelIn$stockwidget$apiVersion <- NULL
   env <- setup_modify_test_env(ioConfig = ioConfig)
   meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)

@@ -1726,7 +1726,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         # only API version 2 renderers receive their data reactively, so only
         # they pick up a change applied from outside the widget
         hostConfig <- private$ioConfig$modelIn[[symConfig$definedByExternalSymbol]]
-        if (!identical(as.integer(hostConfig$apiVersion), 2L)) {
+        if (!identical(as.integer(hostConfig$apiVersion), 2L) || isTRUE(hostConfig$options$readonly)) {
           return(FALSE)
         }
       }
