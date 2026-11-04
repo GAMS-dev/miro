@@ -2585,6 +2585,7 @@ if (config$activateModules$aiAssistant) {
    - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
 %s
 8. OBSERVERS & CLEANUP: Every `observe()`/`observeEvent()` MUST be assigned to `rendererEnv`, keyed via `ns()`, to prevent leaks on re-render. Example: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. No floating observers.
+9. OUTPUTS (CRITICAL): Render to an ID declared in the UI, e.g. `output[['myChart']] <- plotly::renderPlotly({ ... })`. The server function's return value is ignored, so never return a plot or widget.
 
 ### OUTPUT FORMAT
 1-2 sentence overview, then code in the XML tags below—no markdown codeblock ticks. Leave packages/symbols tags empty if unneeded.
@@ -2595,12 +2596,14 @@ if (config$activateModules$aiAssistant) {
 <ui_code>
 mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   ns <- shiny::NS(id)
+  plotly::plotlyOutput(ns('myChart'), height = height)
 }
 </ui_code>
 
 <server_code>
 renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
   # Assign observers to rendererEnv via ns()
+  output[['myChart']] <- plotly::renderPlotly({ ... })
 }
 </server_code>",
       currentSymbol, contextSymbolsLine, allSymbolsMetadataJson, currentCodeSection,
