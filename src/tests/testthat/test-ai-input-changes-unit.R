@@ -61,7 +61,7 @@ mockModifyIoConfig <- list(
       )
     ),
     label = list(
-      alias = "Region Labels", type = "hot",
+      alias = "Region Labels", type = "hot", symtype = "set",
       headers = list(
         region = list(alias = "Region", type = "set"),
         note = list(alias = "Note", type = "string")
@@ -344,11 +344,21 @@ test_that("getSystemMetadata advertises modifiable columns of writable symbols o
   expect_equal(meta$databaseSymbols$maxstock$modifiable, list(kind = "numeric", columns = list("maxstock")))
   expect_equal(meta$databaseSymbols$modeltype$modifiable, list(kind = "choice"))
   expect_equal(meta$databaseSymbols$basregion$modifiable, list(kind = "choice"))
-  # readonly table, table without any numeric column, multi-select dropdown
+  # a set's rows are keyed by all but its last column, the element text
+  expect_equal(meta$databaseSymbols$label$modifiable, list(columns = list("note"), keyColumns = list("region")))
+  # readonly table, multi-select dropdown
   expect_null(meta$databaseSymbols$capacity$modifiable)
-  expect_null(meta$databaseSymbols$label$modifiable)
   expect_null(meta$databaseSymbols$markets$modifiable)
 
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("a custom widget of a scalar is not modifiable", {
+  ioConfig <- mockModifyIoConfig
+  ioConfig$modelIn$maxstock <- list(alias = "Maximum stock", type = "custom", isScalarDs = TRUE)
+  env <- setup_modify_test_env(ioConfig = ioConfig)
+  meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
+  expect_null(meta$databaseSymbols$maxstock$modifiable)
   DBI::dbDisconnect(env$conn)
 })
 
@@ -468,7 +478,7 @@ test_that("modifySandboxInputData refuses symbols the user cannot edit either", 
   # table without a numeric column
   expect_modify_error(env$adapter, list(
     symbolName = "label", targetColumn = "note", operation = "MULTIPLY", value = 2
-  ), "cannot be modified")
+  ), "use modifySandboxTableRows")
 
   DBI::dbDisconnect(env$conn)
 })
@@ -1122,6 +1132,28 @@ test_that("modifySandboxTableRows treats an empty string as a regular key", {
   # applied in order, the delete also removes the row the upsert added
   expect_false("" %in% sequence$data$demand$region)
   expect_equal(nrow(sequence$data$demand), 4L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows adds, updates and deletes rows of a set", {
+  env <- setup_modify_test_env()
+  expect_rows_error(env$adapter, list(
+    symbolName = "label", operation = "UPSERT", columns = c("region", "note"), rows = list(list("EU", "hello"))
+  ), "nothing to change")
+  expect_rows_error(env$adapter, list(
+    symbolName = "label", operation = "UPSERT", columns = c("region", "note"), rows = list(list("EU", NA))
+  ), "needs a value in every row")
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(
+    '{"symbolName":"label","operation":"UPSERT","columns":["region","note"],"rows":[["EU","changed"],["AS",""]]}'
+  ))
+  expect_equal(res$rowsUpdated, 1L)
+  expect_equal(res$rowsAdded, 1L)
+  expect_equal(res$preview$`Note (after)`, c("changed", ""))
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(list(
+    symbolName = "label", operation = "DELETE",
+    filters = data.frame(column = "region", operator = "=", value = "EU", stringsAsFactors = FALSE)
+  )))
+  expect_equal(res$rowsDeleted, 1L)
   DBI::dbDisconnect(env$conn)
 })
 

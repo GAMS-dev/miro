@@ -887,9 +887,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       }
       symName <- args$symbolName
       modifiableInfo <- private$getModifiableInfo(symName)
-      if (is.null(modifiableInfo)) {
+      if (is.null(modifiableInfo$kind)) {
         return(private$toolError(sprintf(
-          "Input symbol '%s' cannot be modified (it is readonly, its numeric columns are all readonly, it holds no numeric or single-choice value, or it is a widget type that does not support being changed). Only symbols with a `modifiable` entry in the database schema can be changed.",
+          "Input symbol '%s' cannot be modified (it is readonly, its numeric columns are all readonly, it holds no numeric or single-choice value, or it is a widget type that does not support being changed). Only symbols with a `modifiable.kind` in the database schema can be changed this way; for other symbols with `modifiable.keyColumns`, use modifySandboxTableRows.",
           symName
         )))
       }
@@ -1076,7 +1076,9 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
         change <- c(change, rows)
         valueColumnIdxs <- setdiff(rows$columnIdxs, keyColumnIdxs)
-        change$targetColumnAlias <- paste(symColumns$aliases[valueColumnIdxs], collapse = ", ")
+        if (length(valueColumnIdxs)) {
+          change$targetColumnAlias <- paste(symColumns$aliases[valueColumnIdxs], collapse = ", ")
+        }
       }
 
       currentData <- tryCatch(private$readInputRowChangeData(symName, symColumns$names, change),
@@ -1745,7 +1747,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(FALSE)
       }
       if (widgetType %in% c("hot", "dt", "custom")) {
-        return(length(private$modifiableColumnsOf(symName)) > 0L)
+        return(length(private$modifiableColumnsOf(symName)) > 0L || length(private$rowKeyColumns(symName)) > 0L)
       }
       if (widgetType %in% c("slider", "numericinput")) {
         # a range slider is stored as two separate `<sym>_lo`/`<sym>_up` scalars
@@ -1767,13 +1769,20 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (identical(private$ioConfig$modelIn[[symName]]$type, "dropdown")) {
         return(list(kind = "choice"))
       }
+      modifiableColumns <- private$modifiableColumnsOf(symName)
+      keyColumns <- private$rowKeyColumns(symName)
+      # whole rows may also set non-numeric value columns, e.g. a set's element text
+      columns <- if (length(keyColumns)) setdiff(private$getInputSymbolColumns(symName)$names, keyColumns) else modifiableColumns
+      modifiableInfo <- list()
+      if (length(modifiableColumns)) {
+        modifiableInfo$kind <- "numeric"
+      }
       # I() keeps a single column an array rather than a bare string
-      modifiableInfo <- list(kind = "numeric", columns = I(private$modifiableColumnsOf(symName)))
-      symColumns <- private$getInputSymbolColumns(symName)
-      isKey <- symColumns$types != "numeric"
-      # a table with any readonly column does not let the user add or delete rows either
-      if (any(isKey) && !any(symColumns$readonly)) {
-        modifiableInfo$keyColumns <- I(unname(symColumns$names[isKey]))
+      if (length(columns)) {
+        modifiableInfo$columns <- I(columns)
+      }
+      if (length(keyColumns)) {
+        modifiableInfo$keyColumns <- I(keyColumns)
       }
       return(modifiableInfo)
     },
@@ -1783,6 +1792,20 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(character(0L))
       }
       return(symColumns$names[symColumns$types == "numeric" & !symColumns$readonly])
+    },
+    rowKeyColumns = function(symName) {
+      symConfig <- private$ioConfig$modelIn[[symName]]
+      symColumns <- private$getInputSymbolColumns(symName)
+      # a table with any readonly column does not let the user add or delete rows either
+      if (!length(symConfig$headers) || any(symColumns$readonly)) {
+        return(character(0L))
+      }
+      isKey <- symColumns$types != "numeric"
+      if (identical(symConfig$symtype, "set") && length(isKey) > 1L) {
+        # the last column of a set holds the element text
+        isKey[[length(isKey)]] <- FALSE
+      }
+      return(unname(symColumns$names[isKey]))
     },
     listDependentChoices = function(symName) {
       symChoices <- tryCatch(private$getInputSymbolChoices(symName)$choices,
@@ -1941,7 +1964,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(sprintf("`columns` must include every key column: %s.", paste(keyColumns, collapse = ", ")))
       }
       valueColumns <- setdiff(columns, keyColumns)
-      if (!length(valueColumns) || !all(valueColumns %in% writableColumns)) {
+      if ((length(writableColumns) && !length(valueColumns)) || !all(valueColumns %in% writableColumns)) {
         return(sprintf(
           "Besides the key columns, `columns` must name at least one of the writable columns: %s.",
           paste(writableColumns, collapse = ", ")
@@ -1971,17 +1994,19 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         }
         keyValues <- if (is.numeric(rows)) {
           format(rows[, pos], scientific = FALSE, trim = TRUE, digits = 15L)
-        } else {
+        } else if (columns[[pos]] %in% keyColumns) {
           trimws(as.character(rows[, pos]))
+        } else {
+          as.character(rows[, pos])
         }
         keyValues[is.na(rows[, pos])] <- NA_character_
         return(keyValues)
       })
       for (pos in seq_along(columns)) {
-        if (columns[[pos]] %in% keyColumns) {
+        if (is.character(values[[pos]])) {
           # an empty string is a valid UEL, only a missing value is not
           if (anyNA(values[[pos]])) {
-            return(sprintf("Key column '%s' needs a value in every row (an empty string \"\" is a valid key, null is not).", columns[[pos]]))
+            return(sprintf("Column '%s' needs a value in every row (an empty string \"\" is valid, null is not).", columns[[pos]]))
           }
         } else if (!all(is.finite(values[[pos]]))) {
           return(sprintf("Column '%s' needs a finite number in every row.", columns[[pos]]))
@@ -2168,13 +2193,13 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       return(list(
         name = "modifySandboxInputData",
         type = "function",
-        description = "Proposes a change to the sandbox scenario's INPUT data: arithmetic on a numeric column, or a new selection for a symbol holding one choice (a dropdown). The change is NOT applied; it is queued as a proposal the user confirms in the chat, seeing exact before/after values first. Only symbols with a `modifiable` entry in the database schema can be changed. One call per column.",
+        description = "Proposes a change to the sandbox scenario's INPUT data: arithmetic on a numeric column, or a new selection for a symbol holding one choice (a dropdown). The change is NOT applied; it is queued as a proposal the user confirms in the chat, seeing exact before/after values first. Only symbols with a `modifiable.kind` in the database schema can be changed. One call per column.",
         parameters = list(
           type = "object",
           properties = list(
             symbolName = list(
               type = "string",
-              description = "Technical identifier of the input symbol. Must have a `modifiable` entry in the database schema."
+              description = "Technical identifier of the input symbol. Must have a `modifiable.kind` in the database schema."
             ),
             targetColumn = list(
               type = "string",
@@ -2214,7 +2239,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
             operation = list(type = "string", enum = AI_INPUT_ROW_OPERATIONS),
             columns = list(
               type = "array", items = list(type = "string"),
-              description = "UPSERT: the columns of `rows`, in order: all `modifiable.keyColumns` plus at least one of `modifiable.columns`. Omitted value columns keep their value (empty in appended rows)."
+              description = "UPSERT: the columns of `rows`, in order: all `modifiable.keyColumns` plus at least one of `modifiable.columns` (if listed). Omitted value columns keep their value (empty in appended rows)."
             ),
             rows = list(
               type = "array",

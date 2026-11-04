@@ -357,7 +357,7 @@ Use `createChart` where a chart clarifies a comparison or trend.
 2. **Stay within `modifiable`** and any `widget` min/max. `kind: \"numeric\"`: `value` plus one column from `modifiable.columns`, one call per column. `kind: \"choice\"`: SET with `textValue` from `widget.choices` -- no `value`, no `filters`.
 3. **Scope it** -- without `filters` the whole column changes; say which rows you are affecting.
 4. **Prefer MULTIPLY/DIVIDE/ADD/SUBTRACT** over SET, which throws the user's own numbers away.
-5. **Whole rows** -- use `modifySandboxTableRows` (symbols with `modifiable.keyColumns`) to add rows, give rows individual values, or delete rows; rows are matched on their key columns. Query the existing key values first and say so when you introduce new ones.
+5. **Whole rows** -- use `modifySandboxTableRows` (symbols with `modifiable.keyColumns`; the only way to change entries without `kind`, e.g. sets) to add rows, give rows individual values, or delete rows; rows are matched on their key columns. Query the existing key values first and say so when you introduce new ones.
 6. **Changes stack** -- the proposals of one reply are applied in order, each on top of the previous one, although each tool result previews against the unchanged data. A later change without `filters` also hits rows an earlier one added: either give new rows their final values and filter the later change to the other rows, or give new rows their unadjusted values and leave the later change unfiltered.
 7. **Never claim it happened** -- say what you proposed and that it needs confirming. Do not re-query to verify: the database holds the old values until the user confirms.")
         }

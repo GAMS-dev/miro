@@ -146,11 +146,11 @@ renderAiInputChangeMeta <- function(change, lang) {
   )
   return(tags$div(class = "miro-ai-change-meta", lapply(parts, tags$span)))
 }
-renderAiInputChangeValue <- function(before, after, lang) {
-  if (!nzchar(before)) {
+renderAiInputChangeValue <- function(before, after, rowStatus, lang) {
+  if (identical(rowStatus, "added")) {
     return(tags$span(class = "miro-ai-change-value-after", after))
   }
-  if (!nzchar(after) || identical(before, after)) {
+  if (identical(rowStatus, "removed") || identical(before, after)) {
     return(before)
   }
   return(tagList(
@@ -188,7 +188,7 @@ renderAiInputChangePreviewTable <- function(change, lang) {
           }),
           lapply(seq_along(preview$before), function(colIdx) {
             tags$td(renderAiInputChangeValue(
-              preview$before[[colIdx]][[rowId]], preview$after[[colIdx]][[rowId]], lang
+              preview$before[[colIdx]][[rowId]], preview$after[[colIdx]][[rowId]], rowStatus, lang
             ))
           })
         )
