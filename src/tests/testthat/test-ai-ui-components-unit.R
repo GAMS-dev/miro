@@ -171,7 +171,14 @@ test_that("renderAiInputChangeProposal shows the summary, the before -> after va
   html <- as.character(renderAiInputChangeProposal(mockTableChange(), mockChangeLang))
 
   expect_match(html, 'data-change-id="aichg_test"', fixed = TRUE)
-  expect_match(html, "<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span>Region = EU</span>\\s*<span>2 rows</span>")
+  expect_match(html, "<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span class=\"miro-ai-change-filter\">Region = EU</span>\\s*<span>2 rows</span>")
+  inChange <- mockTableChange()
+  inChange$filters <- list(list(column = "year", columnAlias = "Year", columnIdx = 2L, operator = "IN", value = "2024,2025 "))
+  expect_match(
+    as.character(renderAiInputChangeProposal(inChange, mockChangeLang)),
+    "<span class=\"miro-ai-change-filter\">Year IN 2024, 2025</span>",
+    fixed = TRUE
+  )
   # the column is named once, by the table header, rather than in the summary too
   expect_false(grepl("<span>Value</span>", html, fixed = TRUE))
   expect_match(html, "<th>Value</th>", fixed = TRUE)
@@ -486,7 +493,7 @@ test_that("the group card shows the combined effect step by step when changes in
     mockGroup(independent = FALSE, steps = list(mockTableChange(), step)), mockGroupLang
   ))
   expect_match(html, "Applied together, in this order:", fixed = TRUE)
-  expect_match(html, '<span class="miro-ai-change-step-no">1</span>\\s*<div class="miro-ai-change-meta">\\s*<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span>Region = EU</span>')
+  expect_match(html, '<span class="miro-ai-change-step-no">1</span>\\s*<div class="miro-ai-change-meta">\\s*<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span class="miro-ai-change-filter">Region = EU</span>')
   expect_match(html, '<span class="miro-ai-change-step-no">2</span>', fixed = TRUE)
   expect_match(html, 'title="after">225</span>', fixed = TRUE)
   expect_false(grepl("do not affect each other", html, fixed = TRUE))

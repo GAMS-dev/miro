@@ -128,23 +128,30 @@ aiInputChangeFilterLabel <- function(change) {
     return(NULL)
   }
   return(paste(vapply(change$filters, function(filterSpec) {
-    return(sprintf("%s %s %s", filterSpec$columnAlias, filterSpec$operator, filterSpec$value))
+    value <- filterSpec$value
+    if (filterSpec$operator %in% c("IN", "NOT IN")) {
+      value <- paste(aiParseInTargets(value), collapse = ", ")
+    }
+    return(sprintf("%s %s %s", filterSpec$columnAlias, filterSpec$operator, value))
   }, character(1L), USE.NAMES = FALSE), collapse = " & "))
 }
 #' One line summing up a change: symbol, operation, row filter and row count.
 #' The column is left to the preview table's header, unless there is none.
 renderAiInputChangeMeta <- function(change, lang) {
   noRows <- change$preview$noRows %||% 0L
-  parts <- c(
-    change$symbolAlias,
-    if (aiInputChangeHasColumn(change) && !(change$preview$noRowsShown %||% 0L)) change$targetColumnAlias,
-    aiInputChangeOperationLabel(change, lang),
-    aiInputChangeFilterLabel(change),
+  filterLabel <- aiInputChangeFilterLabel(change)
+  return(tags$div(
+    class = "miro-ai-change-meta",
+    lapply(c(
+      change$symbolAlias,
+      if (aiInputChangeHasColumn(change) && !(change$preview$noRowsShown %||% 0L)) change$targetColumnAlias,
+      aiInputChangeOperationLabel(change, lang)
+    ), tags$span),
+    if (length(filterLabel)) tags$span(class = "miro-ai-change-filter", filterLabel),
     if (!isTRUE(change$isScalar) && noRows > 0L) {
-      if (noRows == 1L) lang$changeProposalRow else sprintf(lang$changeProposalRows, format(noRows, big.mark = ","))
+      tags$span(if (noRows == 1L) lang$changeProposalRow else sprintf(lang$changeProposalRows, format(noRows, big.mark = ",")))
     }
-  )
-  return(tags$div(class = "miro-ai-change-meta", lapply(parts, tags$span)))
+  ))
 }
 renderAiInputChangeValue <- function(before, after, rowStatus, lang) {
   if (identical(rowStatus, "added")) {
