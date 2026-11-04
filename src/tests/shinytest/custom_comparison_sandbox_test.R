@@ -35,12 +35,6 @@ app$run_js("Miro.batchCompareBack()")
 expect_true(app$get_js("$('#btBatchCompare').is(':visible')"))
 expect_false(app$get_js("$('#btBatchCompareConfirm').is(':visible')"))
 
-selectCompareMode("No baseline test")
-app$set_inputs(cbBatchCompareSandbox = TRUE)
-expect_false(app$get_js("$('#batchCompareBaselineOuter').is(':visible')"))
-app$set_inputs(cbBatchCompareSandbox = FALSE)
-app$run_js("Miro.batchCompareBack()")
-
 selectCompareMode("Sandbox test")
 expect_true(app$get_js("$('#btBatchCompareConfirm').is(':visible')"))
 expect_false(app$get_js("$('#cbBatchCompareSandbox').is(':checked')"))
@@ -66,5 +60,17 @@ Sys.sleep(2L)
 noRowsWithSandbox <- rowCount(app$get_values()$output[["cmpCustom_sbtest-tdVsErrorRatioTable"]])
 
 expect_identical(noRowsWithSandbox, noRowsWithoutSandbox + 1L)
+
+app$run_js("$(\"button[onclick*='btCloseScenCmp']:visible\").click();")
+Sys.sleep(0.5)
+openBatchLoadDialog()
+# without baseline selection, the sandbox scenario is always included
+selectCompareMode("No baseline test")
+expect_false(app$get_js("$('#btBatchCompareConfirm').is(':visible')"))
+Sys.sleep(2L)
+expect_identical(
+  rowCount(app$get_values()$output[["cmpCustom_nobaseline-tdVsErrorRatioTable"]]),
+  noRowsWithSandbox
+)
 
 app$stop()

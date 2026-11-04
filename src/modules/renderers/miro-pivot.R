@@ -2942,7 +2942,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
           zeroTolerance <- numericalTolerance
-          if (identical(baselineCompConfig$record, baselineScenPlaceholder)) {
+          if (identical(baselineCompConfig$domain, "_scenName") &&
+            identical(baselineCompConfig$record, baselineScenPlaceholder)) {
             baselineCompConfig$record <- baselineScenName
           }
           dataTmp <- completeBaselineCompData(

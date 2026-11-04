@@ -1317,12 +1317,17 @@ compModeHasBaseline <- function(compMode) {
   return(identical(compMode, "pivot") ||
     isTRUE(config[["customCompareModules"]][[compMode]][["selectBaseline"]]))
 }
+compModeRequiresSandbox <- function(compMode) {
+  compModeConfig <- config[["customCompareModules"]][[compMode]]
+  return(length(compModeConfig) > 0L && !isTRUE(compModeConfig[["selectBaseline"]]) &&
+    !identical(compModeConfig[["outType"]], "dashboardCompare"))
+}
 getBatchCompareOptions <- function(compareModeId, noScen) {
   showSandbox <- switch(compareModeId,
     split = noScen < 2L,
     tab = noScen < 10L,
     aiCompare = noScen <= 50L,
-    TRUE
+    compModeHasBaseline(compareModeId)
   )
   return(list(
     sandbox = showSandbox,

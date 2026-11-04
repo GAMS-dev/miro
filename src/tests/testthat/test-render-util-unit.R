@@ -135,3 +135,11 @@ test_that("completeBaselineCompData only fills the scenario dimension and keeps 
   names(data)[1] <- "category"
   expect_identical(completeBaselineCompData(data, "category", NULL, "sum"), data)
 })
+
+test_that("dashboardPrepareData treats _baseline as a regular record outside the scenario dimension", {
+  viewData <- tibble(category = c("_baseline", "other"), value = c(10, 50))
+  config <- list(baselineComparison = list(
+    domain = "category", record = "_baseline", metrics = list("percentage difference")
+  ))
+  expect_equal(dashboardPrepareData(config, viewData, baselineScenName = "Base")$data$value, c(0, 400))
+})

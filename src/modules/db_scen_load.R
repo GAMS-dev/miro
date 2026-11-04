@@ -152,11 +152,12 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   uiSidList[["sb"]] <- NULL
   isInMultiCompMode <- isMultiScenCompMode(currentCompMode)
   compRefId <- if (isInMultiCompMode) getMultiCompRefId(currentCompMode)
+  refSids <- if (isInMultiCompMode) normalizeSandboxSids(scenData$getRefScenMap(compRefId))
   sandboxOption <- NULL
-  if (!identical(currentCompMode, "split")) {
+  if (identical(currentCompMode, "tab") || compModeHasBaseline(currentCompMode)) {
     sandboxOption <- list(
       name = paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix),
-      checked = FALSE
+      checked = "sb" %in% refSids
     )
   }
   if (length(names(uiSidList))) {
@@ -171,7 +172,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     } else if (isInMultiCompMode) {
       sidsLoadedInRef <- uiSidList[[compRefId]]
       if (length(sidsLoadedInRef)) {
-        sandboxOption$checked <- "sb" %in% normalizeSandboxSids(sidsLoadedInRef)
         uiSidList <- sidsLoadedInRef
       } else {
         uiSidList <- unique(unlist(uiSidList[names(uiSidList) != compRefId],
@@ -223,8 +223,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       uiSidList <- NULL
     }
   }
-  if (length(baselineOption) && length(scenData$getRefScenMap(compRefId))) {
-    refSids <- normalizeSandboxSids(scenData$getRefScenMap(compRefId))
+  if (length(baselineOption) && length(refSids)) {
     baselineOption$choices <- baselineOption$choices[order(match(sub("_.*$", "", baselineOption$choices), refSids))]
     baselineOption$selected <- baselineOption$choices[1]
   }
@@ -676,6 +675,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     return()
   }
   isInMultiCompMode <- !isInSolveMode && isMultiScenCompMode(currentCompMode)
+  if (isInMultiCompMode && compModeRequiresSandbox(currentCompMode) && !"sb" %in% sidsToLoad) {
+    sidsToLoad <<- c("sb", sidsToLoad)
+  }
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
 
   if (sum(!occupiedSidSlots) < length(sidsToLoad)) {
