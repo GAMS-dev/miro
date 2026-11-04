@@ -3902,26 +3902,29 @@ body.miro-ai-drawer-resizing {
     border-left: 4px solid @primary-color-dark;
   });
 }
+// a phone has no width to spare for the indent of chat bubbles
+@media (max-width: 767px) {
+  .miro-ai-chat-bubble-wrapper.miro-ai-change-proposal {
+    max-width: 100%;
+  }
+}
 .miro-ai-change-reason {
   margin: 8px 0;
   font-style: italic;
   opacity: 0.85;
 }
-.miro-ai-change-facts {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 2px 12px;
-  margin: 10px 0;
-  font-size: 0.9em;
+.miro-ai-change-meta {
+  margin: 2px 0 8px 0;
+  font-size: 0.85em;
+  opacity: 0.65;
 
-  dt {
-    font-weight: 700;
-    opacity: 0.7;
+  span {
+    white-space: nowrap;
   }
 
-  dd {
-    margin: 0;
-    overflow-wrap: anywhere;
+  span + span::before {
+    content: "\00b7";
+    margin: 0 6px;
   }
 }
 .miro-ai-change-preview {
@@ -3935,6 +3938,12 @@ body.miro-ai-drawer-resizing {
   {
     border: 1px solid @dropdown-sidebar-bg-dark;
   });
+}
+// the preview scrolls, not the table, which the generic bubble table rule would make a scroll box of its own
+.miro-ai-chat-bubble .miro-ai-change-table {
+  display: table;
+  max-width: none;
+  overflow: visible;
 }
 .miro-ai-change-table {
   width: 100%;
@@ -3953,6 +3962,9 @@ body.miro-ai-drawer-resizing {
     top: 0;
     z-index: 1;
     font-weight: 700;
+    // long column aliases wrap rather than widen the table
+    white-space: normal;
+    vertical-align: bottom;
     .responsiveDark({
       background-color: @modal-bg;
       border-bottom: 1px solid #e0e0e0;
@@ -3963,14 +3975,43 @@ body.miro-ai-drawer-resizing {
     });
   }
 
-  .miro-ai-change-cell-before {
+  .miro-ai-change-value-before {
+    text-decoration: line-through;
+    opacity: 0.55;
+  }
+
+  .miro-ai-change-value-arrow {
+    margin: 0 5px;
+    opacity: 0.5;
+  }
+
+  .miro-ai-change-value-after {
+    font-weight: 700;
+  }
+
+  .miro-ai-change-row-removed td {
     text-decoration: line-through;
     opacity: 0.6;
   }
-
-  .miro-ai-change-cell-after {
-    font-weight: 700;
-  }
+}
+// inline-block, so the line-through of a removed row does not run through it
+.miro-ai-change-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.miro-ai-change-tag-added {
+  color: #fff;
+  background-color: #28a745;
+}
+.miro-ai-change-tag-removed {
+  color: #fff;
+  background-color: #dc3545;
 }
 .miro-ai-change-truncated {
   margin-top: 6px;
@@ -3987,16 +4028,28 @@ body.miro-ai-drawer-resizing {
   margin-top: 10px;
 }
 .miro-ai-change-group-step-title {
-  font-weight: 600;
-  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+
+  .miro-ai-change-meta {
+    margin: 0 0 4px 0;
+  }
+}
+.miro-ai-change-step-no {
+  flex: none;
+  font-size: 0.85em;
+  font-weight: 700;
+  &::after {
+    content: ".";
+  }
 }
 .miro-ai-change-actions {
   display: flex;
   gap: 8px;
   margin-top: 12px;
 }
-.miro-ai-change-actions .miro-ai-change-apply,
-.miro-ai-change-actions .miro-ai-change-apply-all {
+.miro-ai-change-actions .btn-primary {
   &,
   &:active,
   &:focus,

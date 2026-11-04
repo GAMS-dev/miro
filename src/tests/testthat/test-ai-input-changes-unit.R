@@ -264,7 +264,7 @@ test_that("applyAiInputChange only touches the target column of matching rows", 
   expect_equal(res$data$value, c(100, 225, NA))
   expect_equal(res$data$region, data$region)
   expect_equal(res$data$cost, data$cost)
-  expect_equal(res$rowMask, c(FALSE, TRUE, TRUE))
+  expect_equal(res$updated, 2:3)
   expect_true(tibble::is_tibble(res$data))
 })
 
@@ -284,8 +284,15 @@ test_that("applyAiInputChange handles scalar widgets", {
   res <- applyAiInputChange(4, change)
 
   expect_equal(res$data, 6)
-  expect_equal(res$oldValues, 4)
-  expect_equal(res$newValues, 6)
+  preview <- buildAiInputChangePreview(4, change, res)
+  expect_equal(preview$before, list("4"))
+  expect_equal(preview$after, list("6"))
+})
+
+test_that("applyAiInputChange treats an empty scalar as missing", {
+  change <- list(symbolName = "maxstock", isScalar = TRUE, operation = "ADD", value = 1)
+  expect_equal(applyAiInputChange(tibble::tibble(maxstock = numeric(0L)), change)$data, NA_real_)
+  expect_equal(applyAiInputChange(tibble::tibble(maxstock = numeric(0L)), modifyList(change, list(operation = "SET")))$data, 1)
 })
 
 test_that("buildAiInputChangePreview reports the affected rows and truncates", {
@@ -302,8 +309,9 @@ test_that("buildAiInputChangePreview reports the affected rows and truncates", {
   expect_equal(preview$noRows, 5L)
   expect_equal(preview$noRowsShown, 2L)
   expect_equal(names(preview$labels), c("Region", "Year"))
-  expect_equal(preview$before, c("1", "2"))
-  expect_equal(preview$after, c("2", "4"))
+  expect_equal(preview$columns, "Value")
+  expect_equal(preview$before, list(c("1", "2")))
+  expect_equal(preview$after, list(c("2", "4")))
 })
 
 # --- tool schema / metadata ---------------------------------------------------
@@ -330,7 +338,9 @@ test_that("getSystemMetadata advertises modifiable columns of writable symbols o
   env <- setup_modify_test_env()
   meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
 
-  expect_equal(meta$databaseSymbols$demand$modifiable, list(kind = "numeric", columns = list("value")))
+  expect_equal(meta$databaseSymbols$demand$modifiable, list(
+    kind = "numeric", columns = list("value"), keyColumns = list("region", "year")
+  ))
   expect_equal(meta$databaseSymbols$maxstock$modifiable, list(kind = "numeric", columns = list("maxstock")))
   expect_equal(meta$databaseSymbols$modeltype$modifiable, list(kind = "choice"))
   expect_equal(meta$databaseSymbols$basregion$modifiable, list(kind = "choice"))
@@ -578,8 +588,8 @@ test_that("a queued proposal applies cleanly to the live sandbox data", {
   preview <- buildAiInputChangePreview(liveData, change, res)
   expect_equal(preview$noRows, 2L)
   expect_equal(names(preview$labels), c("Region", "Year"))
-  expect_equal(preview$before, c("100", "150"))
-  expect_equal(preview$after, c("200", "300"))
+  expect_equal(preview$before, list(c("100", "150")))
+  expect_equal(preview$after, list(c("200", "300")))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -593,7 +603,7 @@ test_that("buildAiInputChangePreview drops the label table for a single column s
   preview <- buildAiInputChangePreview(data, change, applyAiInputChange(data, change))
 
   expect_null(preview$labels)
-  expect_equal(preview$after, c("2", "3"))
+  expect_equal(preview$after, list(c("2", "3")))
 })
 
 test_that("a change over a large table is summarized without reading it all", {
@@ -762,12 +772,11 @@ test_that("a queued choice change applies to the live dropdown value", {
   # a dropdown widget holds its selection as a plain string
   res <- applyAiInputChange("lp", change)
   expect_equal(res$data, "mip")
-  expect_equal(res$oldValues, "lp")
 
   preview <- buildAiInputChangePreview("lp", change, res)
   expect_null(preview$labels)
-  expect_equal(preview$before, "lp")
-  expect_equal(preview$after, "mip")
+  expect_equal(preview$before, list("lp"))
+  expect_equal(preview$after, list("mip"))
 
   DBI::dbDisconnect(env$conn)
 })
@@ -779,6 +788,7 @@ test_that("a readonly column is left out of the columns that may be changed", {
   meta <- jsonlite::fromJSON(env$adapter$getSystemMetadata(), simplifyVector = FALSE)
 
   # `baseload` is readonly, so only `extraload` is offered
+  # a readonly column also keeps the user from adding or deleting rows
   expect_equal(meta$databaseSymbols$schedule$modifiable, list(kind = "numeric", columns = list("extraload")))
   expect_true(meta$databaseSymbols$schedule$columns$baseload$readonly)
   expect_null(meta$databaseSymbols$schedule$columns$extraload$readonly)
@@ -904,7 +914,6 @@ test_that("proposals are applied one after another, each on the previous result"
   expect_equal(sequence$data$maxstock, 5)
   # the third step started from the first step's result, not the original
   expect_equal(sequence$steps[[3L]]$before$value, c(100, 300, 200))
-  expect_equal(sequence$steps[[3L]]$result$oldValues, c(100, 300, 200))
 })
 
 test_that("each symbol's data is read only once, even when it is NULL", {
@@ -924,6 +933,19 @@ test_that("each symbol's data is read only once, even when it is NULL", {
 test_that("edits of different rows of the same symbol are independent", {
   changes <- list(demandChange("MULTIPLY", 2, "EU"), demandChange("ADD", 5, "NA"))
   sequence <- applyAiInputChangeSequence(changes, function(symName) demandData())
+  expect_true(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("edits of different columns of the same rows are independent", {
+  changes <- list(demandChange("MULTIPLY", 2, "EU"), demandChange("ADD", 1, "EU", targetColumnIdx = 3L))
+  sequence <- applyAiInputChangeSequence(changes, function(symName) demandData())
+  expect_true(aiInputChangesAreIndependent(changes, sequence))
+})
+
+test_that("independence does not depend on the column types", {
+  data <- tibble::tibble(region = c("NA", "EU", "AS"), value = c(100L, 150L, 200L), cost = 1:3)
+  changes <- list(demandChange("MULTIPLY", 2, "EU"), demandChange("ADD", 1, "EU", targetColumnIdx = 3L))
+  sequence <- applyAiInputChangeSequence(changes, function(symName) data)
   expect_true(aiInputChangesAreIndependent(changes, sequence))
 })
 
@@ -965,4 +987,212 @@ test_that("the widget bounds apply to the combined result", {
   # no range configured, or nothing numeric to check
   expect_null(aiInputChangeBoundsError(list(type = "numericinput", numericinput = list()), "x", 1e9))
   expect_null(aiInputChangeBoundsError(sliderConfig, "maxstock", NA))
+})
+
+# ==============================================================================
+# Adding, overwriting and deleting rows
+# ==============================================================================
+
+upsertChange <- function(rows, columnIdxs = 1:3) {
+  list(
+    symbolName = "demand", isScalar = FALSE, operation = "UPSERT",
+    keyColumnIdxs = 1:2, columnIdxs = columnIdxs, rows = rows,
+    columnAliases = c("Region", "Year", "Value")
+  )
+}
+liveDemand <- function() {
+  tibble::tibble(region = c("NA", "EU", "NA"), year = c("2024", "2024", "2025"), value = c(100, 150, 200))
+}
+
+test_that("an upsert overwrites matching rows and appends the others", {
+  change <- upsertChange(list(c("EU", "AS", "NA"), c("2024", "2024", "2025"), c(160, 50, 200)))
+  res <- applyAiInputChange(liveDemand(), change)
+
+  expect_equal(res$data$region, c("NA", "EU", "NA", "AS"))
+  expect_equal(res$data$value, c(100, 160, 200, 50))
+  expect_true(tibble::is_tibble(res$data))
+  # the NA/2025 row already holds 200, so it does not count as updated
+  expect_equal(res$updated, 2L)
+  expect_equal(res$added, 4L)
+  expect_equal(res$columns, 3L)
+
+  preview <- buildAiInputChangePreview(liveDemand(), change, res)
+  expect_equal(preview$status, c("updated", "added"))
+  expect_equal(preview$labels$Region, c("EU", "AS"))
+  expect_equal(preview$before, list(c("150", "")))
+  expect_equal(preview$after, list(c("160", "50")))
+})
+
+test_that("an upsert leaves the columns it does not name alone", {
+  data <- tibble::tibble(day = c("mon", "tue"), baseload = c(10, 20), extraload = c(1, 2))
+  change <- list(
+    symbolName = "schedule", isScalar = FALSE, operation = "UPSERT",
+    keyColumnIdxs = 1L, columnIdxs = c(1L, 3L), rows = list(c("tue", "wed"), c(5, 6)),
+    columnAliases = c("Day", "Base load", "Extra load")
+  )
+  res <- applyAiInputChange(data, change)
+  expect_equal(res$data$baseload, c(10, 20, NA))
+  expect_equal(res$data$extraload, c(1, 5, 6))
+  expect_equal(buildAiInputChangePreview(data, change, res)$labels$`Base load`, c("20", "NA"))
+})
+
+test_that("a delete removes the matching rows", {
+  change <- list(
+    symbolName = "demand", isScalar = FALSE, operation = "DELETE",
+    filters = list(list(columnIdx = 1L, operator = "=", value = "NA")),
+    columnAliases = c("Region", "Year", "Value")
+  )
+  res <- applyAiInputChange(liveDemand(), change)
+  expect_equal(res$data$region, "EU")
+  expect_equal(res$removed, c(1L, 3L))
+
+  preview <- buildAiInputChangePreview(liveDemand(), change, res)
+  expect_equal(preview$status, c("removed", "removed"))
+  expect_equal(preview$labels$Value, c("100", "200"))
+  expect_length(preview$before, 0L)
+})
+
+test_that("upserts of different keys are independent, of the same key not", {
+  first <- upsertChange(list("EU", "2024", 1))
+  expect_true(aiInputChangesAreIndependent(
+    list(first, upsertChange(list("AS", "2024", 2))),
+    applyAiInputChangeSequence(list(first, upsertChange(list("AS", "2024", 2))), function(symName) liveDemand())
+  ))
+  changes <- list(upsertChange(list("AS", "2024", 1)), upsertChange(list("AS", "2024", 2)))
+  expect_false(aiInputChangesAreIndependent(changes, applyAiInputChangeSequence(changes, function(symName) liveDemand())))
+})
+
+expect_rows_error <- function(adapter, args, pattern) {
+  res <- jsonlite::fromJSON(adapter$modifySandboxTableRows(args))
+  expect_match(res$error, pattern)
+  expect_length(adapter$getPendingInputChanges(), 0L)
+}
+
+test_that("modifySandboxTableRows queues an upsert parsed from JSON", {
+  env <- setup_modify_test_env()
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(
+    '{"symbolName":"demand","operation":"UPSERT","columns":["region","year","value"],"rows":[["EU",2024,175],["AS","2026",80.5]]}'
+  ))
+  expect_equal(res$status, "AWAITING_USER_CONFIRMATION")
+  expect_equal(res$rowsUpdated, 1L)
+  expect_equal(res$rowsAdded, 1L)
+  expect_equal(res$preview$`_change`, c("updated", "added"))
+  expect_equal(res$preview$`Value (after)`, c("175", "80.5"))
+
+  change <- env$adapter$getPendingInputChanges()[[1L]]
+  expect_equal(change$rows, list(c("EU", "AS"), c("2024", "2026"), c(175, 80.5)))
+  expect_equal(change$targetColumnAlias, "Value")
+  # the database is untouched
+  expect_equal(DBI::dbGetQuery(env$conn, "SELECT COUNT(*) AS n FROM data_demand WHERE _sid = 1")$n, 4L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows keeps numeric keys and trims key values", {
+  env <- setup_modify_test_env()
+  DBI::dbExecute(env$conn, "UPDATE data_demand SET year = '100000' WHERE year = '2024'")
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(
+    '{"symbolName":"demand","operation":"UPSERT","columns":["region","year","value"],"rows":[[" EU ",100000,1]]}'
+  ))
+  expect_equal(res$rowsUpdated, 1L)
+  expect_equal(res$rowsAdded, 0L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows treats an empty string as a regular key", {
+  env <- setup_modify_test_env()
+  DBI::dbExecute(env$conn, "INSERT INTO data_demand VALUES (1, '', '2024', 7)")
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(
+    '{"symbolName":"demand","operation":"UPSERT","columns":["region","year","value"],"rows":[["","2024",9],["","2026",3]]}'
+  ))
+  expect_equal(res$rowsUpdated, 1L)
+  expect_equal(res$rowsAdded, 1L)
+  expect_equal(res$preview$`Value (before)`, c("7", ""))
+
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(list(
+    symbolName = "demand", operation = "DELETE",
+    filters = data.frame(column = "region", operator = "=", value = "", stringsAsFactors = FALSE)
+  )))
+  expect_equal(res$rowsDeleted, 1L)
+  expect_equal(res$preview$Year, "2024")
+
+  sequence <- applyAiInputChangeSequence(env$adapter$getPendingInputChanges(), function(symName) {
+    data <- DBI::dbGetQuery(env$conn, "SELECT region, year, value FROM data_demand WHERE _sid = 1")
+    return(data)
+  })
+  # applied in order, the delete also removes the row the upsert added
+  expect_false("" %in% sequence$data$demand$region)
+  expect_equal(nrow(sequence$data$demand), 4L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows queues a delete", {
+  env <- setup_modify_test_env()
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(list(
+    symbolName = "demand", operation = "DELETE",
+    filters = data.frame(column = "year", operator = "=", value = "2025", stringsAsFactors = FALSE)
+  )))
+  expect_equal(res$rowsDeleted, 2L)
+  expect_equal(res$preview$Region, c("NA", "EU"))
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows counts a large delete without reading it all", {
+  env <- setup_modify_test_env()
+  DBI::dbWriteTable(env$conn, "data_demand", tibble::tibble(
+    `_sid` = 1L, region = sprintf("r%04d", 1:500), year = "2030", value = 1
+  ), append = TRUE)
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(list(
+    symbolName = "demand", operation = "DELETE",
+    filters = data.frame(column = "year", operator = "=", value = "2030", stringsAsFactors = FALSE)
+  )))
+  expect_equal(res$rowsDeleted, 500L)
+  expect_equal(nrow(res$preview), AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS)
+  expect_match(res$previewNote, "first 10 of 500 affected rows")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("numeric filters match in SQL at full precision", {
+  env <- setup_modify_test_env()
+  DBI::dbExecute(env$conn, "UPDATE data_demand SET value = 0.1 + 0.2 WHERE value = 100")
+  res <- jsonlite::fromJSON(env$adapter$modifySandboxTableRows(list(
+    symbolName = "demand", operation = "DELETE",
+    filters = data.frame(column = "value", operator = "=", value = "0.30000000000000004", stringsAsFactors = FALSE)
+  )))
+  expect_equal(res$rowsDeleted, 1L)
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("modifySandboxTableRows validates its arguments", {
+  env <- setup_modify_test_env()
+  upsert <- function(columns, rows, symbolName = "demand") {
+    list(symbolName = symbolName, operation = "UPSERT", columns = columns, rows = rows)
+  }
+  cols <- c("region", "year", "value")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", 1)), "maxstock"), "cannot be added or deleted")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", 1)), "capacity"), "cannot be added or deleted")
+  expect_rows_error(env$adapter, list(symbolName = "demand", operation = "MERGE"), "`operation` is required")
+  expect_rows_error(env$adapter, upsert(c("region", "value"), list(list("EU", 1))), "every key column")
+  expect_rows_error(env$adapter, upsert(c("region", "year"), list(list("EU", "2024"))), "at least one of the writable")
+  expect_rows_error(env$adapter, upsert(c(cols, "nope"), list(list("EU", "2024", 1, 2))), "at most once")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024"))), "one value per entry")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", "lots"))), "finite number")
+  expect_rows_error(env$adapter, upsert(cols, list(list(NA, "2024", 1))), "needs a value in every row")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", 1), list("EU", "2024", 2))), "only once")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", 150))), "nothing to change")
+  expect_rows_error(env$adapter, upsert(c("day", "extraload"), list(list("mon", 1)), "schedule"), "cannot be added or deleted")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", 1), list("2030", "2031"))), "one value per entry")
+  expect_rows_error(env$adapter, upsert(cols, list(list("EU", "2024", list(1, 2)))), "one value per entry")
+  expect_rows_error(env$adapter, list(symbolName = "demand", operation = "DELETE"), "requires `filters`")
+  expect_rows_error(env$adapter, list(
+    symbolName = "demand", operation = "DELETE",
+    filters = data.frame(column = "region", operator = "=", value = "MARS", stringsAsFactors = FALSE)
+  ), "nothing to delete")
+  DBI::dbDisconnect(env$conn)
+})
+
+test_that("the row tool is offered next to the modification tool", {
+  env <- setup_modify_test_env()
+  toolNames <- vapply(env$adapter$getToolSchema(), "[[", character(1L), "name")
+  expect_true("modifySandboxTableRows" %in% toolNames)
+  DBI::dbDisconnect(env$conn)
 })

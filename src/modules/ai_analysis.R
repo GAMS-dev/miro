@@ -292,7 +292,8 @@ aiTask <- ExtendedTask$new(
             dbRes
           },
           "createChart" = function(args) aiAdapter$createChart(args),
-          "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args)
+          "modifySandboxInputData" = function(args) aiAdapter$modifySandboxInputData(args),
+          "modifySandboxTableRows" = function(args) aiAdapter$modifySandboxTableRows(args)
         )
         roleContext <- "### ROLE
 You are Mira, the AI assistant of GAMS MIRO, acting as an expert optimization analyst for this app. Answer scenario questions using the scenario database: precise, concise, quantitative, directly on-point. No unneeded explanation.
@@ -342,12 +343,14 @@ Use `createChart` where a chart clarifies a comparison or trend.
           guardrails <- paste0(guardrails, "
 
 ### INPUT DATA CHANGES
-`modifySandboxInputData` only *proposes* a change; the user confirms each one on a card showing the exact before/after values.
+`modifySandboxInputData` and `modifySandboxTableRows` only *propose* a change; the user confirms each one on a card showing the exact before/after values.
 1. **On request only** -- never change data to \"fix\" something you spotted; report it instead.
 2. **Stay within `modifiable`** and any `widget` min/max. `kind: \"numeric\"`: `value` plus one column from `modifiable.columns`, one call per column. `kind: \"choice\"`: SET with `textValue` from `widget.choices` -- no `value`, no `filters`.
 3. **Scope it** -- without `filters` the whole column changes; say which rows you are affecting.
 4. **Prefer MULTIPLY/DIVIDE/ADD/SUBTRACT** over SET, which throws the user's own numbers away.
-5. **Never claim it happened** -- say what you proposed and that it needs confirming. Do not re-query to verify: the database holds the old values until the user confirms.")
+5. **Whole rows** -- use `modifySandboxTableRows` (symbols with `modifiable.keyColumns`) to add rows, give rows individual values, or delete rows; rows are matched on their key columns. Query the existing key values first and say so when you introduce new ones.
+6. **Changes stack** -- the proposals of one reply are applied in order, each on top of the previous one, although each tool result previews against the unchanged data. A later change without `filters` also hits rows an earlier one added: either give new rows their final values and filter the later change to the other rows, or give new rows their unadjusted values and leave the later change unfiltered.
+7. **Never claim it happened** -- say what you proposed and that it needs confirming. Do not re-query to verify: the database holds the old values until the user confirms.")
         }
         if (length(history$sessionId)) {
           aiProvider$sessionId <- history$sessionId
@@ -619,8 +622,8 @@ updateAiInputChangeCard <- function(historyIdx, status, statusDetail = NULL) {
 }
 aiInputChangeSummary <- function(change) {
   return(sprintf(
-    "%s (%s %s)", change$symbolName,
-    tolower(change$operation), formatAiInputValue(change$value)
+    "%s (%s)", change$symbolName,
+    paste(c(tolower(change$operation), formatAiInputValue(change$value)), collapse = " ")
   ))
 }
 #' Values a single-choice widget currently accepts, as the widget itself sees
@@ -642,6 +645,7 @@ aiInputChangeChoices <- function(symName) {
 #' seconds old), so what the card shows is what applying it would produce.
 registerAiInputChanges <- function(pendingChanges) {
   pendingIds <- character(0L)
+  historyIdxs <- integer(0L)
   for (change in pendingChanges) {
     while (change$changeId %in% names(aiAssistantState$changeIndex)) {
       change$changeId <- paste0(change$changeId, "_")
@@ -656,15 +660,17 @@ registerAiInputChanges <- function(pendingChanges) {
     historyIdx <- length(aiAssistantState$chatHistory) + 1L
     aiAssistantState$chatHistory[[historyIdx]] <<- list(role = "inputChange", change = change)
     aiAssistantState$changeIndex[[change$changeId]] <<- historyIdx
-    session$sendCustomMessage("gms-addAiChatCard", list(
-      html = as.character(renderAiInputChangeProposal(change, lang$nav$aiBotDialog))
-    ))
+    historyIdxs <- c(historyIdxs, historyIdx)
     if (identical(change$status, "pending")) {
       pendingIds <- c(pendingIds, change$changeId)
     }
   }
-  if (length(pendingIds) > 1L) {
-    registerAiInputChangeGroup(pendingIds)
+  # the group goes first, so its members are rendered knowing they belong to it
+  groupIdx <- if (length(pendingIds) > 1L) registerAiInputChangeGroup(pendingIds)
+  for (historyIdx in c(historyIdxs, groupIdx)) {
+    session$sendCustomMessage("gms-addAiChatCard", list(
+      html = as.character(renderAiChatItem(aiAssistantState$chatHistory[[historyIdx]], lang$nav$aiBotDialog))
+    ))
   }
   return(invisible())
 }
@@ -672,7 +678,8 @@ getAiSandboxInputData <- function(symName) {
   return(isolate(sandboxInputData$getData(symName)()))
 }
 AI_EMPTY_CHANGE_PREVIEW <- list(
-  labels = NULL, before = character(0L), after = character(0L), noRows = 0L, noRowsShown = 0L
+  labels = NULL, columns = character(0L), before = list(), after = list(), status = character(0L),
+  noRows = 0L, noRowsShown = 0L
 )
 previewAiInputChange <- function(change, currentData = NULL) {
   change$status <- "pending"
@@ -691,14 +698,14 @@ previewAiInputChange <- function(change, currentData = NULL) {
       "AI assistant proposed a change to symbol: '%s' that could not be previewed. Error message: %s",
       change$symbolName, errMsg
     )
-  } else if (!change$isScalar && !any(changeResult$rowMask)) {
+  } else if (!change$isScalar && !aiInputChangeSize(changeResult)) {
     errMsg <- lang$nav$aiBotDialog$changeErrNoRows
   } else if (isTRUE(change$isChoice) && !change$value %in% aiInputChangeChoices(change$symbolName)) {
     errMsg <- sprintf(lang$nav$aiBotDialog$changeErrBadChoice, change$value)
   } else {
     # the assistant checked the range against its database dump; a rebased
     # proposal starts from different values, so it has to be checked again
-    errMsg <- aiInputChangeBoundsError(ioConfig$modelIn[[change$symbolName]], change$symbolName, changeResult$newValues)
+    errMsg <- aiInputChangeBoundsError(ioConfig$modelIn[[change$symbolName]], change$symbolName, aiInputChangeNewValues(changeResult))
   }
   if (!is.null(errMsg)) {
     change$status <- "failed"
@@ -764,9 +771,28 @@ registerAiInputChangeGroup <- function(changeIds) {
   for (changeId in changeIds) {
     aiAssistantState$changeGroupOf[[changeId]] <<- group$groupId
   }
-  session$sendCustomMessage("gms-addAiChatCard", list(
-    html = as.character(renderAiInputChangeGroup(group, lang$nav$aiBotDialog))
-  ))
+  syncAiInputChangesGrouped(group, render = FALSE)
+  return(historyIdx)
+}
+#' Members of a pending group defer to its "apply all"; once it is no longer
+#' pending, their own apply button becomes the primary action again.
+syncAiInputChangesGrouped <- function(group, render = TRUE) {
+  grouped <- identical(group$status, "pending")
+  for (changeId in group$changeIds) {
+    historyIdx <- aiAssistantState$changeIndex[[changeId]]
+    change <- aiAssistantState$chatHistory[[historyIdx]]$change
+    if (identical(isTRUE(change$grouped), grouped)) {
+      next
+    }
+    change$grouped <- grouped
+    aiAssistantState$chatHistory[[historyIdx]]$change <<- change
+    if (render && identical(change$status, "pending")) {
+      session$sendCustomMessage("gms-updateAiChatCard", list(
+        id = change$changeId,
+        html = as.character(renderAiInputChangeProposal(change, lang$nav$aiBotDialog))
+      ))
+    }
+  }
   return(invisible())
 }
 #' The combined preview of a group, computed from its members' current
@@ -831,6 +857,7 @@ refreshAiInputChangeGroup <- function(groupId) {
     id = newGroup$groupId,
     html = as.character(renderAiInputChangeGroup(newGroup, lang$nav$aiBotDialog))
   ))
+  syncAiInputChangesGrouped(newGroup)
   return(invisible())
 }
 #' Each proposal alone was checked against the widget's range by the
@@ -839,7 +866,7 @@ aiInputChangeSequenceBoundsError <- function(changes, sequence) {
   for (changeIdx in seq_along(changes)) {
     symName <- changes[[changeIdx]]$symbolName
     boundsError <- aiInputChangeBoundsError(
-      ioConfig$modelIn[[symName]], symName, sequence$steps[[changeIdx]]$result$newValues
+      ioConfig$modelIn[[symName]], symName, aiInputChangeNewValues(sequence$steps[[changeIdx]]$result)
     )
     if (!is.null(boundsError)) {
       return(boundsError)
@@ -855,6 +882,7 @@ updateAiInputChangeGroupCard <- function(historyIdx, status, statusDetail = NULL
     id = group$groupId,
     html = as.character(renderAiInputChangeGroup(group, lang$nav$aiBotDialog))
   ))
+  syncAiInputChangesGrouped(group)
   return(invisible())
 }
 refreshAiSandboxSnapshot <- function() {

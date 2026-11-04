@@ -19,6 +19,13 @@ AI_LIKE_DESCRIPTION <- "`LIKE` is case-insensitive; `%` matches any text, `_` on
 AI_INPUT_CHANGE_PREVIEW_ROWS <- 50L
 AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS <- 10L
 AI_MAX_LISTED_CHOICES <- 50L
+AI_INPUT_ROW_OPERATIONS <- c("UPSERT", "DELETE")
+AI_INPUT_CHANGE_MAX_ROWS <- 5000L
+AI_INPUT_CHANGE_REASON_SCHEMA <- list(
+  type = "string",
+  description = "One short sentence for the confirmation card: why this change."
+)
+AI_INPUT_CHANGE_PENDING_NOTE <- "NOT applied until the user confirms it in the chat. Don't query to verify it or say the data changed; tell the user in 1-2 sentences what you proposed and that they must confirm or discard it."
 
 deriveAiInputChangeSummary <- function(before, matchedRows, operation, value) {
   if (identical(operation, "SET")) {
@@ -200,6 +207,44 @@ applyAiInputChangeSequence <- function(changes, getData) {
   return(list(data = workingData, steps = steps))
 }
 
+#' A scalar widget's data is treated as a table with a single column.
+aiInputColumn <- function(data, colIdx) {
+  if (is.null(nrow(data))) {
+    return(if (length(data)) data else NA)
+  }
+  return(data[[colIdx]])
+}
+
+aiInputCells <- function(data, rows, cols) {
+  return(lapply(cols, function(colIdx) aiInputColumn(data, colIdx)[rows]))
+}
+
+aiInputChangeSize <- function(changeResult) {
+  return(length(changeResult$updated) + length(changeResult$added) + length(changeResult$removed))
+}
+
+aiInputChangeNewValues <- function(changeResult) {
+  return(unlist(aiInputCells(
+    changeResult$data, c(changeResult$updated, changeResult$added), changeResult$columns
+  ), use.names = FALSE))
+}
+
+aiInputChangeEffect <- function(before, changeResult) {
+  allCols <- seq_along(changeResult$data)
+  cellValues <- function(source, rows, cols) {
+    return(lapply(aiInputCells(source, rows, cols), function(values) {
+      return(if (is.numeric(values)) as.numeric(values) else as.character(values))
+    }))
+  }
+  return(list(
+    updated = changeResult$updated,
+    before = cellValues(before, changeResult$updated, changeResult$columns),
+    after = cellValues(changeResult$data, changeResult$updated, changeResult$columns),
+    added = cellValues(changeResult$data, changeResult$added, allCols),
+    removed = cellValues(before, changeResult$removed, allCols)
+  ))
+}
+
 aiInputChangesAreIndependent <- function(changes, sequence) {
   originalData <- list()
   for (changeIdx in seq_along(changes)) {
@@ -209,85 +254,136 @@ aiInputChangesAreIndependent <- function(changes, sequence) {
       # the first step of each symbol was applied to its unchanged data
       originalData[symName] <- list(sequence$steps[[changeIdx]]$before)
     }
-    alone <- applyAiInputChange(originalData[[symName]], change)
-    together <- sequence$steps[[changeIdx]]$result
-    if (!identical(alone$rowMask, together$rowMask) ||
-      !identical(alone$oldValues, together$oldValues) ||
-      !identical(alone$newValues, together$newValues)) {
+    alone <- aiInputChangeEffect(originalData[[symName]], applyAiInputChange(originalData[[symName]], change))
+    step <- sequence$steps[[changeIdx]]
+    if (!identical(alone, aiInputChangeEffect(step$before, step$result))) {
       return(FALSE)
     }
   }
   return(TRUE)
 }
 
-applyAiInputChange <- function(data, change) {
-  if (isTRUE(change$isChoice)) {
-    oldValue <- NA_character_
-    if (length(data)) {
-      oldValue <- as.character(data)[[1L]]
-    }
-    return(list(
-      data = change$value, rowMask = TRUE,
-      oldValues = oldValue, newValues = change$value
-    ))
+aiInputRowKeys <- function(keyValues) {
+  keyValues <- lapply(keyValues, function(values) {
+    values <- as.character(values)
+    values[is.na(values)] <- "\u001e"
+    return(values)
+  })
+  return(do.call(paste, c(keyValues, sep = "\u001f")))
+}
+
+aiValuesDiffer <- function(old, new) {
+  return(is.na(old) != is.na(new) | (old != new) %in% TRUE)
+}
+
+applyAiInputRowUpsert <- function(data, change) {
+  keyPos <- match(change$keyColumnIdxs, change$columnIdxs)
+  valuePos <- setdiff(seq_along(change$columnIdxs), keyPos)
+  candidates <- which(data[[change$keyColumnIdxs[[1L]]]] %in% change$rows[[keyPos[[1L]]]])
+  for (keyIdx in seq_along(keyPos)[-1L]) {
+    candidates <- candidates[data[[change$keyColumnIdxs[[keyIdx]]]][candidates] %in% change$rows[[keyPos[[keyIdx]]]]]
   }
-  if (isTRUE(change$isScalar)) {
-    oldValues <- suppressWarnings(as.numeric(data))
-    if (!length(oldValues)) {
-      oldValues <- NA_real_
+  target <- match(
+    aiInputRowKeys(lapply(change$keyColumnIdxs, function(colIdx) data[[colIdx]][candidates])),
+    aiInputRowKeys(change$rows[keyPos])
+  )
+  matched <- candidates[!is.na(target)]
+  target <- target[!is.na(target)]
+  changed <- Reduce(`|`, lapply(valuePos, function(pos) {
+    aiValuesDiffer(data[[change$columnIdxs[[pos]]]][matched], change$rows[[pos]][target])
+  }), FALSE)
+  updated <- matched[changed]
+  newRows <- setdiff(seq_along(change$rows[[1L]]), target)
+  noRows <- nrow(data)
+  if (length(newRows)) {
+    data <- data[c(seq_len(noRows), rep(NA_integer_, length(newRows))), , drop = FALSE]
+  }
+  rownames(data) <- NULL
+  added <- noRows + seq_along(newRows)
+  for (pos in seq_along(change$columnIdxs)) {
+    values <- data[[change$columnIdxs[[pos]]]]
+    values[c(updated, added)] <- change$rows[[pos]][c(target[changed], newRows)]
+    data[[change$columnIdxs[[pos]]]] <- values
+  }
+  return(list(
+    data = data, updated = updated, added = added, removed = integer(0L),
+    columns = change$columnIdxs[valuePos]
+  ))
+}
+
+#' Resolves a change against the data into the rows it updates, adds and
+#' removes. `updated` and `removed` index the original rows, `added` the rows
+#' of the new data; `columns` are the columns written.
+applyAiInputChange <- function(data, change) {
+  if (isTRUE(change$isChoice) || isTRUE(change$isScalar)) {
+    newValue <- change$value
+    if (!isTRUE(change$isChoice)) {
+      newValue <- computeAiInputChangeValues(
+        suppressWarnings(as.numeric(aiInputColumn(data, 1L)))[1L], change$operation, change$value
+      )
     }
-    oldValues <- oldValues[[1L]]
-    newValues <- computeAiInputChangeValues(oldValues, change$operation, change$value)
+    return(list(data = newValue, updated = 1L, added = integer(0L), removed = integer(0L), columns = 1L))
+  }
+  noCols <- max(c(change$targetColumnIdx, change$columnIdxs, 0L))
+  if (is.null(nrow(data)) || noCols > length(data)) {
+    stop(sprintf(
+      "Data of symbol '%s' does not have the expected %d columns.",
+      change$symbolName, noCols
+    ), call. = FALSE)
+  }
+  if (identical(change$operation, "UPSERT")) {
+    return(applyAiInputRowUpsert(data, change))
+  }
+  rowMask <- matchAiInputChangeRows(data, change$filters)
+  if (identical(change$operation, "DELETE")) {
     return(list(
-      data = newValues, rowMask = TRUE,
-      oldValues = oldValues, newValues = newValues
+      data = data[!rowMask, , drop = FALSE], updated = integer(0L), added = integer(0L),
+      removed = which(rowMask), columns = integer(0L)
     ))
   }
   colIdx <- change$targetColumnIdx
-  if (is.null(nrow(data)) || colIdx > length(data)) {
-    stop(sprintf(
-      "Data of symbol '%s' does not have the expected %d columns.",
-      change$symbolName, colIdx
-    ), call. = FALSE)
-  }
-  rowMask <- matchAiInputChangeRows(data, change$filters)
   colValues <- suppressWarnings(as.numeric(data[[colIdx]]))
-  oldValues <- colValues[rowMask]
-  newValues <- computeAiInputChangeValues(oldValues, change$operation, change$value)
-  colValues[rowMask] <- newValues
+  colValues[rowMask] <- computeAiInputChangeValues(colValues[rowMask], change$operation, change$value)
   data[[colIdx]] <- colValues
   return(list(
-    data = data, rowMask = rowMask,
-    oldValues = oldValues, newValues = newValues
+    data = data, updated = which(rowMask), added = integer(0L), removed = integer(0L), columns = colIdx
   ))
 }
 
 buildAiInputChangePreview <- function(data, change, changeResult,
                                       maxRows = AI_INPUT_CHANGE_PREVIEW_ROWS) {
-  if (isTRUE(change$isScalar) || isTRUE(change$isChoice)) {
-    return(list(
-      labels = NULL,
-      before = formatAiInputValue(changeResult$oldValues),
-      after = formatAiInputValue(changeResult$newValues),
-      noRows = 1L, noRowsShown = 1L
-    ))
+  noAdded <- length(changeResult$added)
+  noRemoved <- length(changeResult$removed)
+  status <- rep(c("updated", "added", "removed"), c(length(changeResult$updated), noAdded, noRemoved))
+  shownRows <- seq_len(min(length(status), maxRows))
+  beforeRows <- c(changeResult$updated, rep(NA_integer_, noAdded), changeResult$removed)[shownRows]
+  afterRows <- c(changeResult$updated, changeResult$added, rep(NA_integer_, noRemoved))[shownRows]
+  cellTexts <- function(source, rows, cols) {
+    return(lapply(aiInputCells(source, rows, cols), function(values) {
+      texts <- formatAiInputValue(values)
+      texts[is.na(rows)] <- ""
+      return(texts)
+    }))
   }
-  affectedRows <- which(changeResult$rowMask)
-  shownRows <- utils::head(affectedRows, maxRows)
-  labelCols <- setdiff(seq_along(change$columnAliases), change$targetColumnIdx)
+  labelCols <- setdiff(seq_along(change$columnAliases), changeResult$columns)
   labels <- NULL
   if (length(labelCols)) {
     labels <- as.data.frame(
-      lapply(labelCols, function(colIdx) formatAiInputValue(data[[colIdx]][shownRows])),
+      mapply(function(beforeText, afterText) ifelse(is.na(beforeRows), afterText, beforeText),
+        cellTexts(data, beforeRows, labelCols), cellTexts(changeResult$data, afterRows, labelCols),
+        SIMPLIFY = FALSE
+      ),
       stringsAsFactors = FALSE, optional = TRUE
     )
     names(labels) <- change$columnAliases[labelCols]
   }
   return(list(
     labels = labels,
-    before = formatAiInputValue(data[[change$targetColumnIdx]][shownRows]),
-    after = formatAiInputValue(changeResult$data[[change$targetColumnIdx]][shownRows]),
-    noRows = length(affectedRows), noRowsShown = length(shownRows)
+    columns = change$columnAliases[changeResult$columns],
+    before = cellTexts(data, beforeRows, changeResult$columns),
+    after = cellTexts(changeResult$data, afterRows, changeResult$columns),
+    status = status[shownRows],
+    noRows = length(status), noRowsShown = length(shownRows)
   ))
 }
 
@@ -593,6 +689,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       toolSchema[[length(toolSchema) + 1L]] <- private$getChartToolSchema()
       if (private$inputModificationEnabled) {
         toolSchema[[length(toolSchema) + 1L]] <- private$getModifyInputToolSchema()
+        toolSchema[[length(toolSchema) + 1L]] <- private$getModifyRowsToolSchema()
       }
       return(toolSchema)
     },
@@ -784,24 +881,11 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       ), auto_unbox = TRUE))
     },
     modifySandboxInputData = function(argumentsJson) {
-      if (!private$inputModificationEnabled) {
-        return(private$toolError("Input data cannot be modified in the current context."))
+      args <- private$parseInputChangeArguments(argumentsJson)
+      if (is.character(args)) {
+        return(private$toolError(args))
       }
-      if (length(private$allowedSids) != 1L) {
-        return(private$toolError("Input data can only be modified when a single sandbox scenario is in context."))
-      }
-      args <- private$parseToolArguments(argumentsJson)
-      if (is.null(args)) {
-        return(private$toolError("Invalid JSON argument format."))
-      }
-
       symName <- args$symbolName
-      if (length(symName) != 1L || !is.character(symName) || !nzchar(symName)) {
-        return(private$toolError("`symbolName` is required and must be a non-empty string."))
-      }
-      if (is.null(private$ioConfig$modelIn[[symName]])) {
-        return(private$toolError(sprintf("'%s' is not an input symbol, so it cannot be modified.", symName)))
-      }
       modifiableInfo <- private$getModifiableInfo(symName)
       if (is.null(modifiableInfo)) {
         return(private$toolError(sprintf(
@@ -940,7 +1024,99 @@ AIToolAdapter <- R6Class("AIToolAdapter",
             nrow(modelPreview), changeStats$matchedRows
           )
         },
-        note = "The change has NOT been applied. It is queued as a proposal that the user must confirm in the chat. Do not query the database to verify it and do not state that the data has changed; tell the user in one or two sentences what you proposed and that they need to confirm or discard it."
+        note = AI_INPUT_CHANGE_PENDING_NOTE
+      ), dataframe = "rows", auto_unbox = TRUE, na = "null"))
+    },
+    modifySandboxTableRows = function(argumentsJson) {
+      args <- private$parseInputChangeArguments(argumentsJson)
+      if (is.character(args)) {
+        return(private$toolError(args))
+      }
+      symName <- args$symbolName
+      modifiableInfo <- private$getModifiableInfo(symName)
+      if (!length(modifiableInfo$keyColumns)) {
+        return(private$toolError(sprintf(
+          "Rows of '%s' cannot be added or deleted. Only symbols whose `modifiable` entry lists `keyColumns` support this.",
+          symName
+        )))
+      }
+      operation <- if (length(args$operation) == 1L) toupper(as.character(args$operation)) else ""
+      if (!operation %in% AI_INPUT_ROW_OPERATIONS) {
+        return(private$toolError(sprintf(
+          "`operation` is required and must be one of: %s.", paste(AI_INPUT_ROW_OPERATIONS, collapse = ", ")
+        )))
+      }
+      symConfig <- private$ioConfig$modelIn[[symName]]
+      symColumns <- private$getInputSymbolColumns(symName)
+      keyColumnIdxs <- match(modifiableInfo$keyColumns, symColumns$names)
+      change <- list(
+        changeId = private$generateId("aichg_"),
+        symbolName = symName,
+        symbolAlias = if (length(symConfig$alias)) symConfig$alias else symName,
+        isScalar = FALSE,
+        operation = operation,
+        columnAliases = symColumns$aliases,
+        keyColumnIdxs = keyColumnIdxs,
+        filters = list(),
+        reason = if (length(args$reason) == 1L && is.character(args$reason)) args$reason else NULL
+      )
+      if (identical(operation, "DELETE")) {
+        filters <- private$resolveInputChangeFilters(args$filters, symColumns)
+        if (is.character(filters)) {
+          return(private$toolError(filters))
+        }
+        if (!length(filters)) {
+          return(private$toolError("DELETE requires `filters` selecting the rows to delete."))
+        }
+        change$filters <- filters
+      } else {
+        rows <- private$resolveInputChangeRows(args$columns, args$rows, symColumns, keyColumnIdxs, modifiableInfo$columns)
+        if (is.character(rows)) {
+          return(private$toolError(rows))
+        }
+        change <- c(change, rows)
+        valueColumnIdxs <- setdiff(rows$columnIdxs, keyColumnIdxs)
+        change$targetColumnAlias <- paste(symColumns$aliases[valueColumnIdxs], collapse = ", ")
+      }
+
+      currentData <- tryCatch(private$readInputRowChangeData(symName, symColumns$names, change),
+        error = function(err) {
+          return(conditionMessage(err))
+        }
+      )
+      if (is.character(currentData)) {
+        return(private$toolError(sprintf("Could not read current data of symbol '%s': %s", symName, currentData)))
+      }
+      changeResult <- applyAiInputChange(currentData$data, change)
+      noRemoved <- currentData$noRemoved %||% length(changeResult$removed)
+      noAffected <- length(changeResult$updated) + length(changeResult$added) + noRemoved
+      if (!noAffected) {
+        return(private$toolError(if (identical(operation, "DELETE")) {
+          sprintf("No row of symbol '%s' matches the given filters, so there is nothing to delete.", symName)
+        } else {
+          sprintf("The given rows of symbol '%s' already hold these values, so there is nothing to change.", symName)
+        }))
+      }
+      boundsError <- private$checkInputChangeBounds(symName, aiInputChangeNewValues(changeResult))
+      if (!is.null(boundsError)) {
+        return(private$toolError(boundsError))
+      }
+
+      private$pendingInputChanges[[length(private$pendingInputChanges) + 1L]] <- change
+
+      preview <- buildAiInputChangePreview(currentData$data, change, changeResult, maxRows = AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS)
+      return(toJSON(list(
+        status = "AWAITING_USER_CONFIRMATION",
+        symbolName = symName,
+        operation = operation,
+        rowsUpdated = length(changeResult$updated),
+        rowsAdded = length(changeResult$added),
+        rowsDeleted = noRemoved,
+        preview = private$formatModelPreview(preview),
+        previewNote = if (noAffected > preview$noRowsShown) {
+          sprintf("Only the first %d of %d affected rows are shown here.", preview$noRowsShown, noAffected)
+        },
+        note = AI_INPUT_CHANGE_PENDING_NOTE
       ), dataframe = "rows", auto_unbox = TRUE, na = "null"))
     },
     queryScenarioDatabase = function(argumentsJson) {
@@ -1581,7 +1757,14 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         return(list(kind = "choice"))
       }
       # I() keeps a single column an array rather than a bare string
-      return(list(kind = "numeric", columns = I(private$modifiableColumnsOf(symName))))
+      modifiableInfo <- list(kind = "numeric", columns = I(private$modifiableColumnsOf(symName)))
+      symColumns <- private$getInputSymbolColumns(symName)
+      isKey <- symColumns$types != "numeric"
+      # a table with any readonly column does not let the user add or delete rows either
+      if (any(isKey) && !any(symColumns$readonly)) {
+        modifiableInfo$keyColumns <- I(unname(symColumns$names[isKey]))
+      }
+      return(modifiableInfo)
     },
     modifiableColumnsOf = function(symName) {
       symColumns <- private$getInputSymbolColumns(symName)
@@ -1711,10 +1894,101 @@ AIToolAdapter <- R6Class("AIToolAdapter",
         operation = "SET",
         currentValue = currentValue,
         newValue = newValue,
-        note = "The change has NOT been applied. It is queued as a proposal that the user must confirm in the chat. Do not query the database to verify it and do not state that the data has changed; tell the user in one or two sentences what you proposed and that they need to confirm or discard it."
+        note = AI_INPUT_CHANGE_PENDING_NOTE
       ), auto_unbox = TRUE, na = "null"))
     },
-    readInputChangeCurrentValue = function(symName, colNames, change) {
+    parseInputChangeArguments = function(argumentsJson) {
+      if (!private$inputModificationEnabled) {
+        return("Input data cannot be modified in the current context.")
+      }
+      if (length(private$allowedSids) != 1L) {
+        return("Input data can only be modified when a single sandbox scenario is in context.")
+      }
+      args <- private$parseToolArguments(argumentsJson)
+      if (is.null(args)) {
+        return("Invalid JSON argument format.")
+      }
+      symName <- args$symbolName
+      if (length(symName) != 1L || !is.character(symName) || !nzchar(symName)) {
+        return("`symbolName` is required and must be a non-empty string.")
+      }
+      if (is.null(private$ioConfig$modelIn[[symName]])) {
+        return(sprintf("'%s' is not an input symbol, so it cannot be modified.", symName))
+      }
+      return(args)
+    },
+    resolveInputChangeRows = function(columns, rows, symColumns, keyColumnIdxs, writableColumns) {
+      columns <- as.character(unlist(columns))
+      columnIdxs <- match(columns, symColumns$names)
+      if (!length(columns) || anyNA(columnIdxs) || anyDuplicated(columns)) {
+        return(sprintf(
+          "`columns` must name each column at most once, out of: %s.", paste(symColumns$names, collapse = ", ")
+        ))
+      }
+      keyColumns <- symColumns$names[keyColumnIdxs]
+      if (!all(keyColumnIdxs %in% columnIdxs)) {
+        return(sprintf("`columns` must include every key column: %s.", paste(keyColumns, collapse = ", ")))
+      }
+      valueColumns <- setdiff(columns, keyColumns)
+      if (!length(valueColumns) || !all(valueColumns %in% writableColumns)) {
+        return(sprintf(
+          "Besides the key columns, `columns` must name at least one of the writable columns: %s.",
+          paste(writableColumns, collapse = ", ")
+        ))
+      }
+      if (is.list(rows) && !is.data.frame(rows)) {
+        isFlatRow <- vapply(rows, function(row) {
+          return(length(row) == length(columns) && all(lengths(row) == 1L) && !any(vapply(row, is.list, logical(1L))))
+        }, logical(1L))
+        if (!all(isFlatRow)) {
+          return("`rows` must be a non-empty array of rows, each an array with one value per entry of `columns`.")
+        }
+        rows <- do.call(rbind, lapply(rows, unlist))
+      }
+      if (is.data.frame(rows)) {
+        rows <- as.matrix(rows)
+      }
+      if (!is.matrix(rows) || !nrow(rows) || ncol(rows) != length(columns)) {
+        return("`rows` must be a non-empty array of rows, each an array with one value per entry of `columns`.")
+      }
+      if (nrow(rows) > AI_INPUT_CHANGE_MAX_ROWS) {
+        return(sprintf("At most %d rows can be proposed at once; split them into several calls.", AI_INPUT_CHANGE_MAX_ROWS))
+      }
+      values <- lapply(seq_along(columns), function(pos) {
+        if (identical(symColumns$types[[columnIdxs[[pos]]]], "numeric")) {
+          return(suppressWarnings(as.numeric(rows[, pos])))
+        }
+        keyValues <- if (is.numeric(rows)) {
+          format(rows[, pos], scientific = FALSE, trim = TRUE, digits = 15L)
+        } else {
+          trimws(as.character(rows[, pos]))
+        }
+        keyValues[is.na(rows[, pos])] <- NA_character_
+        return(keyValues)
+      })
+      for (pos in seq_along(columns)) {
+        if (columns[[pos]] %in% keyColumns) {
+          # an empty string is a valid UEL, only a missing value is not
+          if (anyNA(values[[pos]])) {
+            return(sprintf("Key column '%s' needs a value in every row (an empty string \"\" is a valid key, null is not).", columns[[pos]]))
+          }
+        } else if (!all(is.finite(values[[pos]]))) {
+          return(sprintf("Column '%s' needs a finite number in every row.", columns[[pos]]))
+        }
+      }
+      if (anyDuplicated(aiInputRowKeys(values[match(keyColumnIdxs, columnIdxs)]))) {
+        return(sprintf("Each combination of the key columns (%s) may appear only once.", paste(keyColumns, collapse = ", ")))
+      }
+      return(list(columnIdxs = columnIdxs, rows = values))
+    },
+    formatModelPreview = function(preview) {
+      return(as.data.frame(c(
+        list(`_change` = preview$status), preview$labels,
+        setNames(preview$before, sprintf("%s (before)", preview$columns)),
+        setNames(preview$after, sprintf("%s (after)", preview$columns))
+      ), check.names = FALSE, stringsAsFactors = FALSE))
+    },
+    getInputChangeDbColumns = function(symName, colNames) {
       dbColNames <- setdiff(unname(private$dbSchema$getDbSchema(symName)$colNames), "_sid")
       if (length(dbColNames) != length(colNames)) {
         stop(sprintf(
@@ -1722,6 +1996,38 @@ AIToolAdapter <- R6Class("AIToolAdapter",
           symName, length(dbColNames), length(colNames)
         ), call. = FALSE)
       }
+      return(dbColNames)
+    },
+    readInputChangeData = function(symName, colNames, whereClause, limit = NULL) {
+      data <- DBI::dbGetQuery(private$conn, sprintf(
+        "SELECT %s FROM %s WHERE %s%s",
+        paste(DBI::dbQuoteIdentifier(private$conn, private$getInputChangeDbColumns(symName, colNames)), collapse = ", "),
+        DBI::dbQuoteIdentifier(private$conn, private$dbSchema$getDbTableName(symName)),
+        whereClause, if (length(limit)) sprintf(" LIMIT %d", limit) else ""
+      ))
+      names(data) <- colNames
+      return(data)
+    },
+    #' A DELETE is counted in SQL and previewed on a sample. An UPSERT reads
+    #' just the rows sharing its key values, which holds every row it can match.
+    readInputRowChangeData = function(symName, colNames, change) {
+      if (identical(change$operation, "DELETE")) {
+        summary <- private$summarizeInputChangeInDb(symName, colNames, change)
+        return(list(data = summary$sample, noRemoved = summary$matchedRows))
+      }
+      dbColNames <- private$getInputChangeDbColumns(symName, colNames)
+      keyClauses <- vapply(change$keyColumnIdxs, function(colIdx) {
+        keyValues <- unique(change$rows[[match(colIdx, change$columnIdxs)]])
+        return(sprintf(
+          "%s IN (%s)", DBI::dbQuoteIdentifier(private$conn, dbColNames[[colIdx]]),
+          paste(DBI::dbQuoteString(private$conn, keyValues), collapse = ", ")
+        ))
+      }, character(1L))
+      whereClause <- paste(c(private$buildInputChangeWhereClause(change, dbColNames), keyClauses), collapse = " AND ")
+      return(list(data = private$readInputChangeData(symName, colNames, whereClause)))
+    },
+    readInputChangeCurrentValue = function(symName, colNames, change) {
+      dbColNames <- private$getInputChangeDbColumns(symName, colNames)
       currentValue <- DBI::dbGetQuery(private$conn, sprintf(
         "SELECT %s FROM %s WHERE %s = %d LIMIT 1",
         DBI::dbQuoteIdentifier(private$conn, dbColNames[[change$targetColumnIdx]]),
@@ -1805,42 +2111,42 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       for (filterSpec in change$filters) {
         escCol <- DBI::dbQuoteIdentifier(private$conn, dbColNames[[filterSpec$columnIdx]])
         quoteValue <- function(value) {
-          DBI::dbQuoteLiteral(private$conn, if (isTRUE(filterSpec$isNumericColumn)) as.numeric(value) else value)
+          if (isTRUE(filterSpec$isNumericColumn)) {
+            return(DBI::SQL(sprintf("%.17g", as.numeric(value))))
+          }
+          return(DBI::dbQuoteLiteral(private$conn, value))
         }
         whereClause <- sprintf("%s AND %s", whereClause, aiFilterSql(private$conn, escCol, filterSpec$operator, filterSpec$value, quoteValue))
       }
       return(whereClause)
     },
     summarizeInputChangeInDb = function(symName, colNames, change) {
-      dbColNames <- setdiff(unname(private$dbSchema$getDbSchema(symName)$colNames), "_sid")
-      if (length(dbColNames) != length(colNames)) {
-        stop(sprintf(
-          "database layout of symbol '%s' (%d columns) does not match its configuration (%d columns)",
-          symName, length(dbColNames), length(colNames)
-        ), call. = FALSE)
-      }
+      dbColNames <- private$getInputChangeDbColumns(symName, colNames)
       escTable <- DBI::dbQuoteIdentifier(private$conn, private$dbSchema$getDbTableName(symName))
-      escTarget <- DBI::dbQuoteIdentifier(private$conn, dbColNames[[change$targetColumnIdx]])
       whereClause <- private$buildInputChangeWhereClause(change, dbColNames)
+      valueStats <- ""
+      if (length(change$targetColumnIdx)) {
+        valueStats <- sprintf(
+          ", COUNT(%1$s) AS value_count, SUM(%1$s) AS value_sum, MIN(%1$s) AS value_min, MAX(%1$s) AS value_max",
+          DBI::dbQuoteIdentifier(private$conn, dbColNames[[change$targetColumnIdx]])
+        )
+      }
 
       stats <- DBI::dbGetQuery(private$conn, sprintf(
-        "SELECT COUNT(*) AS matched_rows, COUNT(%1$s) AS value_count, SUM(%1$s) AS value_sum, MIN(%1$s) AS value_min, MAX(%1$s) AS value_max FROM %2$s WHERE %3$s",
-        escTarget, escTable, whereClause
+        "SELECT COUNT(*) AS matched_rows%s FROM %s WHERE %s", valueStats, escTable, whereClause
       ))
-      sample <- DBI::dbGetQuery(private$conn, sprintf(
-        "SELECT %s FROM %s WHERE %s LIMIT %d",
-        paste(DBI::dbQuoteIdentifier(private$conn, dbColNames), collapse = ", "),
-        escTable, whereClause, AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS
-      ))
-      names(sample) <- colNames
+      sample <- private$readInputChangeData(symName, colNames, whereClause, AI_INPUT_CHANGE_MODEL_PREVIEW_ROWS)
 
-      valueCount <- as.integer(stats$value_count[[1L]])
-      before <- list(count = valueCount)
-      if (valueCount > 0L) {
-        before <- list(
-          count = valueCount, sum = as.numeric(stats$value_sum[[1L]]),
-          min = as.numeric(stats$value_min[[1L]]), max = as.numeric(stats$value_max[[1L]])
-        )
+      before <- NULL
+      if (length(change$targetColumnIdx)) {
+        valueCount <- as.integer(stats$value_count[[1L]])
+        before <- list(count = valueCount)
+        if (valueCount > 0L) {
+          before <- list(
+            count = valueCount, sum = as.numeric(stats$value_sum[[1L]]),
+            min = as.numeric(stats$value_min[[1L]]), max = as.numeric(stats$value_max[[1L]])
+          )
+        }
       }
       return(list(
         matchedRows = as.integer(stats$matched_rows[[1L]]),
@@ -1876,29 +2182,60 @@ AIToolAdapter <- R6Class("AIToolAdapter",
               type = "string",
               description = "New selection for `modifiable.kind: \"choice\"` symbols (instead of `value`, always with SET). Must be one of that symbol's `widget.choices`. If the schema lists none, `widget.choicesFrom` names the symbol and column the valid values come from -- query that column for them."
             ),
-            filters = list(
-              type = "array",
-              description = "Optional. Restricts the change to matching rows; WITHOUT filters EVERY row of the column is changed. Not allowed for symbols holding a single value. Rows whose filter column is empty never match.",
-              items = list(
-                type = "object",
-                properties = list(
-                  column = list(type = "string", description = "Column to filter on."),
-                  operator = list(
-                    type = "string",
-                    enum = AI_INPUT_CHANGE_FILTER_OPERATORS,
-                    description = "`IN`/`NOT IN` take a comma-separated list of values; to change many codes, find them first with a `LIKE` query. The ordering operators require a numeric column."
-                  ),
-                  value = list(type = "string", description = "Value to compare against.")
-                ),
-                required = c("column", "operator", "value")
-              )
+            filters = private$getInputChangeFiltersSchema(
+              "Optional. Restricts the change to matching rows; WITHOUT filters EVERY row of the column is changed. Not allowed for symbols holding a single value."
             ),
-            reason = list(
-              type = "string",
-              description = "One short sentence, shown on the confirmation card, saying why the change is proposed."
-            )
+            reason = AI_INPUT_CHANGE_REASON_SCHEMA
           ),
           required = c("symbolName", "operation")
+        )
+      ))
+    },
+    getModifyRowsToolSchema = function() {
+      return(list(
+        name = "modifySandboxTableRows",
+        type = "function",
+        description = "Proposes adding, overwriting or deleting whole rows of a sandbox INPUT table (symbols with `modifiable.keyColumns` only). UPSERT: a row matching an existing one on all key columns overwrites that row's given columns; other rows are appended. DELETE: removes the rows matching `filters`. Only proposes; the user confirms.",
+        parameters = list(
+          type = "object",
+          properties = list(
+            symbolName = list(type = "string", description = "Technical identifier of the input symbol."),
+            operation = list(type = "string", enum = AI_INPUT_ROW_OPERATIONS),
+            columns = list(
+              type = "array", items = list(type = "string"),
+              description = "UPSERT: the columns of `rows`, in order: all `modifiable.keyColumns` plus at least one of `modifiable.columns`. Omitted value columns keep their value (empty in appended rows)."
+            ),
+            rows = list(
+              type = "array",
+              items = list(type = "array", items = list(anyOf = list(list(type = "string"), list(type = "number")))),
+              description = sprintf(
+                "UPSERT: up to %d rows, one value per `columns` entry, e.g. [[\"EU\", \"2026\", 120.5]]. Keys must match exactly to overwrite a row; \"\" is a valid key.",
+                AI_INPUT_CHANGE_MAX_ROWS
+              )
+            ),
+            filters = private$getInputChangeFiltersSchema("DELETE (required): the rows to delete."),
+            reason = AI_INPUT_CHANGE_REASON_SCHEMA
+          ),
+          required = c("symbolName", "operation")
+        )
+      ))
+    },
+    getInputChangeFiltersSchema = function(description) {
+      return(list(
+        type = "array",
+        description = paste(description, "A null value never matches; \"\" is a regular value (`=` \"\")."),
+        items = list(
+          type = "object",
+          properties = list(
+            column = list(type = "string"),
+            operator = list(
+              type = "string",
+              enum = AI_INPUT_CHANGE_FILTER_OPERATORS,
+              description = "`IN`/`NOT IN`: comma-separated values (find many codes with a `LIKE` query first). `<`, `<=`, `>`, `>=`: numeric columns only."
+            ),
+            value = list(type = "string")
+          ),
+          required = c("column", "operator", "value")
         )
       ))
     },

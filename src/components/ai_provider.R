@@ -203,7 +203,7 @@ MiroAiBaseProvider <- R6Class("MiroAiBaseProvider",
       if (is.null(arguments)) {
         return(NULL)
       }
-      return(fromJSON(toJSON(arguments, auto_unbox = TRUE, null = "null")))
+      return(fromJSON(toJSON(arguments, auto_unbox = TRUE, null = "null", digits = NA)))
     },
     logToDebugFile = function(title, contentData) {
       timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")

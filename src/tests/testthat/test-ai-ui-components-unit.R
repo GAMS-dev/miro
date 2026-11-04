@@ -130,16 +130,17 @@ test_that("renderAiChatBubble never emits a raw <script> tag echoed by the AI as
 
 mockChangeLang <- list(
   changeProposalHeader = "Proposed input data change",
-  changeProposalSymbol = "Symbol",
-  changeProposalColumn = "Column",
-  changeProposalOperation = "Operation",
-  changeProposalFilter = "Rows",
-  changeProposalAffected = "Affected values",
   changeProposalBefore = "before",
   changeProposalAfter = "after",
+  changeProposalRow = "1 row",
+  changeProposalRows = "%s rows",
+  changeRowAdded = "new",
+  changeRowRemoved = "removed",
   changeProposalTruncated = "Showing the first %s of %s changed values.",
   changeOpMultiply = "multiply by %s",
   changeOpSet = "set to %s",
+  changeOpUpsert = "write rows",
+  changeOpDelete = "delete rows",
   changeStatusApplied = "Applied to the sandbox scenario.",
   changeStatusDiscarded = "Discarded.",
   changeStatusOutdated = "Outdated.",
@@ -160,23 +161,24 @@ mockTableChange <- function(status = "pending", ...) {
     status = status,
     preview = list(
       labels = data.frame(Region = c("EU", "EU"), Year = c("2024", "2025"), stringsAsFactors = FALSE),
-      before = c("150", "200"), after = c("165", "220"),
+      columns = "Value", before = list(c("150", "200")), after = list(c("165", "220")),
       noRows = 2L, noRowsShown = 2L
     )
   ), list(...))
 }
 
-test_that("renderAiInputChangeProposal shows the facts, the before/after values and both buttons", {
+test_that("renderAiInputChangeProposal shows the summary, the before -> after values and both buttons", {
   html <- as.character(renderAiInputChangeProposal(mockTableChange(), mockChangeLang))
 
   expect_match(html, 'data-change-id="aichg_test"', fixed = TRUE)
-  expect_match(html, "Customer Demand", fixed = TRUE)
-  expect_match(html, "multiply by 1.1", fixed = TRUE)
-  expect_match(html, "Region = EU", fixed = TRUE)
-  expect_match(html, "Value (before)", fixed = TRUE)
-  expect_match(html, "Value (after)", fixed = TRUE)
-  expect_match(html, ">165<", fixed = TRUE)
-  expect_match(html, ">220<", fixed = TRUE)
+  expect_match(html, "<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span>Region = EU</span>\\s*<span>2 rows</span>")
+  # the column is named once, by the table header, rather than in the summary too
+  expect_false(grepl("<span>Value</span>", html, fixed = TRUE))
+  expect_match(html, "<th>Value</th>", fixed = TRUE)
+  expect_match(html, 'title="before">150</span>', fixed = TRUE)
+  expect_match(html, 'title="after">165</span>', fixed = TRUE)
+  expect_match(html, 'title="after">220</span>', fixed = TRUE)
+  expect_match(html, "\u2192", fixed = TRUE)
   expect_match(html, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
   expect_match(html, "Miro.resolveAiInputChange(this, false)", fixed = TRUE)
 })
@@ -208,14 +210,50 @@ test_that("renderAiInputChangeProposal drops the column/row facts for a scalar w
     changeId = "aichg_scalar", symbolName = "maxstock", symbolAlias = "Maximum stock",
     isScalar = TRUE, operation = "SET", value = 8, targetColumnAlias = "Maximum stock",
     filters = list(), reason = NULL, status = "pending",
-    preview = list(labels = NULL, before = "4", after = "8", noRows = 1L, noRowsShown = 1L)
+    preview = list(labels = NULL, before = list("4"), after = list("8"), noRows = 1L, noRowsShown = 1L)
   )
   html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
 
   expect_match(html, "set to 8", fixed = TRUE)
-  expect_match(html, ">before<", fixed = TRUE)
-  expect_false(grepl("Affected values", html, fixed = TRUE))
-  expect_false(grepl("Column", html, fixed = TRUE))
+  expect_match(html, 'title="before">4</span>', fixed = TRUE)
+  expect_match(html, 'title="after">8</span>', fixed = TRUE)
+  # a single value has no row count and no table header
+  expect_false(grepl("1 row", html, fixed = TRUE))
+  expect_false(grepl("<thead>", html, fixed = TRUE))
+})
+
+test_that("renderAiInputChangeProposal marks added and deleted rows", {
+  upsert <- mockTableChange(operation = "UPSERT", value = NULL, filters = list())
+  # assigned, as modifyList() would merge it into the default preview
+  upsert$preview <- list(
+    labels = data.frame(Region = c("EU", "AS"), Year = c("2024", "2026")),
+    columns = "Value", before = list(c("150", "")), after = list(c("175", "80")),
+    status = c("updated", "added"), noRows = 2L, noRowsShown = 2L
+  )
+  html <- as.character(renderAiInputChangeProposal(upsert, mockChangeLang))
+  expect_match(html, "write rows", fixed = TRUE)
+  expect_match(html, "<span>2 rows</span>", fixed = TRUE)
+  expect_match(html, "<th>Value</th>", fixed = TRUE)
+  expect_match(html, '<tr class="miro-ai-change-row-added">', fixed = TRUE)
+  expect_identical(lengths(regmatches(html, gregexpr("miro-ai-change-row-", html, fixed = TRUE))), 1L)
+  # an added row has no old value to cross out, just the tag next to its key
+  expect_match(html, 'AS\\s*<span class="miro-ai-change-tag miro-ai-change-tag-added">new</span>')
+  expect_match(html, '<span class="miro-ai-change-value-after">80</span>', fixed = TRUE)
+  expect_identical(lengths(regmatches(html, gregexpr("miro-ai-change-value-before", html, fixed = TRUE))), 1L)
+
+  delete <- mockTableChange(operation = "DELETE", value = NULL, targetColumnAlias = NULL)
+  delete$preview <- list(
+    labels = data.frame(Region = "EU", Year = "2024", Value = "150"),
+    columns = character(0L), before = list(), after = list(),
+    status = "removed", noRows = 1L, noRowsShown = 1L
+  )
+  html <- as.character(renderAiInputChangeProposal(delete, mockChangeLang))
+  expect_match(html, "delete rows", fixed = TRUE)
+  expect_match(html, "<span>1 row</span>", fixed = TRUE)
+  expect_match(html, '<tr class="miro-ai-change-row-removed">', fixed = TRUE)
+  expect_match(html, '<span class="miro-ai-change-tag miro-ai-change-tag-removed">removed</span>', fixed = TRUE)
+  expect_match(html, "<th>Region</th>\\s*<th>Year</th>\\s*<th>Value</th>")
+  expect_false(grepl("miro-ai-change-value-", html, fixed = TRUE))
 })
 
 test_that("renderAiInputChangeProposal escapes assistant supplied text", {
@@ -266,13 +304,15 @@ test_that("renderAiChatLogContent offers to go back to the sandbox only on the a
 test_that("renderAiInputChangeProposal leaves out an empty preview table", {
   change <- mockTableChange(status = "failed", statusDetail = "no matching row")
   change$preview <- list(
-    labels = NULL, before = character(0L), after = character(0L),
+    labels = NULL, before = list(), after = list(),
     noRows = 0L, noRowsShown = 0L
   )
   html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
 
   expect_false(grepl("miro-ai-change-table", html, fixed = TRUE))
-  expect_false(grepl("Affected values", html, fixed = TRUE))
+  # without a table header to name it, the summary names the column
+  expect_match(html, "<span>Value</span>", fixed = TRUE)
+  expect_false(grepl("rows</span>", html, fixed = TRUE))
   expect_match(html, "Could not be applied: no matching row", fixed = TRUE)
 })
 
@@ -282,7 +322,7 @@ test_that("renderAiInputChangeProposal renders a dropdown selection change", {
     isScalar = TRUE, isChoice = TRUE, operation = "SET", value = "mip",
     targetColumnAlias = "Model type", filters = list(),
     reason = "User asked to solve it as a MIP.", status = "pending",
-    preview = list(labels = NULL, before = "lp", after = "mip", noRows = 1L, noRowsShown = 1L)
+    preview = list(labels = NULL, before = list("lp"), after = list("mip"), noRows = 1L, noRowsShown = 1L)
   )
   html <- as.character(renderAiInputChangeProposal(change, mockChangeLang))
 
@@ -290,8 +330,8 @@ test_that("renderAiInputChangeProposal renders a dropdown selection change", {
   expect_match(html, "set to mip", fixed = TRUE)
   expect_match(html, ">lp<", fixed = TRUE)
   expect_match(html, ">mip<", fixed = TRUE)
-  # a single choice has no column or row facts
-  expect_false(grepl("Affected values", html, fixed = TRUE))
+  # a single choice has no row count
+  expect_false(grepl("1 row", html, fixed = TRUE))
   expect_match(html, "Miro.resolveAiInputChange(this, true)", fixed = TRUE)
 })
 
@@ -441,15 +481,22 @@ test_that("the group card offers Apply all and can be replaced like a proposal c
 
 test_that("the group card shows the combined effect step by step when changes interact", {
   step <- mockTableChange()
-  step$preview$after <- c("170", "225")
+  step$preview$after <- list(c("170", "225"))
   html <- as.character(renderAiInputChangeGroup(
     mockGroup(independent = FALSE, steps = list(mockTableChange(), step)), mockGroupLang
   ))
   expect_match(html, "Applied together, in this order:", fixed = TRUE)
-  expect_match(html, "1. Customer Demand (Value): multiply by 1.1 [Region = EU]", fixed = TRUE)
-  expect_match(html, "2. Customer Demand (Value)", fixed = TRUE)
-  expect_match(html, ">225<", fixed = TRUE)
+  expect_match(html, '<span class="miro-ai-change-step-no">1</span>\\s*<div class="miro-ai-change-meta">\\s*<span>Customer Demand</span>\\s*<span>multiply by 1.1</span>\\s*<span>Region = EU</span>')
+  expect_match(html, '<span class="miro-ai-change-step-no">2</span>', fixed = TRUE)
+  expect_match(html, 'title="after">225</span>', fixed = TRUE)
   expect_false(grepl("do not affect each other", html, fixed = TRUE))
+})
+
+test_that("a proposal in a pending group leaves the primary action to Apply all", {
+  grouped <- as.character(renderAiInputChangeProposal(mockTableChange(grouped = TRUE), mockGroupLang))
+  expect_match(grouped, 'class="btn btn-sm miro-ai-change-apply btn-default"', fixed = TRUE)
+  alone <- as.character(renderAiInputChangeProposal(mockTableChange(), mockGroupLang))
+  expect_match(alone, 'class="btn btn-sm miro-ai-change-apply btn-primary"', fixed = TRUE)
 })
 
 test_that("the group card replaces its button once resolved", {

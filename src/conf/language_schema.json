@@ -2353,31 +2353,27 @@
               "type": "string",
               "minLength": 1
             },
-            "changeProposalSymbol": {
-              "type": "string",
-              "minLength": 1
-            },
-            "changeProposalColumn": {
-              "type": "string",
-              "minLength": 1
-            },
-            "changeProposalOperation": {
-              "type": "string",
-              "minLength": 1
-            },
-            "changeProposalFilter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "changeProposalAffected": {
-              "type": "string",
-              "minLength": 1
-            },
             "changeProposalBefore": {
               "type": "string",
               "minLength": 1
             },
             "changeProposalAfter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalRow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeRowAdded": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeRowRemoved": {
               "type": "string",
               "minLength": 1
             },
@@ -2402,6 +2398,14 @@
               "minLength": 1
             },
             "changeOpSet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpUpsert": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpDelete": {
               "type": "string",
               "minLength": 1
             },
@@ -2526,7 +2530,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 75
+          "minProperties": 76
         },
         "hcubeMode": {
           "type": "object",

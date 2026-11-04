@@ -111,9 +111,17 @@ aiInputChangeOperationLabel <- function(change, lang) {
     DIVIDE = "changeOpDivide",
     ADD = "changeOpAdd",
     SUBTRACT = "changeOpSubtract",
-    SET = "changeOpSet"
+    SET = "changeOpSet",
+    UPSERT = "changeOpUpsert",
+    DELETE = "changeOpDelete"
   )
+  if (is.null(change$value)) {
+    return(lang[[labelKey]])
+  }
   return(sprintf(lang[[labelKey]], formatAiInputValue(change$value)))
+}
+aiInputChangeHasColumn <- function(change) {
+  return(!isTRUE(change$isScalar) && length(change$targetColumnAlias) > 0L)
 }
 aiInputChangeFilterLabel <- function(change) {
   if (!length(change$filters)) {
@@ -123,29 +131,66 @@ aiInputChangeFilterLabel <- function(change) {
     return(sprintf("%s %s %s", filterSpec$columnAlias, filterSpec$operator, filterSpec$value))
   }, character(1L), USE.NAMES = FALSE), collapse = " & "))
 }
+#' One line summing up a change: symbol, operation, row filter and row count.
+#' The column is left to the preview table's header, unless there is none.
+renderAiInputChangeMeta <- function(change, lang) {
+  noRows <- change$preview$noRows %||% 0L
+  parts <- c(
+    change$symbolAlias,
+    if (aiInputChangeHasColumn(change) && !(change$preview$noRowsShown %||% 0L)) change$targetColumnAlias,
+    aiInputChangeOperationLabel(change, lang),
+    aiInputChangeFilterLabel(change),
+    if (!isTRUE(change$isScalar) && noRows > 0L) {
+      if (noRows == 1L) lang$changeProposalRow else sprintf(lang$changeProposalRows, format(noRows, big.mark = ","))
+    }
+  )
+  return(tags$div(class = "miro-ai-change-meta", lapply(parts, tags$span)))
+}
+renderAiInputChangeValue <- function(before, after, lang) {
+  if (!nzchar(before)) {
+    return(tags$span(class = "miro-ai-change-value-after", after))
+  }
+  if (!nzchar(after) || identical(before, after)) {
+    return(before)
+  }
+  return(tagList(
+    tags$span(class = "miro-ai-change-value-before", title = lang$changeProposalBefore, before),
+    tags$span(class = "miro-ai-change-value-arrow", `aria-hidden` = "true", "→"),
+    tags$span(class = "miro-ai-change-value-after", title = lang$changeProposalAfter, after)
+  ))
+}
 renderAiInputChangePreviewTable <- function(change, lang) {
   preview <- change$preview
-  if (change$isScalar) {
-    beforeHeader <- lang$changeProposalBefore
-    afterHeader <- lang$changeProposalAfter
-  } else {
-    beforeHeader <- sprintf("%s (%s)", change$targetColumnAlias, lang$changeProposalBefore)
-    afterHeader <- sprintf("%s (%s)", change$targetColumnAlias, lang$changeProposalAfter)
+  rowTag <- function(rowStatus) {
+    if (identical(rowStatus, "added")) {
+      return(tags$span(class = "miro-ai-change-tag miro-ai-change-tag-added", lang$changeRowAdded))
+    }
+    if (identical(rowStatus, "removed")) {
+      return(tags$span(class = "miro-ai-change-tag miro-ai-change-tag-removed", lang$changeRowRemoved))
+    }
+    return(NULL)
   }
   return(tags$div(
     class = "miro-ai-change-preview",
     tags$table(
       class = "miro-ai-change-table",
-      tags$thead(tags$tr(
-        lapply(names(preview$labels), function(colName) tags$th(colName)),
-        tags$th(class = "miro-ai-change-col-before", beforeHeader),
-        tags$th(class = "miro-ai-change-col-after", afterHeader)
-      )),
-      tags$tbody(lapply(seq_along(preview$before), function(rowId) {
+      if (!isTRUE(change$isScalar)) {
+        tags$thead(tags$tr(
+          lapply(c(names(preview$labels), preview$columns), function(colName) tags$th(colName))
+        ))
+      },
+      tags$tbody(lapply(seq_len(preview$noRowsShown), function(rowId) {
+        rowStatus <- preview$status[rowId]
         tags$tr(
-          lapply(preview$labels, function(labelCol) tags$td(labelCol[[rowId]])),
-          tags$td(class = "miro-ai-change-cell-before", preview$before[[rowId]]),
-          tags$td(class = "miro-ai-change-cell-after", preview$after[[rowId]])
+          class = if (isTRUE(rowStatus != "updated")) paste0("miro-ai-change-row-", rowStatus),
+          lapply(seq_along(preview$labels), function(colIdx) {
+            tags$td(preview$labels[[colIdx]][[rowId]], if (colIdx == 1L) rowTag(rowStatus))
+          }),
+          lapply(seq_along(preview$before), function(colIdx) {
+            tags$td(renderAiInputChangeValue(
+              preview$before[[colIdx]][[rowId]], preview$after[[colIdx]][[rowId]], lang
+            ))
+          })
         )
       }))
     )
@@ -178,8 +223,10 @@ renderAiInputChangeStatus <- function(change, lang) {
   }
   return(tags$div(
     class = "miro-ai-change-actions",
+    # while a group card offers to apply all, that is the primary action
     tags$button(
-      type = "button", class = "btn btn-primary btn-sm miro-ai-change-apply",
+      type = "button",
+      class = paste("btn btn-sm miro-ai-change-apply", if (isTRUE(change$grouped)) "btn-default" else "btn-primary"),
       onclick = "Miro.resolveAiInputChange(this, true)",
       icon("check"), lang$btApplyChange
     ),
@@ -191,7 +238,6 @@ renderAiInputChangeStatus <- function(change, lang) {
   ))
 }
 renderAiInputChangeProposal <- function(change, lang) {
-  filterLabel <- aiInputChangeFilterLabel(change)
   return(tags$div(
     class = "miro-ai-chat-bubble-wrapper miro-ai-chat-assistant miro-ai-change-proposal",
     `data-change-id` = change$changeId,
@@ -201,26 +247,13 @@ renderAiInputChangeProposal <- function(change, lang) {
         class = "miro-ai-chat-author",
         icon("pen-to-square"), lang$changeProposalHeader
       ),
+      renderAiInputChangeMeta(change, lang),
       if (length(change$reason)) {
         tags$div(class = "miro-ai-change-reason", change$reason)
       },
       if (isTRUE(change$rebased) && identical(change$status, "pending")) {
         tags$div(class = "miro-ai-change-rebased", icon("rotate"), lang$changeRebased)
       },
-      tags$dl(
-        class = "miro-ai-change-facts",
-        tags$dt(lang$changeProposalSymbol), tags$dd(change$symbolAlias),
-        if (!change$isScalar) tags$dt(lang$changeProposalColumn),
-        if (!change$isScalar) tags$dd(change$targetColumnAlias),
-        tags$dt(lang$changeProposalOperation),
-        tags$dd(aiInputChangeOperationLabel(change, lang)),
-        if (!is.null(filterLabel)) tags$dt(lang$changeProposalFilter),
-        if (!is.null(filterLabel)) tags$dd(filterLabel),
-        if (!change$isScalar && change$preview$noRows > 0L) tags$dt(lang$changeProposalAffected),
-        if (!change$isScalar && change$preview$noRows > 0L) {
-          tags$dd(format(change$preview$noRows, big.mark = ","))
-        }
-      ),
       if (change$preview$noRowsShown > 0L) {
         renderAiInputChangePreviewTable(change, lang)
       },
@@ -289,17 +322,12 @@ renderAiInputChangeGroup <- function(group, lang) {
           tags$div(class = "miro-ai-change-reason", lang$changeGroupCombined),
           lapply(seq_along(group$steps), function(stepIdx) {
             step <- group$steps[[stepIdx]]
-            filterLabel <- aiInputChangeFilterLabel(step)
             tags$div(
               class = "miro-ai-change-group-step",
               tags$div(
                 class = "miro-ai-change-group-step-title",
-                sprintf(
-                  "%d. %s%s: %s%s", stepIdx, step$symbolAlias,
-                  if (isTRUE(step$isScalar)) "" else sprintf(" (%s)", step$targetColumnAlias),
-                  aiInputChangeOperationLabel(step, lang),
-                  if (is.null(filterLabel)) "" else sprintf(" [%s]", filterLabel)
-                )
+                tags$span(class = "miro-ai-change-step-no", stepIdx),
+                renderAiInputChangeMeta(step, lang)
               ),
               if (step$preview$noRowsShown > 0L) renderAiInputChangePreviewTable(step, lang),
               if (step$preview$noRowsShown < step$preview$noRows) {
