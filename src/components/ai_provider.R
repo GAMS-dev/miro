@@ -414,11 +414,17 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
     maxTokens = 32000L,
     # models with safety classifiers: declined requests are retried server-side on a fallback model
     fallbackModels = c("claude-opus-5-5", "claude-fable-5-1"),
+    # models that bind thinking blocks to the conversation prefix (preserved thinking)
+    blockBindingModels = c("claude-opus-5-5", "claude-fable-5-1", "claude-sonnet-5-5", "claude-haiku-5-5"),
     buildUrl = function() "https://api.anthropic.com/v1/messages",
     buildAuthHeaders = function() {
       headers <- list(`x-api-key` = private$apiKey, `anthropic-version` = "2023-06-01")
-      if (private$modelName %in% private$fallbackModels) {
-        headers$`anthropic-beta` <- "server-side-fallback-2026-07-01,thinking-binding-controls-2026-08-01"
+      betas <- c(
+        if (private$modelName %in% private$fallbackModels) "server-side-fallback-2026-07-01",
+        if (private$modelName %in% private$blockBindingModels) "thinking-binding-controls-2026-08-01"
+      )
+      if (length(betas)) {
+        headers$`anthropic-beta` <- paste(betas, collapse = ",")
       }
       return(headers)
     },
@@ -438,6 +444,8 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
       }
       if (private$modelName %in% private$fallbackModels) {
         payload$fallbacks <- "default"
+      }
+      if (private$modelName %in% private$blockBindingModels) {
         # the system prompt is rebuilt for every request (e.g. when the scenarios in context
         # change), which invalidates the thinking blocks of earlier turns: drop them instead
         # of rejecting the request
@@ -768,6 +776,7 @@ MiroAiAzureAnthropicProvider <- R6Class("MiroAiAzureAnthropicProvider",
     tokenProvider = NULL,
     # server-side fallbacks are not available on Foundry
     fallbackModels = character(0L),
+    blockBindingModels = character(0L),
     buildUrl = function() {
       return(paste0(normalizeAzureEndpoint(private$endpoint), "/anthropic/v1/messages"))
     },
@@ -1092,6 +1101,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "GPT-6.1 Terra" = "openai/gpt-6.1-terra",
         "GPT-6 Luna" = "openai/gpt-6-luna"
       ),
+      # review fallbackModels and blockBindingModels of MiroAiAnthropicProvider when changing this list
       Anthropic = c(
         "Claude Opus 5.5" = "anthropic/claude-opus-5-5",
         "Claude Sonnet 5.5" = "anthropic/claude-sonnet-5-5",

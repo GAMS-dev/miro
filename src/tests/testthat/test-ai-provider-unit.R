@@ -971,7 +971,21 @@ test_that("Claude deployments on Azure use the Anthropic Messages API", {
   expect_equal(payload$messages[[1]]$content, "q")
   # server-side fallbacks do not exist on Foundry
   expect_null(payload$fallbacks)
+  expect_null(payload$thinking)
   expect_null(private$buildAuthHeaders()$`anthropic-beta`)
+})
+
+test_that("Claude models drop thinking blocks invalidated by a changed system prompt", {
+  private <- MiroAiAnthropicProvider$new("claude-haiku-5-5", "sk-ant")$.__enclos_env__$private
+  payload <- private$prepareInitialPayload("q", "sys", NULL)
+  expect_equal(payload$thinking$block_binding$prefix_mismatch_behavior, "drop_block")
+  expect_null(payload$fallbacks)
+  expect_identical(private$buildAuthHeaders()$`anthropic-beta`, "thinking-binding-controls-2026-08-01")
+  private$modelName <- "claude-opus-5-5"
+  expect_identical(
+    private$buildAuthHeaders()$`anthropic-beta`,
+    "server-side-fallback-2026-07-01,thinking-binding-controls-2026-08-01"
+  )
 })
 
 test_that("Azure surfaces truncation and content filtering", {
