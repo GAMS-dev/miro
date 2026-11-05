@@ -2,6 +2,7 @@ import bootbox from 'bootbox';
 import { state, dom } from './state';
 import {
   expandAddAppForm, refreshConfigList, openAdvancedSettingsDialog, showOverwriteDialog,
+  pinTileHeights,
 } from './ui';
 import {
   sendAddRequest, sendUpdateRequest, sendRemoveRequest, sendUpdateAppOrderRequest,
@@ -257,7 +258,8 @@ export default function setupEventListeners() {
     }
     // only mark the box as expanded once it really opens (e.g. not when its delete
     // button was clicked), as expanded boxes disable the hover styles of all tiles
-    $this.addClass('app-box-expanded');
+    pinTileHeights();
+    $this.css('height', '').addClass('app-box-expanded');
     const appIDEncoded = this.dataset.id;
     const appID = HTMLIDToUnicode(appIDEncoded);
     const appIndex = this.dataset.index;

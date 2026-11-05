@@ -8,7 +8,18 @@ import {
 } from './constants';
 import { sendUpdateAppShinyEvent } from './api';
 
+const TILES_SELECTOR = '.miro-app-item > .app-box, #addAppWrapper > .add-app-box';
+
+// Expanding a box turns off the equal tile heights (its row would grow to its height),
+// so the other tiles keep their current height until the overlay is closed.
+export function pinTileHeights() {
+  $(TILES_SELECTOR).each(function () {
+    $(this).outerHeight($(this).outerHeight());
+  });
+}
+
 export function exitOverlayMode() {
+  $(TILES_SELECTOR).css('height', '');
   if ($('#expandedAddAppWrapper').is(':visible')) {
     $('#addAppWrapper').html(ADD_APP_WRAPPER_HTML);
   }
@@ -612,6 +623,7 @@ export function expandAddAppForm() {
     '',
   );
 
+  pinTileHeights();
   $('#addAppWrapper').css('z-index', 11);
   dom.$overlay.data('current', $('#addAppWrapper')).fadeIn(300);
   $('#addAppWrapper')
