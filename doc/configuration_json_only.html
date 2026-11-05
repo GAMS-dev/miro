@@ -1256,6 +1256,50 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                       >.
                     </li>
                   </ol>
+                  <div
+                    id="custom-dashboard-compare-select-baseline"
+                    class="callout-block callout-warning"
+                  >
+                    <div class="icon-holder">
+                      <i class="fas fa-info-circle"></i>
+                    </div>
+                    <!--//icon-holder-->
+                    <div class="content">
+                      <b class="callout-title"
+                        >Enabling baseline selection in an existing custom
+                        comparison dashboard:</b
+                      >
+                      <p>
+                        The previous standard dashboard comparison renderer
+                        always excluded the first scenario because it was the
+                        sandbox. Custom comparison dashboards based on that
+                        renderer may therefore contain the same logic, such as
+                        <span class="code">data$get(symbolName)[-1]</span> and
+                        <span class="code">data$getMetadata()[-1]</span>. With
+                        <span class="code">"selectBaseline": true</span>, the
+                        first scenario is the baseline selected by the user,
+                        and the sandbox is included only if explicitly
+                        selected.
+                      </p>
+                      <p>
+                        Before enabling this option, review and adapt any code
+                        that unconditionally removes the first scenario.
+                        Otherwise, your dashboard will discard the selected
+                        baseline instead of the sandbox. Keep the baseline data
+                        available for comparison calculations, and exclude it
+                        from the displayed results only if intended. The order
+                        of the scenarios is the same for all symbols and the
+                        metadata.
+                      </p>
+                      <p>
+                        Leaving <span class="code">selectBaseline</span>
+                        disabled preserves the previous behavior: the sandbox
+                        remains the first scenario.
+                      </p>
+                    </div>
+                    <!--//content-->
+                  </div>
+                  <!--//callout-block-->
                 </section>
                 <section id="custom-compare-mode" class="doc-section">
                   <h2 class="section-title">Custom scenario comparison</h2>
@@ -1446,6 +1490,13 @@ renderMirocompare_maxstock1 &#x3C;- function(input, output, session, data, optio
                       comparison module. The baseline scenario is always the
                       first scenario passed to your renderer function, and the
                       sandbox scenario is only included if the user selects it.
+                      If your renderer is based on the previous dashboard
+                      comparison renderer, read the
+                      <a
+                        href="./configuration_json_only.html#custom-dashboard-compare-select-baseline"
+                        >migration note</a
+                      >
+                      before enabling this option.
                     </p>
                     <p>
                       Below is the full schema used to validate the
