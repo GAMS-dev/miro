@@ -769,6 +769,8 @@
       "btLoadView": "Cargar vista",
       "btShowSettings": "Ajustes",
       "btNewView": "Añadir vista",
+      "btNewViewDisabledTooltip": "Las vistas solo se pueden añadir en el escenario sandbox.",
+      "btNewViewDisabledCompareTooltip": "Las vistas solo se pueden añadir cuando el escenario sandbox es el escenario base. Para añadir una vista a esta comparación, cargue de nuevo los escenarios, seleccione el escenario sandbox como escenario base, añada la vista y guarde el escenario sandbox.",
       "btEnableEdit": "Habilitar edición",
       "btAddRow": "Añadir fila",
       "btRemoveRows": "Eliminar filas",

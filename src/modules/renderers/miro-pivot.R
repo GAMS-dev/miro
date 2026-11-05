@@ -193,7 +193,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btNewView
                   )
                 ),
-                title = lang$renderers$miroPivot$btNewView,
+                `data-tooltip` = lang$renderers$miroPivot$btNewView, `aria-label` = lang$renderers$miroPivot$btNewView,
                 class = "btn-custom pivot-btn-custom"
               ),
               actionButton(ns("showSettings"),
@@ -204,14 +204,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btShowSettings
                   )
                 ),
-                title = lang$renderers$miroPivot$btShowSettings,
+                `data-tooltip` = lang$renderers$miroPivot$btShowSettings, `aria-label` = lang$renderers$miroPivot$btShowSettings,
                 class = "btn-custom pivot-btn-custom"
               ),
               tags$div(
                 class = "btn-group pivot-btn-custom",
                 tags$button(
                   class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
-                  title = lang$renderers$miroPivot$btDownload,
+                  `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
                   type = "button",
                   `data-toggle` = "dropdown",
                   `aria-haspopup` = "true",
@@ -267,7 +267,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btHidePivotControlsShort
                   )
                 ),
-                title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
+                `data-tooltip` = lang$renderers$miroPivot$btHidePivotControls, `aria-label` = lang$renderers$miroPivot$btHidePivotControls, role = "button", `data-id` = ns("")
               )
             ),
             tags$div(
@@ -300,14 +300,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                   lang$renderers$miroPivot$btShowSettings
                 )
               ),
-              title = lang$renderers$miroPivot$btShowSettings,
+              `data-tooltip` = lang$renderers$miroPivot$btShowSettings, `aria-label` = lang$renderers$miroPivot$btShowSettings,
               class = "btn-custom pivot-btn-custom"
             ),
             tags$div(
               class = "btn-group pivot-btn-custom",
               tags$button(
                 class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
-                title = lang$renderers$miroPivot$btDownload,
+                `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
                 type = "button",
                 `data-toggle` = "dropdown",
                 `aria-haspopup` = "true",
@@ -363,7 +363,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                   lang$renderers$miroPivot$btHidePivotControlsShort
                 )
               ),
-              title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
+              `data-tooltip` = lang$renderers$miroPivot$btHidePivotControls, `aria-label` = lang$renderers$miroPivot$btHidePivotControls, role = "button", `data-id` = ns("")
             )
           )
         }
@@ -375,7 +375,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           class = "btn-group pivot-btn-custom",
           tags$button(
             class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
-            title = lang$renderers$miroPivot$btDownload,
+            `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
             type = "button",
             `data-toggle` = "dropdown",
             `aria-haspopup` = "true",
@@ -431,7 +431,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               lang$renderers$miroPivot$btShowPivotControlsShort
             )
           ),
-          title = lang$renderers$miroPivot$btShowPivotControls, `data-id` = ns("")
+          `data-tooltip` = lang$renderers$miroPivot$btShowPivotControls, `aria-label` = lang$renderers$miroPivot$btShowPivotControls, role = "button", `data-id` = ns("")
         )
       ),
       tags$div(
@@ -1219,10 +1219,21 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         readonlyViews <- views$isReadonly(session)
         updateViewList()
+        saveViewSel <- paste0("#", ns("saveView"))
         if (readonlyViews) {
-          disableEl(session, paste0("#", ns("saveView")))
+          disableEl(session, saveViewSel)
+          setAttributes(
+            session, saveViewSel, "data-tooltip",
+            # pivot/custom comparison with baseline selection
+            if (grepl("^(tab_0_|cmpCustom_)", ns(""))) {
+              lang$renderers$miroPivot$btNewViewDisabledCompareTooltip
+            } else {
+              lang$renderers$miroPivot$btNewViewDisabledTooltip
+            }
+          )
         } else {
-          enableEl(session, paste0("#", ns("saveView")))
+          enableEl(session, saveViewSel)
+          setAttributes(session, saveViewSel, "data-tooltip", lang$renderers$miroPivot$btNewView)
           views$registerUpdateCallback(session, updateViewList)
         }
 

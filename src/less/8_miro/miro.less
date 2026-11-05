@@ -2169,6 +2169,26 @@ li.drop-index-item[data-col-hidden="true"] {
 .miro-pivot-btn-text {
   display: none;
 }
+.pivot-btn-custom[data-tooltip],
+.pivot-btn-custom > [data-tooltip] {
+  position: relative;
+  &::after {
+    top: calc(100% + 4px);
+    left: 0;
+    right: auto;
+    margin: 0;
+    max-width: 20rem;
+    text-align: left;
+    white-space: normal;
+  }
+}
+// dim content instead of button so tooltip stays opaque
+.pivot-btn-custom[data-tooltip][disabled] {
+  opacity: 1;
+  > * {
+    opacity: .65;
+  }
+}
 .dt-title {
   margin-top:30px;
   font-weight: bold;

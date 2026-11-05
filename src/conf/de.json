@@ -811,6 +811,8 @@
       "btLoadView": "View laden",
       "btShowSettings": "Einstellungen",
       "btNewView": "View hinzufügen",
+      "btNewViewDisabledTooltip": "Views können nur im Sandbox-Szenario hinzugefügt werden.",
+      "btNewViewDisabledCompareTooltip": "Views können nur hinzugefügt werden, wenn das Sandbox-Szenario das Basis-Szenario ist. Um diesem Vergleich eine View hinzuzufügen, laden Sie die Szenarien erneut, wählen Sie das Sandbox-Szenario als Basis-Szenario, fügen Sie die View hinzu und speichern Sie das Sandbox-Szenario.",
       "btEnableEdit": "Bearbeitung aktivieren",
       "btAddRow": "Zeile hinzufügen",
       "btRemoveRows": "Zeilen entfernen",

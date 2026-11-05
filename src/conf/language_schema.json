@@ -2964,6 +2964,14 @@
               "type": "string",
               "minLength": 1
             },
+            "btNewViewDisabledTooltip": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btNewViewDisabledCompareTooltip": {
+              "type": "string",
+              "minLength": 1
+            },
             "btEnableEdit": {
               "type": "string",
               "minLength": 1
@@ -3528,7 +3536,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 41
+          "minProperties": 43
         },
         "datatable": {
           "type": "object",
