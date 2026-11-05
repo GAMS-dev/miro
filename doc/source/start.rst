@@ -475,10 +475,9 @@ be used for comparison. There are three different types of comparison available,
 Pivot view
 ^^^^^^^^^^
 
-Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as `pivot tables <./charts.html#pivot-chart>`__. Also note that the pivot view
-comparison mode always compares the sandbox scenario with other scenarios. The sandbox scenario is therefore also called *base scenario* in this context.
+Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as `pivot tables <./charts.html#pivot-chart>`__. When loading scenarios into the pivot view, you can also include your sandbox scenario and select one of the scenarios as the *baseline scenario* that the other scenarios are compared against.
 
-The data of the sandbox scenario and all selected scenarios are merged into a single table with an additional domain: *Scenario*. You can add/remove scenarios at any time by clicking the |Add
+The data of all selected scenarios is merged into a single table with an additional domain: *Scenario*. You can add/remove scenarios at any time by clicking the |Add
 scenarios button| button in the upper left corner. To close the scenarios currently loaded in the pivot mode, click the |Close scenarios button| button in the upper right corner. If you have made
 changes to your sandbox scenario and want to update the data in the pivot view, click the |Refresh scenarios button| button.
 
@@ -486,8 +485,7 @@ changes to your sandbox scenario and want to update the data in the pivot view, 
    :alt: compare scenarios in pivot view
    :class: img-fluid
 
-`Views <./start.html#metadata-views>`__ can also be used in pivot view mode. They are attached to the sandbox/base scenario. Thus, the scenario you currently have in your sandbox determines what
-views will be available to you in the pivot view scenario comparison. To save a new view, you only need to save your sandbox scenario once the new view has been added.
+`Views <./start.html#metadata-views>`__ can also be used in pivot view mode. They are attached to the baseline scenario. Thus, the baseline scenario determines what views will be available to you in the pivot view scenario comparison. Views can only be added or edited if your sandbox scenario is the baseline scenario. To save a new view, you only need to save your sandbox scenario once the new view has been added.
 
 Views from the pivot view comparison mode can be managed (imported/exported/deleted) just like *normal* views via the *Views* dialog in the *Scenario* → *Edit Metadata* menu. You can learn more
 about views `here <./start.html#metadata-views>`__.

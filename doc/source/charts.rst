@@ -154,7 +154,7 @@ A click on the settings ( |MIRO Pivot settings button| ) button opens the "Setti
 
 - **Baseline Comparison**
   **Enable baseline comparison**: Enable this option to analyse every value relative to a user-defined reference.
-  After switching the toggle on, pick the *Domain* (the pivot dimension) and the Baseline *record* within that domain; all other records will be compared against it. You may select up to two Comparison *metrics* - relative difference, absolute difference, normalization and/or raw values. In the table cell the **primary metric appears in bold**, followed - inside parentheses - by the secondary metric. Only the primary metric is exported or included in charts. The baseline domain cannot be aggregated: If dragged into the *Aggregate* area, MIRO automatically falls back to raw values and shows an error message.
+  After switching the toggle on, pick the *Domain* (the pivot dimension) and the Baseline *record* within that domain; all other records will be compared against it. You may select up to two Comparison *metrics* - relative difference, absolute difference, normalization and/or raw values. In the table cell the **primary metric appears in bold**, followed - inside parentheses - by the secondary metric. Only the primary metric is exported or included in charts. The baseline domain cannot be aggregated: If dragged into the *Aggregate* area, MIRO automatically falls back to raw values and shows an error message. In the pivot view comparison mode, you can select the *Scenario* domain and the record *Baseline scenario* to compare all scenarios against the baseline scenario selected when loading the scenarios.
 
 .. admonition:: Tip:
    :class: tip

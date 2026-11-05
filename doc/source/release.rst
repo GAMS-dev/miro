@@ -13,6 +13,11 @@ Security
 
 - Various security improvements. Updating is recommended, especially for MIRO Server.
 
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- MIRO Desktop requires macOS 13 (Ventura) or later.
+
 New features
 ~~~~~~~~~~~~
 
@@ -25,17 +30,40 @@ New features
     <./ai_assistant.html#changing-input-data>`__, e.g. "increase demand in
     the EU by 10%", and apply them with a single click after reviewing a
     before/after preview.
+  - Mira adds `charts <./ai_assistant.html#charts>`__ to its answers. The data
+    is read from the scenario database by MIRO, never written by the model,
+    and each chart can be opened in the pivot view comparison mode for
+    further analysis.
   - In Configuration Mode, get assistance writing `custom renderers
     <./ai_assistant.html#ai-assisted-custom-renderers>`__.
 
 - New, modern design for MIRO apps, MIRO Desktop and MIRO Server.
 - MIRO Desktop: Environment variables can now be edited directly in the settings window, so exporting and importing them is no longer necessary.
 - Spanish language support.
+- Scenario comparison: Select a baseline scenario.
+
+  - The sandbox scenario is no longer automatically included in the
+    `pivot view <./start.html#compare-pivot>`__. Instead, include it explicitly
+    when loading scenarios, also from the batch load module.
+  - Select one of the loaded scenarios as the baseline scenario. In the pivot
+    view, views are taken from the baseline scenario.
+  - Use the new record `_baseline <./charts.html#baseline-comparison>`__ in
+    baseline comparisons of MIRO Pivot and dashboards to compare against the
+    selected baseline scenario.
+  - `Custom <./configuration_json_only.html#custom-compare-mode>`__ and
+    `dashboard <./configuration_json_only.html#dashboard-compare>`__ comparison
+    modules can enable baseline selection via the new ``selectBaseline``
+    option. In these modules, users choose whether to include the sandbox
+    scenario.
 
 Minor new features and improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Improved German and Chinese translations.
+- Baseline comparisons of scenarios in MIRO Pivot and dashboards count a
+  record that is missing in one of the scenarios as 0 if the aggregation
+  function is sum or count, as GAMS does not store zeros. Previously, such
+  values were left empty.
 
 - Updated documentation with a new design and layout, resulting in clearer
   guides, improved navigation and search, and light/dark theme support.

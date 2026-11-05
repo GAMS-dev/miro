@@ -95,12 +95,23 @@ Analysis usually ends in a question of the form "what if we changed this?". Inst
 Mira never writes to our data on its own. Instead, it puts a **proposal** into the chat, and nothing happens until we confirm it. Each proposal is a card that spells out exactly what would change:
 
 * **What is affected** - the symbol, the column, and the rows the change applies to (if Mira restricted it to a subset), plus how many values that comes to.
-* **The arithmetic** - whether the current values are multiplied, divided, increased, decreased, or replaced outright, and by which number. Mira works *with* our numbers rather than overwriting the table: multiplying a column by 1.1 keeps every individual value and scales it. For an input that holds a single selection rather than numbers - a dropdown - the proposal is simply the new selection, and it can only ever be one of the values that dropdown offers.
+* **The arithmetic** - whether the current values are multiplied, divided, increased, decreased, or replaced outright, and by which number. Mira works *with* our numbers rather than overwriting the table: multiplying a column by 1.1 keeps every individual value and scales it. For an input that holds a single selection rather than numbers - a dropdown - the proposal is simply the new selection, and it can only ever be one of the values that dropdown offers. Mira can also propose whole rows: new rows to add (a new element of a set, for instance), rows to overwrite with individual values, or rows to delete.
 * **The exact result** - a before/after table of the values that would change, so we can see the new data before it exists. A change can span millions of rows, so the table shows the first of them and tells us how many there are in total.
 
 *Apply* writes the new values into the sandbox scenario, exactly as if we had typed them ourselves: the input widgets update, the scenario is marked as modified, and we can solve, save, or undo it like any other manual edit. *Discard* leaves everything untouched. Each proposal is confirmed on its own, so we can accept one suggestion and reject the next.
 
-A few things are deliberately out of Mira's reach. It can only change what we could change by hand: readonly symbols, individual columns a table marks as readonly, symbols without a numeric column and multi-select dropdowns are never offered, output data is never touched, and a value that would fall outside the bounds of its widget (a slider's minimum or maximum, for instance) is rejected before we ever see a proposal. Proposals are also tied to the data they were computed from - if the underlying data changes before we confirm, the card is marked as outdated rather than applied to values the preview never showed. In readonly mode, Mira cannot propose changes at all.
+A few things are deliberately out of Mira's reach. It can only change what we could change by hand: readonly symbols (including custom widgets configured with ``options.readonly``), individual columns a table marks as readonly and multi-select dropdowns are never offered, rows of a table with readonly columns cannot be added or deleted, output data is never touched, and a value that would fall outside the bounds of its widget (a slider's minimum or maximum, for instance) is rejected before we ever see a proposal. Proposals are also tied to the data they were computed from - if the underlying data changes before we confirm, the card is marked as outdated rather than applied to values the preview never showed. In readonly mode, Mira cannot propose changes at all.
+
+.. _ai-assistant-charts:
+
+Charts
+------
+
+Where a chart makes a comparison or trend easier to grasp - e.g. "compare the shipments per plant across all scenarios" - Mira adds one to its answer. Charts work like a `MIRO Pivot <./charts.html#pivot-chart>`__: Mira only decides which symbol and scenarios to show, how to arrange the dimensions (categories and series), which values to filter and which dimensions to aggregate. The values themselves are always read from the scenario database by MIRO, never written by the model, so a chart shows exactly what is in our data.
+
+Charts use the colors configured for the pivot view comparison mode (or the MIRO default palette). We can also ask Mira for specific colors, e.g. "show the oil price shock scenario in red". These colors are kept when the chart is opened in the pivot view.
+
+Each chart can be downloaded as PNG. For symbols shown in the pivot view comparison mode, the *Open in pivot view* button loads the same scenarios into the `pivot view <./start.html#compare-pivot>`__ comparison mode and opens the chart's symbol with the same layout, so we can explore the data further - change filters, switch the chart type or look at the underlying table. A comparison against a baseline scenario is carried over as well. If scenarios are already loaded in the pivot view, we are asked before they are replaced.
 
 .. _how-it-works:
 
@@ -114,7 +125,7 @@ Mira does not receive a dump of our scenario data up front. Its system prompt is
 * **Domain context** - by default, our app's full README. If the `Domain Context <configuration_general.html#ai-assistant-domain-context>`__ setting has been customized instead, that text is used, with the README still available via the ``[[README]]`` placeholder.
 * **General instructions** - whatever is configured under `General Instructions <configuration_general.html#ai-assistant-instructions>`__, if anything.
 
-When we ask a question, the model decides which symbols it needs, queries the database with a scoped request (a symbol, optionally filtered, grouped, or aggregated), reads the result, and either answers or queries again - so it only ever sees the specific slices of data it asked for, not the scenario as a whole.
+When we ask a question, the model decides which symbols it needs, queries the database with a scoped request (a symbol, optionally filtered, grouped, or aggregated), reads the result, and either answers or queries again - so it only ever sees the specific slices of data it asked for, not the scenario as a whole. Charts are created the same way: the model describes the chart, MIRO reads and aggregates the data, and the values are passed straight to the chart without going through the model.
 
 Every query is checked against the scenarios we currently have loaded before it runs - Mira can only read scenarios that are part of our active session, never scenarios it has not been given access to, regardless of what it is asked. This is the same access control that governs every other part of MIRO; Mira does not bypass it.
 

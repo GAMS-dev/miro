@@ -414,6 +414,8 @@ sudoku.json file. Note that we do not set the option ``isInput`` here.
        }
      }
 
+MIRO cannot tell from your code whether your widget lets users edit its data. If it doesn't, set ``"readonly": true`` in the ``"options"`` of the widget configuration. The AI assistant `Mira <./ai_assistant.html#changing-input-data>`__ then never proposes changes to the symbol of the widget or to any of its ``"widgetSymbols"``. Note that Mira only proposes changes to ``"widgetSymbols"`` of widgets with ``"apiVersion": 2``.
+
 The full version of the custom widget described here as well as the corresponding GAMS model *Sudoku* can be found in the MIRO model library. There you will also find an example of how to create a
 widget that defines multiple symbols. In this case, the ``data`` argument is a named list of reactive expressions, where the names are the lowercase names of the GAMS symbols. Similarly,
 you must also return a named list of reactive expressions. Defining a custom input widget for multiple GAMS symbols is as simple as listing all the additional symbols you want your widget to define
@@ -491,6 +493,8 @@ scenario comparison configuration only differs from the regular dashboard in a f
 - Instead of the ``"outType"`` in the dashboard configuration, a ``"type": "dashboard"`` is specified here.
 
 - A ``"label"`` is assigned which is displayed when you select the scenario comparison mode (next to split view, tab view, pivot view).
+
+- Set ``"selectBaseline": true`` to let users select a baseline scenario when loading scenarios into the dashboard comparison. In a ``baselineComparison`` with domain ``_scenName``, use the record ``_baseline`` to compare all scenarios against the selected baseline scenario. The sandbox scenario is then only included if the user selects it.
 
   Example: dashboard and dashboard comparison configuration
 
@@ -655,6 +659,18 @@ As in the normal dashboard, one can also provide custom R code, which is rendere
 #. That's it. You can now extend the dashboard scenario comparison renderer as a custom scenario comparison module. Since the procedure is identical to the regular dashboard render from now on,
    please refer to the second half of the `corresponding section <./charts.html#dashboard-custom-code>`__.
 
+.. _custom-dashboard-compare-select-baseline:
+
+.. warning::
+
+   **Enabling baseline selection in an existing custom comparison dashboard:**
+
+   The previous standard dashboard comparison renderer always excluded the first scenario because it was the sandbox. Custom comparison dashboards based on that renderer may therefore contain the same logic, such as ``data$get(symbolName)[-1]`` and ``data$getMetadata()[-1]``. With ``"selectBaseline": true``, the first scenario is the baseline selected by the user, and the sandbox is included only if explicitly selected.
+
+   Before enabling this option, review and adapt any code that unconditionally removes the first scenario. Otherwise, your dashboard will discard the selected baseline instead of the sandbox. Keep the baseline data available for comparison calculations, and exclude it from the displayed results only if intended. The order of the scenarios is the same for all symbols and the metadata.
+
+   Leaving ``selectBaseline`` disabled preserves the previous behavior: the sandbox remains the first scenario.
+
 .. _custom-compare-mode:
 
 Custom scenario comparison
@@ -733,7 +749,7 @@ In order to use this custom comparison module in MIRO, we have to append the fol
 The only mandatory fields are ``"id"`` and ``label``. The label is displayed when selecting the comparison mode and the ``id`` is used internally to identify your module. You can specify an optional object with
 ``options`` provided to the output and renderer functions. This is especially useful if you want to reuse the same renderer function with different ``options``. In this case, the ``id`` of the comparison
 module is not the same as the ``id`` of the output/renderer function. Therefore, you must specify the ``id`` of the renderer function using the ``externalRendererId`` field. Additional R ``packages`` required for
-your comparison module can be specified via the ``packages`` field.
+your comparison module can be specified via the ``packages`` field. Set ``selectBaseline`` to ``true`` to let users select a baseline scenario when loading scenarios into your comparison module. The baseline scenario is always the first scenario passed to your renderer function, and the sandbox scenario is only included if the user selects it. If your renderer is based on the previous dashboard comparison renderer, read the `migration note <#custom-dashboard-compare-select-baseline>`__ before enabling this option.
 
 Below is the full schema used to validate the configuration of your custom comparison modules.
 
@@ -784,6 +800,11 @@ Below is the full schema used to validate the configuration of your custom compa
               "options":{
                   "description":"Additional options",
                   "type":"object"
+              },
+              "selectBaseline":{
+                  "description":"Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario. The sandbox scenario is then only included if selected by the user (default: false).",
+                  "type":"boolean",
+                  "default":false
               }
             },
             "required": ["id", "label"]
@@ -834,7 +855,7 @@ An unnamed list of dataframes (tibbles).
 
 .. rubric:: Description
 
-This method allows you to retrieve the data of the specified symbol for all loaded scenarios. The first element is always the sandbox scenario. To get the metadata (e.g. scenario name, scenario
+This method allows you to retrieve the data of the specified symbol for all loaded scenarios. The first element is the sandbox scenario or, if ``selectBaseline`` is enabled for your module, the baseline scenario selected by the user. To get the metadata (e.g. scenario name, scenario
 owner, etc.) of the different scenarios, use the ``getMetadata()`` method. The order of the scenarios is the same for all symbols and the metadata.
 
 Get metadata
@@ -860,7 +881,7 @@ Get attachment (meta)data
 .. code-block:: r
 
 
-     data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = TRUE)
+     data$getAttachmentData(scenIds = NULL, fileNames = NULL, includeContent = FALSE, includeSandboxScen = NULL)
 
 .. rubric:: Arguments
 
@@ -868,7 +889,7 @@ Get attachment (meta)data
 scenIds            integer vector of scenario IDs (as returned by ``getMetadata()`` method) or ``NULL`` to include all loaded scenarios
 fileNames          character vector of attachment filenames to filter or ``NULL`` to include all loaded scenarios
 includeContent     boolean specifying whether to include ``fileContent`` column with attachment data
-includeSandboxScen boolean specifying whether to include attachments of the sandbox scenario (will be included with scenario ID (``_sid``) of ``0``)
+includeSandboxScen boolean specifying whether to include attachments of the sandbox scenario (will be included with scenario ID (``_sid``) of ``0``) or ``NULL`` to include them only if the sandbox scenario is part of the comparison
 ================== ==========================================================================================================================
 
 .. rubric:: Value
@@ -904,11 +925,11 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
          "d": {
            "widgetType": "table",
            "alias": "distance in thousands of miles",
-     	  "pivotCols": "j",
-     	  "dropdownCols": {
+           "pivotCols": "j",
+           "dropdownCols": {
              "i": {
                "static": ["Seattle", "San-Diego", "Los Angeles", "Houston", "Philadelphia"],
-     		  "colType": "dropdown"
+               "colType": "dropdown"
              }
            }
          }
@@ -943,12 +964,12 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
          "d": {
            "widgetType": "table",
            "alias": "distance in thousands of miles",
-     	  "pivotCols": "j",
-     	  "dropdownCols": {
+           "pivotCols": "j",
+           "dropdownCols": {
              "i": {
                "symbol": "a",
                "column": "i",
-     		  "colType": "dropdown"
+               "colType": "dropdown"
              }
            }
          }
