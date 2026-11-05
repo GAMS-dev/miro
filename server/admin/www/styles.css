@@ -2131,6 +2131,8 @@ body:has(.app-box-expanded) .app-box:hover,
   box-shadow: none;
 }
 .app-logo-wrapper > .shiny-file-input-progress .progress-bar {
+  /* too thin for the file name Shiny writes into the bar */
+  color: transparent;
   border-radius: 999px;
   background: var(--m-accent);
 }
