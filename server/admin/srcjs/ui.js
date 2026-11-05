@@ -5,6 +5,7 @@ import {
   ADD_APP_WRAPPER_HTML,
   PLACEHOLDERS,
   SUPPORTED_FILE_TYPES,
+  YES_NO_BUTTONS,
 } from './constants';
 import { sendUpdateAppShinyEvent } from './api';
 
@@ -684,7 +685,8 @@ export const showOverwriteDialog = (
   showAdvancedSettingsDialog = false,
 ) => bootbox.prompt({
   title: 'Overwrite data',
-  message: `Do you want to overwrite existing scenario data? Please type <b>${escapeHtml(newAppId)}</b> to confirm or choose 'Cancel' to keep the existing data.`,
+  message: `Do you want to overwrite existing scenario data? Please type <b>${escapeHtml(newAppId)}</b> to confirm or choose 'No' to keep the existing data.`,
+  buttons: YES_NO_BUTTONS,
   centerVertical: true,
   onEscape: false,
   callback: (result) => {

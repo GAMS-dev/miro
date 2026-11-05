@@ -8,6 +8,8 @@ export const PLACEHOLDERS = {
 
 export const SUPPORTED_FILE_TYPES = ['gdx', 'miroscen', 'xlsx', 'xlsm', 'xls', 'zip'];
 
+export const YES_NO_BUTTONS = { confirm: { label: 'Yes' }, cancel: { label: 'No' } };
+
 export const ADD_APP_WRAPPER_HTML = `<div id="addAppBox" class="add-app-box app-box-fixed-height">
   <div class="app-logo-wrapper"><p class="add-app-box-logo"></p></div>
   <div>

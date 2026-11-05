@@ -9,7 +9,7 @@ import {
   sendUpdateAppShinyEvent,
 } from './api';
 import { escapeHtml, HTMLIDToUnicode, unicodeToHTMLID } from './utils';
-import { PLACEHOLDERS, SUPPORTED_FILE_TYPES } from './constants';
+import { PLACEHOLDERS, SUPPORTED_FILE_TYPES, YES_NO_BUTTONS } from './constants';
 import registerDropZoneHighlight from './drop_zones';
 
 export default function setupEventListeners() {
@@ -314,6 +314,7 @@ export default function setupEventListeners() {
     bootbox.confirm({
       message:
         'Are you sure you want to remove this app? This cannot be undone.',
+      buttons: YES_NO_BUTTONS,
       centerVertical: true,
       onEscape: false,
       callback: (removeAppConfirmed) => {
@@ -323,7 +324,8 @@ export default function setupEventListeners() {
         bootbox.prompt({
           required: true,
           title: 'Remove data',
-          message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm or press 'Cancel' to keep the data.`,
+          message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm or press 'No' to keep the data.`,
+          buttons: YES_NO_BUTTONS,
           centerVertical: true,
           onEscape: false,
           callback: (result) => {
