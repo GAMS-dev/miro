@@ -1,5 +1,9 @@
 AI_PROVIDER_MAX_RETRY_WAIT <- 10
 
+# a model choice is "<provider>/<model id>"; the id itself may contain "/" (e.g. Bedrock ARNs)
+aiModelProvider <- function(choice) sub("/.*$", "", choice)
+aiModelId <- function(choice) sub("^[^/]*/", "", choice)
+
 # Azure documents `retry-after-ms` for standard deployments and adds the
 # seconds-based `retry-after` only for provisioned ones; Bedrock may send
 # `retry-after`. Without either, back off exponentially with jitter.
@@ -17,13 +21,14 @@ retryWaitSeconds <- function(resp, attempt) {
   return(2^(attempt - 1L) + runif(1L))
 }
 
-httpPostWithRetry <- function(url, authHeaders, payload, errorPrefix, extractErrorMessage) {
+httpPostWithRetry <- function(url, authHeaders, payload, errorPrefix, extractErrorMessage,
+                              body = toJSON(payload, auto_unbox = TRUE)) {
   attempt <- 0L
   repeat {
     attempt <- attempt + 1L
     resp <- POST(
       url,
-      body = toJSON(payload, auto_unbox = TRUE),
+      body = body,
       encode = "raw",
       authHeaders,
       content_type_json(),
@@ -772,6 +777,280 @@ MiroAiAzureAnthropicProvider <- R6Class("MiroAiAzureAnthropicProvider",
   )
 )
 
+#' ==========================================================================
+#' Concrete Provider: Amazon Bedrock (Converse API)
+#' ==========================================================================
+# the region becomes part of the host the credential is sent to
+BEDROCK_REGION_REGEX <- "^[a-z]{2}(-gov)?-[a-z]+-[0-9]$"
+
+awsHmac <- function(key, message) {
+  return(as.raw(openssl::sha256(charToRaw(enc2utf8(message)), key = key)))
+}
+awsSha256Hex <- function(text) {
+  return(as.character(openssl::sha256(charToRaw(enc2utf8(text)))))
+}
+# Signature Version 4 headers of a JSON POST, see
+# https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-create-signed-request.html
+# `path` is the percent-encoded request path; host and content type are signed
+# with the values httr sends anyway, so they are not returned.
+awsSigV4Headers <- function(credentials, region, service, host, path, body, time = Sys.time()) {
+  amzDate <- format(time, "%Y%m%dT%H%M%SZ", tz = "UTC")
+  dateStamp <- substr(amzDate, 1L, 8L)
+  headers <- c(`content-type` = "application/json", host = host, `x-amz-date` = amzDate)
+  if (length(credentials$sessionToken)) {
+    headers[["x-amz-security-token"]] <- credentials$sessionToken
+  }
+  headers <- headers[order(names(headers))]
+  signedHeaders <- paste(names(headers), collapse = ";")
+  canonicalRequest <- paste(
+    # all services but S3 encode the (already encoded) path segments a second time
+    "POST", gsub("%", "%25", path, fixed = TRUE), "",
+    paste0(names(headers), ":", headers, "\n", collapse = ""),
+    signedHeaders, awsSha256Hex(body),
+    sep = "\n"
+  )
+  scope <- paste(dateStamp, region, service, "aws4_request", sep = "/")
+  stringToSign <- paste("AWS4-HMAC-SHA256", amzDate, scope, awsSha256Hex(canonicalRequest), sep = "\n")
+  signingKey <- Reduce(
+    awsHmac, c(dateStamp, region, service, "aws4_request"),
+    charToRaw(paste0("AWS4", credentials$secretAccessKey))
+  )
+  signature <- paste(as.character(awsHmac(signingKey, stringToSign)), collapse = "")
+  return(c(
+    as.list(headers[setdiff(names(headers), c("content-type", "host"))]),
+    list(Authorization = sprintf(
+      "AWS4-HMAC-SHA256 Credential=%s/%s, SignedHeaders=%s, Signature=%s",
+      credentials$accessKeyId, scope, signedHeaders, signature
+    ))
+  ))
+}
+
+#' IAM roles for service accounts (IRSA): EKS mounts a service account token
+#' and names it and the role to assume in AWS_WEB_IDENTITY_TOKEN_FILE and
+#' AWS_ROLE_ARN. STS exchanges the token for temporary credentials, which are
+#' cached until shortly before they expire. STS is called in the pod's own
+#' region (AWS_REGION, set by EKS) if known, like the AWS SDKs do.
+MiroAwsWebIdentityCredentials <- R6Class("MiroAwsWebIdentityCredentials",
+  public = list(
+    initialize = function(region,
+                          roleArn = Sys.getenv("AWS_ROLE_ARN"),
+                          tokenFile = Sys.getenv("AWS_WEB_IDENTITY_TOKEN_FILE")) {
+      private$region <- Sys.getenv("AWS_REGION", region)
+      private$roleArn <- roleArn
+      private$tokenFile <- tokenFile
+      return(self)
+    },
+    getCredentials = function() {
+      if (!is.null(private$cached) && private$expiresAt > Sys.time()) {
+        return(private$cached)
+      }
+      credentials <- private$assumeRole()
+      private$cached <- credentials[c("accessKeyId", "secretAccessKey", "sessionToken")]
+      # refreshed five minutes early so a long tool loop never signs with expired credentials
+      private$expiresAt <- max(credentials$expiration - 300, Sys.time() + 60)
+      return(private$cached)
+    }
+  ), private = list(
+    region = NULL,
+    roleArn = NULL,
+    tokenFile = NULL,
+    cached = NULL,
+    expiresAt = NULL,
+    requestCredentials = function(webIdentityToken) {
+      return(POST(
+        sprintf("https://sts.%s.amazonaws.com/", private$region),
+        body = list(
+          Action = "AssumeRoleWithWebIdentity", Version = "2011-06-15",
+          RoleArn = private$roleArn, RoleSessionName = paste0("miro-", Sys.getpid()),
+          WebIdentityToken = webIdentityToken
+        ),
+        encode = "form",
+        add_headers(Accept = "application/json"),
+        timeout(30L)
+      ))
+    },
+    assumeRole = function() {
+      if (!nzchar(private$roleArn) || !nzchar(private$tokenFile) || !file.exists(private$tokenFile)) {
+        stop("IAM roles for service accounts are not configured on this server (AWS_ROLE_ARN or AWS_WEB_IDENTITY_TOKEN_FILE is missing).", call. = FALSE)
+      }
+      # read on every request: the kubelet rotates the projected token
+      resp <- private$requestCredentials(
+        trimws(paste(readLines(private$tokenFile, warn = FALSE), collapse = ""))
+      )
+      resBody <- tryCatch(content(resp, type = "application/json", encoding = "utf-8"), error = function(e) NULL)
+      credentials <- resBody$AssumeRoleWithWebIdentityResponse$AssumeRoleWithWebIdentityResult$Credentials
+      if (status_code(resp) != 200 || !length(credentials$SecretAccessKey)) {
+        stop("AWS authentication failed: ",
+          resBody$Error$Message %||% sprintf("HTTP %d", status_code(resp)),
+          call. = FALSE
+        )
+      }
+      # STS' JSON protocol sends epoch seconds; without a usable expiration,
+      # assume the shortest session STS issues (15 minutes)
+      expiration <- credentials$Expiration
+      expiration <- if (is.numeric(expiration)) {
+        as.POSIXct(expiration, origin = "1970-01-01", tz = "UTC")
+      } else {
+        as.POSIXct(as.character(expiration %||% NA_character_), format = "%Y-%m-%dT%H:%M:%OS", tz = "UTC")
+      }
+      return(list(
+        accessKeyId = credentials$AccessKeyId,
+        secretAccessKey = credentials$SecretAccessKey,
+        sessionToken = credentials$SessionToken,
+        expiration = if (is.na(expiration)) Sys.time() + 900 else expiration
+      ))
+    }
+  )
+)
+
+# Converse rejects a request whose history does not alternate between user and
+# assistant or that has a blank text block, which a history carried over from
+# another provider can contain (e.g. after a stopped request)
+bedrockConverseMessages <- function(messages) {
+  merged <- list()
+  for (message in messages) {
+    message$content <- Filter(function(block) is.null(block$text) || nzchar(trimws(block$text)), message$content)
+    if (!length(message$content)) {
+      next
+    }
+    if (length(merged) && identical(merged[[length(merged)]]$role, message$role)) {
+      merged[[length(merged)]]$content <- c(merged[[length(merged)]]$content, message$content)
+    } else {
+      merged[[length(merged) + 1L]] <- message
+    }
+  }
+  return(merged)
+}
+
+MiroAiBedrockProvider <- R6Class("MiroAiBedrockProvider",
+  inherit = MiroAiBaseProvider,
+  public = list(
+    initialize = function(modelName, bedrockConfig, debugFile = NULL) {
+      super$initialize(modelName, bedrockConfig$key, debugFile = debugFile)
+      private$region <- bedrockConfig$region
+      modelConfig <- Find(function(model) identical(model$id, modelName), bedrockConfig$models) %||% list()
+      private$promptCaching <- !isFALSE(modelConfig$promptCaching)
+      if (identical(bedrockConfig$authMode, "workloadidentity")) {
+        private$credentials <- MiroAwsWebIdentityCredentials$new(bedrockConfig$region)
+      }
+      return(self)
+    }
+  ),
+  private = list(
+    replaysHistory = TRUE,
+    errorPrefix = "Amazon Bedrock API Error: ",
+    region = NULL,
+    credentials = NULL,
+    # models without prompt caching reject a cachePoint
+    promptCaching = TRUE,
+    systemInstructions = NULL,
+    toolsPayload = NULL,
+    host = function() sprintf("bedrock-runtime.%s.amazonaws.com", private$region),
+    # the model id is one path segment: an ARN's ":" and "/" are percent-encoded
+    path = function() sprintf("/model/%s/converse", utils::URLencode(private$modelName, reserved = TRUE)),
+    buildUrl = function() paste0("https://", private$host(), private$path()),
+    buildAuthHeaders = function(body) {
+      if (is.null(private$credentials)) {
+        return(list(Authorization = paste("Bearer", private$apiKey)))
+      }
+      return(awsSigV4Headers(
+        private$credentials$getCredentials(), private$region, "bedrock", private$host(), private$path(), body
+      ))
+    },
+    executeHttpCall = function(payload) {
+      post <- function(payload) {
+        # the signature covers the exact bytes that are sent
+        body <- toJSON(payload, auto_unbox = TRUE)
+        return(httpPostWithRetry(
+          private$buildUrl(), do.call(add_headers, private$buildAuthHeaders(body)), payload,
+          private$errorPrefix, private$extractErrorMessage,
+          body = body
+        ))
+      }
+      if (!private$promptCaching) {
+        return(post(payload))
+      }
+      return(tryCatch(post(payload), error = function(err) {
+        if (!grepl("prompt caching", conditionMessage(err), fixed = TRUE)) {
+          stop(err)
+        }
+        private$promptCaching <- FALSE
+        return(post(private$buildPayload()))
+      }))
+    },
+    historyMessage = function(isUser, text) {
+      return(list(role = if (isUser) "user" else "assistant", content = list(list(text = text))))
+    },
+    buildPayload = function() {
+      system <- list(list(text = private$systemInstructions))
+      messages <- bedrockConverseMessages(self$history)
+      if (private$promptCaching) {
+        # cache the system prompt and tools, and the growing history up to the latest message
+        cachePoint <- list(cachePoint = list(type = "default"))
+        system[[2L]] <- cachePoint
+        lastIdx <- length(messages)
+        messages[[lastIdx]]$content[[length(messages[[lastIdx]]$content) + 1L]] <- cachePoint
+      }
+      payload <- list(messages = messages, system = system)
+      if (!is.null(private$toolsPayload)) {
+        payload$toolConfig <- list(tools = private$toolsPayload)
+      }
+      return(payload)
+    },
+    prepareInitialPayload = function(userInput, systemInstructions, tools) {
+      # rebuilt for every request, so it is not part of the stored history
+      private$systemInstructions <- systemInstructions
+      self$history[[length(self$history) + 1L]] <- private$historyMessage(TRUE, userInput)
+      if (!is.null(tools) && length(tools) > 0) {
+        private$toolsPayload <- lapply(tools, function(f) {
+          list(toolSpec = list(name = f$name, description = f$description, inputSchema = list(json = f$parameters)))
+        })
+      }
+      return(private$buildPayload())
+    },
+    parseApiResponse = function(resContent) {
+      message <- resContent$output$message
+      # replayed verbatim: every tool result must refer to a tool use the model emitted
+      self$history[[length(self$history) + 1L]] <- list(role = "assistant", content = message$content)
+
+      toolCalls <- list()
+      finalText <- ""
+      for (block in message$content) {
+        if (length(block$toolUse)) {
+          toolCalls[[length(toolCalls) + 1L]] <- list(
+            id = block$toolUse$toolUseId,
+            name = block$toolUse$name,
+            arguments = private$simplifyToolArguments(block$toolUse$input)
+          )
+        } else if (length(block$text)) {
+          finalText <- paste0(finalText, block$text)
+        }
+      }
+      hasToolCalls <- length(toolCalls) > 0L
+      stopReason <- resContent$stopReason %||% ""
+      if (stopReason %in% c("malformed_model_output", "malformed_tool_use")) {
+        stop("The model returned a malformed response; please try again.", call. = FALSE)
+      }
+
+      return(list(
+        hasToolCalls = hasToolCalls,
+        toolCalls = toolCalls,
+        text = private$finalizeText(finalText, hasToolCalls,
+          truncated = stopReason %in% c("max_tokens", "model_context_window_exceeded"),
+          filteredBy = if (stopReason %in% c("guardrail_intervened", "content_filtered")) "Amazon Bedrock"
+        ),
+        tokens = list(input = resContent$usage$inputTokens, output = resContent$usage$outputTokens)
+      ))
+    },
+    prepareNextIterationPayload = function(toolResults) {
+      self$history[[length(self$history) + 1L]] <- list(role = "user", content = lapply(toolResults, function(res) {
+        list(toolResult = list(toolUseId = res$id, content = list(list(text = as.character(res$output)))))
+      }))
+      return(private$buildPayload())
+    }
+  )
+)
+
 AI_PROVIDER_REGISTRY <- list(
   openai = list(
     label = "OpenAI", custom = FALSE,
@@ -793,6 +1072,10 @@ AI_PROVIDER_REGISTRY <- list(
       }
       return(MiroAiAzureProvider$new(modelId, entry, debugFile = debugFile))
     }
+  ),
+  bedrock = list(
+    label = "Amazon Bedrock", custom = TRUE,
+    construct = function(modelId, entry, debugFile) MiroAiBedrockProvider$new(modelId, entry, debugFile = debugFile)
   )
 )
 
@@ -821,7 +1104,8 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Gemini 3.8 Flash" = "google/gemini-3.8-flash",
         "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
       ),
-      `Microsoft Foundry` = character(0L)
+      `Microsoft Foundry` = character(0L),
+      `Amazon Bedrock` = character(0L)
     ),
     debugFile = NULL,
     initialize = function(config = NULL, apiKeys = NULL) {
@@ -883,13 +1167,14 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         if (!providerId %in% private$providerIds) {
           stop(sprintf("AI Provider: %s currently not supported", apiKey$provider), call. = FALSE)
         }
-        isSecretless <- identical(providerId, "azure") &&
+        isSecretless <- providerId %in% c("azure", "bedrock") &&
           tolower(apiKey$authMode %||% "") %in% c("workloadidentity", "usersignin")
         if (!isSecretless && (!length(apiKey$key) || nchar(apiKey$key) < 1L)) {
           stop(sprintf("Invalid API key for provider: %s", apiKey$provider), call. = FALSE)
         }
         self$apiKeys[[providerId]] <- switch(providerId,
           azure = private$validateAzureConfig(apiKey),
+          bedrock = private$validateBedrockConfig(apiKey),
           list(key = apiKey$key)
         )
       }
@@ -927,6 +1212,26 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         endpoint = endpoint,
         authMode = authMode, tenantId = entry$tenantId, clientId = entry$clientId,
         models = private$validateModelsList(entry, "Microsoft Foundry")
+      ))
+    },
+    validateBedrockConfig = function(entry) {
+      region <- trimws(entry$region %||% "")
+      if (!grepl(BEDROCK_REGION_REGEX, region)) {
+        stop("Amazon Bedrock region must be an AWS region such as 'us-east-1'.", call. = FALSE)
+      }
+      authMode <- tolower(entry$authMode %||% "apikey")
+      if (!authMode %in% c("apikey", "workloadidentity")) {
+        stop("Amazon Bedrock authMode must be one of 'apiKey' or 'workloadIdentity'.", call. = FALSE)
+      }
+      models <- private$validateModelsList(entry, "Amazon Bedrock")
+      for (model in models) {
+        if (length(model$promptCaching) && !isTRUE(model$promptCaching) && !isFALSE(model$promptCaching)) {
+          stop("Amazon Bedrock promptCaching must be true or false.", call. = FALSE)
+        }
+      }
+      return(list(
+        key = if (identical(authMode, "workloadidentity")) NULL else entry$key,
+        region = region, authMode = authMode, models = models
       ))
     },
     registerCustomProviderModels = function(providerId) {

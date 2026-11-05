@@ -1301,3 +1301,274 @@ test_that("provider errors carry the provider's prefix and message", {
   provider <- MiroAiAnthropicProvider$new("claude-sonnet-5-5", "bad")
   expect_error(provider$.__enclos_env__$private$executeHttpCall(list()), "Claude API Error: invalid x-api-key", fixed = TRUE)
 })
+
+# ==============================================================================
+# Amazon Bedrock
+# ==============================================================================
+
+bedrockEntry <- function(authMode = "apiKey",
+                         models = list(list(label = "Claude Haiku", id = "us.anthropic.claude-haiku-4-5-20251001-v1:0")),
+                         ...) {
+  modifyList(list(provider = "bedrock", key = "bedrock-api-key", region = "eu-central-1", authMode = authMode, models = models), list(...))
+}
+
+MockBedrockCapture <- R6Class("MockBedrockCapture",
+  inherit = MiroAiBedrockProvider,
+  public = list(
+    capturedPayloads = list(),
+    mockResponses = list(),
+    url = function() private$buildUrl()
+  ),
+  private = list(
+    callCount = 0,
+    executeHttpCall = function(payload) {
+      private$callCount <- private$callCount + 1
+      self$capturedPayloads[[private$callCount]] <- payload
+      return(self$mockResponses[[private$callCount]])
+    }
+  )
+)
+
+bedrockResponse <- function(content, stopReason = "end_turn", usage = list(inputTokens = 1L, outputTokens = 1L)) {
+  list(output = list(message = list(role = "assistant", content = content)), stopReason = stopReason, usage = usage)
+}
+
+newBedrockProvider <- function(entry = bedrockEntry(), model = entry$models[[1]]$id) {
+  config <- MiroAiAssistant$new(config = list(apiKeys = list(entry)))$apiKeys$bedrock
+  MockBedrockCapture$new(model, config)
+}
+
+test_that("Bedrock models reach supportedModels and the provider", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(bedrockEntry())))
+  expect_equal(
+    assistant$supportedModels$`Amazon Bedrock`,
+    c(`Claude Haiku` = "bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0")
+  )
+  expect_s3_class(assistant$getProvider("bedrock", "us.anthropic.claude-haiku-4-5-20251001-v1:0"), "MiroAiBedrockProvider")
+  # not listed unless configured
+  expect_null(MiroAiAssistant$new(apiKeys = list(openai = list(key = "k")))$supportedModels$`Amazon Bedrock`)
+})
+
+test_that("Bedrock config validation rejects malformed entries", {
+  expectBedrockError <- function(pattern, ...) {
+    expect_error(MiroAiAssistant$new(config = list(apiKeys = list(bedrockEntry(...)))), pattern)
+  }
+  expectBedrockError("region", region = "evil.example.com/x")
+  expectBedrockError("authMode", authMode = "sigv4")
+  expectBedrockError("promptCaching", models = list(list(id = "m", promptCaching = "no")))
+  expectBedrockError("Invalid API key", key = NULL)
+  # workload identity needs no key
+  config <- MiroAiAssistant$new(config = list(apiKeys = list(bedrockEntry(authMode = "workloadIdentity", key = NULL))))$apiKeys$bedrock
+  expect_equal(config$authMode, "workloadidentity")
+  expect_null(config$key)
+})
+
+test_that("Bedrock builds a Converse payload", {
+  provider <- newBedrockProvider()
+  provider$mockResponses <- list(bedrockResponse(list(list(text = "Hello."))))
+  result <- provider$sendMessage("q", "SYSTEM", tools = list(list(name = "getData", description = "d", parameters = list(type = "object"))))
+
+  payload <- provider$capturedPayloads[[1]]
+  expect_equal(result$text, "Hello.")
+  cachePoint <- list(cachePoint = list(type = "default"))
+  expect_equal(payload$messages[[1]], list(role = "user", content = list(list(text = "q"), cachePoint)))
+  expect_equal(payload$system, list(list(text = "SYSTEM"), cachePoint))
+  expect_equal(payload$toolConfig$tools[[1]]$toolSpec, list(name = "getData", description = "d", inputSchema = list(json = list(type = "object"))))
+  expect_null(payload$inferenceConfig)
+  # the model id is one percent-encoded path segment
+  expect_equal(provider$url(), "https://bedrock-runtime.eu-central-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1%3A0/converse")
+
+  # prompt caching can be switched off per model
+  provider <- newBedrockProvider(bedrockEntry(models = list(list(id = "meta.llama3-3-70b-instruct-v1:0", promptCaching = FALSE))))
+  provider$mockResponses <- list(bedrockResponse(list(list(text = "Hi."))))
+  provider$sendMessage("q", "SYSTEM")
+  expect_equal(provider$capturedPayloads[[1]]$system, list(list(text = "SYSTEM")))
+  expect_equal(provider$capturedPayloads[[1]]$messages[[1]]$content, list(list(text = "q")))
+})
+
+test_that("Bedrock drops prompt caching once a model rejects it", {
+  bodies <- list()
+  testthat::local_mocked_bindings(
+    POST = function(url, config, body, ...) {
+      bodies[[length(bodies) + 1L]] <<- fromJSON(body, simplifyVector = FALSE)
+      structure(list(code = if (length(bodies) == 1L) 400L else 200L), class = "response")
+    },
+    status_code = function(resp) resp$code,
+    content = function(resp, ...) {
+      if (resp$code == 400L) list(Message = "You invoked an unsupported model or your request did not allow prompt caching.") else list(ok = TRUE)
+    },
+    .package = "httr"
+  )
+  provider <- MiroAiBedrockProvider$new("anthropic.claude-3-haiku-20240307-v1:0", list(key = "k", region = "us-east-1", authMode = "apikey"))
+  private <- provider$.__enclos_env__$private
+  expect_equal(private$executeHttpCall(private$prepareInitialPayload("q", "sys", NULL)), list(ok = TRUE))
+  expect_length(bodies, 2L)
+  expect_match(toJSON(bodies[[1]]), "cachePoint", fixed = TRUE)
+  expect_false(grepl("cachePoint", toJSON(bodies[[2]]), fixed = TRUE))
+  # later requests go without it right away
+  private$executeHttpCall(private$buildPayload())
+  expect_length(bodies, 3L)
+  expect_false(grepl("cachePoint", toJSON(bodies[[3]]), fixed = TRUE))
+})
+
+test_that("Bedrock merges consecutive turns and drops blank text of a carried-over history", {
+  expect_equal(
+    bedrockConverseMessages(list(
+      list(role = "user", content = list(list(text = "first"))),
+      list(role = "assistant", content = list(list(text = " \n"))),
+      list(role = "user", content = list(list(text = "second")))
+    )),
+    list(list(role = "user", content = list(list(text = "first"), list(text = "second"))))
+  )
+})
+
+test_that("model choices keep a model id that contains slashes", {
+  choice <- "bedrock/arn:aws:bedrock:eu-central-1:123:application-inference-profile/abc"
+  expect_equal(aiModelProvider(choice), "bedrock")
+  expect_equal(aiModelId(choice), "arn:aws:bedrock:eu-central-1:123:application-inference-profile/abc")
+  expect_equal(aiModelId("openai/gpt-6-luna"), "gpt-6-luna")
+})
+
+test_that("Bedrock runs tool calls and replays them with their results", {
+  provider <- newBedrockProvider()
+  toolUse <- list(toolUse = list(toolUseId = "tooluse_1", name = "getData", input = list(
+    symbolName = "demand", filters = list(list(column = "region", operator = "=", value = "EU"))
+  )))
+  provider$mockResponses <- list(
+    bedrockResponse(list(toolUse), stopReason = "tool_use"),
+    bedrockResponse(list(list(text = "Done.")), usage = list(inputTokens = 7L, outputTokens = 3L))
+  )
+  toolOutput <- toJSON(data.frame(region = "NA", value = 42), dataframe = "rows", auto_unbox = TRUE)
+  received <- NULL
+  result <- provider$sendMessage("q", "sys",
+    tools = list(list(name = "getData", description = "d", parameters = list())),
+    toolDispatcher = list(getData = function(args) {
+      received <<- args
+      toolOutput
+    })
+  )
+
+  expect_equal(result$text, "Done.")
+  expect_equal(result$inputTokens, 8L)
+  expect_equal(received$symbolName, "demand")
+  expect_true(is.data.frame(received$filters))
+  sent <- provider$capturedPayloads[[2]]$messages
+  expect_equal(sent[[2]], list(role = "assistant", content = list(toolUse)))
+  expect_equal(sent[[3]]$content[[1]]$toolResult$toolUseId, "tooluse_1")
+  # the replayed history itself carries no cache point
+  expect_length(provider$.__enclos_env__$self$history[[3]]$content, 1L)
+  expect_equal(sent[[3]]$content[[1]]$toolResult$content[[1]]$text, as.character(toolOutput))
+})
+
+test_that("Bedrock surfaces truncation and guardrails, and restores a prior chat", {
+  provider <- newBedrockProvider()
+  provider$mockResponses <- list(bedrockResponse(list(list(text = "partial")), stopReason = "max_tokens"))
+  result <- provider$sendMessage("q", "sys")
+  expect_match(result$text, "truncated")
+
+  provider <- newBedrockProvider()
+  provider$mockResponses <- list(bedrockResponse(list(list(text = "Sorry.")), stopReason = "guardrail_intervened"))
+  result <- provider$sendMessage("q", "sys")
+  expect_match(result$text, "content safety policy of Amazon Bedrock")
+
+  provider <- newBedrockProvider()
+  provider$mockResponses <- list(bedrockResponse(list(list(text = "Again."))))
+  provider$chatHistory <- list(list(role = "user", text = "first"), list(role = "assistant", text = "answer"), list(role = "user", text = "q"))
+  provider$sendMessage("q", "sys")
+  expect_equal(provider$capturedPayloads[[1]]$messages[[2]], list(role = "assistant", content = list(list(text = "answer"))))
+})
+
+test_that("awsSigV4Headers matches the AWS reference signer", {
+  # signature computed with botocore's SigV4Auth for the same request
+  headers <- awsSigV4Headers(
+    list(accessKeyId = "AKIDEXAMPLE", secretAccessKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY", sessionToken = "SESSIONTOKEN"), # pragma: allowlist secret
+    "eu-central-1", "bedrock", "bedrock-runtime.eu-central-1.amazonaws.com",
+    "/model/arn%3Aaws%3Abedrock%3Aeu-central-1%3A123%3Ainference-profile%2Feu.anthropic.claude-haiku-4-5-v1%3A0/converse",
+    "{\"messages\":[{\"role\":\"user\",\"content\":[{\"text\":\"hé\"}]}]}",
+    time = as.POSIXct("2026-11-04 16:15:38", tz = "UTC")
+  )
+  expect_equal(headers$`x-amz-date`, "20261104T161538Z")
+  expect_equal(headers$`x-amz-security-token`, "SESSIONTOKEN")
+  expect_equal(
+    headers$Authorization,
+    paste0(
+      "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20261104/eu-central-1/bedrock/aws4_request, ",
+      "SignedHeaders=content-type;host;x-amz-date;x-amz-security-token, ",
+      "Signature=a1309cbbede393ccb148e63be47a0da6ea89f1e567984468240f23a4f9bb67cd"
+    )
+  )
+})
+
+test_that("Bedrock authenticates with the API key or signs with IRSA credentials", {
+  sent <- list()
+  testthat::local_mocked_bindings(
+    POST = function(url, config, body, ...) {
+      sent[[length(sent) + 1L]] <<- list(url = url, headers = config$headers, body = body)
+      structure(list(code = 200L), class = "response")
+    },
+    status_code = function(resp) resp$code,
+    content = function(resp, ...) list(ok = TRUE),
+    .package = "httr"
+  )
+  apiKeyProvider <- MiroAiBedrockProvider$new("m", list(key = "bedrock-api-key", region = "us-east-1", authMode = "apikey"))
+  apiKeyProvider$.__enclos_env__$private$executeHttpCall(list(a = 1))
+  expect_equal(sent[[1]]$headers[["Authorization"]], "Bearer bedrock-api-key")
+  expect_equal(sent[[1]]$url, "https://bedrock-runtime.us-east-1.amazonaws.com/model/m/converse")
+
+  irsaProvider <- MiroAiBedrockProvider$new("m", list(region = "us-east-1", authMode = "workloadidentity"))
+  irsaProvider$.__enclos_env__$private$credentials <- list(getCredentials = function() {
+    list(accessKeyId = "AKID", secretAccessKey = "secret", sessionToken = "token") # pragma: allowlist secret
+  })
+  irsaProvider$.__enclos_env__$private$executeHttpCall(list(a = 1))
+  expect_match(sent[[2]]$headers[["Authorization"]], "^AWS4-HMAC-SHA256 Credential=AKID/[0-9]{8}/us-east-1/bedrock/aws4_request")
+  expect_equal(sent[[2]]$headers[["x-amz-security-token"]], "token")
+  # the signed body is the one that is sent
+  expect_equal(as.character(sent[[2]]$body), '{"a":1}')
+})
+
+test_that("IRSA exchanges the projected token for cached temporary credentials", {
+  withr::local_envvar(AWS_REGION = NA)
+  tokenFile <- tempfile()
+  writeLines("projected-jwt", tokenFile)
+  requests <- list()
+  testthat::local_mocked_bindings(
+    POST = function(url, body, ...) {
+      requests[[length(requests) + 1L]] <<- list(url = url, body = body)
+      structure(list(code = 200L), class = "response")
+    },
+    status_code = function(resp) resp$code,
+    content = function(resp, ...) {
+      list(AssumeRoleWithWebIdentityResponse = list(AssumeRoleWithWebIdentityResult = list(Credentials = list(
+        AccessKeyId = "ASIA", SecretAccessKey = "secret", SessionToken = "token", # pragma: allowlist secret
+        Expiration = as.numeric(Sys.time()) + 3600
+      ))))
+    },
+    .package = "httr"
+  )
+  credentials <- MiroAwsWebIdentityCredentials$new("eu-central-1", "arn:aws:iam::123:role/miro", tokenFile)
+  expect_equal(credentials$getCredentials(), list(accessKeyId = "ASIA", secretAccessKey = "secret", sessionToken = "token")) # pragma: allowlist secret
+  credentials$getCredentials()
+  expect_length(requests, 1L)
+  expect_equal(requests[[1]]$url, "https://sts.eu-central-1.amazonaws.com/")
+  expect_equal(requests[[1]]$body$Action, "AssumeRoleWithWebIdentity")
+  expect_equal(requests[[1]]$body$RoleArn, "arn:aws:iam::123:role/miro")
+  expect_equal(requests[[1]]$body$WebIdentityToken, "projected-jwt")
+})
+
+test_that("IRSA failures surface STS' message, and a missing setup is explained", {
+  tokenFile <- tempfile()
+  writeLines("projected-jwt", tokenFile)
+  testthat::local_mocked_bindings(
+    POST = function(...) structure(list(code = 400L), class = "response"),
+    status_code = function(resp) resp$code,
+    content = function(resp, ...) list(Error = list(Code = "InvalidIdentityToken", Message = "Missing a required claim: iss")),
+    .package = "httr"
+  )
+  credentials <- MiroAwsWebIdentityCredentials$new("eu-central-1", "arn:aws:iam::123:role/miro", tokenFile)
+  expect_error(credentials$getCredentials(), "AWS authentication failed: Missing a required claim: iss", fixed = TRUE)
+  expect_error(
+    MiroAwsWebIdentityCredentials$new("eu-central-1", "", "")$getCredentials(),
+    "AWS_ROLE_ARN or AWS_WEB_IDENTITY_TOKEN_FILE",
+    fixed = TRUE
+  )
+})

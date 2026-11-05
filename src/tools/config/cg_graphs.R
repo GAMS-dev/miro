@@ -2629,10 +2629,8 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
           source("global.R")
           source("components/ai_provider.R")
 
-          providerAndModel <- strsplit(model, "/", fixed = TRUE)[[1]]
-
           assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
-          provider <- assistant$getProvider(providerAndModel[1], providerAndModel[2])
+          provider <- assistant$getProvider(aiModelProvider(model), aiModelId(model))
           if (length(history$sessionId)) {
             provider$sessionId <- history$sessionId
           }
@@ -2715,7 +2713,7 @@ renderMirorenderer_%s <- function(input, output, session, data, options = NULL, 
     aiAssistantState$activeSymbolName <<- activeAiSymbolName
     chatHistory <- NULL
     if (!identical(aiAssistantState$model, input$miroAiModel)) {
-      if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
+      if (!is.null(aiAssistantState$model) && !identical(aiModelProvider(aiAssistantState$model), aiModelProvider(input$miroAiModel))) {
         # switch from one provider to another -> need to pass state as chat history
         chatHistory <- aiAssistantState$chatHistory[lapply(aiAssistantState$chatHistory, length) > 1L][-1]
         aiAssistantState$history <<- list()

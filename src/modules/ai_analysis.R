@@ -264,8 +264,6 @@ aiTask <- ExtendedTask$new(
         conn <- dbConnProvider$getConnection()
         on.exit(DBI::dbDisconnect(conn))
 
-        providerAndModel <- strsplit(model, "/", fixed = TRUE)[[1]]
-
         assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
         aiAdapter <- AIToolAdapter$new(dbSchema, conn, ioConfig,
           inputModificationEnabled = allowInputModification,
@@ -274,7 +272,7 @@ aiTask <- ExtendedTask$new(
         if (length(scenIdNameMap)) {
           aiAdapter$setScenIdNameMap(scenIdNameMap)
         }
-        aiProvider <- assistant$getProvider(providerAndModel[1], providerAndModel[2])
+        aiProvider <- assistant$getProvider(aiModelProvider(model), aiModelId(model))
 
         activityLog <- list()
         writeActivitySnapshot <- function() {
@@ -421,7 +419,7 @@ observeEvent(input$miroAiUserText, {
   aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
   chatHistory <- NULL
   if (!identical(aiAssistantState$model, input$miroAiModel)) {
-    if (!is.null(aiAssistantState$model) && !identical(dirname(aiAssistantState$model), dirname(input$miroAiModel))) {
+    if (!is.null(aiAssistantState$model) && !identical(aiModelProvider(aiAssistantState$model), aiModelProvider(input$miroAiModel))) {
       # switch from one provider to another -> need to pass state as chat history
       # only the user/model bubbles carry over; context dividers and input
       # change proposals have no counterpart in a provider's chat history
