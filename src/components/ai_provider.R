@@ -1009,6 +1009,12 @@ MiroAiBedrockProvider <- R6Class("MiroAiBedrockProvider",
     prepareInitialPayload = function(userInput, systemInstructions, tools) {
       # rebuilt for every request, so it is not part of the stored history
       private$systemInstructions <- systemInstructions
+      # reasoning is bound to the system prompt it was produced with (a changed one is
+      # rejected by e.g. Claude Haiku 5.5): drop it from earlier turns
+      self$history <- lapply(self$history, function(message) {
+        message$content <- Filter(function(block) is.null(block$reasoningContent), message$content)
+        return(message)
+      })
       self$history[[length(self$history) + 1L]] <- private$historyMessage(TRUE, userInput)
       if (!is.null(tools) && length(tools) > 0) {
         private$toolsPayload <- lapply(tools, function(f) {

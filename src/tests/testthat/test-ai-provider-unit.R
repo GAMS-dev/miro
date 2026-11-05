@@ -1474,6 +1474,25 @@ test_that("Bedrock runs tool calls and replays them with their results", {
   expect_equal(sent[[3]]$content[[1]]$toolResult$content[[1]]$text, as.character(toolOutput))
 })
 
+test_that("Bedrock keeps reasoning within a turn and drops it from earlier turns", {
+  provider <- newBedrockProvider()
+  reasoning <- list(reasoningContent = list(reasoningText = list(text = "", signature = "sig")))
+  toolUse <- list(toolUse = list(toolUseId = "tooluse_1", name = "getData", input = list()))
+  provider$mockResponses <- list(
+    bedrockResponse(list(reasoning, toolUse), stopReason = "tool_use"),
+    bedrockResponse(list(reasoning, list(text = "Done."))),
+    bedrockResponse(list(list(text = "Again.")))
+  )
+  tools <- list(list(name = "getData", description = "d", parameters = list()))
+  provider$sendMessage("q", "sys", tools = tools, toolDispatcher = list(getData = function(args) "[]"))
+  expect_equal(provider$capturedPayloads[[2]]$messages[[2]]$content, list(reasoning, toolUse))
+
+  provider$sendMessage("q2", "sys2", tools = tools)
+  sent <- provider$capturedPayloads[[3]]$messages
+  expect_equal(sent[[2]]$content, list(toolUse))
+  expect_equal(sent[[4]]$content, list(list(text = "Done.")))
+})
+
 test_that("Bedrock surfaces truncation and guardrails, and restores a prior chat", {
   provider <- newBedrockProvider()
   provider$mockResponses <- list(bedrockResponse(list(list(text = "partial")), stopReason = "max_tokens"))
