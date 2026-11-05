@@ -152,7 +152,7 @@ build_build_image_linux:
     - docker push $CI_REGISTRY_IMAGE/builder-linux:latest
   rules:
     - if: '"$[[ inputs.force-build-linux-builder ]]" == "true"'
-    - if: '$CI_PIPELINE_SOURCE != "push"'
+    - if: '$CI_PIPELINE_SOURCE != "push" && $CI_PIPELINE_SOURCE != "merge_request_event"'
       when: never
     - changes:
         paths:
@@ -1292,6 +1292,7 @@ update_doc_job:
   tags:
     - linux
   stage: deploy
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
   before_script:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
@@ -1316,7 +1317,9 @@ update_doc_job:
       when: always
     - when: manual
     - allow_failure: true
-  needs: []
+  needs:
+    - job: build_build_image_linux
+      optional: true
 
 
 niteni-code-review:

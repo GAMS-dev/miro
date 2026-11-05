@@ -59,8 +59,10 @@ doc/.venv/bin/python -m http.server 8000 --directory doc/_build/html
 
 The Linux builder image installs `doc/requirements.txt` into `/opt/miro-docs`
 and exposes its interpreter through `SPHINX_PYTHON`. Both staging and production
-use that environment without installing packages during publication. Changes to
-the requirements trigger a builder image rebuild. When building the image
+jobs use `builder-linux:latest` without installing packages during publication.
+Changes to the Dockerfile or requirements trigger a builder image rebuild in
+push and merge request pipelines. The staging job waits for that build when it
+is included in the pipeline; otherwise it uses the existing builder image. When building the image
 manually, first copy `doc/requirements.txt` to `ci/linux/requirements-docs.txt`,
 then use `ci/linux` as the Docker build context.
 
