@@ -15,7 +15,10 @@ source("../../modules/renderers/miro-pivot.R")
 
 lang <<- list(renderers = list(miroPivot = list(
   rowTruncationWarning = "Data was truncated to the first %s rows.",
-  colTruncationWarning = "Data was truncated to the first %s columns."
+  colTruncationWarning = "Data was truncated to the first %s columns.",
+  btNewView = "Add view",
+  btNewViewDisabledTooltip = "Views can only be added in the sandbox scenario.",
+  btNewViewDisabledCompareTooltip = "Views can only be added when the sandbox scenario is the baseline scenario."
 )))
 
 testData <- tibble(

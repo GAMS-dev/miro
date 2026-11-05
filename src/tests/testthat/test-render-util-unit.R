@@ -113,8 +113,9 @@ test_that("dashboardPrepareData counts records missing in a scenario as 0 when c
     baselineComparison = list(domain = "_scenName", record = "Base", metrics = list("absolute difference"))
   )
   expect_equal(dashboardPrepareData(config, viewData)$data$Target, c(0, -1.7))
+  # no aggregated dimension: records are compared one by one regardless of the aggregation function
   config$aggregationFunction <- "mean"
-  expect_equal(dashboardPrepareData(config, viewData)$data$Target, c(0, NA))
+  expect_equal(dashboardPrepareData(config, viewData)$data$Target, c(0, -1.7))
 })
 
 test_that("dashboardPrepareData counts a scenario without any record as 0 when comparing sums", {
@@ -142,4 +143,49 @@ test_that("dashboardPrepareData treats _baseline as a regular record outside the
     domain = "category", record = "_baseline", metrics = list("percentage difference")
   ))
   expect_equal(dashboardPrepareData(config, viewData, baselineScenName = "Base")$data$value, c(0, 400))
+})
+
+test_that("dashboardPrepareData treats missing/NA values as 0 in baseline comparison", {
+  viewData <- tibble(
+    i = c("SD", "SD", "SE", "SE", "SD", "SE"),
+    j = c("C", "NY", "NY", "NY", "C", "NY"),
+    `_scenName` = c("s3", "s3", "s3", "s4", "s4", "s5"),
+    value = c(NA, 275, 50, NA, NA, 20)
+  )
+  config <- list(
+    rows = c("i", "j", "_scenName"),
+    baselineComparison = list(
+      domain = "_scenName",
+      record = "s3",
+      metrics = list("absolute difference")
+    )
+  )
+
+  result <- dashboardPrepareData(config, viewData)$data
+
+  expect_identical(result$i, c("SD", "SD", "SD", "SE", "SE", "SE"))
+  expect_identical(result$`_scenName`, rep(c("s3", "s4", "s5"), 2L))
+  expect_equal(result$value, c(0, -275, -275, 0, -50, -30))
+})
+
+test_that("dashboardPrepareData does not add records of filtered-out domain elements in baseline comparison", {
+  viewData <- tibble(
+    i = c("a", "b", "c", "a"),
+    `_scenName` = c("s3", "s4", "s5", "s4"),
+    value = c(1, 2, 3, NA)
+  )
+  config <- list(
+    rows = "i",
+    filter = list(`_scenName` = c("s3", "s4")),
+    baselineComparison = list(
+      domain = "_scenName",
+      record = "s3",
+      metrics = list("absolute difference")
+    )
+  )
+
+  result <- dashboardPrepareData(config, viewData)$data
+
+  expect_identical(result$i, c("a", "a", "b", "b"))
+  expect_equal(result$value, c(0, -1, 0, 2))
 })

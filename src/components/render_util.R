@@ -103,23 +103,28 @@ dashboardGetSelectedValues <- function(choices, selected, multiple) {
   if (!isTRUE(multiple) && length(vals) > 1) vals <- vals[1]
   if (length(vals) == 0) NULL else vals
 }
-# GAMS does not store zeros: when comparing scenarios with sum or count, a record missing
-# in a scenario counts as 0 rather than leaving a gap. `scenNames` also covers scenarios
-# without any record.
-completeBaselineCompData <- function(data, domain, scenNames, aggregationFunction) {
+# GAMS does not store zeros: when comparing scenarios record by record (no aggregation) or with
+# sum/count, a record missing (or NA) in a scenario counts as 0 rather than leaving a gap.
+# `scenNames` also covers scenarios without any record, `domainFilter` restricts the scenarios.
+completeBaselineCompData <- function(data, domain, scenNames = NULL, aggregationFunction = NULL,
+                                     domainFilter = NULL) {
   if (!identical(domain, "_scenName") || !domain %in% names(data) ||
-    !any(aggregationFunction %in% c("sum", "count"))) {
+    !all(aggregationFunction %in% c("sum", "count"))) {
     return(data)
   }
-  scenNames <- scenNames %||% unique(data[[domain]])
+  scenNames <- scenNames %||% unique(as.character(data[[domain]]))
+  if (length(domainFilter)) {
+    scenNames <- intersect(scenNames, domainFilter)
+    data <- data[data[[domain]] %in% scenNames, ]
+  }
   if (is.factor(data[[domain]])) {
-    scenNames <- factor(scenNames, levels = union(levels(data[[domain]]), scenNames))
+    scenNames <- factor(scenNames, levels = union(intersect(levels(data[[domain]]), scenNames), scenNames))
   }
   valueColName <- names(data)[length(data)]
   return(tidyr::complete(
-    data, !!rlang::sym(domain) := scenNames,
+    data[!is.na(data[[valueColName]]), ], !!rlang::sym(domain) := scenNames,
     tidyr::nesting(!!!rlang::syms(setdiff(names(data), c(domain, valueColName)))),
-    fill = setNames(list(0), valueColName), explicit = FALSE
+    fill = setNames(list(0), valueColName)
   ))
 }
 dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselineScenName = NULL,
@@ -244,7 +249,11 @@ dashboardPrepareData <- function(config, viewData, zeroTolerance = 1e-6, baselin
   }
 
   if (length(baselineCompConfig)) {
-    dataTmp <- completeBaselineCompData(dataTmp, baselineCompConfig$domain, scenNames, aggregationFunction)
+    dataTmp <- completeBaselineCompData(
+      dataTmp, baselineCompConfig$domain, scenNames,
+      if (length(aggFilterIndexList) || isTRUE(config$.aggregatedInSql)) aggregationFunction,
+      if (length(baselineCompConfig$filterIndex)) union(baselineCompConfig$filterVal, baselineCompConfig$record)
+    )
   }
 
   # apply custom labels

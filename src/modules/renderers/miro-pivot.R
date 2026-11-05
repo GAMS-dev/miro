@@ -2958,7 +2958,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             baselineCompConfig$record <- baselineScenName
           }
           dataTmp <- completeBaselineCompData(
-            dataTmp, baselineCompConfig$domain, options[["_scenNames"]], input$aggregationFunction
+            dataTmp, baselineCompConfig$domain, options[["_scenNames"]],
+            if (length(aggIndexList)) aggregationFunction,
+            if (length(baselineCompConfig$filterIndex)) union(baselineCompConfig$filterVal, baselineCompConfig$record)
           )
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%

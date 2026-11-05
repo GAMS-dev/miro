@@ -1500,6 +1500,11 @@ test_that("createChart counts missing records as 0 when comparing sums or counts
     baselineScenarioName = "Base", baselineMetric = "absolute difference"
   ))
   expect_equal(chart$datasets[[2]]$data, c(-1, -2))
+  chart <- createTestChart(env, list(
+    rows = list("region"), cols = list("_scenName"), aggregationFunction = "mean",
+    baselineScenarioName = "Base", baselineMetric = "absolute difference"
+  ))
+  expect_equal(chart$datasets[[2]]$data, c(8.5, NA))
   DBI::dbDisconnect(env$conn)
 })
 

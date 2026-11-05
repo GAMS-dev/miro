@@ -783,6 +783,7 @@ AIToolAdapter <- R6Class("AIToolAdapter",
       if (length(view$aggregations) && aggregationFunction %in% names(aiChartSqlAggregations)) {
         aggregatedCols <- names(view$aggregations)
         prepareView$aggregations <- NULL
+        prepareView$.aggregatedInSql <- TRUE
       }
       data <- private$fetchChartData(symName, sids, indexCols, valueCols, filters, aggregatedCols, aggregationFunction)
       if (is.character(data)) {
