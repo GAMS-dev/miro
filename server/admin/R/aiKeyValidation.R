@@ -1,4 +1,6 @@
 AI_KEY_VALIDATION_TIMEOUT <- 10L
+# a thinking model may take a while even to answer "ping"
+BEDROCK_PROBE_TIMEOUT <- 60L
 
 AI_KEY_VALIDATION_ENDPOINTS <- list(
   openai = list(
@@ -46,4 +48,48 @@ validateAiApiKey <- function(provider, apiKey) {
   }
   flog.warn("Could not validate API key for AI provider: %s (HTTP %d).", provider, statusCode)
   return("unreachable")
+}
+
+#' Amazon Bedrock has no route that lists the models a key may invoke, so the
+#' key is checked with a minimal request to a model. Returns the status like
+#' validateAiApiKey.
+validateBedrockConfig <- function(region, apiKey, modelId) {
+  apiKey <- trimws(apiKey)
+  # the region becomes part of the host the key is sent to
+  if (!grepl("^[a-z]{2}(-gov)?-[a-z]+-[0-9]$", region) || nchar(apiKey) < 10L) {
+    return("invalid")
+  }
+  resp <- tryCatch(
+    POST(
+      sprintf(
+        "https://bedrock-runtime.%s.amazonaws.com/model/%s/converse",
+        region, URLencode(modelId, reserved = TRUE)
+      ),
+      add_headers(Authorization = paste("Bearer", apiKey)),
+      # reasoning models reject a token cap below their thinking budget
+      body = list(
+        messages = list(list(role = "user", content = list(list(text = "ping")))),
+        inferenceConfig = list(maxTokens = 2048L)
+      ),
+      encode = "json", timeout(BEDROCK_PROBE_TIMEOUT)
+    ),
+    error = function(err) err
+  )
+  if (inherits(resp, "error")) {
+    flog.warn("Could not reach Amazon Bedrock to validate API key. Error message: %s", conditionMessage(resp))
+    return("unreachable")
+  }
+  statusCode <- status_code(resp)
+  if (statusCode == 200L) {
+    return("valid")
+  }
+  if (statusCode %in% c(408L, 429L) || statusCode >= 500L) {
+    flog.warn("Could not validate Amazon Bedrock API key (HTTP %d).", statusCode)
+    return("unreachable")
+  }
+  flog.info(
+    "Amazon Bedrock rejected request to model: %s (HTTP %d): %s", modelId, statusCode,
+    content(resp, "text", encoding = "UTF-8")
+  )
+  return("invalid")
 }

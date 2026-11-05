@@ -95,11 +95,15 @@ const schema = {
             },
             provider: {
               type: 'string',
-              enum: ['openai', 'google', 'anthropic', 'azure'],
+              enum: ['openai', 'google', 'anthropic', 'azure', 'bedrock'],
             },
             endpoint: {
               type: 'string',
               pattern: '^https://([A-Za-z0-9-]+\\.)+[A-Za-z]{2,63}(/[A-Za-z0-9._~-]*)*$',
+            },
+            region: {
+              type: 'string',
+              pattern: '^[a-z]{2}(-gov)?-[a-z]+-[0-9]$',
             },
             authMode: {
               type: 'string',

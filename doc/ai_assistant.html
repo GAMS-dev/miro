@@ -188,16 +188,27 @@
                       provider on our behalf, so before it shows up in any app
                       we first have to tell MIRO which provider to use and give
                       it an API key for that provider. MIRO currently supports
-                      OpenAI, Anthropic (Claude), Google (Gemini) and Azure AI
-                      Foundry - we only need a key for the provider(s) we
-                      intend to use. Microsoft Foundry runs models inside our
-                      own cloud tenant, so instead of a single key it needs our
-                      resource endpoint and the names of the model deployments
-                      we created there. On Microsoft Foundry, GAMS MIRO talks
-                      to Claude models via the Anthropic Messages API and to
-                      all other models via Chat Completions. It recognises a
-                      Claude deployment by its name, so the name must contain
-                      "claude" (the default name does).
+                      OpenAI, Anthropic (Claude), Google (Gemini), Microsoft
+                      Foundry and Amazon Bedrock - we only need a key for the
+                      provider(s) we intend to use. Microsoft Foundry runs
+                      models inside our own cloud tenant, so instead of a
+                      single key it needs our resource endpoint and the names
+                      of the model deployments we created there. On Microsoft
+                      Foundry, GAMS MIRO talks to Claude models via the
+                      Anthropic Messages API and to all other models via Chat
+                      Completions. It recognises a Claude deployment by its
+                      name, so the name must contain "claude" (the default name
+                      does).
+                    </p>
+                    <p>
+                      Amazon Bedrock likewise runs models in our own AWS
+                      account. It needs the AWS region, a Bedrock API key and
+                      the models to offer: one model ID, or ID or ARN of an
+                      inference profile, per line (e.g. the inference profile
+                      <code>global.anthropic.claude-haiku-5-5</code>),
+                      optionally as <code>Label = model-id</code>. GAMS MIRO
+                      talks to all models on Amazon Bedrock via the Converse
+                      API.
                     </p>
                     <p>
                       Where we configure this key depends on how our MIRO app
@@ -238,7 +249,9 @@
                           </li>
                         </ul>
                         We then enter its tenant ID and application (client) ID
-                        in MIRO.
+                        in MIRO. For Amazon Bedrock, we enter the region, a
+                        Bedrock API key and the models. MIRO checks them with a
+                        short test request.
                       </li>
                       <li>
                         <b>GAMS MIRO Server:</b> an administrator opens the
@@ -249,7 +262,27 @@
                         and enters the provider API key(s) on the
                         <i>Mira</i> tab there. Keys are configured per app, so
                         different apps on the same server can use different
-                        providers, or none at all.
+                        providers, or none at all. On Kubernetes, Amazon
+                        Bedrock can also be used without an API key: with
+                        <i>Workload identity</i>, the app's pods use the IAM
+                        role of their Kubernetes service account (IAM roles for
+                        service accounts on Amazon EKS), so no secret is
+                        stored. The service account must be annotated with the
+                        role (<code>eks.amazonaws.com/role-arn</code>; EKS Pod
+                        Identity is not supported), and the role needs
+                        <code>bedrock:InvokeModel</code> on the configured
+                        models (for an inference profile, also on the models it
+                        routes to). The service account is assigned to the pods
+                        of all apps via the Helm value
+                        <code>miro.podPatches</code>:
+                        <pre><code class="language-yaml">miro:
+  podPatches:
+    - op: add
+      path: /spec/serviceAccountName
+      value: my-bedrock-service-account
+</code></pre>
+                        As the credentials only exist in the app's pods, the
+                        Admin Panel cannot verify this configuration.
                       </li>
                     </ul>
                     <div class="section-block" style="text-align: center">

@@ -453,10 +453,17 @@ server <- function(input, output, session) {
       flog.warn("Invalid AI API key validation request received.")
       return()
     }
-    session$sendCustomMessage("onAiApiKeyValidated", list(
-      requestId = request$requestId,
-      status = validateAiApiKey(request$provider, request$key)
-    ))
+    if (identical(request$provider, "bedrock")) {
+      if (!is.character(request$region) || length(request$region) != 1L ||
+        !is.character(request$model) || length(request$model) != 1L) {
+        flog.warn("Invalid Amazon Bedrock validation request received.")
+        return()
+      }
+      status <- validateBedrockConfig(request$region, request$key, request$model)
+    } else {
+      status <- validateAiApiKey(request$provider, request$key)
+    }
+    session$sendCustomMessage("onAiApiKeyValidated", list(requestId = request$requestId, status = status))
   })
   observeEvent(input$updateAppOrder, {
     if (loginRequired(session, isLoggedIn)) {

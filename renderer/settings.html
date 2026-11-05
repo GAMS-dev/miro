@@ -799,6 +799,63 @@
                   </div>
                 </div>
               </div>
+              <div class="setting-wrapper setting-wrapper--stacked">
+                <div class="settings-label">
+                  <label
+                    id="keyBedrockLabel"
+                    for="bedrockRegion"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Amazon Bedrock
+                  </label>
+                  <span
+                    id="statusBedrock"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="bedrockRegion"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="us-east-1"
+                    />
+                    <input
+                      id="keyBedrock"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="ABSK..."
+                    />
+                    <textarea
+                      id="bedrockDeployments"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="global.anthropic.claude-haiku-5-5"
+                    ></textarea>
+                    <small
+                      id="keyBedrockHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-bedrock-models-info"
+                        >One model ID or inference profile per line, optionally
+                        as "Label = model-id".</span
+                      >
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://console.aws.amazon.com/bedrock/home#/api-keys"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div

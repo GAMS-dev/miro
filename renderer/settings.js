@@ -11,7 +11,7 @@ const {
   EngineError,
 } = require('../components/engine.cjs');
 const {
-  testAiProviderApiKey, testAzureFoundryConnection, KEY_VALID, KEY_INVALID,
+  testAiProviderApiKey, testAzureFoundryConnection, testBedrockConnection, KEY_VALID, KEY_INVALID,
 } = require('../components/ai-assistant.cjs');
 const { EnvEditor } = require('./env-editor.cjs');
 
@@ -52,8 +52,8 @@ const aiProviders = [
   { id: 'Anthropic', name: 'anthropic' },
   { id: 'Google', name: 'google' },
   { id: 'Azure', name: 'azure' },
+  { id: 'Bedrock', name: 'bedrock' },
 ];
-const CUSTOM_AI_PROVIDER_NAMES = ['azure'];
 
 const CUSTOM_AI_PROVIDERS = {
   azure: {
@@ -71,6 +71,11 @@ const CUSTOM_AI_PROVIDERS = {
     },
     test: testAzureFoundryConnection,
     hasAuthModeToggle: true,
+  },
+  bedrock: {
+    name: 'bedrock',
+    fields: { region: 'bedrockRegion', key: 'keyBedrock', deployments: 'bedrockDeployments' },
+    test: testBedrockConnection,
   },
 };
 
@@ -602,7 +607,7 @@ ipcRenderer.on(
     $('#aiAssistantForm').show();
   })
 aiProviders.forEach(provider => {
-  if (CUSTOM_AI_PROVIDER_NAMES.includes(provider.name)) {
+  if (CUSTOM_AI_PROVIDERS[provider.name]) {
     return;
   }
   const inputElement = document.getElementById(`key${provider.id}`);
@@ -1022,7 +1027,8 @@ ipcRenderer.on(
         'ai-azure-auth-user',
         'ai-azure-sign-in',
         'ai-azure-sign-out',
-        'ai-custom-provider-deployments-info'].forEach((className) => {
+        'ai-custom-provider-deployments-info',
+        'ai-bedrock-models-info'].forEach((className) => {
           $(`.${className}`).text(lang[className]);
         });
       $('.ai-key-status').text(lang['ai-key-status-not-configured']);

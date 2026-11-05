@@ -93,30 +93,75 @@ const KEY_INVALID = 'invalid';
 const KEY_UNREACHABLE = 'unreachable';
 // longer than the server's request timeout, only covers a lost reply
 const KEY_VALIDATION_TIMEOUT = 20000;
+// longer than the server's Bedrock probe timeout
+const BEDROCK_VALIDATION_TIMEOUT = 90000;
 
 const pendingKeyValidations = new Map();
 let lastKeyValidationId = 0;
 
-export function resolveAiKeyValidation({ requestId, status }) {
-  const resolve = pendingKeyValidations.get(requestId);
+export function resolveAiKeyValidation(reply) {
+  const resolve = pendingKeyValidations.get(reply.requestId);
   if (resolve) {
-    pendingKeyValidations.delete(requestId);
-    resolve(status);
+    pendingKeyValidations.delete(reply.requestId);
+    resolve(reply);
   }
 }
 
-const testAiProviderApiKey = (provider, apiKey) => new Promise((resolve) => {
-  lastKeyValidationId += 1;
-  const requestId = lastKeyValidationId;
-  pendingKeyValidations.set(requestId, resolve);
-  setTimeout(
-    () => resolveAiKeyValidation({ requestId, status: KEY_UNREACHABLE }),
-    KEY_VALIDATION_TIMEOUT,
-  );
-  Shiny.setInputValue('validateAiApiKey', { requestId, provider, key: apiKey }, {
-    priority: 'event',
-  });
-});
+const requestAiValidation = (request, timeout = KEY_VALIDATION_TIMEOUT) => new Promise(
+  (resolve) => {
+    lastKeyValidationId += 1;
+    const requestId = lastKeyValidationId;
+    pendingKeyValidations.set(requestId, resolve);
+    setTimeout(() => resolveAiKeyValidation({ requestId, status: KEY_UNREACHABLE }), timeout);
+    Shiny.setInputValue('validateAiApiKey', { requestId, ...request }, {
+      priority: 'event',
+    });
+  },
+);
+
+const VALIDATION_BADGES = {
+  [KEY_VALID]: ['success', 'Connected'],
+  [KEY_INVALID]: ['danger', 'Invalid Key'],
+  [KEY_UNREACHABLE]: ['danger', 'Connection Error'],
+};
+const setAiStatus = (badge, variant, text) => $(badge).attr('class', `badge badge-${variant}`).text(text);
+const validateAiConfig = async (badge, $inputs, request, timeout) => {
+  $inputs.removeClass('is-valid is-invalid');
+  setAiStatus(badge, 'info', 'Validating...');
+  $('.confirm-btn').attr('disabled', true);
+  const reply = await requestAiValidation(request, timeout);
+  setAiStatus(badge, ...VALIDATION_BADGES[reply.status]);
+  $inputs.addClass(reply.status === KEY_VALID ? 'is-valid' : 'is-invalid');
+  $('.confirm-btn').attr('disabled', false);
+  return reply;
+};
+
+// as checked by the AI assistant, which rejects the whole AI configuration otherwise
+const BEDROCK_REGION_REGEX = /^[a-z]{2}(-gov)?-[a-z]+-[0-9]$/;
+// one model per line, optionally as "Label = model-id"
+const parseBedrockModels = (text) => text.split('\n')
+  .map((line) => line.trim())
+  .filter((line) => line !== '')
+  .map((line) => {
+    const separator = line.indexOf('=');
+    return separator === -1
+      ? { id: line }
+      : { label: line.slice(0, separator).trim(), id: line.slice(separator + 1).trim() };
+  })
+  .filter((model) => model.id !== '');
+const formatBedrockModels = (models = []) => models
+  .map((model) => (model.label && model.label !== model.id ? `${model.label} = ${model.id}` : model.id))
+  .join('\n');
+const readBedrockConfig = () => {
+  const authMode = $('#bedrockAuthMode').val();
+  return {
+    provider: 'bedrock',
+    region: $('#bedrockRegion').val().trim(),
+    authMode,
+    ...(authMode === 'apiKey' ? { key: $('#keyBedrock').val().trim() } : {}),
+    models: parseBedrockModels($('#bedrockModels').val()),
+  };
+};
 
 const REMOVE_ICON = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'
   + '<path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" '
@@ -135,6 +180,9 @@ export function openAdvancedSettingsDialog() {
   } catch (e) {
     console.warn('Failed to parse MIRO_AI_ASSISTANT_CONFIG JSON.', e);
   }
+  const bedrock = aiConfig.apiKeys?.find((k) => k.provider === 'bedrock');
+  // the AI assistant accepts the auth mode in any case
+  const bedrockWorkloadIdentity = bedrock?.authMode?.toLowerCase() === 'workloadidentity';
   const maxEnvVars = 47;
 
   const createRow = (
@@ -320,6 +368,33 @@ export function openAdvancedSettingsDialog() {
                         </td>
                       </tr>`;
   }).join('')}
+                      <tr>
+                        <td class="ai-provider-name">Amazon Bedrock</td>
+                        <td>
+                          <input type="text" id="bedrockRegion" class="form-control ai-bedrock-input"
+                            value="${escapeHtml(bedrock?.region ?? '')}" placeholder="AWS region, e.g. us-east-1">
+                          <select id="bedrockAuthMode" class="form-control ai-bedrock-input mt-1">
+                            <option value="apiKey">API key</option>
+                            <option value="workloadIdentity"${bedrockWorkloadIdentity ? ' selected' : ''}>
+                              Workload identity (IAM role of the app's service account)
+                            </option>
+                          </select>
+                          <input type="password" id="keyBedrock" class="form-control ai-bedrock-input mt-1"
+                            value="${escapeHtml(bedrock?.key ?? '')}" placeholder="ABSK..."
+                            ${bedrockWorkloadIdentity ? 'style="display:none"' : ''}>
+                          <textarea id="bedrockModels" class="form-control ai-bedrock-input mt-1" rows="3"
+                            placeholder="global.anthropic.claude-haiku-5-5">${escapeHtml(formatBedrockModels(bedrock?.models))}</textarea>
+                          <small class="form-text" style="margin-top: 5px">
+                            One model ID or inference profile per line, optionally as "Label = model-id".
+                            <a href="https://console.aws.amazon.com/bedrock/home#/api-keys" target="_blank" rel="noopener noreferrer">Get an API key here</a>.
+                          </small>
+                        </td>
+                        <td class="ai-provider-status">
+                          <span id="statusBedrock" class="badge badge-${bedrock ? 'success' : 'secondary'}">
+                            ${bedrock ? 'Saved' : 'Not Configured'}
+                          </span>
+                        </td>
+                      </tr>
                   </tbody>
                 </table>
               </div>
@@ -368,6 +443,18 @@ export function openAdvancedSettingsDialog() {
               });
             }
           });
+
+          const bedrockConfig = readBedrockConfig();
+          if (bedrockConfig.region || bedrockConfig.key || bedrockConfig.models.length) {
+            if (BEDROCK_REGION_REGEX.test(bedrockConfig.region) && bedrockConfig.models.length
+              && (bedrockConfig.authMode !== 'apiKey' || bedrockConfig.key)) {
+              apiKeys.push(bedrockConfig);
+            } else {
+              $('#conf-ai-assistant-tab').tab('show');
+              errorMessage = 'Amazon Bedrock needs an AWS region such as us-east-1, at least one model and, with API key authentication, an API key.';
+              isValid = false;
+            }
+          }
 
           if (apiKeys.length > 0) {
             const envName = 'MIRO_AI_ASSISTANT_CONFIG';
@@ -426,61 +513,49 @@ export function openAdvancedSettingsDialog() {
   $('#conf-permissions [rel=tooltip]').tooltip({ placement: 'right' });
 
   AI_PROVIDERS.forEach((provider) => {
-    const inputElement = document.getElementById(`key${provider.id}`);
-    const badgeElement = document.getElementById(`status${provider.id}`);
-
-    if (!inputElement || !badgeElement) return;
-
-    inputElement.addEventListener('blur', async (e) => {
-      const keyValue = e.target.value.trim();
-      inputElement.classList.remove('is-valid', 'is-invalid');
-
-      if (!keyValue) {
-        badgeElement.className = 'badge badge-secondary';
-        badgeElement.innerText = 'Not Configured';
+    const badge = document.getElementById(`status${provider.id}`);
+    const $input = $(`#key${provider.id}`);
+    $input.on('blur', () => {
+      const key = $input.val().trim();
+      if (!key) {
+        $input.removeClass('is-valid is-invalid');
+        setAiStatus(badge, 'secondary', 'Not Configured');
         return;
       }
-
-      badgeElement.className = 'badge badge-info';
-      badgeElement.innerText = 'Validating...';
-
-      $('.confirm-btn').attr('disabled', true);
-
-      try {
-        console.debug(`Validating API key for AI provider: ${provider.name}`);
-        const keyStatus = await testAiProviderApiKey(provider.name, keyValue);
-
-        if (keyStatus === KEY_VALID) {
-          console.debug(
-            `Valid API key for AI provider: ${provider.name} added!`,
-          );
-          inputElement.classList.add('is-valid');
-          badgeElement.className = 'badge badge-success';
-          badgeElement.innerText = 'Connected';
-        } else if (keyStatus === KEY_INVALID) {
-          console.debug(`Invalid API key for AI provider: ${provider.name}`);
-          inputElement.classList.add('is-invalid');
-          badgeElement.className = 'badge badge-danger';
-          badgeElement.innerText = 'Invalid Key';
-        } else {
-          console.warn(
-            `Could not reach AI provider to validate key: ${provider.name}`,
-          );
-          inputElement.classList.add('is-invalid');
-          badgeElement.className = 'badge badge-danger';
-          badgeElement.innerText = 'Connection Error';
-        }
-      } catch (err) {
-        console.warn(
-          `Failed validating API key for AI provider: ${provider.name}. Error: ${err}`,
-        );
-        inputElement.classList.add('is-invalid');
-        badgeElement.className = 'badge badge-danger';
-        badgeElement.innerText = 'Connection Error';
-      } finally {
-        $('.confirm-btn').attr('disabled', false);
-      }
+      validateAiConfig(badge, $input, { provider: provider.name, key });
     });
+  });
+
+  const bedrockBadge = document.getElementById('statusBedrock');
+  const $bedrockInputs = $('.ai-bedrock-input');
+  // moving between the fields must not validate again
+  let checkedBedrockConfig = bedrock ? JSON.stringify(readBedrockConfig()) : null;
+  $('#bedrockAuthMode').on('change', function () {
+    $('#keyBedrock').toggle(this.value === 'apiKey');
+  });
+  $bedrockInputs.on('blur', async () => {
+    const config = readBedrockConfig();
+    if (JSON.stringify(config) === checkedBedrockConfig) {
+      return;
+    }
+    checkedBedrockConfig = JSON.stringify(config);
+    $bedrockInputs.removeClass('is-valid is-invalid');
+    if (!BEDROCK_REGION_REGEX.test(config.region) || !config.models.length
+      || (config.authMode === 'apiKey' && !config.key)) {
+      setAiStatus(bedrockBadge, 'secondary', 'Not Configured');
+      return;
+    }
+    if (config.authMode !== 'apiKey') {
+      // the credentials only exist in the app's own pods
+      setAiStatus(bedrockBadge, 'secondary', 'Not Verified');
+      return;
+    }
+    const { status } = await validateAiConfig(bedrockBadge, $bedrockInputs, {
+      provider: 'bedrock', region: config.region, key: config.key, model: config.models[0].id,
+    }, BEDROCK_VALIDATION_TIMEOUT);
+    if (status === KEY_UNREACHABLE) {
+      checkedBedrockConfig = null;
+    }
   });
 
   const tableBody = $('#env-rows');

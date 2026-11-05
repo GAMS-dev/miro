@@ -163,9 +163,27 @@ const testAzureFoundryConnection = async (config, deployments = [], { accessToke
       }));
 };
 
+// the region becomes part of the host the key is sent to
+const isValidBedrockRegion = (region) => /^[a-z]{2}(-gov)?-[a-z]+-[0-9]$/.test(region ?? '');
+
+const testBedrockConnection = async (config, deployments = []) => {
+  if (!config?.key || !isValidBedrockRegion(config.region)) {
+    return { status: KEY_INVALID, models: [] };
+  }
+  return probeCustomProviderDeployments('Amazon Bedrock', deployments, (deployment) => ({
+    url: `https://bedrock-runtime.${config.region}.amazonaws.com/model/${encodeURIComponent(String(deployment.id).trim())}/converse`,
+    headers: { Authorization: `Bearer ${config.key}` },
+    body: {
+      messages: [{ role: 'user', content: [{ text: 'ping' }] }],
+      inferenceConfig: { maxTokens: PROBE_MAX_TOKENS },
+    },
+  }));
+};
+
 module.exports = {
   testAiProviderApiKey,
   testAzureFoundryConnection,
+  testBedrockConnection,
   KEY_VALID,
   KEY_INVALID,
   KEY_UNREACHABLE,
