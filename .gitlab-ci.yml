@@ -141,6 +141,8 @@ build_build_image_linux:
   image: docker:29-cli
   services:
     - docker:29-dind
+  variables:
+    BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
   stage: prepare
   before_script:
     - apk update && apk add jq
@@ -226,6 +228,7 @@ build_linux_job:
     DOCKER_HOST: tcp://docker:2376
     GIT_SUBMODULE_STRATEGY: normal
     NODE_OPTIONS: --openssl-legacy-provider
+    BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
   before_script:
     - yarn install --frozen-lockfile
   script:
