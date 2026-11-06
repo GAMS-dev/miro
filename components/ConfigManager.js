@@ -91,7 +91,7 @@ const schema = {
           properties: {
             key: {
               type: 'string',
-              minLength: 5,
+              minLength: 1,
             },
             provider: {
               type: 'string',
