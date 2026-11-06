@@ -1,5 +1,13 @@
-# License
-Note that the template used for this documentation is release under the Creative Commons Attribution 3.0 License. The template can be found here: https://github.com/xriley/PrettyDocs-Theme . The Montserrat font is available under the SIL Open Font License 1.1. A copy of this license can be found in `gallery/app/static/webfonts` subfolder.
+# Theme and third-party assets
+
+The Sphinx documentation uses the [PyData Sphinx Theme](https://github.com/pydata/pydata-sphinx-theme),
+licensed under the BSD 3-Clause License. Bundled third-party assets retain their
+respective license notices.
+
+Legacy [PrettyDocs](https://github.com/xriley/PrettyDocs-Theme) assets remain in
+`assets/` under their existing Creative Commons Attribution 3.0 license. They are
+not used as the Sphinx theme or published as a complete asset tree.
+
 # Documentation style guide
 This style guide aims to standardize the structure and style of the documentation for GAMS MIRO. When you write a new chapter, please follow these guidelines:
 
@@ -52,14 +60,19 @@ doc/.venv/bin/python -m http.server 8000 --directory doc/_build/html
   These files and the primary `html_logo` are copied to `_static/`. Template
   URLs use `pathto()`; page-specific raw HTML refers to these static filenames.
 - `html_extra_path` publishes `miro_server_api.json` at the output root for
-  ReDoc. No custom asset-copy hook is needed.
+  ReDoc. A targeted build hook also publishes `assets/images/logo.svg` at its
+  existing public URL for Helm charts and image READMEs; no other legacy assets
+  are copied by this hook.
 - `_build/html/` is generated output and must not be committed.
+- RST source files are not copied to the published site (`html_copy_source = False`).
 
 ## CI builds
 
 The Linux builder image installs `doc/requirements.txt` into `/opt/miro-docs`
-and exposes its interpreter through `SPHINX_PYTHON`. Both staging and production
-jobs use `builder-linux:latest` without installing packages during publication.
+and exposes its interpreter through `SPHINX_PYTHON`. The requirements pin both
+direct and transitive documentation dependencies, including the Windows-only
+`colorama` dependency. Update the pins together and verify a strict Sphinx build.
+Both staging and production jobs use `builder-linux:latest` without installing packages during publication.
 Changes to the Dockerfile or requirements trigger a builder image rebuild in
 push and merge request pipelines. The staging job waits for that build when it
 is included in the pipeline; otherwise it uses the existing builder image. When building the image

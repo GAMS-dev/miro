@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from pathlib import Path
+import shutil
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -43,6 +44,7 @@ html_static_path = [
 html_extra_path = ["../miro_server_api.json"]
 html_css_files = ["custom.css"]
 html_js_files = ["image-lightbox.js"]
+html_copy_source = False
 html_show_sourcelink = False
 html_show_search_summary = True
 html_last_updated_fmt = None
@@ -87,3 +89,15 @@ html_sidebars = {
     "**": ["sidebar-brand-search.html", "sidebar-nav-bs.html"],
     "index": ["sidebar-brand-search.html", "sidebar-nav-index.html"],
 }
+
+
+def copy_public_logo(app, exception):
+    """Preserve the public logo URL used by Helm charts and image READMEs."""
+    if exception is None and app.builder.format == "html":
+        target = Path(app.outdir) / "assets" / "images" / "logo.svg"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(DOC_DIR / "assets" / "images" / "logo.svg", target)
+
+
+def setup(app):
+    app.connect("build-finished", copy_public_logo)
