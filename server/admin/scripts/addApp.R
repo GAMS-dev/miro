@@ -98,6 +98,7 @@ tryCatch(
       appDbCredentials <- modelConfig$getAppDbConf(appId)
 
       appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+      appConfig$containerEnv[["MIRO_APP_UPLOADER"]] <- APP_UPLOADER
       if (IN_KUBERNETES) {
         appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
       } else {
@@ -144,6 +145,7 @@ tryCatch(
           MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
           MIRO_MODE = "base",
           MIRO_ENGINE_MODELNAME = appId,
+          MIRO_APP_UPLOADER = APP_UPLOADER,
           MIRO_DB_USERNAME = appDbCredentials$user,
           MIRO_DB_PASSWORD = appDbCredentials$password,
           MIRO_DB_SCHEMA = appDbCredentials$user

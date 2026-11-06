@@ -221,7 +221,8 @@ server <- function(input, output, session) {
           containerEnv = list(
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
-            MIRO_ENGINE_MODELNAME = appId
+            MIRO_ENGINE_MODELNAME = appId,
+            MIRO_APP_UPLOADER = APP_UPLOADER
           ),
           extraData = list(
             appVersion = miroAppValidator$getAppVersion(),
@@ -598,6 +599,7 @@ server <- function(input, output, session) {
         appVersion <- miroAppValidator$getAppVersion()
         appAuthors <- miroAppValidator$getAppAuthors()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+        appConfig$containerEnv[["MIRO_APP_UPLOADER"]] <- APP_UPLOADER
         if (IN_KUBERNETES) {
           appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
         } else {
