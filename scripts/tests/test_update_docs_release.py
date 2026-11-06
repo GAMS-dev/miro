@@ -66,6 +66,79 @@ class ReleaseSourcesTest(unittest.TestCase):
         self.update("2.14.1")
         self.assertIn("Get GAMS MIRO 2.14.1", self.index.read_text())
 
+    def nested_patch_release(self):
+        return (
+            "Release notes\n=============\n\n"
+            "GAMS MIRO 2.14\n--------------\n\n(2026-11-01)\n\n"
+            "GAMS MIRO 2.14.1\n~~~~~~~~~~~~~~~~\n\n(xxxx-xx-xx)\n\nPatch notes.\n\n"
+            "GAMS MIRO 2.14.0\n~~~~~~~~~~~~~~~~\n\n(2026-11-01)\n\nOriginal notes.\n\n"
+            + self.history
+        )
+
+    def test_nested_patch_updates_only_its_date_and_is_idempotent(self):
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=repr(newline)):
+                original = self.nested_patch_release().replace("\n", newline).encode()
+                self.release.write_bytes(original)
+                self.update("2.14.1")
+                expected = original.replace(b"(xxxx-xx-xx)", b"(2026-11-04)")
+                self.assertEqual(self.release.read_bytes(), expected)
+                self.assertIn("Get GAMS MIRO 2.14.1", self.index.read_text())
+                before = (self.release.read_bytes(), self.index.read_bytes())
+                self.update("2.14.1")
+                self.assertEqual(before, (self.release.read_bytes(), self.index.read_bytes()))
+
+    def test_accepts_initial_prerelease_under_minor_heading(self):
+        self.update("2.14.0-rc.1")
+        self.assertIn("Get GAMS MIRO 2.14.0-rc.1", self.index.read_text())
+
+    def test_nested_patch_rejects_redating(self):
+        self.release.write_text(self.nested_patch_release())
+        self.update("2.14.1")
+        self.assert_rejected_unchanged("already dated", version="2.14.1", release_date="2026-11-05")
+
+    def test_rejects_patch_without_its_own_entry(self):
+        self.assert_rejected_unchanged("add a patch entry", version="2.14.1")
+
+    def test_rejects_wrong_patch_even_when_requested_patch_exists_later(self):
+        original = self.nested_patch_release()
+        self.release.write_text(original.replace(
+            "GAMS MIRO 2.14.1", "GAMS MIRO 2.14.2\n~~~~~~~~~~~~~~~~\n\n(2026-11-05)\n\nGAMS MIRO 2.14.1"
+        ))
+        self.assert_rejected_unchanged("Latest release heading", version="2.14.1")
+
+    def test_nested_patch_rejects_unresolved_parent_date(self):
+        self.release.write_text(self.nested_patch_release().replace("(2026-11-01)", "(xxxx-xx-xx)", 1))
+        self.assert_rejected_unchanged("Older release", version="2.14.1")
+
+    def test_nested_patch_requires_its_own_date(self):
+        self.release.write_text(self.nested_patch_release().replace("(xxxx-xx-xx)", "No date"))
+        self.assert_rejected_unchanged("Latest release must have a date", version="2.14.1")
+
+    def test_html_validation_handles_main_and_nested_patch_releases(self):
+        html = self.source / "release.html"
+        for heading in ("GAMS MIRO 2.14", "GAMS MIRO 2.14.0"):
+            html.write_text(f'<h2>{heading}<a class="headerlink" href="#main">¶</a></h2><p>(2026-11-01)</p>')
+            module.validate_release_html(html, "2.14.0", "2026-11-01")
+        html.write_text(
+            '<nav><a href="#old">GAMS MIRO 2.13.5</a></nav>'
+            '<h2>GAMS MIRO 2.14<a class="headerlink" href="#main">¶</a></h2><p>(2026-11-01)</p>'
+            '<h3>GAMS MIRO 2.14.1<a class="headerlink" href="#patch">#</a></h3>\n<p>(2026-11-04)</p>'
+            '<h3>Bug fixes</h3><p>Details.</p>'
+            '<h3>GAMS MIRO 2.14.0</h3><p>(2026-11-01)</p>'
+            '<h2>GAMS MIRO 2.13</h2><p>(2025-09-25)</p>'
+        )
+        module.validate_release_html(html, "2.14.1", "2026-11-04")
+        for version, release_date, message in (
+            ("2.14.1", "2026-11-01", "Current release date"),
+            ("2.14.2", "2026-11-04", "Latest release heading"),
+            ("2.14.0", "2026-11-01", "Latest release heading"),
+            ("2.13.5", "2025-09-25", "Latest release heading"),
+        ):
+            with self.subTest(version=version, release_date=release_date):
+                with self.assertRaisesRegex(ValueError, message):
+                    module.validate_release_html(html, version, release_date)
+
     def test_rejects_wrong_latest_version_even_if_target_exists_later(self):
         self.release.write_text("GAMS MIRO 2.15\n--------------\n\n(xxxx-xx-xx)\n\n" + self.release.read_text())
         self.assert_rejected_unchanged("Latest release heading")

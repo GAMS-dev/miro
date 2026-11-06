@@ -181,15 +181,8 @@ if ! grep -Fq ">Get GAMS MIRO ${MIRO_VERSION_FULL}</span>" "$index_page"; then
     exit 1
 fi
 
-# Check the first release, rather than accepting an older entry or TOC link.
-latest_release_heading=$(grep -m 1 '<h2>GAMS MIRO ' "$release_page" || true)
-if ! grep -Fq ">GAMS MIRO ${MIRO_VERSION_SHORT}<" <<< "$latest_release_heading" &&
-    ! grep -Fq ">GAMS MIRO ${MIRO_VERSION_FULL}<" <<< "$latest_release_heading"; then
-    echo "Current version ${MIRO_VERSION_FULL} is not the latest release in $release_page" >&2
-    exit 1
-fi
-latest_release_date=$(awk '/<h2>GAMS MIRO / { release = 1; next } release && /<p>/ { print; exit }' "$release_page")
-if ! grep -Fq "<p>(${MIRO_RELEASE_DATE})</p>" <<< "$latest_release_date"; then
-    echo "Current release date ${MIRO_RELEASE_DATE} is not advertised in $release_page" >&2
-    exit 1
-fi
+# Validate the current major/minor entry or its newest nested patch release.
+python3 ./scripts/update_docs_release.py \
+    --html-file "$release_page" \
+    --version "$MIRO_VERSION_FULL" \
+    --date "$MIRO_RELEASE_DATE"
