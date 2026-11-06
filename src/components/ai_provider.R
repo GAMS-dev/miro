@@ -670,29 +670,15 @@ isAzureClaudeDeployment <- function(deploymentName) {
   return(grepl("claude", deploymentName, ignore.case = TRUE))
 }
 
-MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
+# Chat Completions API; subclasses define where requests go (buildUrl, buildAuthHeaders)
+MiroAiChatCompletionsProvider <- R6Class("MiroAiChatCompletionsProvider",
   inherit = MiroAiBaseProvider,
-  public = list(
-    initialize = function(modelName, azureConfig, debugFile = NULL) {
-      super$initialize(modelName, azureConfig$key, debugFile = debugFile)
-      private$endpoint <- azureConfig$endpoint
-      private$tokenProvider <- newAzureTokenProvider(azureConfig)
-      return(self)
-    }
-  ),
   private = list(
     replaysHistory = TRUE,
-    errorPrefix = "Microsoft Foundry API Error: ",
-    endpoint = NULL,
-    tokenProvider = NULL,
+    # named in the note appended to responses stopped by a content filter
+    providerLabel = "the AI provider",
     systemInstructions = NULL,
     toolsPayload = NULL,
-    buildUrl = function() {
-      return(paste0(normalizeAzureEndpoint(private$endpoint), "/openai/v1/chat/completions"))
-    },
-    buildAuthHeaders = function() {
-      return(azureAuthHeaders(private$tokenProvider, private$apiKey))
-    },
     buildPayload = function() {
       # the system prompt is rebuilt for every request, so it is not part of the stored history;
       # no max_completion_tokens on purpose: left out, each model defaults to its own maximum
@@ -743,7 +729,7 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
         toolCalls = toolCalls,
         text = private$finalizeText(finalText, hasToolCalls,
           truncated = identical(choice$finish_reason, "length"),
-          filteredBy = if (identical(choice$finish_reason, "content_filter")) "Microsoft Foundry"
+          filteredBy = if (identical(choice$finish_reason, "content_filter")) private$providerLabel
         ),
         tokens = list(
           input = resContent$usage$prompt_tokens,
@@ -756,6 +742,30 @@ MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
         self$history[[length(self$history) + 1L]] <- list(role = "tool", tool_call_id = res$id, content = res$output)
       }
       return(private$buildPayload())
+    }
+  )
+)
+
+MiroAiAzureProvider <- R6Class("MiroAiAzureProvider",
+  inherit = MiroAiChatCompletionsProvider,
+  public = list(
+    initialize = function(modelName, azureConfig, debugFile = NULL) {
+      super$initialize(modelName, azureConfig$key, debugFile = debugFile)
+      private$endpoint <- azureConfig$endpoint
+      private$tokenProvider <- newAzureTokenProvider(azureConfig)
+      return(self)
+    }
+  ),
+  private = list(
+    errorPrefix = "Microsoft Foundry API Error: ",
+    providerLabel = "Microsoft Foundry",
+    endpoint = NULL,
+    tokenProvider = NULL,
+    buildUrl = function() {
+      return(paste0(normalizeAzureEndpoint(private$endpoint), "/openai/v1/chat/completions"))
+    },
+    buildAuthHeaders = function() {
+      return(azureAuthHeaders(private$tokenProvider, private$apiKey))
     }
   )
 )
@@ -1066,6 +1076,52 @@ MiroAiBedrockProvider <- R6Class("MiroAiBedrockProvider",
   )
 )
 
+#' ==========================================================================
+#' Concrete Provider: custom endpoint (MIRO Desktop only)
+#' ==========================================================================
+# OpenAI- or Anthropic-compatible servers such as AI gateways or local models; endpoint
+# and API format are validated by MIRO Desktop (components/ai-assistant.cjs)
+
+# accepts the base URL (e.g. `.../v1`) or a full route pasted by the user
+normalizeCustomEndpoint <- function(endpoint) {
+  endpoint <- sub("/+$", "", trimws(endpoint %||% ""))
+  return(sub("/(chat/completions|messages|responses)$", "", endpoint))
+}
+
+newCustomProviderClass <- function(parent, route, extraHeaders = list()) {
+  return(R6Class(
+    inherit = parent,
+    public = list(
+      initialize = function(modelName, customConfig, debugFile = NULL) {
+        super$initialize(modelName, customConfig$key, debugFile = debugFile)
+        private$endpoint <- customConfig$endpoint
+        return(self)
+      }
+    ),
+    private = list(
+      errorPrefix = "Custom AI provider API Error: ",
+      endpoint = NULL,
+      # Anthropic only: no Claude-specific request options
+      fallbackModels = character(0L),
+      blockBindingModels = character(0L),
+      buildUrl = function() paste0(private$endpoint, route),
+      buildAuthHeaders = function() {
+        # the token is optional, e.g. for local servers
+        if (length(private$apiKey) && nzchar(private$apiKey)) {
+          return(c(list(Authorization = paste("Bearer", private$apiKey)), extraHeaders))
+        }
+        return(extraHeaders)
+      }
+    )
+  ))
+}
+
+CUSTOM_PROVIDER_CLASSES <- list(
+  chatCompletions = newCustomProviderClass(MiroAiChatCompletionsProvider, "/chat/completions"),
+  anthropicMessages = newCustomProviderClass(MiroAiAnthropicProvider, "/messages", list(`anthropic-version` = "2023-06-01")),
+  responses = newCustomProviderClass(MiroAiOpenAiProvider, "/responses")
+)
+
 AI_PROVIDER_REGISTRY <- list(
   openai = list(
     label = "OpenAI", custom = FALSE,
@@ -1091,6 +1147,12 @@ AI_PROVIDER_REGISTRY <- list(
   bedrock = list(
     label = "Amazon Bedrock", custom = TRUE,
     construct = function(modelId, entry, debugFile) MiroAiBedrockProvider$new(modelId, entry, debugFile = debugFile)
+  ),
+  custom = list(
+    label = "Custom", custom = TRUE,
+    construct = function(modelId, entry, debugFile) {
+      CUSTOM_PROVIDER_CLASSES[[entry$apiFormat]]$new(modelId, entry, debugFile = debugFile)
+    }
   )
 )
 
@@ -1121,7 +1183,8 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
       ),
       `Microsoft Foundry` = character(0L),
-      `Amazon Bedrock` = character(0L)
+      `Amazon Bedrock` = character(0L),
+      Custom = character(0L)
     ),
     debugFile = NULL,
     initialize = function(config = NULL, apiKeys = NULL) {
@@ -1183,14 +1246,15 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         if (!providerId %in% private$providerIds) {
           stop(sprintf("AI Provider: %s currently not supported", apiKey$provider), call. = FALSE)
         }
-        isSecretless <- providerId %in% c("azure", "bedrock") &&
-          tolower(apiKey$authMode %||% "") %in% c("workloadidentity", "usersignin")
+        isSecretless <- identical(providerId, "custom") || (providerId %in% c("azure", "bedrock") &&
+          tolower(apiKey$authMode %||% "") %in% c("workloadidentity", "usersignin"))
         if (!isSecretless && (!length(apiKey$key) || nchar(apiKey$key) < 1L)) {
           stop(sprintf("Invalid API key for provider: %s", apiKey$provider), call. = FALSE)
         }
         self$apiKeys[[providerId]] <- switch(providerId,
           azure = private$validateAzureConfig(apiKey),
           bedrock = private$validateBedrockConfig(apiKey),
+          custom = private$validateCustomConfig(apiKey),
           list(key = apiKey$key)
         )
       }
@@ -1248,6 +1312,12 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       return(list(
         key = if (identical(authMode, "workloadidentity")) NULL else entry$key,
         region = region, authMode = authMode, models = models
+      ))
+    },
+    validateCustomConfig = function(entry) {
+      return(list(
+        key = entry$key, endpoint = normalizeCustomEndpoint(entry$endpoint), apiFormat = entry$apiFormat,
+        models = private$validateModelsList(entry, "Custom AI provider")
       ))
     },
     registerCustomProviderModels = function(providerId) {

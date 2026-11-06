@@ -997,7 +997,7 @@ test_that("Azure surfaces truncation and content filtering", {
   provider <- newAzureProvider()
   provider$mockResponses <- list(azureTextResponse("", finishReason = "content_filter"))
   result <- provider$sendMessage("q", "sys")
-  expect_match(result$text, "content safety policy")
+  expect_match(result$text, "content safety policy of Microsoft Foundry")
 })
 
 test_that("Azure tool arguments reach the dispatcher simplified", {
@@ -1604,4 +1604,74 @@ test_that("IRSA failures surface STS' message, and a missing setup is explained"
     "AWS_ROLE_ARN or AWS_WEB_IDENTITY_TOKEN_FILE",
     fixed = TRUE
   )
+})
+
+# ==============================================================================
+# Custom provider (MIRO Desktop)
+# ==============================================================================
+
+customEntry <- function(...) {
+  modifyList(list(
+    provider = "custom", key = "gw-token", apiFormat = "chatCompletions",
+    endpoint = "https://gateway.example.com/v1/",
+    models = list(list(label = "Llama", id = "llama-3.3"))
+  ), list(...))
+}
+customProvider <- function(...) {
+  MiroAiAssistant$new(config = list(apiKeys = list(customEntry(...))))$getProvider("custom", "llama-3.3")
+}
+privateOf <- function(provider) provider$.__enclos_env__$private
+
+test_that("custom provider routes each API format to its endpoint with a bearer token", {
+  expectations <- list(
+    chatCompletions = list(class = "MiroAiChatCompletionsProvider", route = "/chat/completions"),
+    anthropicMessages = list(class = "MiroAiAnthropicProvider", route = "/messages"),
+    responses = list(class = "MiroAiOpenAiProvider", route = "/responses")
+  )
+  for (apiFormat in names(expectations)) {
+    provider <- customProvider(apiFormat = apiFormat)
+    expect_s3_class(provider, expectations[[apiFormat]]$class)
+    expect_equal(
+      privateOf(provider)$buildUrl(),
+      paste0("https://gateway.example.com/v1", expectations[[apiFormat]]$route)
+    )
+    expect_equal(privateOf(provider)$buildAuthHeaders()$Authorization, "Bearer gw-token")
+  }
+  expect_equal(privateOf(customProvider(apiFormat = "anthropicMessages"))$buildAuthHeaders()$`anthropic-version`, "2023-06-01")
+})
+
+test_that("custom provider models are listed and a pasted full route is normalised", {
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(
+    customEntry(endpoint = "https://gateway.example.com/v1/chat/completions")
+  )))
+  expect_equal(assistant$apiKeys$custom$endpoint, "https://gateway.example.com/v1")
+  expect_equal(assistant$supportedModels$Custom, c(Llama = "custom/llama-3.3"))
+})
+
+test_that("custom provider works without a token, e.g. for a local server", {
+  provider <- customProvider(key = NULL, endpoint = "http://localhost:11434/v1")
+  expect_null(privateOf(provider)$buildAuthHeaders()$Authorization)
+  expect_equal(privateOf(provider)$buildUrl(), "http://localhost:11434/v1/chat/completions")
+})
+
+test_that("custom Anthropic-compatible provider sends no Claude-specific options", {
+  entry <- customEntry(apiFormat = "anthropicMessages")
+  entry$models <- list(list(id = "claude-opus-5-5"))
+  provider <- MiroAiAssistant$new(config = list(apiKeys = list(entry)))$getProvider("custom", "claude-opus-5-5")
+  payload <- privateOf(provider)$prepareInitialPayload("hi", "system", NULL)
+  expect_null(payload$fallbacks)
+  expect_null(payload$thinking)
+  expect_null(privateOf(provider)$buildAuthHeaders()$`anthropic-beta`)
+})
+
+test_that("custom provider accepts model ids containing a slash and survives the worker rebuild", {
+  entry <- customEntry()
+  entry$models <- list(list(id = "meta-llama/Llama-3.3"))
+  assistant <- MiroAiAssistant$new(config = list(apiKeys = list(entry)))
+  model <- unname(assistant$supportedModels$Custom)
+  expect_equal(model, "custom/meta-llama/Llama-3.3")
+  inWorker <- MiroAiAssistant$new(apiKeys = assistant$apiKeys)
+  provider <- inWorker$getProvider(aiModelProvider(model), aiModelId(model))
+  expect_s3_class(provider, "MiroAiChatCompletionsProvider")
+  expect_equal(privateOf(provider)$modelName, "meta-llama/Llama-3.3")
 })
