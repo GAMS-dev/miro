@@ -414,8 +414,6 @@ sudoku.json file. Note that we do not set the option ``isInput`` here.
        }
      }
 
-MIRO cannot tell from your code whether your widget lets users edit its data. If it doesn't, set ``"readonly": true`` in the ``"options"`` of the widget configuration. The AI assistant `Mira <./ai_assistant.html#changing-input-data>`__ then never proposes changes to the symbol of the widget or to any of its ``"widgetSymbols"``. Note that Mira only proposes changes to ``"widgetSymbols"`` of widgets with ``"apiVersion": 2``.
-
 The full version of the custom widget described here as well as the corresponding GAMS model *Sudoku* can be found in the MIRO model library. There you will also find an example of how to create a
 widget that defines multiple symbols. In this case, the ``data`` argument is a named list of reactive expressions, where the names are the lowercase names of the GAMS symbols. Similarly,
 you must also return a named list of reactive expressions. Defining a custom input widget for multiple GAMS symbols is as simple as listing all the additional symbols you want your widget to define
@@ -436,6 +434,8 @@ in the ``"widgetSymbols"`` array of your widget configuration. Below you find th
 
 In addition to defining a widget for multiple symbols, MIRO also allows you to access values from (other) input widgets from your code. To do this, you must list the symbols you want to access in
 the ``"additionalData"`` array of your configuration.
+
+MIRO cannot tell from your code whether your widget lets users edit its data. If it doesn't, set ``"readonly": true`` in the ``"options"`` of the widget configuration. The AI assistant `Mira <./ai_assistant.html#changing-input-data>`__ then never proposes changes to the symbol of the widget or to any of its ``"widgetSymbols"``. Note that Mira only proposes changes to ``"widgetSymbols"`` of widgets with ``"apiVersion": 2``.
 
 Note that custom widgets cannot be automatically expanded to use them for `Hypercube jobs <./hc-module.html>`__. Therefore, if you include scalar symbols in custom widgets (either as the symbol for
 which the widget is defined or via ``"widgetSymbols"``) and still want to include these symbols in the Hypercube job configuration, you must also define a scalar widget configuration for Hypercube

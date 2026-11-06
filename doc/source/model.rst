@@ -210,7 +210,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
          [...]
          $offExternalInput
 
-      This ``<`` `operator <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ causes the sets ``i`` and ``j`` to be defined implicitly via the parameters ``a`` and ``b`` (see also `here <#implicit-set>`__). Alternatively, we could declare the first column of the tables a and b to be `readonly <widgets.html#table-option-readonlycol>`__ in order to prevent domain violations.
+      This ``<`` `operator <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ causes the sets ``i`` and ``j`` to be defined implicitly via the parameters ``a`` and ``b`` (see also :ref:`here <implicit-set>`). Alternatively, we could declare the first column of the tables a and b to be `readonly <widgets.html#table-option-readonlycol>`__ in order to prevent domain violations.
 
       In addition, we want MIRO to display the variables of the model. To do so, we simply tag the declaration statement of the variables:
 
@@ -280,7 +280,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
          b = Parameter(m, name="b", domain=[j], records=demands, domain_forwarding=True, is_miro_input=True, description="demand at market j in cases")
 
 
-      This `Implicit Set Definition <https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding>`__ causes the sets ``i`` and ``j`` to be defined implicitly via the parameters ``a`` and ``b`` (see also `here <#implicit-set>`__). Alternatively, we could declare the first column of the tables a and b to be `readonly <widgets.html#table-option-readonlycol>`__ in order to prevent domain violations.
+      This `Implicit Set Definition <https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition-via-domain-forwarding>`__ causes the sets ``i`` and ``j`` to be defined implicitly via the parameters ``a`` and ``b`` (see also :ref:`here <implicit-set>`). Alternatively, we could declare the first column of the tables a and b to be `readonly <widgets.html#table-option-readonlycol>`__ in order to prevent domain violations.
 
       In addition, we want MIRO to display the variables of the model. To do this, we simply assign the argument ``is_miro_output=True`` to the corresponding symbol constructors:
 
@@ -449,7 +449,9 @@ Sets
       **Note**: Be careful when you want to load both a set and a parameter whose domain this set is part of! You will end up with two distinct tables, one for the set and one for the parameter. If you now change the domain of the parameter but not the set, you will end up with domain violations!
 
 
-      **Implicit set definition**
+.. _implicit-set:
+
+**Implicit set definition**
 
 
 .. tab-set::
@@ -995,7 +997,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
            Table price(date<,symbol<) 'Price';
            $offExternalInput
 
-        Here, the sets are declared outside the ``$on-/offExternalInput`` tags but the definition, i.e. the population with elements, takes place implicitly via the data statement ``price(date<,symbol<)``. The ``<`` `signs <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ signal that the sets ``date`` and ``price`` will be defined implicitly via the parameter ``price`` (see also `here <#implicit-set>`__). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, the parameter ``price`` is displayed in the list view.
+        Here, the sets are declared outside the ``$on-/offExternalInput`` tags but the definition, i.e. the population with elements, takes place implicitly via the data statement ``price(date<,symbol<)``. The ``<`` `signs <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ signal that the sets ``date`` and ``price`` will be defined implicitly via the parameter ``price`` (see also :ref:`here <implicit-set>`). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, the parameter ``price`` is displayed in the list view.
 
       - Only multi-dimensional parameters can be pivoted. In the following example the parameter ``oneDim`` would be displayed in list view even when the table statement is used:
 
@@ -1045,7 +1047,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
            price = Parameter(m, name="price", domain=[date,symbol], domain_forwarding=True, is_miro_input=True, is_miro_table=True, description="Price")
 
-        Here, the sets are not included in the MIRO app but the definition, i.e. the population with elements, takes place implicitly via the ``domain_forwarding`` attribute. This attribute signals GAMSPy that the sets ``date`` and ``symbol`` will be defined implicitly via the parameter ``price`` (see also `here <#implicit-set>`__). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, GAMSPy raises an exception.
+        Here, the sets are not included in the MIRO app but the definition, i.e. the population with elements, takes place implicitly via the ``domain_forwarding`` attribute. This attribute signals GAMSPy that the sets ``date`` and ``symbol`` will be defined implicitly via the parameter ``price`` (see also :ref:`here <implicit-set>`). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, GAMSPy raises an exception.
 
       - Only multi-dimensional parameters can be pivoted. In the following example, the parameter ``oneDim`` parameter cannot be defined as a table:
 

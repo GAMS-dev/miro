@@ -23,7 +23,6 @@ smartquotes = False
 root_doc = "index"
 source_suffix = {".rst": "restructuredtext"}
 extensions = [
-    "sphinx.ext.mathjax",
     "sphinx_design",
     "sphinx_copybutton",
     "sphinx_tabs.tabs",

@@ -701,6 +701,11 @@ General Instructions
 
 General Instructions let us set concrete rules for how Mira should respond - formatting preferences ("Always report monetary values in millions of dollars"), tone, or steps it should take when it spots a data inconsistency ("Flag negative values in the demand table as an error"). Where Domain Context describes our model, General Instructions describe how we want Mira to talk about it.
 
+.. image:: ../assets/images/configuration_mode/ai-assistant-config.png
+   :alt: AI Assistant configuration interface
+   :class: miro-image-max-height-150pt
+   :align: center
+
 .. |Application title| image:: ../assets/images/configuration_mode/general_title.png
    :class: miro-image-max-height-200pt
 .. |App logo| image:: ../assets/images/configuration_mode/app-logo.png

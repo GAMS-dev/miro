@@ -1219,16 +1219,16 @@ At first the input parameters are empty. By clicking on *Load data*, we can load
 
 If our input parameters are correctly set up, we can modify them and then click *Solve model* to compute solutions for new input values.
 
-Even before solving, it can sometimes be useful to visualize the data to catch inconsistencies—such as negative load demand (which shouldn’t happen) or cost values that don’t align with expectations throughout the day. To view this data graphically, we can toggle the chart view in the top-right corner by clicking the |image2| icon. Here, we can filter, aggregate, and pivot the data. We can also use different chart types directly through the `Pivot Table <https://www.gams.com/miro/charts.html#pivot-chart>`__.
+Even before solving, it can sometimes be useful to visualize the data to catch inconsistencies—such as negative load demand (which shouldn’t happen) or cost values that don’t align with expectations throughout the day. To view this data graphically, we can toggle the chart view in the top-right corner by clicking the :fas:`chart-bar` icon. Here, we can filter, aggregate, and pivot the data. We can also use different chart types directly through the `Pivot Table <https://www.gams.com/miro/charts.html#pivot-chart>`__.
 
 In our example, we pivoted the headers and selected line graphs. Because the dimensions of ``load_demand`` and ``cost_external_grid`` differ, it initially looks as though ``cost_external_grid`` is zero, even though it isn’t. To clarify this, we add a second y-axis with a different scale:
 
 1. Switch the display type to *Line Chart*.
-2. Click the |image3| icon to add a new view.
+2. Click the :fas:`square-plus` icon to add a new view.
 3. In the *Second Axis* tab, pick which series should use the additional y-axis.
 4. (Optional) Add a title and label for the axis.
 5. Save the view.
-6. Press the |image4| icon to enable `Presentation Mode <https://www.gams.com/miro/charts.html#presentation-mode>`__.
+6. Press the :fas:`table` icon to enable `Presentation Mode <https://www.gams.com/miro/charts.html#presentation-mode>`__.
 
 You should end up with something like this:
 
@@ -1266,7 +1266,7 @@ We can see that *gen1* is the most expensive generator. It is used a bit at the 
 Let’s look at another example. Recall that we combined all power values with the given load demand into a single parameter so we could verify if the load demand is indeed met and how each source contributes at each hour. If we chose a *Stacked Bar Chart*, we can not easily compare the load demand with the sum of the power sources. Instead, we:
 
 1. Select *Stacked Bar Chart*.
-2. Click the |image5| icon to add a new view.
+2. Click the :fas:`square-plus` icon to add a new view.
 3. In the *Combo Chart* tab, specify that the load demand should be shown as a *Line* and excluded from the stacked bars.
 4. Save the view.
 
@@ -1799,7 +1799,7 @@ The additional scenario dimension also changes the appearance of the graphs. Som
 .. image:: ../assets/images/step_by_step_tutorial/scenario_pivot_compare.png
    :alt: Result of pivot tool for Balance
 
-As you can see, the values for both scenarios are stacked on top of each other, so it's no longer easy to see if the load is fulfilled. Comparing the scenarios becomes difficult. To fix this, click the |image14| icon to add a new view (or the *edit* button to edit an existing one). In the view settings dialog that opens, find "Group stacks by dimension" and add the scenario dimension. This will group the stacked bars by scenario.
+As you can see, the values for both scenarios are stacked on top of each other, so it's no longer easy to see if the load is fulfilled. Comparing the scenarios becomes difficult. To fix this, click the :fas:`square-plus` icon to add a new view (or the *edit* button to edit an existing one). In the view settings dialog that opens, find "Group stacks by dimension" and add the scenario dimension. This will group the stacked bars by scenario.
 
 We can also adjust the coloring so that the value for, e.g., ``"generators"``, is the same across all scenarios. The "Series Styling" tab in the view menu allows to assign custom colors to individual series. So you could assign the same color to each series containing ``"generators"``. Keep in mind that this approach is not generic as the scenario name is part of the dimensions. A generic, scenario-independent approach is to define a color pattern for all series that contain ``"generators"``. This can be done in the JSON file itself (read more about this `here <https://www.gams.com/miro/charts.html#series-patterns>`__).
 
@@ -3116,19 +3116,3 @@ If you’d like to see a fully operational version of this tutorial in action, h
 - Example R scripts for custom renderers, widgets, and data import/export
 
 Feel free to clone or fork the repo, adapt it for your organization’s workflows, and submit improvements via pull requests!
-
-.. |image2| image:: https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/chart-bar.svg
-   :width: 15px
-   :height: 15px
-.. |image3| image:: https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg
-   :width: 15px
-   :height: 15px
-.. |image4| image:: https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/table.svg
-   :width: 15px
-   :height: 15px
-.. |image5| image:: https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg
-   :width: 15px
-   :height: 15px
-.. |image14| image:: https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/square-plus.svg
-   :width: 15px
-   :height: 15px
