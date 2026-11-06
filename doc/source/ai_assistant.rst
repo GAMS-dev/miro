@@ -21,7 +21,9 @@ Mira is just as useful before we get to comparing scenarios at all. Before we ev
 Enabling Mira
 -------------
 
-Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini) and Azure AI Foundry - we only need a key for the provider(s) we intend to use. Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognises a Claude deployment by its name, so the name must contain "claude" (the default name does).
+Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini), Microsoft Foundry and Amazon Bedrock - we only need a key for the provider(s) we intend to use. Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognises a Claude deployment by its name, so the name must contain "claude" (the default name does).
+
+Amazon Bedrock likewise runs models in our own AWS account. It needs the AWS region, a Bedrock API key and the models to offer: one model ID, or ID or ARN of an inference profile, per line (e.g. the inference profile ``global.anthropic.claude-haiku-5-5``), optionally as ``Label = model-id``. GAMS MIRO talks to all models on Amazon Bedrock via the Converse API.
 
 Where we configure this key depends on how our MIRO app is deployed:
 
@@ -30,14 +32,24 @@ Where we configure this key depends on how our MIRO app is deployed:
   * Platform *Mobile and desktop applications* with the redirect URI ``http://localhost``.
   * Under *API permissions* (*APIs my organization uses*), the delegated permission ``user_impersonation`` of *Azure Machine Learning Services* (application ID ``18a66f5f-dbdf-4c17-9dd7-1634712a9cbe``), which issues the tokens for ``https://ai.azure.com``. Without it, sign-in fails with ``AADSTS650057``. Then select *Grant admin consent*.
 
-  We then enter its tenant ID and application (client) ID in MIRO.
+  We then enter its tenant ID and application (client) ID in MIRO. For Amazon Bedrock, we enter the region, a Bedrock API key and the models. MIRO checks them with a short test request.
 
   .. image:: ../assets/images/deployment/ai-settings.png
      :alt: AI Provider settings in MIRO Desktop
      :class: miro-image-max-height-300pt
      :align: center
 
-* **GAMS MIRO Server:** an administrator opens the app's *Advanced Settings* dialog in the `Admin Panel <server_administration.html#app-environment>`__ and enters the provider API key(s) on the *Mira* tab there. Keys are configured per app, so different apps on the same server can use different providers, or none at all.
+* **GAMS MIRO Server:** an administrator opens the app's *Advanced Settings* dialog in the `Admin Panel <server_administration.html#app-environment>`__ and enters the provider API key(s) on the *Mira* tab there. Keys are configured per app, so different apps on the same server can use different providers, or none at all. On Kubernetes, Amazon Bedrock can also be used without an API key: with *Workload identity*, the app's pods use the IAM role of their Kubernetes service account (IAM roles for service accounts on Amazon EKS), so no secret is stored. The service account must be annotated with the role (``eks.amazonaws.com/role-arn``; EKS Pod Identity is not supported), and the role needs ``bedrock:InvokeModel`` on the configured models (for an inference profile, also on the models it routes to). The service account is assigned to the pods of all apps via the Helm value ``miro.podPatches``:
+
+  .. code-block:: yaml
+
+     miro:
+       podPatches:
+         - op: add
+           path: /spec/serviceAccountName
+           value: my-bedrock-service-account
+
+  As the credentials only exist in the app's pods, the Admin Panel cannot verify this configuration.
 
   .. image:: ../assets/images/server/ai-settings.png
      :alt: AI Provider settings in MIRO Server

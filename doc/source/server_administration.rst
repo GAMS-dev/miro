@@ -184,10 +184,11 @@ Further settings that can be made before adding the app:
   permissions.
 
   **Mira**: The *Mira* tab (AI assistant) is where you enter API keys for
-  the LLM providers (e.g. OpenAI, Anthropic, Google) `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, should use. MIRO validates each key
+  the LLM providers (e.g. OpenAI, Anthropic, Google, Amazon Bedrock) `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, should use. MIRO validates each key
   against the provider as soon as you enter it. Keys are configured per app,
   so different apps on the same MIRO Server can use different providers, or
-  not offer Mira at all.
+  not offer Mira at all. See `Enabling Mira <./ai_assistant.html#enabling-ai-assistant>`__
+  for what Amazon Bedrock needs.
 
   **Language**: While the `global language
   setting <./server_setup.html#global-language>`__ applies to
