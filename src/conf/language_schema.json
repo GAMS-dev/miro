@@ -3140,6 +3140,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "hideLegend": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "minY": {
                   "type": "string",
                   "minLength": 1
@@ -3281,7 +3285,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 53
+              "minProperties": 54
             },
             "settings": {
               "type": "object",

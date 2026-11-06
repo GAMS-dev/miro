@@ -813,6 +813,7 @@
         "yGrid": "Dibujar cuadrícula para el eje y",
         "showDataMarkers": "Dibujar puntos de datos",
         "stepPlot": "Gráfico de líneas escalonadas",
+        "hideLegend": "Ocultar leyenda",
         "minY": "Valor mínimo fijo en el eje y (opcional)",
         "maxY": "Valor máximo fijo en el eje y (opcional)",
         "multiChartSeries": "Representar series con otro tipo de gráfico",

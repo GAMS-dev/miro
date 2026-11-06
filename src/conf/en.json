@@ -802,6 +802,7 @@
         "yGrid": "Draw grid for y axis",
         "showDataMarkers": "Draw data points",
         "stepPlot": "Stepped Line Chart",
+        "hideLegend": "Hide legend",
         "minY": "Static minimum value on y axis (optional)",
         "maxY": "Static maximum value on y axis (optional)",
         "multiChartSeries": "Render series with different chart type",

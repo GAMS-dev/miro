@@ -1246,6 +1246,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               "horizontalstackedbar"
             )) {
             moreOptions <- NULL
+            hideLegendInput <- tags$div(
+              class = "col-sm-6",
+              checkboxInput_MIRO(ns("hideLegend"),
+                label = lang$renderers$miroPivot$newView$hideLegend,
+                value = identical(viewOptions$chartOptions$hideLegend, TRUE)
+              )
+            )
             if (pivotRenderer %in% c(
               "bar", "stackedbar", "line", "scatter", "area", "stackedarea",
               "timeseries", "horizontalbar", "horizontalstackedbar"
@@ -1326,7 +1333,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           }
                         )
                       }
-                    )
+                    ),
+                    tags$div(class = "row", hideLegendInput)
                   ),
                   tabPanel(
                     lang$renderers$miroPivot$newView$tabScales,
@@ -1563,7 +1571,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         value = viewOptions$chartOptions$title
                       )
                     )
-                  )
+                  ),
+                  tags$div(class = "row", hideLegendInput)
                 ))
               )
             }
@@ -2063,6 +2072,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 list(
                   inputId = "singleStack",
                   optionId = "singleStack"
+                ),
+                list(
+                  inputId = "hideLegend",
+                  optionId = "hideLegend"
                 )
               )) {
                 if (length(input[[advancedOption$inputId]])) {
@@ -3645,6 +3658,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
 
         chartJsObj <- chartJsObj %>% cjsLegend()
+        if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+          chartJsObj$x$options$plugins$legend$display <- FALSE
+        }
 
         if (length(chartFontSize())) {
           chartFontSize <- isolate(as.numeric(chartFontSize()))

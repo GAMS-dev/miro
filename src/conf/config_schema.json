@@ -351,6 +351,10 @@
               "description": "Whether to draw a stepped line chart",
               "type": "boolean"
             },
+            "hideLegend": {
+              "description": "Hide legend in chart",
+              "type": "boolean"
+            },
             "singleStack": {
               "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
               "type": "boolean"

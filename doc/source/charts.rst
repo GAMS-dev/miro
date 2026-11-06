@@ -89,7 +89,7 @@ View Settings
 
 Before configuring and saving a view, you need to first slice and dice the data - apply filters, set the desired data ranges, and choose the appropriate chart type. Once your data is prepared, click the "New View" button ( |Add view| ). In the opening dialog, you can assign a name to the view. Depending on the selected chart type, further optional settings are available.
 
-- **General**: General settings such as the title displayed above the chart/table and axis labels. The tab also contains chart-specific settings such as showing a line chart as a step plot or grouping stacks by a dimension for stacked bar charts.
+- **General**: General settings such as the title displayed above the chart/table, axis labels and whether to hide the chart legend. The tab also contains chart-specific settings such as showing a line chart as a step plot or grouping stacks by a dimension for stacked bar charts.
 
 - **Axes**: Range limitations for axes, grid settings, axis scaling.
 

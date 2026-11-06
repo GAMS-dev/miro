@@ -855,6 +855,7 @@
         "yGrid": "绘制 y 轴网格",
         "showDataMarkers": "绘制数据点",
         "stepPlot": "阶梯线图",
+        "hideLegend": "隐藏图例",
         "minY": "Y轴的静态最小值（可选的）",
         "maxY": "Y轴的静态最大值（可选的）",
         "multiChartSeries": "以不同图表类型渲染系列",

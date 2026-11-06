@@ -59,6 +59,8 @@ New features
 Minor new features and improvements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- Add option to hide the chart legend in
+  `MIRO Pivot views <./charts.html#pivot-views>`__.
 - Improved German and Chinese translations.
 - Baseline comparisons of scenarios in MIRO Pivot and dashboards count a
   record that is missing in one of the scenarios as 0 if the aggregation

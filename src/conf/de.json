@@ -855,6 +855,7 @@
         "yGrid": "Raster für y-Achse zeichnen",
         "showDataMarkers": "Datenpunkte zeichnen",
         "stepPlot": "Stufen-Liniendiagramm",
+        "hideLegend": "Legende ausblenden",
         "minY": "Statischer Minimalwert auf der y-Achse (optional)",
         "maxY": "Statischer Maximalwert auf der y-Achse (optional)",
         "multiChartSeries": "Datenreihe mit anderem Diagrammtyp darstellen",
