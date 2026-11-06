@@ -318,29 +318,46 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
     errorPrefix = "OpenAI API Error: ",
     systemInstructionsPayload = NULL,
     toolsPayload = NULL,
-    prepareInitialPayload = function(userInput, systemInstructions, tools) {
-      private$systemInstructionsPayload <- systemInstructions
+    buildPayload = function(input) {
       payload <- list(
         model = private$modelName,
-        input = userInput,
-        store = TRUE,
+        input = input,
+        store = !private$replaysHistory,
         instructions = private$systemInstructionsPayload
       )
-      if (!is.null(tools) && length(tools) > 0) {
-        private$toolsPayload <- tools
+      if (private$replaysHistory) {
+        # without stored responses, reasoning items can only be replayed encrypted
+        payload$include <- list("reasoning.encrypted_content")
+      } else if (!is.null(self$sessionId)) {
+        payload$previous_response_id <- self$sessionId
+      }
+      if (!is.null(private$toolsPayload)) {
         payload$tools <- private$toolsPayload
       }
-      if (!is.null(self$sessionId)) {
-        payload$previous_response_id <- self$sessionId
-      } else if (length(self$chatHistory)) {
-        payload$input <- c(self$chatHistory, list(private$historyMessage(TRUE, userInput)))
-      }
       return(payload)
+    },
+    prepareInitialPayload = function(userInput, systemInstructions, tools) {
+      private$systemInstructionsPayload <- systemInstructions
+      if (!is.null(tools) && length(tools) > 0) {
+        private$toolsPayload <- tools
+      }
+      if (private$replaysHistory) {
+        self$history[[length(self$history) + 1L]] <- private$historyMessage(TRUE, userInput)
+        return(private$buildPayload(self$history))
+      }
+      if (is.null(self$sessionId) && length(self$chatHistory)) {
+        return(private$buildPayload(c(self$chatHistory, list(private$historyMessage(TRUE, userInput)))))
+      }
+      return(private$buildPayload(userInput))
     },
     buildUrl = function() "https://api.openai.com/v1/responses",
     buildAuthHeaders = function() list(Authorization = paste("Bearer", private$apiKey)),
     parseApiResponse = function(resContent) {
-      if (!is.null(resContent$id)) self$sessionId <- resContent$id
+      if (private$replaysHistory) {
+        self$history <- c(self$history, resContent$output)
+      } else if (!is.null(resContent$id)) {
+        self$sessionId <- resContent$id
+      }
 
       toolCalls <- list()
       hasToolCalls <- FALSE
@@ -385,17 +402,11 @@ MiroAiOpenAiProvider <- R6Class("MiroAiOpenAiProvider",
           output = res$output
         )
       })
-      payload <- list(
-        model = private$modelName,
-        input = toolOutputs,
-        previous_response_id = self$sessionId,
-        store = TRUE,
-        instructions = private$systemInstructionsPayload
-      )
-      if (!is.null(private$toolsPayload)) {
-        payload$tools <- private$toolsPayload
+      if (private$replaysHistory) {
+        self$history <- c(self$history, toolOutputs)
+        return(private$buildPayload(self$history))
       }
-      return(payload)
+      return(private$buildPayload(toolOutputs))
     }
   )
 )
@@ -1100,6 +1111,8 @@ newCustomProviderClass <- function(parent, route, extraHeaders = list()) {
     ),
     private = list(
       errorPrefix = "Custom AI provider API Error: ",
+      # compatible servers need not keep conversations (e.g. Ollama's Responses API)
+      replaysHistory = TRUE,
       endpoint = NULL,
       # Anthropic only: no Claude-specific request options
       fallbackModels = character(0L),

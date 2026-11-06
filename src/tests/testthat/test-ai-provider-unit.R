@@ -437,6 +437,8 @@ test_that("MiroAiOpenAiProvider keeps tools and instructions on follow-up reques
 
   expect_true(!is.null(provider$capturedPayloads[[2]]$tools))
   expect_equal(provider$capturedPayloads[[2]]$instructions, "sys prompt")
+  expect_true(provider$capturedPayloads[[2]]$store)
+  expect_equal(provider$capturedPayloads[[2]]$previous_response_id, "r1")
 })
 
 test_that("MiroAiOpenAiProvider passes tool output through as the original raw JSON string", {
@@ -1674,4 +1676,27 @@ test_that("custom provider accepts model ids containing a slash and survives the
   provider <- inWorker$getProvider(aiModelProvider(model), aiModelId(model))
   expect_s3_class(provider, "MiroAiChatCompletionsProvider")
   expect_equal(privateOf(provider)$modelName, "meta-llama/Llama-3.3")
+})
+
+test_that("custom Responses provider resends the conversation instead of relying on stored responses", {
+  provider <- customProvider(apiFormat = "responses")
+  private <- privateOf(provider)
+  first <- private$prepareInitialPayload("hi", "system", list(list(type = "function", name = "query")))
+  expect_false(first$store)
+  expect_equal(first$include, list("reasoning.encrypted_content"))
+  expect_null(first$previous_response_id)
+  callItem <- list(type = "function_call", call_id = "call_1", name = "query", arguments = "{}")
+  private$parseApiResponse(list(id = "resp_1", output = list(callItem)))
+  expect_null(provider$sessionId)
+  toolPayload <- private$prepareNextIterationPayload(list(list(id = "call_1", name = "query", output = "[]")))
+  expect_null(toolPayload$previous_response_id)
+  expect_equal(toolPayload$input[[1L]], list(role = "user", content = "hi"))
+  expect_equal(toolPayload$input[[2L]], callItem)
+  expect_equal(toolPayload$input[[3L]]$type, "function_call_output")
+  private$parseApiResponse(list(id = "resp_2", output = list(list(
+    type = "message", content = list(list(type = "output_text", text = "done"))
+  ))))
+  followUp <- private$prepareInitialPayload("and now?", "system", NULL)
+  expect_length(followUp$input, 5L)
+  expect_equal(followUp$input[[5L]], list(role = "user", content = "and now?"))
 })
