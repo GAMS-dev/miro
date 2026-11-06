@@ -222,6 +222,11 @@ startup and automatically loads all data into the interface. In case
 always the same input data is used as base data, the step of importing
 data into MIRO can be skipped with this option.
 
+On MIRO Server, MIRO first looks for a scenario with this name owned by
+the current user. If there is none, the scenario of the user who added or
+last updated the app on MIRO Server (via the Admin Panel or API) is
+loaded, which is normally the scenario bundled with the app.
+
 .. _local-upload:
 
 Local Data Upload
