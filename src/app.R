@@ -2131,8 +2131,10 @@ if (!is.null(errMsg)) {
         {
           if (length(config$defaultScenName) && nchar(trimws(config$defaultScenName))) {
             defSid <- db$getSid(config$defaultScenName)
-            if (identical(defSid, 0L) && !identical(uid, uidAdmin)) {
-              defSid <- db$getSid(config$defaultScenName, uid = uidAdmin)
+            # fall back to user who uploaded the app (owner of the scenarios shipped with the app)
+            uidUploader <- Sys.getenv("MIRO_APP_UPLOADER", uidAdmin)
+            if (identical(defSid, 0L) && !identical(uid, uidUploader)) {
+              defSid <- db$getSid(config$defaultScenName, uid = uidUploader)
             }
             if (!identical(defSid, 0L)) {
               sidsToLoad <- list(defSid)
