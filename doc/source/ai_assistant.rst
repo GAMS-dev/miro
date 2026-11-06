@@ -21,18 +21,20 @@ Mira is just as useful before we get to comparing scenarios at all. Before we ev
 Enabling Mira
 -------------
 
-Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini), Microsoft Foundry and Amazon Bedrock - we only need a key for the provider(s) we intend to use. Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognises a Claude deployment by its name, so the name must contain "claude" (the default name does).
+Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini), Microsoft Foundry and Amazon Bedrock - we only need a key for the provider(s) we intend to use. On MIRO Desktop, Mira can also use a custom OpenAI- or Anthropic-compatible server (see below). Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognises a Claude deployment by its name, so the name must contain "claude" (the default name does).
 
 Amazon Bedrock likewise runs models in our own AWS account. It needs the AWS region, a Bedrock API key and the models to offer: one model ID, or ID or ARN of an inference profile, per line (e.g. the inference profile ``global.anthropic.claude-haiku-5-5``), optionally as ``Label = model-id``. GAMS MIRO talks to all models on Amazon Bedrock via the Converse API.
 
 Where we configure this key depends on how our MIRO app is deployed:
 
-* **GAMS MIRO Desktop:** open the *Settings* dialog, enable *AI Features*, and enter the API key for the provider(s) we want to use. MIRO validates the key against the provider before saving it. For Microsoft Foundry, we recommend *Sign in with Microsoft* instead of an API key: each user signs in with their own work account in the browser, no secret is stored, and access follows the user's role on the Foundry resource (*Cognitive Services User*). This needs an app registration in our Entra tenant, set up once by our IT:
+* **GAMS MIRO Desktop:** open the *Settings* dialog, enable *AI Features*, select a provider in the *AI provider* dropdown and enter its API key. Repeat this for every provider we want to use; configured providers are marked with a check mark. MIRO validates the key against the provider before saving it. For Microsoft Foundry, we recommend *Sign in with Microsoft* instead of an API key: each user signs in with their own work account in the browser, no secret is stored, and access follows the user's role on the Foundry resource (*Cognitive Services User*). This needs an app registration in our Entra tenant, set up once by our IT:
 
   * Platform *Mobile and desktop applications* with the redirect URI ``http://localhost``.
   * Under *API permissions* (*APIs my organization uses*), the delegated permission ``user_impersonation`` of *Azure Machine Learning Services* (application ID ``18a66f5f-dbdf-4c17-9dd7-1634712a9cbe``), which issues the tokens for ``https://ai.azure.com``. Without it, sign-in fails with ``AADSTS650057``. Then select *Grant admin consent*.
 
   We then enter its tenant ID and application (client) ID in MIRO. For Amazon Bedrock, we enter the region, a Bedrock API key and the models. MIRO checks them with a short test request.
+
+  With *Custom (OpenAI/Anthropic compatible)*, Mira can use any server that speaks the OpenAI Chat Completions, OpenAI Responses or Anthropic Messages API, such as a company AI gateway or a model running locally (e.g. vLLM, Ollama or LM Studio). We enter the base URL (e.g. ``https://gateway.example.com/v1``), the API format, an optional bearer token and the model IDs, one per line, optionally as "Label = model-id". The URL must use ``https://``; plain ``http://`` is only accepted for the local machine (``localhost``, ``127.0.0.1`` or ``[::1]``). Mira relies on tool calling, so only models that support it work: MIRO sends a test request with a tool to each model and leaves out models the server rejects.
 
   .. image:: ../assets/images/deployment/ai-settings.png
      :alt: AI Provider settings in MIRO Desktop
@@ -58,16 +60,16 @@ Where we configure this key depends on how our MIRO app is deployed:
 
 .. note::
 
-   Mira sends data to a third-party provider outside of GAMS. Only the pieces of scenario data Mira explicitly queries to answer a given question are sent - MIRO never uploads a scenario wholesale - but if your data is sensitive, review the provider's data handling terms before enabling this feature. Requests are also billed by the provider based on usage; consult their pricing before rolling this out to a large group of users.
+   Mira sends data to a third-party provider outside of GAMS (unless a custom server keeps the data within our own infrastructure). Only the pieces of scenario data Mira explicitly queries to answer a given question are sent - MIRO never uploads a scenario wholesale - but if your data is sensitive, review the provider's data handling terms before enabling this feature. Requests are also billed by the provider based on usage; consult their pricing before rolling this out to a large group of users.
 
-On MIRO Desktop, once at least one provider key is configured, Mira is available to every app installed on that machine. On MIRO Server, a key configured for one app has no effect on any other app. Either way, whether Mira is actually turned on for a given app is a separate, per-app setting, covered next.
+On MIRO Desktop, once at least one provider is configured, Mira is available to every app installed on that machine. On MIRO Server, a key configured for one app has no effect on any other app. Either way, whether Mira is actually turned on for a given app is a separate, per-app setting, covered next.
 
 .. _configuring-ai-assistant:
 
 Configuring Mira for Your App
 -----------------------------
 
-With a provider key in place, we can tailor how Mira behaves for a specific app - whether it is enabled at all, and what background knowledge and instructions it is given. These settings live in `Configuration Mode <customize.html>`__'s *General* tab and are documented there, in `Mira <configuration_general.html#ai-assistant-config>`__.
+With a provider in place, we can tailor how Mira behaves for a specific app - whether it is enabled at all, and what background knowledge and instructions it is given. These settings live in `Configuration Mode <customize.html>`__'s *General* tab and are documented there, in `Mira <configuration_general.html#ai-assistant-config>`__.
 
 .. _using-ai-assistant:
 
