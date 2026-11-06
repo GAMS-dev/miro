@@ -459,11 +459,11 @@ server <- function(input, output, session) {
         flog.warn("Invalid Amazon Bedrock validation request received.")
         return()
       }
-      status <- validateBedrockConfig(request$region, request$key, request$model)
+      result <- validateBedrockConfig(request$region, request$key, request$model)
     } else {
-      status <- validateAiApiKey(request$provider, request$key)
+      result <- list(status = validateAiApiKey(request$provider, request$key))
     }
-    session$sendCustomMessage("onAiApiKeyValidated", list(requestId = request$requestId, status = status))
+    session$sendCustomMessage("onAiApiKeyValidated", c(list(requestId = request$requestId), result))
   })
   observeEvent(input$updateAppOrder, {
     if (loginRequired(session, isLoggedIn)) {

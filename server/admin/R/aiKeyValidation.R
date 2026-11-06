@@ -52,12 +52,13 @@ validateAiApiKey <- function(provider, apiKey) {
 
 #' Amazon Bedrock has no route that lists the models a key may invoke, so the
 #' key is checked with a minimal request to a model. Returns the status like
-#' validateAiApiKey.
+#' validateAiApiKey and, if Bedrock rejected the request, its error message:
+#' an invalid key and e.g. a model without access are both HTTP 403.
 validateBedrockConfig <- function(region, apiKey, modelId) {
   apiKey <- trimws(apiKey)
   # the region becomes part of the host the key is sent to
   if (!grepl("^[a-z]{2}(-gov)?-[a-z]+-[0-9]$", region) || nchar(apiKey) < 10L) {
-    return("invalid")
+    return(list(status = "invalid"))
   }
   resp <- tryCatch(
     POST(
@@ -77,19 +78,21 @@ validateBedrockConfig <- function(region, apiKey, modelId) {
   )
   if (inherits(resp, "error")) {
     flog.warn("Could not reach Amazon Bedrock to validate API key. Error message: %s", conditionMessage(resp))
-    return("unreachable")
+    return(list(status = "unreachable"))
   }
   statusCode <- status_code(resp)
   if (statusCode == 200L) {
-    return("valid")
+    return(list(status = "valid"))
   }
   if (statusCode %in% c(408L, 429L) || statusCode >= 500L) {
     flog.warn("Could not validate Amazon Bedrock API key (HTTP %d).", statusCode)
-    return("unreachable")
+    return(list(status = "unreachable"))
   }
-  flog.info(
-    "Amazon Bedrock rejected request to model: %s (HTTP %d): %s", modelId, statusCode,
-    content(resp, "text", encoding = "UTF-8")
-  )
-  return("invalid")
+  body <- tryCatch(content(resp, "parsed", type = "application/json"), error = function(e) NULL)
+  if (!is.list(body)) {
+    body <- NULL
+  }
+  message <- body$Message %||% body$message %||% sprintf("HTTP %d", statusCode)
+  flog.info("Amazon Bedrock rejected request to model: %s (HTTP %d): %s", modelId, statusCode, message)
+  return(list(status = "invalid", message = message))
 }

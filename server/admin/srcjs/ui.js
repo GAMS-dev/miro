@@ -124,15 +124,32 @@ const VALIDATION_BADGES = {
   [KEY_INVALID]: ['danger', 'Invalid Key'],
   [KEY_UNREACHABLE]: ['danger', 'Connection Error'],
 };
-const setAiStatus = (badge, variant, text) => $(badge).attr('class', `badge badge-${variant}`).text(text);
+// the validation of each provider (by badge) whose reply is still awaited
+const latestAiValidations = new Map();
+let runningAiValidations = 0;
+// showing any other status supersedes a validation that is still running
+const setAiStatus = (badge, variant, text) => {
+  latestAiValidations.delete(badge);
+  $(badge).attr('class', `badge badge-${variant}`).text(text);
+};
+// resolves with the reply, or null if the inputs changed in the meantime
 const validateAiConfig = async (badge, $inputs, request, timeout) => {
   $inputs.removeClass('is-valid is-invalid');
   setAiStatus(badge, 'info', 'Validating...');
+  const validation = {};
+  latestAiValidations.set(badge, validation);
+  runningAiValidations += 1;
   $('.confirm-btn').attr('disabled', true);
   const reply = await requestAiValidation(request, timeout);
-  setAiStatus(badge, ...VALIDATION_BADGES[reply.status]);
+  runningAiValidations -= 1;
+  $('.confirm-btn').attr('disabled', runningAiValidations > 0);
+  if (latestAiValidations.get(badge) !== validation) {
+    return null;
+  }
+  const [variant, text] = VALIDATION_BADGES[reply.status];
+  // a message means the provider rejected the request, not necessarily the key
+  setAiStatus(badge, variant, reply.message ? 'Rejected' : text);
   $inputs.addClass(reply.status === KEY_VALID ? 'is-valid' : 'is-invalid');
-  $('.confirm-btn').attr('disabled', false);
   return reply;
 };
 
@@ -388,6 +405,7 @@ export function openAdvancedSettingsDialog() {
                             One model ID or inference profile per line, optionally as "Label = model-id".
                             <a href="https://console.aws.amazon.com/bedrock/home#/api-keys" target="_blank" rel="noopener noreferrer">Get an API key here</a>.
                           </small>
+                          <small id="bedrockMessage" class="form-text text-danger"></small>
                         </td>
                         <td class="ai-provider-status">
                           <span id="statusBedrock" class="badge badge-${bedrock ? 'success' : 'secondary'}">
@@ -528,6 +546,7 @@ export function openAdvancedSettingsDialog() {
 
   const bedrockBadge = document.getElementById('statusBedrock');
   const $bedrockInputs = $('.ai-bedrock-input');
+  const $bedrockMessage = $('#bedrockMessage');
   // moving between the fields must not validate again
   let checkedBedrockConfig = bedrock ? JSON.stringify(readBedrockConfig()) : null;
   $('#bedrockAuthMode').on('change', function () {
@@ -540,6 +559,7 @@ export function openAdvancedSettingsDialog() {
     }
     checkedBedrockConfig = JSON.stringify(config);
     $bedrockInputs.removeClass('is-valid is-invalid');
+    $bedrockMessage.text('');
     if (!BEDROCK_REGION_REGEX.test(config.region) || !config.models.length
       || (config.authMode === 'apiKey' && !config.key)) {
       setAiStatus(bedrockBadge, 'secondary', 'Not Configured');
@@ -550,10 +570,14 @@ export function openAdvancedSettingsDialog() {
       setAiStatus(bedrockBadge, 'secondary', 'Not Verified');
       return;
     }
-    const { status } = await validateAiConfig(bedrockBadge, $bedrockInputs, {
+    const reply = await validateAiConfig(bedrockBadge, $bedrockInputs, {
       provider: 'bedrock', region: config.region, key: config.key, model: config.models[0].id,
     }, BEDROCK_VALIDATION_TIMEOUT);
-    if (status === KEY_UNREACHABLE) {
+    if (!reply) {
+      return;
+    }
+    $bedrockMessage.text(reply.message ?? '');
+    if (reply.status === KEY_UNREACHABLE) {
       checkedBedrockConfig = null;
     }
   });
