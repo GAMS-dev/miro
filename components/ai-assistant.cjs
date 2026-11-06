@@ -82,9 +82,11 @@ const extractProbeErrorMessage = (error) => {
   return body?.error?.message ?? body?.message ?? null;
 };
 
-const probeCustomProviderDeployments = async (providerLabel, deployments, buildRequest) => {
+// stops at the first usable deployment unless `probeAll` is set
+const probeCustomProviderDeployments = async (providerLabel, deployments, buildRequest, { probeAll = false } = {}) => {
   const candidates = deployments.filter((deployment) => String(deployment.id || '').trim());
   const failedIds = new Set();
+  let anyUsable = false;
 
   /* eslint-disable no-restricted-syntax, no-await-in-loop */
   for (const deployment of candidates) {
@@ -95,10 +97,8 @@ const probeCustomProviderDeployments = async (providerLabel, deployments, buildR
         headers: { ...headers, 'Content-Type': 'application/json' },
         timeout: DEPLOYMENT_PROBE_TIMEOUT,
       });
-      const models = candidates
-        .filter((d) => !failedIds.has(String(d.id).trim()))
-        .map((d) => ({ id: String(d.id).trim(), label: String(d.label || '').trim() || String(d.id).trim() }));
-      return { status: KEY_VALID, models };
+      anyUsable = true;
+      if (!probeAll) break;
     } catch (error) {
       const status = error.response?.status;
       if (!error.response) {
@@ -123,7 +123,13 @@ const probeCustomProviderDeployments = async (providerLabel, deployments, buildR
     }
   }
   /* eslint-enable no-restricted-syntax, no-await-in-loop */
-  return { status: KEY_INVALID, models: [] };
+  if (!anyUsable) {
+    return { status: KEY_INVALID, models: [] };
+  }
+  const models = candidates
+    .filter((d) => !failedIds.has(String(d.id).trim()))
+    .map((d) => ({ id: String(d.id).trim(), label: String(d.label || '').trim() || String(d.id).trim() }));
+  return { status: KEY_VALID, models };
 };
 
 // `accessToken` is only used, and required, with authMode 'userSignIn'
@@ -180,10 +186,69 @@ const testBedrockConnection = async (config, deployments = []) => {
   }));
 };
 
+// Custom endpoints (AI gateways, local models): http only for loopback, so a
+// token never travels in plain text
+const isValidCustomEndpoint = (endpoint) => /^(https:\/\/[^/?#@\s]+|http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?)(\/[^?#@\s]*)?$/.test(endpoint);
+
+// accepts the base URL (e.g. `.../v1`) or a full route pasted by the user
+const normalizeCustomEndpoint = (endpoint) => String(endpoint || '')
+  .trim()
+  .replace(/\/+$/, '')
+  .replace(/\/(chat\/completions|messages|responses)$/, '');
+
+// Mira cannot work without tool calling, so the probe offers a tool: servers
+// that do not support tools for a model may reject the request
+const PROBE_TOOL = {
+  name: 'ping', description: 'Connectivity check', parameters: { type: 'object', properties: {} },
+};
+const CUSTOM_API_FORMATS = {
+  chatCompletions: {
+    route: '/chat/completions',
+    body: (model, messages) => ({
+      model, messages, tools: [{ type: 'function', function: PROBE_TOOL }],
+    }),
+  },
+  anthropicMessages: {
+    route: '/messages',
+    headers: { 'anthropic-version': '2023-06-01' },
+    body: (model, messages) => ({
+      model,
+      messages,
+      max_tokens: PROBE_MAX_TOKENS,
+      tools: [{ name: PROBE_TOOL.name, description: PROBE_TOOL.description, input_schema: PROBE_TOOL.parameters }],
+    }),
+  },
+  responses: {
+    route: '/responses',
+    body: (model, messages) => ({ model, input: messages, tools: [{ type: 'function', ...PROBE_TOOL }] }),
+  },
+};
+
+const testCustomProviderConnection = async (config, models = []) => {
+  const apiFormat = CUSTOM_API_FORMATS[config?.apiFormat];
+  const endpoint = normalizeCustomEndpoint(config?.endpoint);
+  if (!apiFormat || !isValidCustomEndpoint(endpoint)) {
+    __electronLog.warn('Custom AI provider rejected: unknown API format, or endpoint not an https:// (or http://localhost) URL');
+    return { status: KEY_INVALID, models: [] };
+  }
+  const headers = {
+    ...(config.key ? { Authorization: `Bearer ${config.key}` } : {}),
+    ...apiFormat.headers,
+  };
+  const messages = [{ role: 'user', content: 'ping' }];
+  // every model is probed: each one must support tool calling
+  return probeCustomProviderDeployments('Custom AI provider', models, (model) => ({
+    url: `${endpoint}${apiFormat.route}`,
+    headers,
+    body: apiFormat.body(model.id, messages),
+  }), { probeAll: true });
+};
+
 module.exports = {
   testAiProviderApiKey,
   testAzureFoundryConnection,
   testBedrockConnection,
+  testCustomProviderConnection,
   KEY_VALID,
   KEY_INVALID,
   KEY_UNREACHABLE,

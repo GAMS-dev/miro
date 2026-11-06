@@ -1354,6 +1354,22 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        aiProviderSelectLabel: {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-custom-option': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-custom-models-info': {
+          type: 'string',
+          minLength: 1,
+        },
+        'ai-custom-tool-warning': {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: [
         'title',
@@ -1470,6 +1486,10 @@ const schema = {
         'ai-azure-signing-in',
         'ai-azure-sign-in-failed',
         'ai-azure-sign-in-missing-ids',
+        'aiProviderSelectLabel',
+        'ai-custom-option',
+        'ai-custom-models-info',
+        'ai-custom-tool-warning',
       ],
     },
   },
@@ -1819,6 +1839,10 @@ log file should be stored is invalid! Please enter only whole numbers!',
     'ai-azure-signing-in': 'Complete the sign-in in your browser...',
     'ai-azure-sign-in-failed': 'Sign-in failed.',
     'ai-azure-sign-in-missing-ids': 'Enter the tenant ID and application (client) ID first.',
+    aiProviderSelectLabel: 'AI provider',
+    'ai-custom-option': 'Custom (OpenAI/Anthropic compatible)',
+    'ai-custom-models-info': 'One model per line, optionally as "Label = model-id".',
+    'ai-custom-tool-warning': 'Only models that support tool calling (function calling) work with Mira.',
   },
 };
 const de = {
@@ -2186,6 +2210,10 @@ const de = {
   "ai-azure-sign-in-failed": "Anmeldung fehlgeschlagen.",
     'ai-azure-sign-in-missing-ids':
       'Geben Sie zuerst die Mandanten-ID und die Anwendungs-ID (Client-ID) ein.',
+    aiProviderSelectLabel: 'KI-Anbieter',
+    'ai-custom-option': 'Benutzerdefiniert (OpenAI/Anthropic-kompatibel)',
+    'ai-custom-models-info': 'Ein Modell pro Zeile, optional als "Bezeichnung = Modell-ID".',
+    'ai-custom-tool-warning': 'Nur Modelle, die Tool Calling (Function Calling) unterstützen, funktionieren mit Mira.',
   },
 };
 const cn = {
@@ -2508,6 +2536,10 @@ const cn = {
   "ai-azure-signing-in": "请在浏览器中完成登录...",
   "ai-azure-sign-in-failed": "登录失败。",
   "ai-azure-sign-in-missing-ids": "请先输入租户 ID 和应用程序（客户端）ID。",
+    aiProviderSelectLabel: 'AI 提供商',
+    'ai-custom-option': '自定义（兼容 OpenAI/Anthropic）',
+    'ai-custom-models-info': '每行一个模型，可写作“标签 = 模型 ID”。',
+    'ai-custom-tool-warning': '只有支持工具调用（函数调用）的模型才能与 Mira 配合使用。',
   },
 };
 
@@ -2857,6 +2889,10 @@ const es = {
     'ai-azure-sign-in-failed': 'Error al iniciar sesión.',
     'ai-azure-sign-in-missing-ids':
       'Introduzca primero el ID de inquilino y el ID de aplicación (cliente).',
+    aiProviderSelectLabel: 'Proveedor de IA',
+    'ai-custom-option': 'Personalizado (compatible con OpenAI/Anthropic)',
+    'ai-custom-models-info': 'Un modelo por línea, opcionalmente como "Etiqueta = id-del-modelo".',
+    'ai-custom-tool-warning': 'Solo los modelos que admiten llamadas a herramientas (function calling) funcionan con Mira.',
   },
 };
 

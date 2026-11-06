@@ -95,11 +95,16 @@ const schema = {
             },
             provider: {
               type: 'string',
-              enum: ['openai', 'google', 'anthropic', 'azure', 'bedrock'],
+              enum: ['openai', 'google', 'anthropic', 'azure', 'bedrock', 'custom'],
             },
+            // http only for loopback: custom providers may be local servers
             endpoint: {
               type: 'string',
-              pattern: '^https://([A-Za-z0-9-]+\\.)+[A-Za-z]{2,63}(/[A-Za-z0-9._~-]*)*$',
+              pattern: '^(https://[^/?#@\\s]+|http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:\\d+)?)(/[^?#@\\s]*)?$',
+            },
+            apiFormat: {
+              type: 'string',
+              enum: ['chatCompletions', 'anthropicMessages', 'responses'],
             },
             region: {
               type: 'string',

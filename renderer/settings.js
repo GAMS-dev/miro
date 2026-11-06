@@ -11,7 +11,8 @@ const {
   EngineError,
 } = require('../components/engine.cjs');
 const {
-  testAiProviderApiKey, testAzureFoundryConnection, testBedrockConnection, KEY_VALID, KEY_INVALID,
+  testAiProviderApiKey, testAzureFoundryConnection, testBedrockConnection, testCustomProviderConnection,
+  KEY_VALID, KEY_INVALID,
 } = require('../components/ai-assistant.cjs');
 const { EnvEditor } = require('./env-editor.cjs');
 
@@ -53,6 +54,7 @@ const aiProviders = [
   { id: 'Google', name: 'google' },
   { id: 'Azure', name: 'azure' },
   { id: 'Bedrock', name: 'bedrock' },
+  { id: 'Custom', name: 'custom' },
 ];
 
 const CUSTOM_AI_PROVIDERS = {
@@ -77,7 +79,34 @@ const CUSTOM_AI_PROVIDERS = {
     fields: { region: 'bedrockRegion', key: 'keyBedrock', deployments: 'bedrockDeployments' },
     test: testBedrockConnection,
   },
+  // OpenAI- or Anthropic-compatible endpoint, e.g. an AI gateway or a local server
+  custom: {
+    name: 'custom',
+    fields: {
+      endpoint: 'customEndpoint', apiFormat: 'customApiFormat', key: 'keyCustom', deployments: 'customModels',
+    },
+    // local servers usually need no token
+    optionalFields: ['key'],
+    test: testCustomProviderConnection,
+  },
 };
+
+// only the provider selected in the dropdown is shown; configured ones are ticked
+const aiProviderSelect = document.getElementById('aiProviderSelect');
+const showSelectedAiProvider = () => {
+  $('.ai-provider-panel').each(function togglePanel() {
+    $(this).toggle(this.dataset.aiProvider === aiProviderSelect.value);
+  });
+};
+const markConfiguredAiProviders = () => {
+  const configured = new Set(newConfig.aiAssistantConfig?.apiKeys?.map((entry) => entry.provider));
+  [...aiProviderSelect.options].forEach((option) => {
+    const label = option.textContent.trim().replace(/ ✓$/, '');
+    $(option).text(configured.has(option.value) ? `${label} ✓` : label);
+  });
+};
+aiProviderSelect.addEventListener('change', showSelectedAiProvider);
+showSelectedAiProvider();
 
 const optionAliasMap = {
   language: {
@@ -540,8 +569,8 @@ const disableAiAssistant = () => {
   $('#aiAssistantForm').hide();
   $('.ai-key-status').text(lang['ai-key-status-not-configured']).attr('class', 'ai-key-status badge badge-secondary');
   $('.ai-key-input').val('').removeClass('is-valid is-invalid');
-  // a <select> is not covered by the .ai-key-input value clear above, and only
-  // Azure has one, so this is a no-op for every other custom provider
+  // a <select> is not covered by the .ai-key-input value clear above; only the
+  // Azure auth mode needs a reset, the custom API format may keep its value
   Object.values(CUSTOM_AI_PROVIDERS).forEach((provider) => {
     if (provider.hasAuthModeToggle) {
       const authModeField = document.getElementById(provider.fields.authMode);
@@ -549,6 +578,7 @@ const disableAiAssistant = () => {
       authModeField.dispatchEvent(new Event('change'));
     }
   });
+  markConfiguredAiProviders();
 };
 $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   saveButton.attr('disabled', false);
@@ -701,7 +731,7 @@ aiProviders.forEach(provider => {
   // validateKey updates newConfig only once it knows the outcome, so saving must
   // wait for any validation still in flight
   inputElement.addEventListener('blur', (e) => {
-    aiKeyValidation = Promise.allSettled([aiKeyValidation, validateKey(e)]);
+    aiKeyValidation = Promise.allSettled([aiKeyValidation, validateKey(e).finally(markConfiguredAiProviders)]);
   });
 });
 
@@ -722,7 +752,7 @@ const parseCustomProviderDeployments = (raw) => raw
   .filter((deployment) => deployment.id !== '');
 
 function registerCustomProvider({
-  name, fields: fieldIds, fieldsByAuthMode, test, hasAuthModeToggle,
+  name, fields: fieldIds, fieldsByAuthMode, optionalFields = [], test, hasAuthModeToggle,
 }) {
   const fields = Object.fromEntries(
     Object.entries(fieldIds).map(([key, id]) => [key, document.getElementById(id)]),
@@ -732,7 +762,9 @@ function registerCustomProvider({
 
   const fieldsInUse = (authMode) => fieldsByAuthMode?.[authMode]
     ?? Object.keys(fields).filter((key) => key !== 'deployments');
-  const requiredFields = (authMode) => fieldsInUse(authMode).filter((key) => key !== 'authMode');
+  // dropdowns always have a value, so they neither make a form complete nor non-empty
+  const inputFields = (authMode) => fieldsInUse(authMode).filter((key) => fields[key].tagName !== 'SELECT');
+  const requiredFields = (authMode) => inputFields(authMode).filter((key) => !optionalFields.includes(key));
   const isUserSignIn = () => fields.authMode?.value === 'userSignIn';
 
   // Microsoft sign-in (Azure only). The browser flow, the token cache and the
@@ -822,7 +854,7 @@ function registerCustomProvider({
     const deployments = parseCustomProviderDeployments(fields.deployments.value);
     const isComplete = requiredFields(config.authMode).every((key) => config[key])
       && deployments.length > 0;
-    const isEmpty = requiredFields(config.authMode).every((key) => !config[key])
+    const isEmpty = inputFields(config.authMode).every((key) => !config[key])
       && deployments.length === 0;
 
     if (isEmpty) {
@@ -841,7 +873,7 @@ function registerCustomProvider({
 
     const previous = stored();
     const unchanged = previous
-      && Object.keys(config).every((key) => previous[key] === config[key])
+      && fieldsInUse(config.authMode).every((key) => previous[key] === config[key])
       && JSON.stringify(previous.models?.map((m) => m.id) ?? [])
         === JSON.stringify(deployments.map((d) => d.id));
     if (unchanged) {
@@ -900,7 +932,7 @@ function registerCustomProvider({
 
   Object.values(fields).forEach((field) => {
     field.addEventListener('blur', () => {
-      aiKeyValidation = Promise.allSettled([aiKeyValidation, validate()]);
+      aiKeyValidation = Promise.allSettled([aiKeyValidation, validate().finally(markConfiguredAiProviders)]);
     });
   });
 
@@ -916,7 +948,7 @@ function registerCustomProvider({
       signInStatus.textContent = lang['ai-azure-signing-in'] ?? 'Complete the sign-in in your browser...';
       try {
         showSignedInUser(await ipcRenderer.invoke(`${name}-sign-in`, config));
-        aiKeyValidation = Promise.allSettled([aiKeyValidation, validate()]);
+        aiKeyValidation = Promise.allSettled([aiKeyValidation, validate().finally(markConfiguredAiProviders)]);
       } catch (err) {
         __electronLog.warn(`Microsoft sign-in failed: ${err.message}`);
         // strip Electron's "Error invoking remote method '...': Error: " prefix
@@ -1011,7 +1043,8 @@ ipcRenderer.on(
         'enginePasswordValidation',
         'engineJWTValidation',
         'enableAiAssistantLabel',
-        'aiAssistantInfo'
+        'aiAssistantInfo',
+        'aiProviderSelectLabel',
       ].forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -1028,7 +1061,10 @@ ipcRenderer.on(
         'ai-azure-sign-in',
         'ai-azure-sign-out',
         'ai-custom-provider-deployments-info',
-        'ai-bedrock-models-info'].forEach((className) => {
+        'ai-bedrock-models-info',
+        'ai-custom-option',
+        'ai-custom-models-info',
+        'ai-custom-tool-warning'].forEach((className) => {
           $(`.${className}`).text(lang[className]);
         });
       $('.ai-key-status').text(lang['ai-key-status-not-configured']);
@@ -1161,6 +1197,11 @@ ipcRenderer.on(
           badgeElement.className = 'ai-key-status badge badge-success';
           badgeElement.innerText = lang['ai-key-status-connected'];
         })
+        if (aiEnabled && aiProviders.some((provider) => provider.name === newValue.apiKeys[0].provider)) {
+          aiProviderSelect.value = newValue.apiKeys[0].provider;
+          showSelectedAiProvider();
+        }
+        markConfiguredAiProviders();
         cbEnableAi.prop('checked', aiEnabled);
         if (isImportant) {
           cbEnableAi.attr('disabled', true);

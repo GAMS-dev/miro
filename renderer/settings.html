@@ -584,6 +584,34 @@
                 </p>
               </div>
               <div class="setting-wrapper">
+                <label
+                  id="aiProviderSelectLabel"
+                  class="settings-label"
+                  for="aiProviderSelect"
+                  style="margin: 0"
+                  >AI provider</label
+                >
+                <div class="settings-item">
+                  <select
+                    id="aiProviderSelect"
+                    class="miro-launcher-input form-control"
+                    style="width: 100%"
+                  >
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="google">Google Gemini</option>
+                    <option value="azure">Microsoft Foundry</option>
+                    <option value="bedrock">Amazon Bedrock</option>
+                    <option value="custom" class="ai-custom-option">
+                      Custom (OpenAI/Anthropic compatible)
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="openai"
+              >
                 <div class="settings-label">
                   <label
                     id="keyOpenAiLabel"
@@ -622,7 +650,10 @@
                   </div>
                 </div>
               </div>
-              <div class="setting-wrapper">
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="google"
+              >
                 <div class="settings-label">
                   <label
                     id="keyGoogleLabel"
@@ -661,7 +692,10 @@
                   </div>
                 </div>
               </div>
-              <div class="setting-wrapper">
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="anthropic"
+              >
                 <div class="settings-label">
                   <label
                     id="keyAnthropicLabel"
@@ -700,7 +734,10 @@
                   </div>
                 </div>
               </div>
-              <div class="setting-wrapper setting-wrapper--stacked">
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="azure"
+              >
                 <div class="settings-label">
                   <label
                     id="keyAzureLabel"
@@ -799,7 +836,10 @@
                   </div>
                 </div>
               </div>
-              <div class="setting-wrapper setting-wrapper--stacked">
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="bedrock"
+              >
                 <div class="settings-label">
                   <label
                     id="keyBedrockLabel"
@@ -852,6 +892,83 @@
                         href="https://console.aws.amazon.com/bedrock/home#/api-keys"
                         >Get one here</a
                       >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="custom"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyCustomLabel"
+                    class="ai-custom-option"
+                    for="customEndpoint"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Custom (OpenAI/Anthropic compatible)
+                  </label>
+                  <span
+                    id="statusCustom"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="customEndpoint"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="https://gateway.example.com/v1 (http only for localhost)"
+                    />
+                    <select
+                      id="customApiFormat"
+                      class="miro-launcher-input form-control ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                    >
+                      <option value="chatCompletions">
+                        OpenAI Chat Completions API
+                      </option>
+                      <option value="responses">OpenAI Responses API</option>
+                      <option value="anthropicMessages">
+                        Anthropic Messages API
+                      </option>
+                    </select>
+                    <input
+                      id="keyCustom"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="Bearer token (optional)"
+                    />
+                    <textarea
+                      id="customModels"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="llama-3.3-70b"
+                    ></textarea>
+                    <small
+                      id="keyCustomHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-custom-models-info"
+                        >One model per line, optionally as "Label =
+                        model-id".</span
+                      >
+                      <span class="d-block" style="margin-top: 3px">
+                        <i
+                          class="fas fa-exclamation-triangle text-warning"
+                        ></i>
+                        <span class="ai-custom-tool-warning"
+                          >Only models that support tool calling (function
+                          calling) work with Mira.</span
+                        >
+                      </span>
                     </small>
                   </div>
                 </div>
