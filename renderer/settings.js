@@ -849,7 +849,12 @@ function registerCustomProvider({
     }
   };
 
+  // a probe still in flight when the form is validated again must not overwrite the newer result
+  let latestValidation = 0;
   const validate = async () => {
+    latestValidation += 1;
+    const validation = latestValidation;
+    const isLatest = () => validation === latestValidation;
     const config = readConfig();
     const deployments = parseCustomProviderDeployments(fields.deployments.value);
     const isComplete = requiredFields(config.authMode).every((key) => config[key])
@@ -872,14 +877,15 @@ function registerCustomProvider({
     }
 
     const previous = stored();
+    const modelsKey = (models) => JSON.stringify(models.map(({ id, label }) => [id, label || id]));
     const unchanged = previous
       && fieldsInUse(config.authMode).every((key) => previous[key] === config[key])
-      && JSON.stringify(previous.models?.map((m) => m.id) ?? [])
-        === JSON.stringify(deployments.map((d) => d.id));
+      && modelsKey(previous.models ?? []) === modelsKey(deployments);
     if (unchanged) {
       // nothing changed, and a config only reaches newConfig after it
       // validated, so merely tabbing through the fields must not re-probe
       setStatus('connected', true);
+      saveButton.attr('disabled', false);
       return;
     }
 
@@ -887,6 +893,9 @@ function registerCustomProvider({
     if (config.authMode === 'userSignIn') {
       // silent only: the browser opens from the sign-in button, never on blur
       accessToken = await ipcRenderer.invoke(`${name}-access-token`, signInConfig()).catch(() => null);
+      if (!isLatest()) {
+        return;
+      }
       if (!accessToken) {
         // cannot verify without a signed-in user, but that says nothing
         // about the configuration itself, so a stored one is kept
@@ -903,6 +912,9 @@ function registerCustomProvider({
       __electronLog.debug(`Validating ${name} connection`);
       const { status, models } = await test(config, deployments, { accessToken });
 
+      if (!isLatest()) {
+        return;
+      }
       if (status === KEY_VALID) {
         __electronLog.debug(`${name} connection valid, ${models.length} deployment(s)`);
         setStatus('connected', true);
@@ -924,9 +936,13 @@ function registerCustomProvider({
       }
     } catch (err) {
       __electronLog.warn(`Failed validating ${name} configuration. Error: ${err}`);
-      setStatus('error', false);
+      if (isLatest()) {
+        setStatus('error', false);
+      }
     } finally {
-      saveButton.attr('disabled', false);
+      if (isLatest()) {
+        saveButton.attr('disabled', false);
+      }
     }
   };
 
@@ -959,9 +975,11 @@ function registerCustomProvider({
       }
     });
     signOutButton.addEventListener('click', async () => {
+      latestValidation += 1;
       await ipcRenderer.invoke(`${name}-sign-out`, signInConfig()).catch(() => {});
       showSignedInUser(null);
       setStatus('not-configured');
+      saveButton.attr('disabled', false);
     });
   }
 }
