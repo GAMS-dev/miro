@@ -443,10 +443,10 @@ Sets
 
 
 
-      If a set is declared in this way, it is displayed in MIRO as a table in a separate tab. Set tables consist of one column for the set elements and one column for the explanatory text of each set element (element text).
-      Since the sets ``i`` and ``j`` are displayed in MIRO, their elements will be defined via MIRO.
+If a set is declared in this way, it is displayed in MIRO as a table in a separate tab. Set tables consist of one column for the set elements and one column for the explanatory text of each set element (element text).
+Since the sets ``i`` and ``j`` are displayed in MIRO, their elements will be defined via MIRO.
 
-      **Note**: Be careful when you want to load both a set and a parameter whose domain this set is part of! You will end up with two distinct tables, one for the set and one for the parameter. If you now change the domain of the parameter but not the set, you will end up with domain violations!
+**Note**: Be careful when you want to load both a set and a parameter whose domain this set is part of! You will end up with two distinct tables, one for the set and one for the parameter. If you now change the domain of the parameter but not the set, you will end up with domain violations!
 
 
 .. _implicit-set:
@@ -549,7 +549,7 @@ In this example the parameter *price* has been tagged for use in MIRO:
 
 
 
-      When we start GAMS MIRO and load the default scenario that was automatically created, we see the following input screen:
+When we start GAMS MIRO and load the default scenario that was automatically created, we see the following input screen:
 
 .. _no-header:
 
@@ -638,14 +638,14 @@ Let's take the output parameter ``schedule`` of the *transport* model as an exam
 
 
 
-      The parameter ``schedule`` reports on transport volumes and also provides information on the geodata of the locations of plants and markets. Declared as a normal parameter, the symbol looks like this in MIRO:
+The parameter ``schedule`` reports on transport volumes and also provides information on the geodata of the locations of plants and markets. Declared as a normal parameter, the symbol looks like this in MIRO:
 
 
-         .. image:: ../assets/images/no-multi-col-table.png
-            :alt: Table without Demand and Production time columns
-            :class: miro-image-max-height-275pt
+.. image:: ../assets/images/no-multi-col-table.png
+   :alt: Table without Demand and Production time columns
+   :class: miro-image-max-height-275pt
 
-      When using the table statement instead, the elements of the last index set ``schedule header`` become separate columns:
+When using the table statement instead, the elements of the last index set ``schedule header`` become separate columns:
 
 
 .. tab-set::
@@ -775,15 +775,15 @@ As already mentioned, using the table statement affects the data contract betwee
 
 
 
-      We want to use this symbol to display a `map <./charts.html#map-chart>`__ in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns ``i``, ``j`` and ``scheduleHdr`` are communicated with MIRO. The geographic information is now only available as elements of the last dimension. In the `Configuration Mode <./customize.html#configurationMode>`__ we now see only the one value column ``scheduleHdr`` for selection:
+We want to use this symbol to display a `map <./charts.html#map-chart>`__ in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns ``i``, ``j`` and ``scheduleHdr`` are communicated with MIRO. The geographic information is now only available as elements of the last dimension. In the `Configuration Mode <./customize.html#configurationMode>`__ we now see only the one value column ``scheduleHdr`` for selection:
 
 
-         .. image:: ../assets/images/no-multi-col-map.png
-            :alt: Map configuration without Table statement
-            :class: miro-image-max-height-225pt
+.. image:: ../assets/images/no-multi-col-map.png
+   :alt: Map configuration without Table statement
+   :class: miro-image-max-height-225pt
 
-         However, the map tool needs one column each for latitude and longitude information to set a marker. Hence, we can't configure a map this way.
-         Now let's use a table statement for that symbol instead:
+However, the map tool needs one column each for latitude and longitude information to set a marker. Hence, we can't configure a map this way.
+Now let's use a table statement for that symbol instead:
 
 
 .. tab-set::
@@ -826,62 +826,62 @@ As already mentioned, using the table statement affects the data contract betwee
 
 
 
-      The elements previously included in the last dimension are now communicated with MIRO as columns. This allows us to specify markers now:
+The elements previously included in the last dimension are now communicated with MIRO as columns. This allows us to specify markers now:
 
 
-         .. image:: ../assets/images/multi-col-map.png
-            :alt: Map configuration with Table statement
-            :class: miro-image-max-height-250pt
-
-
-
-
-         .. tip::
-
-            Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:
-
-
-            .. tab-set::
-
-               .. tab-item:: GAMS
-
-                  .. raw:: html
-
-                     <span id="gams-11"></span>
+.. image:: ../assets/images/multi-col-map.png
+   :alt: Map configuration with Table statement
+   :class: miro-image-max-height-250pt
 
 
 
-                  .. code:: gams
 
-                     $onExternalOutput
-                     Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
-                     $offExternalOutput
+.. tip::
 
-                     schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
-                     schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
-                     schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
-                     schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+   Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:
 
-               .. tab-item:: GAMSPy
 
-                  .. raw:: html
+   .. tab-set::
 
-                     <span id="gamspy-11"></span>
+      .. tab-item:: GAMS
+
+         .. raw:: html
+
+            <span id="gams-11"></span>
 
 
 
-                  .. code:: python
+         .. code:: gams
 
-                     schedule = Parameter(m, name="schedule", domain=[i,j,latP,lngP,latM,lngM], is_miro_output=True, description="shipment quantities in cases")
+            $onExternalOutput
+            Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
+            $offExternalOutput
 
-                     schedule['Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242'] = 50
-                     schedule['Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177'] = 300
-                     schedule['San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242'] = 275
-                     schedule['San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312'] = 275
+            schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
+            schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
+            schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
+            schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+
+      .. tab-item:: GAMSPy
+
+         .. raw:: html
+
+            <span id="gamspy-11"></span>
 
 
 
-            The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.
+         .. code:: python
+
+            schedule = Parameter(m, name="schedule", domain=[i,j,latP,lngP,latM,lngM], is_miro_output=True, description="shipment quantities in cases")
+
+            schedule['Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242'] = 50
+            schedule['Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177'] = 300
+            schedule['San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242'] = 275
+            schedule['San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312'] = 275
+
+
+
+   The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.
 
 Maps and Gantt charts are examples of tools that require separate columns for information such as geodata, start/end time etc. Other tools allow pivoting of the parameters internally. Example:
 
@@ -925,27 +925,27 @@ In the model Pickstock there is the parameter *Price*, which contains all stock 
 
 
 
-      .. image:: ../assets/images/single-col-line-table.png
-         :alt: Parameter Price
-         :class: miro-image-max-height-250pt
+.. image:: ../assets/images/single-col-line-table.png
+   :alt: Parameter Price
+   :class: miro-image-max-height-250pt
 
-      We want to configure a line chart in which the price trend of each stock symbol is plotted separately. Now MIRO needs the price information of each symbol for each date. The problem is that - as with the map configuration in the previous example - MIRO only knows about one value column: *Price*. Hence, we cannot distinguish between the prices of individual stocks. In the resulting line chart a single line is plotted which contains all prices of all stock symbols:
-
-
-         .. image:: ../assets/images/single-col-line.png
-            :alt: Line chart configuration without Table statement
-            :class: miro-image-max-height-250pt
-
-      Notice, however, that there is an important difference between the previous example and this one. In the previous example, the structure of the table was independent of the data: when a new shipment is added, we simple add another row to the table. The number and names of the columns is static! Now the structure of the table depends on the data. If we were to import data from another stock index - say the French CAC40 - the table would have 40 columns with totally different names. Thus, the pivoting - the transformation of the table from the list view to the table view - has to be done internally: In the category *Y data* we can select a domain we want to pivot. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
+We want to configure a line chart in which the price trend of each stock symbol is plotted separately. Now MIRO needs the price information of each symbol for each date. The problem is that - as with the map configuration in the previous example - MIRO only knows about one value column: *Price*. Hence, we cannot distinguish between the prices of individual stocks. In the resulting line chart a single line is plotted which contains all prices of all stock symbols:
 
 
-         .. image:: ../assets/images/single-col-line-domain.png
-            :alt: image1
-            :class: miro-image-max-height-300pt
+.. image:: ../assets/images/single-col-line.png
+   :alt: Line chart configuration without Table statement
+   :class: miro-image-max-height-250pt
 
-      The internal pivoting is available for the chart types `Bar chart <./charts.html#bar-chart>`__, `Scatter plot <./charts.html#scatter-chart>`__, `Line chart <./charts.html#line-chart>`__, `Bubble chart <./charts.html#bubble-chart>`__, `Histogram <./charts.html#histogram-chart>`__ and `Time series diagram <./charts.html#timeseries-chart>`__. Read more `here <./charts.html#group-domain>`__.
+Notice, however, that there is an important difference between the previous example and this one. In the previous example, the structure of the table was independent of the data: when a new shipment is added, we simple add another row to the table. The number and names of the columns is static! Now the structure of the table depends on the data. If we were to import data from another stock index - say the French CAC40 - the table would have 40 columns with totally different names. Thus, the pivoting - the transformation of the table from the list view to the table view - has to be done internally: In the category *Y data* we can select a domain we want to pivot. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
 
-      To sum up: If the structure of your table is fixed (that is, it does NOT depend on the data), you can declare the GAMS symbol as a table. This is especially important if you want to visualize your data in the form of a map or Gantt chart. If the structure of your table is not rigid but depends on the data, you must declare it as a parameter and not as a table.
+
+.. image:: ../assets/images/single-col-line-domain.png
+   :alt: image1
+   :class: miro-image-max-height-300pt
+
+The internal pivoting is available for the chart types `Bar chart <./charts.html#bar-chart>`__, `Scatter plot <./charts.html#scatter-chart>`__, `Line chart <./charts.html#line-chart>`__, `Bubble chart <./charts.html#bubble-chart>`__, `Histogram <./charts.html#histogram-chart>`__ and `Time series diagram <./charts.html#timeseries-chart>`__. Read more `here <./charts.html#group-domain>`__.
+
+To sum up: If the structure of your table is fixed (that is, it does NOT depend on the data), you can declare the GAMS symbol as a table. This is especially important if you want to visualize your data in the form of a map or Gantt chart. If the structure of your table is not rigid but depends on the data, you must declare it as a parameter and not as a table.
 
 .. _table-restrictions:
 
