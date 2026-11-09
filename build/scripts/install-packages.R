@@ -239,13 +239,13 @@ if (!dir.create(file.path(".", "r-src", "build"))) {
   stop("Could not create build directory: ./r-src/build")
 }
 
-installPackage <- function(package, attempt = 0) {
+installPackage <- function(package, attempt = 0, sourceOnly = isLinux) {
   if (attempt == 3L) {
     stop(sprintf("Problems installing package: %s", package[0]))
   }
   tryCatch(
     {
-      if (isLinux) {
+      if (sourceOnly) {
         downloadPackage(package)
       } else if (isMac && identical(package[1], "V8")) {
         # use binary from CRAN to avoid having absolute path to v8 dylib compiled into binary
@@ -282,16 +282,17 @@ installPackage <- function(package, attempt = 0) {
         #        'CPPFLAGS=-I/usr/local/opt/gettext/include -I$(LLVM_LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'),
         #    makevarsPath)
         # }
-        withr::with_libpaths(if (CIBuild) RlibPathTmp else RLibPath, install_version(package[1], package[2],
+        # on Linux, dependencies (e.g. askpass for openssl) are only available in the devel lib path
+        withr::with_libpaths(if (CIBuild && !isLinux) RlibPathTmp else RLibPath, install_version(package[1], package[2],
           out = "./dist/dump",
           dependencies = FALSE, repos = CRANMirrors[attempt + 1],
           INSTALL_opts = "--no-multiarch"
-        ))
+        ), action = if (isLinux) "prefix" else "replace")
       }
     },
     error = function(e) {
       print(conditionMessage(e))
-      installPackage(package, attempt + 1)
+      installPackage(package, attempt + 1, sourceOnly)
     }
   )
 }
@@ -316,6 +317,43 @@ downloadPackage <- function(package) {
     }
     if (unlink(packageFileNameTmp) != 0) {
       print(sprintf("WARNING: Could not remove temporary file: %s", packageFileNameTmp))
+    }
+  }
+}
+
+installOpenSSL <- function(package) {
+  # ship a binary linked against the OpenSSL 3 built from source (AppImage, macOS CI);
+  # OPENSSL_PKG_CONFIG_PATH points pkg-config to it
+  CIMacOpenSSLBuild <- CIBuild && isMac
+  if (CIMacOpenSSLBuild) {
+    installStaticOpenSSL(file.path(getwd(), RlibPathDevel, "openssl-static"))
+  }
+  opensslPkgConfigPath <- Sys.getenv("OPENSSL_PKG_CONFIG_PATH")
+  withr::with_envvar(
+    if (nzchar(opensslPkgConfigPath)) {
+      c(PKG_CONFIG_PATH = paste(c(opensslPkgConfigPath, Sys.getenv("PKG_CONFIG_PATH")), collapse = .Platform$path.sep))
+    },
+    installPackage(package, sourceOnly = isLinux && identical(Sys.getenv("BUILD_DOCKER"), "true"))
+  )
+  if (CIMacOpenSSLBuild) {
+    rOpenSSLBinary <- file.path(RlibPathTmp, "openssl", "libs", "openssl.so")
+    proc <- processx::run("otool", c(
+      "-L",
+      rOpenSSLBinary
+    ),
+    error_on_status = FALSE
+    )
+    if (proc$status != 0L) {
+      stop(sprintf(
+        "Something went wrong checking dependencies of: %s.\n\nStdout: %s\n\nStderr: %s",
+        rOpenSSLBinary, proc$stdout, proc$stderr
+      ))
+    }
+    if (grepl("libssl", proc$stdout, fixed = TRUE)) {
+      stop(sprintf(
+        "R OpenSSL binary: %s is still depent on openSSL shared library (something went wrong with static compilation).\n\nStdout: %s\n\nStderr: %s",
+        rOpenSSLBinary, proc$stdout, proc$stderr
+      ))
     }
   }
 }
@@ -349,8 +387,7 @@ for (package in packageVersionMap) {
       binary = FALSE, vignettes = FALSE, manual = FALSE,
       args = NULL, quiet = FALSE
     )
-    if (isLinux && (!identical(package, "openssl") || identical(Sys.getenv("BUILD_DOCKER"), "true"))) {
-      # we should include binary openssl linked against openssl3 in AppImage
+    if (isLinux) {
       if (!file.rename(
         packagePath,
         file.path(RlibPathSrc, basename(packagePath))
@@ -367,37 +404,16 @@ for (package in packageVersionMap) {
       }
       next
     }
-    CIMacOpenSSLBuild <- CIBuild && isMac && identical(package, "openssl")
-    if (CIMacOpenSSLBuild) {
-      installStaticOpenSSL(file.path(getwd(), RlibPathDevel, "openssl-static"))
-    }
     install.packages(packagePath,
       lib = if (CIBuild && !isLinux) RlibPathTmp else RLibPath, repos = NULL,
       type = "source", dependencies = FALSE, INSTALL_opts = "--no-multiarch"
     )
-    if (CIMacOpenSSLBuild) {
-      rOpenSSLBinary <- file.path(RlibPathTmp, "openssl", "libs", "openssl.so")
-      proc <- processx::run("otool", c(
-        "-L",
-        rOpenSSLBinary
-      ),
-      error_on_status = FALSE
-      )
-      if (proc$status != 0L) {
-        stop(sprintf(
-          "Something went wrong checking dependencies of: %s.\n\nStdout: %s\n\nStderr: %s",
-          rOpenSSLBinary, proc$stdout, proc$stderr
-        ))
-      }
-      if (grepl("libssl", proc$stdout, fixed = TRUE)) {
-        stop(sprintf(
-          "R OpenSSL binary: %s is still depent on openSSL shared library (something went wrong with static compilation).\n\nStdout: %s\n\nStderr: %s",
-          rOpenSSLBinary, proc$stdout, proc$stderr
-        ))
-      }
-    }
   } else {
-    installPackage(package)
+    if (identical(package[1], "openssl")) {
+      installOpenSSL(package)
+    } else {
+      installPackage(package)
+    }
     if (CIBuild) {
       installedPackagesTmp <- c(installedPackagesTmp, package[1])
     }

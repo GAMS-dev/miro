@@ -164,7 +164,7 @@ XlsIO <- R6::R6Class("XlsIO",
               "#'",
               names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"
             ),
-            name = wsNamesRaw
+            value = wsNamesRaw
           ),
           .before = 1L
         )

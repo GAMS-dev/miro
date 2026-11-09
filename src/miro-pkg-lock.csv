@@ -1,68 +1,62 @@
-nanonext, 1.10.0
-mirai, 2.7.1
-data.table, 1.18.4
+nanonext, 1.10.4
+mirai, 2.7.4
+data.table, 1.18.6.1
 cpp11, 0.5.5
-xfun, 0.53
+xfun, 0.62
 fastmap, 1.2.0
-backports, 1.5.1
 assertthat, 0.2.1
 crayon, 1.5.3
 glue, 1.8.1
-fansi, 1.0.7
 cli, 3.6.6
 utf8, 1.2.6
-Rcpp, 1.1.1-1.1
+Rcpp, 1.1.2
 R6, 2.6.1
-BH, 1.90.0-1
 magrittr, 2.0.5
-rlang, 1.2.0
-ellipsis, 0.3.3
+rlang, 1.3.0
 later, 1.4.8
-promises, 1.3.3
+otel, 0.3.0
+lifecycle, 1.0.5
+promises, 1.5.0
 httpuv, 1.6.17
 mime, 0.13
 jsonlite
 digest, 0.6.39
 sourcetools, 0.1.7-2
 xtable, 1.8-8
-curl, 7.0.0
-V8, 8.2.0
+curl, 8.1.0
+V8, 8.2.1
 base64enc, 0.1-6
 htmltools, 0.5.9
 jquerylib, 0.1.4
-withr, 3.0.0
-leaflet.providers, 2.0.0
+withr, 3.0.3
+leaflet.providers, 3.0.0
 commonmark, 2.0.0
 cachem, 1.1.0
 memoise, 2.0.1
 fontawesome, 0.5.3
-lifecycle, 1.0.5
 vctrs, 0.7.3
-fs, 1.6.6
+fs, 1.6.7
 rappdirs, 0.3.4
 sass, 0.4.10
-bslib, 0.9.0
+bslib, 0.12.0
 shiny
 shinyAce, 0.4.4
-colorspace, 2.1-2
+colorspace, 2.1-4
 purrr, 1.2.2
 yaml, 2.3.12
 labeling, 0.4.3
-munsell, 0.5.1
 lazyeval, 0.2.3
 pkgconfig, 2.0.3
 tidyselect, 1.2.1
-plogr, 0.2.0
 htmlwidgets, 1.5.4
 png, 0.1-9
 RColorBrewer, 1.1-3
-lattice, 0.22-9
-sp, 2.2-1
+lattice, 0.23-1
+sp, 2.2-4
 viridisLite, 0.4.3
 raster, 3.4-13
 farver, 2.1.2
 scales, 1.4.0
-zeallot, 0.2.0
 crosstalk, 1.2.2
 DT
 gdxrrwMIRO
@@ -71,19 +65,19 @@ pillar, 1.11.1
 tibble, 3.3.1
 generics, 0.1.4
 timechange, 0.4.0
-lubridate, 1.9.4
+lubridate, 1.9.5
 dplyr, 1.2.1
 sys, 3.4.3
 askpass, 1.2.1
-openssl
+openssl, 2.5.0
 prettyunits, 1.2.0
-stringi, 1.8.7
+stringi, 1.8.9
 DBI, 1.3.0
-blob, 1.2.4
+blob, 1.3.0
 hms, 1.1.4
-stringr, 1.5.2
+stringr, 1.6.0
 tidyr, 1.3.2
-httr, 1.4.8
+httr, 1.4.9
 plotly
 shinydashboard
 timevis
@@ -93,24 +87,24 @@ ps, 1.9.3
 clipr, 0.8.1
 cellranger, 1.1.0
 progress, 1.2.3
-lambda.r, 1.2.4
+lambda.r, 1.2.6
 futile.options, 1.0.1
-zoo, 1.8-15
+zoo, 1.9-1
 processx, 3.9.0
-readxl, 1.5.0
-writexl, 1.5.4
-futile.logger, 1.4.3
-zip, 2.3.3
-leaflet.minicharts, 0.6.2
-xts, 0.14.2
+readxl, 1.6.0
+writexl, 2.0.1
+futile.logger, 1.4.9
+zip, 3.0.2
+leaflet.minicharts, 0.6.3
+xts, 0.14.3
 dygraphs, 1.1.1.6
 bit, 4.6.0
-bit64, 4.6.0-1
+bit64, 4.8.6
 tzdb, 0.5.0
 vroom, 1.7.1
-readr, 2.1.6
+readr, 2.2.0
 miroUtil
 rhandsontable
 sortable
 chartjs
-RSQLite, 3.53.1
+RSQLite, 3.53.3

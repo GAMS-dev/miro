@@ -72,9 +72,7 @@ these components are included below):
 - stringr https://github.com/tidyverse/stringr or https://cran.r-project.org/web/packages/stringr/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
 - lifecycle https://github.com/r-lib/lifecycle or https://cran.r-project.org/web/packages/lifecycle/index.html
-- backports https://github.com/r-lib/backports or https://cran.r-project.org/web/packages/backports/index.html
 - vctrs https://github.com/r-lib/vctrs or https://cran.r-project.org/web/packages/vctrs/index.html
-- ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
 - withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html
@@ -85,8 +83,6 @@ these components are included below):
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
 - hms https://github.com/tidyverse/hms or https://cran.r-project.org/web/packages/hms/index.html
 - Rcpp https://github.com/RcppCore/Rcpp or https://cran.r-project.org/web/packages/Rcpp/index.html
-- BH https://github.com/eddelbuettel/bh or https://cran.r-project.org/web/packages/BH/index.html
-- plogr https://github.com/krlmlr/plogr or https://cran.r-project.org/web/packages/plogr/index.html
 - httpuv https://github.com/rstudio/httpuv or https://cran.r-project.org/web/packages/httpuv/index.html
 - mime https://github.com/yihui/mime or https://cran.r-project.org/web/packages/mime/index.html
 - xtable https://github.com/cran/xtable or https://cran.r-project.org/web/packages/xtable/index.html
@@ -121,7 +117,6 @@ these components are included below):
 - codetools https://gitlab.com/luke-tierney/codetools or https://cran.r-project.org/web/packages/codetools/index.html
 - globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
 - listenv https://github.com/HenrikBengtsson/listenv or https://cran.r-project.org/web/packages/listenv/index.html
-- zeallot https://github.com/nteetor/zeallot or https://cran.r-project.org/web/packages/zeallot/index.html
 - viridisLite https://github.com/sjmgarnier/viridisLite or https://cran.r-project.org/web/packages/viridisLite/index.html
 - base64enc https://github.com/cran/base64enc or https://cran.r-project.org/web/packages/base64enc/index.html
 - RColorBrewer https://github.com/cran/RColorBrewer or https://cran.r-project.org/web/packages/RColorBrewer/index.html
@@ -138,11 +133,11 @@ these components are included below):
 - cachem https://github.com/r-lib/cachem or https://cran.r-project.org/web/packages/cachem/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
 - mirai https://github.com/r-lib/mirai or https://cran.r-project.org/web/packages/mirai/index.html
+- otel https://github.com/r-lib/otel or https://cran.r-project.org/web/packages/otel/index.html
 
 - bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
 - cli https://github.com/r-lib/cli or https://cran.r-project.org/web/packages/cli/index.html
 - pillar https://github.com/r-lib/pillar or https://cran.r-project.org/web/packages/pillar/index.html
-- fansi https://github.com/brodieG/fansi or https://cran.r-project.org/web/packages/fansi/index.html
 - utf8 https://github.com/patperry/r-utf8 or https://cran.r-project.org/web/packages/utf8/index.html
 - openssl https://www.openssl.org/source/license.html
 - progress https://github.com/r-lib/progress or https://cran.r-project.org/web/packages/progress/index.html
@@ -163,7 +158,6 @@ these components are included below):
 - viridis https://github.com/sjmgarnier/viridis or https://cran.r-project.org/web/packages/viridis/index.html
 - leaflet.minicharts https://github.com/cran/leaflet.minicharts or https://cran.r-project.org/web/packages/leaflet.minicharts/index.html
 - labeling https://github.com/cran/labeling or https://cran.r-project.org/web/packages/labeling/index.html
-- munsell https://github.com/cwickham/munsell/ or https://cran.r-project.org/web/packages/munsell/index.html
 - graphics https://github.com/zenspider/graphics or https://cran.r-project.org/web/packages/RGraphics/index.html
 - Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
 - nlme, https://cran.r-project.org/web/packages/nlme/index.html
@@ -918,7 +912,6 @@ Section 8 -- Interpretation.
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017-2024 Plotly Technologies Inc.
         - rappdirs, Copyright (c) 2001, 2014-2016 Hadley Wickham; RStudio; ActiveState Software Inc
-        - fs, Copyright (c) 2020 fs authors
         - sass, Copyright (c) 2019 Joe Cheng [aut], Timothy Mastny [aut], Richard Iannone ORCID iD [aut], Barret Schloerke ORCID iD [aut], Carson Sievert ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], RStudio [cph, fnd], Sass Open Source Foundation [ctb, cph] (LibSass library), Greter Marcel [ctb, cph] (LibSass library), Mifsud Michael [ctb, cph] (LibSass library), Hampton Catlin [ctb, cph] (LibSass library), Natalie Weizenbaum [ctb, cph] (LibSass library), Chris Eppstein [ctb, cph] (LibSass library), Adams Joseph [ctb, cph] (json.cpp), Trifunovic Nemanja [ctb, cph] (utf8.h)
         - bslib, Copyright (c) 2021 Carson Sievert ORCID iD [aut, cre], Joe Cheng [aut], RStudio [cph], Bootstrap contributors [ctb] (Bootstrap library), Twitter, Inc [cph] (Bootstrap library), Javi Aguilar [ctb, cph] (Bootstrap colorpicker library), Thomas Park [ctb, cph] (Bootswatch library), PayPal [ctb, cph] (Bootstrap accessibility plugin)
         - fontawesome, Copyright (c) 2018-2021 Richard Iannone ORCID iD [aut, cre], Christophe Dervieux  ORCID iD [ctb], Winston Chang [ctb], Dave Gandy [ctb, cph] (Font-Awesome font), RStudio [cph, fnd]
@@ -931,8 +924,6 @@ Section 8 -- Interpretation.
         - xfun, Copyright (c) 2018-2022 Yihui Xie ORCID iD [aut, cre, cph], Wush Wu [ctb], Daijiang Li [ctb], Xianying Tan [ctb], Salim Brüggemann ORCID iD [ctb], Christophe Dervieux [ctb]
         - stringr, Copyright (c) 2020 Hadley Wickham [aut, cre, cph], RStudio [cph, fnd]
         - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
-        - plogr, Copyright (c) 2016 Kirill Müller [aut, cre],
-          Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey
         - sys, Copyright (c) 2019 Jeroen Ooms ORCID iD [aut, cre], Gábor Csárdi [ctb]
         - promises, Copyright (c) 2016-2017 RStudio, Inc.
@@ -971,7 +962,6 @@ Section 8 -- Interpretation.
         - viridis, Copyright (c) 2015 Simon Garnier
         - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
         - labeling, Copyright (c) 2020 Justin Talbot
-        - munsell, Copyright (c) 2016 Charlotte Wickham
         - tidyselect, Copyright (c) 2020 Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
         - fastmap, Copyright (c) 2019 Winston Chang [aut, cre], RStudio [cph, fnd], Tessil [cph] (hopscotch_map library)
@@ -1018,6 +1008,71 @@ Section 8 -- Interpretation.
           Charlie Gao ORCID iD [aut, cre], Joe Cheng [ctb], Posit Software, PBC ROR ID [cph, fnd], Hibiki AI Limited [cph],
           Staysail Systems, Inc. [cph] (NNG library), Capitar IT Group BV [cph] (NNG library), The Mbed TLS Contributors [cph] (Mbed TLS library),
           Pierre L'Ecuyer [cph] (RngStreams library), sakura authors [cph] (Serialization hooks), R Consortium ROR ID [fnd]
+        - shiny, Copyright (c) Winston Chang ORCID iD [aut], Joe Cheng [aut],
+           JJ Allaire [aut], Carson Sievert ORCID iD [aut, cre], Barret Schloerke ORCID iD [aut],
+           Garrick Aden-Buie ORCID iD [aut], Yihui Xie [aut], Jeff Allen [aut], Jonathan McPherson [aut],
+           Alan Dipert [aut], Barbara Borges [aut], Posit Software, PBC [cph, fnd],
+           jQuery Foundation [cph] (jQuery library and jQuery UI library),
+           jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt),
+           jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt),
+           Mark Otto [ctb] (Bootstrap library),
+           Jacob Thornton [ctb] (Bootstrap library),
+           Bootstrap contributors [ctb] (Bootstrap library),
+           Twitter, Inc [cph] (Bootstrap library),
+           Prem Nawaz Khan [ctb] (Bootstrap accessibility plugin),
+           Victor Tsaran [ctb] (Bootstrap accessibility plugin),
+           Dennis Lembree [ctb] (Bootstrap accessibility plugin),
+           Srinivasu Chakravarthula [ctb] (Bootstrap accessibility plugin),
+           Cathy O'Connor [ctb] (Bootstrap accessibility plugin),
+           PayPal, Inc [cph] (Bootstrap accessibility plugin),
+           Stefan Petre [ctb, cph] (Bootstrap-datepicker library),
+           Andrew Rowls [ctb, cph] (Bootstrap-datepicker library),
+           Brian Reavis [ctb, cph] (selectize.js library),
+           Salmen Bejaoui [ctb, cph] (selectize-plugin-a11y library),
+           Denis Ineshin [ctb, cph] (ion.rangeSlider library),
+           Sami Samhuri [ctb, cph] (Javascript strftime library),
+           SpryMedia Limited [ctb, cph] (DataTables library),
+           Ivan Sagalaev [ctb, cph] (highlight.js library),
+           R Core Team [ctb, cph] (tar implementation from R)
+        - shinydashboard, Copyright (c) 2014 RStudio, Inc.; Posit Software, PBC [cph, fnd]
+        - DT, Copyright (c) Yihui Xie [aut], Garrick Aden-Buie [aut, cre],
+            Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb],
+            Greg Freedman Ellis [ctb], Johannes Rauh [ctb],
+            jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),
+            SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),
+            Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
+            Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
+            Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
+            Alex Pickering [ctb], William Holmes [ctb], Mikko Marttila [ctb], Andres Quintero [ctb], Stéphane Laurent [ctb], Posit Software, PBC [cph, fnd]
+        - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
+            Garrett Grolemund [aut], Hadley Wickham [aut], Davis Vaughan [ctb], Ian Lyttle [ctb],
+            Imanuel Costigan [ctb], Jason Law [ctb], Doug Mitarotonda [ctb], Joseph Larmarange [ctb],
+            Jonathan Boiser [ctb], Chel Hee Lee [ctb]
+        - blob, Copyright (c)
+            Hadley Wickham [aut],
+            Kirill Müller [cre],
+            RStudio [cph]
+        - fs, Copyright (c)
+            Jim Hester [aut, cre],
+            Hadley Wickham [aut],
+            libuv project contributors [cph] (libuv library), Joyent, Inc. and other Node contributors [cph] (libuv library),
+            RStudio [cph, fnd]
+        - otel, Copyright (c) 2025 otel authors; Gábor Csárdi [aut, cre]
+        - leaflet, Copyright (c) Joe Cheng [aut], Garrick Aden-Buie [aut, cre], Bhaskar Karambelkar [aut],
+            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb],
+            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library),
+            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library),
+            Leaflet contributors [ctb] (Leaflet library),
+            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin),
+            Brandon Copeland [ctb, cph] (leaflet-measure plugin),
+            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin),
+            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin),
+            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin),
+            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin),
+            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin),
+            Kartena AB [ctb, cph] (Proj4Leaflet plugin),
+            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin),
+            Mapbox [ctb, cph] (leaflet-omnivore plugin), Michael Bostock [ctb, cph] (topojson), Posit Software, PBC [cph, fnd]
 
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
@@ -1072,14 +1127,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             Liam Healy [ctb] (for the included SQLite sources),
             R Consortium [fnd], RStudio [cph]
         - pillar, Copyright (c) Kirill Müller [aut, cre], Hadley Wickham [aut], RStudio [cph]
-        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre],
-            Elliott Sales De Andrade [ctb],
-            R Core Team [cph] (UTF8 byte length calcs from src/util.c)
         - parallelly, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - future, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - globals, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - listenv, Copyright (c) Henrik Bengtsson [aut, cre, cph]
-        - zeallot, Copyright (c) Nathan Teetor [aut, cre], Paul Teetor [ctb]
 
 -----------------------------------------------------------------------------
 
@@ -1253,62 +1304,9 @@ Library.
             The “GNU General Public License” version 3 (GPL-3)
         applies to:
         - R, Copyright (C) 2018 The R Foundation for Statistical Computing
-        - shinydashboard [expanded from: GPL (≥ 2)], Copyright (c) 2014 RStudio, Inc.
-        - DT, Copyright (c) Yihui Xie [aut, cre],
-            Joe Cheng [ctb], JJ Allaire [ctb], Xianying Tan [ctb], Maximilian Girlich [ctb],
-            Greg Freedman Ellis [ctb], Johannes Rauh [ctb],
-            jQuery contributors [ctb, cph] (jQuery in htmlwidgets/lib),
-            SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),
-            Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),
-            Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),
-            Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),
-            Alex Pickering [ctb], William Holmes [ctb], Mikko Marttila [ctb], RStudio Inc [cph]
         - timechange, Copyright (c) Vitalie Spinu [aut, cre], Google Inc. [ctb, cph]
             (Parts of the 'CCTZ' source code, released under the Apache 2.0 License, are included in this package.
             See <https://github.com/google/cctz> for more details.)
-        - lubridate, Copyright (c) Vitalie Spinu [aut, cre],
-            Garrett Grolemund [aut],
-            Hadley Wickham [aut],
-            Ian Lyttle [ctb],
-            Imanuel Costigan [ctb],
-            Jason Law [ctb],
-            Doug Mitarotonda [ctb],
-            Joseph Larmarange [ctb],
-            Jonathan Boiser [ctb],
-            Chel Hee Lee [ctb],
-            Google Inc. [ctb, cph]
-        - shiny, Copyright (c) Winston Chang ORCID iD [aut, cre], Joe Cheng [aut],
-           JJ Allaire [aut], Carson Sievert ORCID iD [aut], Barret Schloerke ORCID iD [aut],
-           Yihui Xie [aut], Jeff Allen [aut], Jonathan McPherson [aut], Alan Dipert [aut],
-           Barbara Borges [aut], RStudio [cph],
-           jQuery Foundation [cph] (jQuery library and jQuery UI library),
-           jQuery contributors [ctb, cph] (jQuery library; authors listed in inst/www/shared/jquery-AUTHORS.txt),
-           jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in inst/www/shared/jqueryui/AUTHORS.txt),
-           Mark Otto [ctb] (Bootstrap library),
-           Jacob Thornton [ctb] (Bootstrap library),
-           Bootstrap contributors [ctb] (Bootstrap library),
-           Twitter, Inc [cph] (Bootstrap library),
-           Prem Nawaz Khan [ctb] (Bootstrap accessibility plugin),
-           Victor Tsaran [ctb] (Bootstrap accessibility plugin),
-           Dennis Lembree [ctb] (Bootstrap accessibility plugin),
-           Srinivasu Chakravarthula [ctb] (Bootstrap accessibility plugin),
-           Cathy O'Connor [ctb] (Bootstrap accessibility plugin),
-           PayPal, Inc [cph] (Bootstrap accessibility plugin),
-           Stefan Petre [ctb, cph] (Bootstrap-datepicker library),
-           Andrew Rowls [ctb, cph] (Bootstrap-datepicker library),
-           Brian Reavis [ctb, cph] (selectize.js library),
-           Salmen Bejaoui [ctb, cph] (selectize-plugin-a11y library),
-           Denis Ineshin [ctb, cph] (ion.rangeSlider library),
-           Sami Samhuri [ctb, cph] (Javascript strftime library),
-           SpryMedia Limited [ctb, cph] (DataTables library),
-           John Fraser [ctb, cph] (showdown.js library),
-           John Gruber [ctb, cph] (showdown.js library),
-           Ivan Sagalaev [ctb, cph] (highlight.js library),
-           R Core Team [ctb, cph] (tar implementation from R)
-        - blob, Copyright (c)
-            Hadley Wickham [aut],
-            Kirill Müller [cre],
-            RStudio [cph]
         - Rcpp [expanded from: GPL (≥ 2)], Copyright (c)
             Dirk Eddelbuettel,
             Romain Francois,
@@ -1320,11 +1318,6 @@ Library.
             John Chambers
         - httpuv [expanded from: GPL (≥ 2)], Copyright (c)
             RStudio, PBC; Joyent, Inc.; Nginx Inc.; Igor Sysoev; Niels Provos; Internet Systems Consortium, Inc.; Alexander Chemeris; Berkeley Software Design; Google Inc.; Sony Mobile Communications AB; Alexander Peslyak; Free Software Foundation, Inc.; X Consortium; Ben Noordhuis; StrongLoop, Inc.; Saúl Ibarra Corretgé; Bert Belder; Fedor Indutny; libuv project; Refael Ackermann; Kenneth MacKay; Emergya; Diego Pettenò; xine project, The Regents of the University of California, Dariusz Dwornikowski
-        - fs, Copyright (c)
-            Jim Hester [aut, cre],
-            Hadley Wickham [aut],
-            libuv project contributors [cph] (libuv library), Joyent, Inc. and other Node contributors [cph] (libuv library),
-            RStudio [cph, fnd]
         - mime [expanded from: GPL], Copyright (c)
             Yihui Xie ORCID [aut, cre],
             Jeffrey Horner [ctb],
@@ -1359,21 +1352,6 @@ Library.
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
         - formatR, Copyright (c) Yihui Xie [aut, cre], Ed Lee [ctb], Eugene Ha [ctb],
             Kohske Takahashi [ctb], Pavel Krivitsky [ctb]
-        - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut],
-            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb],
-            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library),
-            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library),
-            Leaflet contributors [ctb] (Leaflet library),
-            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin),
-            Brandon Copeland [ctb, cph] (leaflet-measure plugin),
-            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin),
-            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin),
-            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin),
-            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin),
-            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin),
-            Kartena AB [ctb, cph] (Proj4Leaflet plugin),
-            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin),
-            Mapbox [ctb, cph] (leaflet-omnivore plugin), Michael Bostock [ctb, cph] (topojson), RStudio [cph]
         - png, Copyright (c) Simon Urbanek
         - raster, Copyright (c) Robert J. Hijmans [cre, aut], Jacob van Etten [ctb], Joe Cheng [ctb], Michael Sumner [ctb], Matteo Mattiuzzi [ctb], Jonathan A. Greenberg [ctb], Oscar Perpinan Lamigueiro [ctb], Andrew Bevan [ctb], Roger Bivand [ctb], Lorenzo Busetto [ctb], Mort Canty [ctb], David Forrest [ctb], Aniruddha Ghosh [ctb], Duncan Golicher [ctb], Josh Gray [ctb], Paul Hiemstra [ctb], Institute for Mathematics Applied Geosciences [cph], Charles Karney [ctb], Steven Mosher [ctb], Jakub Nowosad [ctb], Edzer Pebesma [ctb], Etienne B. Racine [ctb], Barry Rowlingson [ctb], Ashton Shortridge [ctb], Bill Venables [ctb], Rafael Wueest [ctb]
         - sp, Copyright (c) Edzer Pebesma [aut, cre], Roger Bivand [aut], Barry Rowlingson [ctb], Virgilio Gomez-Rubio [ctb], Robert Hijmans [ctb], Michael Sumner [ctb], Don MacQueen [ctb], Jim Lemon [ctb], Josh O'Brien [ctb], Joseph O'Rourke [ctb]
@@ -1386,11 +1364,9 @@ Library.
         - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
-        - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
         - bit, Copyright (c) Michael Chirico [aut, cre], Jens Oehlschlägel [aut], Brian Ripley [ctb]
         - bit64, Copyright (c) Michael Chirico [aut, cre], Jens Oehlschlägel [aut], Leonardo Silvestri [ctb], Ofek Shilon [ctb]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
-        - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Jim Hester [aut], Lionel Henry [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - codetools, Copyright (c) Luke Tierney <luke-tierney at uiowa.edu>
         - gdxrrwMIRO [expanded from: EPL2 with Secondary License GPL-2.0 or greater], Copyright (c) GAMS Development Corp. [aut, cre, cph], Steve Dirkse [aut], Michael Ferris [aut], Rishabh Jain [aut], Frederik Proske [ctb]
@@ -2145,39 +2121,6 @@ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
------------------------------------------------------------------------------
-            The “BSL-1.0 License"
-        applies to:
-        - BH, Copyright (c)
-            Dirk Eddelbuettel,
-            John W. Emerson and
-            Michael J. Kane
------------------------------------------------------------------------------
-
-Boost Software License - Version 1.0 - August 17th, 2003
-
-Permission is hereby granted, free of charge, to any person or organization
-obtaining a copy of the software and accompanying documentation covered by
-this license (the "Software") to use, reproduce, display, distribute,
-execute, and transmit the Software, and to prepare derivative works of the
-Software, and to permit third-parties to whom the Software is furnished to
-do so, all subject to the following:
-
-The copyright notices in the Software and this entire statement, including
-the above license grant, this restriction and the following disclaimer,
-must be included in all copies of the Software, in whole or in part, and
-all derivative works of the Software, unless such copies or derivative
-works are solely in the form of machine-executable object code generated by
-a source language processor.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
-SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
-FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
 
 -----------------------------------------------------------------------------
             The “Apache License 2.0”
