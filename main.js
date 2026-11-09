@@ -6,6 +6,7 @@ import {
   ipcMain,
   dialog,
   safeStorage,
+  screen,
   session,
   shell,
 } from 'electron';
@@ -1248,10 +1249,12 @@ async function createWhatsNewWindow({ force = false } = {}) {
   if (whatsNewContent == null) {
     return;
   }
+  const { width: workAreaWidth, height: workAreaHeight } =
+    screen.getPrimaryDisplay().workAreaSize;
   whatsNewWindow = new BrowserWindow({
     title: "What's New",
-    width: 790,
-    height: 820,
+    width: Math.min(860, workAreaWidth),
+    height: Math.min(860, workAreaHeight),
     minWidth: 600,
     minHeight: 600,
     resizable: true,

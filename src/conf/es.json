@@ -466,7 +466,8 @@
       "title": "Novedades",
       "newFeaturesHdr": "Nuevas funciones",
       "minorImprovementsHdr": "Funciones nuevas menores y mejoras",
-      "cancelButton": "Cerrar"
+      "cancelButton": "Cerrar",
+      "releaseNotes": "Leer las notas de la versión completas"
     },
     "dialogSettings": {
       "title": "Ajustes de GAMS Engine",

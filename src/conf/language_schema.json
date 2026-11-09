@@ -1794,9 +1794,13 @@
             "cancelButton": {
               "type": "string",
               "minLength": 1
+            },
+            "releaseNotes": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 4
+          "minProperties": 5
         },
         "dialogSettings": {
           "type": "object",

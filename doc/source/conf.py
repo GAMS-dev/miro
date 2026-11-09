@@ -39,6 +39,9 @@ html_static_path = [
     "../assets/plugins/jquery.min.js",
     "../assets/plugins/redoc/redoc.standalone.js",
     "../assets/images/configuration_mode/configuration.mp4",
+    # also streamed by the What's New dialog of MIRO 2.14 (src/whats-new/2.14.json)
+    "../assets/videos/meet_mira.mp4",
+    "../assets/videos/meet_mira_poster.jpg",
     "../assets/images/miro-logo-wordmark-white.svg",
 ]
 html_extra_path = ["../miro_server_api.json"]

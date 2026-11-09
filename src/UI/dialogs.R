@@ -74,25 +74,74 @@ showSettingsDialog <- function() {
   ))
 }
 
+renderWhatsNewHighlight <- function(highlight) {
+  if (is.null(highlight)) {
+    return(NULL)
+  }
+  tags$section(
+    class = "whats-new-hero",
+    tags$div(class = "whats-new-eyebrow", renderMiraIcon(), tags$span(highlight$eyebrow)),
+    tags$h3(class = "whats-new-hero-title", HTML(highlight$title)),
+    tags$p(class = "whats-new-lead", HTML(highlight$description)),
+    tags$div(
+      class = "whats-new-media",
+      # preload = "none": nothing is fetched until the user starts the video
+      tags$video(
+        src = highlight$video, poster = highlight$poster,
+        controls = NA, preload = "none", playsinline = NA, `aria-label` = highlight$mediaAlt
+      )
+    ),
+    tags$div(
+      class = "whats-new-features",
+      lapply(highlight$features, function(feature) {
+        tags$div(
+          class = "whats-new-feature",
+          tags$div(class = "whats-new-feature-icon", icon(feature$icon)),
+          tags$div(
+            tags$div(class = "whats-new-feature-title", HTML(feature$title)),
+            tags$div(class = "whats-new-feature-text", HTML(feature$text))
+          )
+        )
+      })
+    ),
+    tags$div(
+      class = "whats-new-hero-footer",
+      tags$p(class = "whats-new-note", HTML(highlight$note)),
+      tags$a(
+        class = "whats-new-cta", href = highlight$link$href, target = "_blank",
+        rel = "noreferrer noopener", highlight$link$text, HTML("&rarr;")
+      )
+    )
+  )
+}
 showWhatsNewDialog <- function(whatsNewData) {
-  makeSection <- function(title, items) {
+  makeSection <- function(title, items, modifier) {
     if (is.null(items) || length(items) == 0) {
       return(NULL)
     }
-    tags$div(
-      tags$h4(title),
+    tags$section(
+      class = "whats-new-section",
+      tags$h4(class = "whats-new-section-title", title),
       tags$ul(
+        class = paste0("whats-new-list whats-new-list-", modifier),
         lapply(items, function(x) tags$li(HTML(x)))
-      ),
-      tags$hr()
+      )
     )
   }
   showModal(modalDialog(
     title = lang$nav$dialogWhatsNew$title,
     tags$div(
       class = "container-fluid whats-new-dialog",
-      makeSection(lang$nav$dialogWhatsNew$newFeaturesHdr, whatsNewData$major),
-      makeSection(lang$nav$dialogWhatsNew$minorImprovementsHdr, whatsNewData$minor)
+      renderWhatsNewHighlight(whatsNewData$highlight),
+      makeSection(lang$nav$dialogWhatsNew$newFeaturesHdr, whatsNewData$major, "major"),
+      makeSection(lang$nav$dialogWhatsNew$minorImprovementsHdr, whatsNewData$minor, "minor"),
+      tags$div(
+        class = "whats-new-footer",
+        tags$a(
+          href = "https://gams.com/miro/release.html", target = "_blank", rel = "noreferrer noopener",
+          lang$nav$dialogWhatsNew$releaseNotes, HTML("&rarr;")
+        )
+      )
     ),
     footer = modalButton(lang$nav$dialogWhatsNew$cancelButton),
     size = "l", fade = TRUE, easyClose = TRUE

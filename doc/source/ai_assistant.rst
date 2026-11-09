@@ -12,6 +12,12 @@ Say we are working with the *transport* example model and have just loaded two s
 
 Mira is just as useful before we get to comparing scenarios at all. Before we even run a model, we can ask it to look over our inputs: *"Do any of the demand or supply values look off?"*. It reviews the input tables we point it to and calls out what stands out - missing values, unusual units, outliers, duplicates - the kind of typo or data-entry slip that is easy to miss by eye but often explains a model that solves to an unexpected result (or does not solve at all).
 
+.. raw:: html
+
+   <video class="miro-video-responsive" controls playsinline preload="metadata" poster="_static/meet_mira_poster.jpg" aria-label="Video: Meet Mira, the AI assistant in GAMS MIRO 2.14">
+     <source src="_static/meet_mira.mp4" type="video/mp4">
+   </video>
+
 .. note::
 
    Mira answers questions about the scenarios currently loaded in the app (a single sandbox scenario or a comparison of several). It does not have access to scenarios you have not loaded, and it cannot change your model or your data - it only reads from the scenario database to answer your question.

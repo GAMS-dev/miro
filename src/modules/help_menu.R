@@ -1,5 +1,8 @@
 observeEvent(input$btOpenWhatsNewDialog, {
-  whatsNewFileName <- file.path("whats-new", paste0(paste(strsplit(MIROVersion, ".", fixed = TRUE)[[1]][1:2], collapse = "."), ".json"))
+  # newest file (like MIRO Desktop), so development versions show the upcoming release
+  whatsNewFiles <- list.files("whats-new", pattern = "^[0-9]+\\.[0-9]+\\.json$")
+  whatsNewVersions <- numeric_version(sub("\\.json$", "", whatsNewFiles))
+  whatsNewFileName <- file.path("whats-new", whatsNewFiles[which.max(whatsNewVersions)])
   whatsNewData <- tryCatch(suppressWarnings(read_json(whatsNewFileName,
     simplifyDataFrame = FALSE,
     simplifyMatrix = FALSE

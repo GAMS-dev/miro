@@ -458,7 +458,8 @@
       "title": "What's New",
       "newFeaturesHdr": "New features",
       "minorImprovementsHdr": "Minor new features and improvements",
-      "cancelButton": "Close"
+      "cancelButton": "Close",
+      "releaseNotes": "Read the full release notes"
     },
     "dialogSettings": {
       "title": "GAMS Engine settings",

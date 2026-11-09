@@ -466,7 +466,8 @@
       "title": "最新动态",
       "newFeaturesHdr": "新功能",
       "minorImprovementsHdr": "小型新功能和改进",
-      "cancelButton": "关闭"
+      "cancelButton": "关闭",
+      "releaseNotes": "阅读完整的版本说明"
     },
     "dialogSettings": {
       "title": "GAMS Engine 设置",
