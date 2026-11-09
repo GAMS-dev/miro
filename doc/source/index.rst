@@ -343,6 +343,7 @@ Have a look at our fact sheets:
    :hidden:
 
    release
+   r_packages
    faqs
    file_formats
    license

@@ -27,6 +27,7 @@ extensions = [
     "sphinx_design",
     "sphinx_copybutton",
     "sphinx_tabs.tabs",
+    "r_packages_ext",
 ]
 templates_path = ["_templates"]
 exclude_patterns = ["Thumbs.db", ".DS_Store"]

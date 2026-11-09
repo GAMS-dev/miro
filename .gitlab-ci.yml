@@ -1268,6 +1268,8 @@ update_doc_job_release:
     DOCKER_TLS_CERTDIR: '/certs'
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
+    # r-src/ package versions for the R package list in the docs
+    GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - git config --global user.email "puma@noreply.gams.com"
@@ -1296,6 +1298,9 @@ update_doc_job:
     - linux
   stage: deploy
   image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  variables:
+    # r-src/ package versions for the R package list in the docs
+    GIT_SUBMODULE_STRATEGY: normal
   before_script:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh

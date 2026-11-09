@@ -5,6 +5,10 @@ from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 import re
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "doc" / "source"))
+from r_packages_ext import write_snapshot  # noqa: E402
 
 
 def select_latest_release(headings, version):
@@ -121,6 +125,7 @@ def update_release_sources(source_dir: Path, version: str, release_date: str) ->
         raise ValueError("Expected exactly one Get GAMS MIRO version label in index.rst")
 
     # Validate both sources before writing either one. Repeated builds are a no-op.
+    write_snapshot(heading[1], source_dir / "r_packages")
     if updated_release != release:
         release_path.write_bytes(updated_release.encode("utf-8"))
     if updated_index != index:

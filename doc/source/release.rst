@@ -1,6 +1,8 @@
 Release notes
 =============
 
+The R version and R packages shipped with each release are listed in :doc:`r_packages`.
+
 .. _v214:
 
 GAMS MIRO 2.14
