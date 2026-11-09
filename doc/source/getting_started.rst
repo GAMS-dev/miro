@@ -4,15 +4,15 @@ GAMS MIRO Quick Start Guide
 Introduction
 ------------
 
-Welcome to the GAMS MIRO Quick Start Guide. This guide is designed to provide a fast, reliable onboarding path to help you transform your existing GAMS or GAMSPy optimization models into fully functional, interactive web applications.
+Welcome to the GAMS MIRO Quick Start Guide. This guide provides a fast, reliable onboarding path to help you transform your existing GAMS or GAMSPy optimization models into fully functional, interactive web applications.
 
 In the following sections, we will walk you through the essential stages of building your first MIRO app. You will learn how to establish a data contract to seamlessly link your model's inputs and outputs to the MIRO interface, launch your application to immediately interact with your data, and customize the user experience using widgets and charts. Finally, we will cover how to package and deploy your application so it can be easily shared with end users.
 
-This quick start guide covers the most important aspects of MIRO application development. The individual aspects are explained in more detail in corresponding linked chapters.
+This quick start guide covers the most important aspects of MIRO application development. The individual aspects are explained in more detail in the linked chapters.
 
 .. note::
 
-   For a more detailed tutorial you can find a complete walkthrough from the implementation of a GAMSPy model to a simple MIRO app and sophisticated custom visualizations `here <./step_by_step_tutorial.html>`__.
+   For a complete walkthrough from the implementation of a GAMSPy model to a simple MIRO app and sophisticated custom visualizations, see the `step-by-step tutorial <./step_by_step_tutorial.html>`__.
 
 .. _miro-components:
 
@@ -152,12 +152,12 @@ Choose How to Get Started with MIRO
 Once your environment is set up, there are several ways to start working with GAMS MIRO:
 
 - **Explore Demo Applications:** You can try out pre-deployed MIRO demo apps to instantly see the capabilities of the interface. To add these apps to your MIRO Library, open MIRO Desktop and click **Edit → Add example apps**. Launch any app by clicking on one of the app tiles. You can find an overview of how to work with a GAMS MIRO app `here <start.html>`__.
-- **Add an Existing MIRO App:** If you already have a fully deployed MIRO application (a ``.miroapp`` file), you can add it directly to your MIRO Library. Simply double-click the ``.miroapp`` file or use **Edit apps** in MIRO Desktop to import it. See `Installing and Running a developed MIRO App <#install-run-app>`__ for details.
-- **Develop Your First App:** If you want to turn your own GAMS or GAMSPy model into a MIRO application, continue with the development workflow starting at `Step 1: Prepare Your Model <#step-1>`__ Pre-configured demo applications are also available as reference implementations and starting points for your own projects. You can download them `here <https://www.gams.com/miro/download.html#demo-section>`__.
+- **Add an Existing MIRO App:** If you already have a fully deployed MIRO application (a ``.miroapp`` file), you can add it directly to your MIRO Library. Simply double-click the ``.miroapp`` file or use **Edit apps** in MIRO Desktop to import it. See `Installing and Running a Developed MIRO App <#install-run-app>`__ for details.
+- **Develop Your First App:** If you want to turn your own GAMS or GAMSPy model into a MIRO application, continue with the development workflow starting at `Step 1: Prepare Your Model <#step-1>`__. Pre-configured demo applications are also available as reference implementations and starting points for your own projects. You can download them `here <https://www.gams.com/miro/download.html#demo-section>`__.
 
 .. _install-run-app:
 
-Installing and Running a developed MIRO App
+Installing and Running a Developed MIRO App
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **To install a MIRO app:**
@@ -173,7 +173,7 @@ Installing and Running a developed MIRO App
 **Once the app is installed:**
 
 - Click on the ``<app_name>`` tile in MIRO Desktop to start the interface.
-- If no default scenario is loaded, click on **Load data** in the left hand menu panel and select one.
+- If no default scenario is loaded, click on **Load data** in the navigation bar and select one.
 - Click on **Solve model** to generate results.
 
 .. _demo-applications:
@@ -223,7 +223,7 @@ Before you can launch a model as a MIRO application, the model must define which
 
       .. _gams-1:
 
-      In our example we use the classic `transportation problem <https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html>`__ from the GAMS model library. The only thing we have to do in the model is to tell MIRO which symbols we want to see in the application. We do this by wrapping the corresponding *symbol declarations* with the tags ``$onExternalInput`` / ``$offExternalInput`` for input data and ``$onExternalOutput`` / ``$offExternalOutput`` for output data. These tags can be used multiple times within a model. Symbols which are not tagged won’t be visible in MIRO.
+      In our example we use the classic `transportation problem <https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html>`__ from the GAMS model library. The only thing we have to do in the model is to tell MIRO which symbols we want to see in the application. We do this by wrapping the corresponding *symbol declarations* with the tags ``$onExternalInput`` / ``$offExternalInput`` for input data and ``$onExternalOutput`` / ``$offExternalOutput`` for output data. These tags can be used multiple times within a model. Symbols that are not tagged are not visible in MIRO.
 
       .. code-block:: gams
          :class: miro-code-max-height-300px
@@ -300,7 +300,7 @@ Before you can launch a model as a MIRO application, the model must define which
          ...
          model.solve()
 
-      Symbols which are not annotated won't be visible in MIRO.
+      Symbols that are not annotated are not visible in MIRO.
 
 Once your model is prepared for MIRO, continue with the next step and launch it in Base Mode to verify that the app starts correctly.
 
@@ -349,7 +349,7 @@ Run the model in MIRO Base Mode to verify that your data contract works and gene
 
       .. _run-miro-gamspy:
 
-      After you mark your miro symbols with ``is_miro_input`` and ``is_miro_output``, you can run MIRO. Navigate to your model directory and launch MIRO from the command line:
+      After you mark your MIRO symbols with ``is_miro_input`` and ``is_miro_output``, you can run MIRO. Navigate to your model directory and launch MIRO from the command line:
 
       .. code-block:: text
 
@@ -357,7 +357,7 @@ Run the model in MIRO Base Mode to verify that your data contract works and gene
 
       You can omit ``--path`` if MIRO is installed in one of the standard locations on Windows or macOS, or if you configured the ``MIRO_PATH`` environment variable.
 
-This initializes the default values for your GAMS MIRO app and creates the necessary data contract. Then, it spawns the GAMS MIRO app.
+This creates the data contract, initializes the default values of your GAMS MIRO app, and then launches the app.
 
 .. admonition:: Expected Output:
    :class: tip
@@ -389,7 +389,7 @@ GAMS Studio and the GAMSPy CLI can start MIRO without executing the model first.
 
       .. dropdown:: Advanced: Start MIRO using the command line
 
-         In case you want to launch MIRO from the command line, the data contract between GAMS and MIRO must be created first (`\<modelname\>_io.json <./faqs.html#file-io>`__). This happens when the model is called in GAMS with the option ``IDCGenerateJSON=path/to/conf_<modelname>/<modelname>_io.json``.
+         To launch MIRO from the command line, the data contract between GAMS and MIRO must be created first (`\<modelname\>_io.json <./faqs.html#file-io>`__). This happens when the model is called in GAMS with the option ``IDCGenerateJSON=path/to/conf_<modelname>/<modelname>_io.json``.
 
          For the *transport* model this would result in the following call:
 
@@ -397,7 +397,7 @@ GAMS Studio and the GAMSPy CLI can start MIRO without executing the model first.
 
             > gams transport.gms IDCGenerateJSON=conf_transport/transport_io.json
 
-         While GAMS Studio automatically creates the required folder *conf_modelname* when launching MIRO, this does not happen when GAMS is called from the command line, so you have to create it manually. Once the model has been run with ``IDCGenerateJSON``, the file *conf_<modelname>/<modelname>_io*.json should have been created.
+         While GAMS Studio automatically creates the required folder *conf_modelname* when launching MIRO, this does not happen when GAMS is called from the command line, so you have to create it manually. Once the model has been run with ``IDCGenerateJSON``, the file *conf_<modelname>/<modelname>_io.json* has been created.
 
          **Note**: Whenever changes are made to the model that are relevant for MIRO (i.e. symbols tagged with ``$onExternalInput`` / ``$offExternalInput`` or ``$onExternalOutput`` / ``$offExternalOutput`` have been changed), the data contract must be updated!
 
@@ -406,7 +406,7 @@ GAMS Studio and the GAMSPy CLI can start MIRO without executing the model first.
 
             When launching MIRO via GAMS Studio, you will find a scenario named *default* in the database after the startup. When starting MIRO via the command line you can create this default scenario with the GAMS option ``IDCGenerateGDX=data_<modelname>/default.gdx``.
 
-         Before you can start MIRO, a few environment variables need to be set. On Windows the default installation location is ``C:\Program Files\GAMS MIRO\GAMS MIRO.exe`` or ``C:\Users\<user>\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe`` depending on whether MIRO was installed for all users or not.
+         Before you can start MIRO, a few environment variables need to be set. On Windows, the default installation location is ``C:\Program Files\GAMS MIRO\GAMS MIRO.exe`` or ``C:\Users\<user>\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe`` depending on whether MIRO was installed for all users or not.
 
          .. tab-set::
 
@@ -447,7 +447,7 @@ GAMS Studio and the GAMSPy CLI can start MIRO without executing the model first.
          .. admonition:: Note:
             :class: warning
 
-            By default, MIRO uses the GAMS version, which is in the PATH of your operating system. By setting another environment variable *GAMS_SYS_DIR*, you can tell MIRO where to look for GAMS instead. Note that at least GAMS version 30.2 is required to use MIRO.
+            By default, MIRO uses the GAMS version that is in the PATH of your operating system. By setting the environment variable *GAMS_SYS_DIR*, you can tell MIRO where to look for GAMS instead. Note that at least GAMS version 30.2 is required to use MIRO.
 
    .. tab-item:: GAMSPy
 
@@ -484,7 +484,7 @@ The navigation bar provides access to the main views of a MIRO application:
 #. **Load scenarios:**
    Explore and manage scenarios stored in the MIRO database.
 #. **Compare scenarios:**
-   Compare results and scenarios in split-view or multi-scenario comparison modes.
+   Compare scenarios in split view, tab view, pivot view or custom comparison modes.
 
 The navigation bar also contains the main action buttons:
 
@@ -515,7 +515,7 @@ Additional functions are available in the header bar:
 Step 3: Customize the App (Configuration Mode)
 ----------------------------------------------
 
-The default interface is fully functional, but you can enhance it by assigning widgets (sliders, drop-downs), defining charts, and setting global options. Read about the app configuration in detail `here <./customize.html>`__.
+The default interface is fully functional, but you can enhance it by assigning widgets (sliders, dropdown menus), defining charts, and setting global options. Read about the app configuration in detail `here <./customize.html>`__.
 
 - **In GAMS Studio**: Launch the app using **Configuration Mode** instead of **Base Mode**.
 - **Using GAMSPy CLI**: Run the following command:
@@ -535,7 +535,7 @@ You will enter a configuration screen. Any change you save (e.g., turning a scal
 - Input Widgets:
   Input widgets can be used to communicate input data with GAMS/GAMSPy. Examples of such widgets include: tables, sliders, dropdown menus, date selectors or checkboxes.
 - Graphs:
-  GAMS/GAMSPy symbols can be visualized as graphs. A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also write your own custom renderer.
+  GAMS/GAMSPy symbols can be visualized as graphs. Many chart types are available and only need to be configured, i.e. adapted to your model-specific data. To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also write your own custom renderer.
 - Colors:
   Configure custom themes.
 - Database management:
@@ -555,7 +555,7 @@ When the MIRO app is completely configured, i.e. all graphics have been created,
 
       .. _gams-2:
 
-      Deploying MIRO applications can be done directly `from within GAMS Studio <./studio.html#studio-deploy>`__. In the MIRO menu, select *Assembly and Deploy*. In the dialog that opens, you first need to specify which files belong to your model. These are the main model file and all other files that are used by the model during a model run. Select all relevant files in the file selection window and click 'Create'. The information is then stored in the *model assembly file*. Optionally, you can Choose your execution environment (e.g., *Single-user* or *Multi-user*) and then click *Deploy*. See `Deployment <./deployment.html>`__ for more information.
+      Deploying MIRO applications can be done directly `from within GAMS Studio <./studio.html#studio-deploy>`__. In the MIRO menu, select *Assembly and Deploy*. In the dialog that opens, you first need to specify which files belong to your model. These are the main model file and all other files that are used by the model during a model run. Select all relevant files in the file selection window and click *Create*. The information is then stored in the *model assembly file*. Optionally, choose your execution environment (e.g., *Single-user* or *Multi-user*) and then click *Deploy*. See `Deployment <./deployment.html>`__ for more information.
 
    .. tab-item:: GAMSPy
 

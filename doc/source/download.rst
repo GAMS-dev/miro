@@ -16,9 +16,9 @@ Install GAMS MIRO Desktop
 
       .. note::
 
-         To be able to solve models in GAMS MIRO, GAMS 30.2 or later is required. You can download the latest GAMS version `here <https://www.gams.com/download/>`__.
+         To solve models in GAMS MIRO, you need GAMS 30.2 or later. You can download the latest GAMS version `here <https://www.gams.com/download/>`__.
 
-      GAMS MIRO Desktop itself is open source software. In order for GAMS to interact with MIRO, the ``MIRO connector`` is required, which is included in the GAMS system `from GAMS version 30.2 <https://www.gams.com/download>`__. Without a valid license, the connector has limitations on the number of indexed symbols that can be communicated with MIRO. A maximum of 10 indexed symbols can be included in `$on/offExternalInput and $on/offExternalOutput <./model.html#model-adjustments>`__.
+      GAMS MIRO Desktop itself is open source software. For GAMS to interact with MIRO, the ``MIRO connector`` is required, which is included in the GAMS system `from GAMS version 30.2 <https://www.gams.com/download>`__. Without a valid license, the connector has limitations on the number of indexed symbols that can be communicated with MIRO. A maximum of 10 indexed symbols can be included in `$on/offExternalInput and $on/offExternalOutput <./model.html#model-adjustments>`__.
 
    .. tab-item:: GAMSPy
 
@@ -28,7 +28,7 @@ Install GAMS MIRO Desktop
 
       .. note::
 
-         To be able to solve models in GAMS MIRO, GAMSPy 0.12 or later is required.
+         To solve models in GAMS MIRO, you need GAMSPy 0.12 or later.
 
       Both GAMS MIRO Desktop and GAMSPy are open source software.
 
@@ -119,15 +119,15 @@ Please check the `release notes <./release.html>`__.
             .. rubric:: Installation
 
 
-            #. In case a current R version (4.4 or later) is not yet installed on your system, you need to do this first. You can download R `here <https://cloud.r-project.org/>`__.
+            #. If a current R version (4.4 or later) is not yet installed on your system, install it first. You can download R `here <https://cloud.r-project.org/>`__.
             #. For MIRO to work, compilers as well as the system libraries libpng and libcurl need to be installed. For example, on Fedora:
 
                .. code-block:: console
 
                   > sudo dnf install libcurl-devel libpng-devel
 
-               If there are no compilers installed on your system yet, we recommend installing build tools: ``> sudo dnf groupinstall "Development Tools"`` (Fedora).
-            #. The first time you launch GAMS MIRO, some R packages need to be installed. They are installed either at the R installation path (``rPath/miro-library``) or in the user's home directory (``$XDG_CONFIG_HOME/miro-library`` or ``~/.config/miro-library``) depending on whether MIRO was installed for all users or only for the current user. You will be guided through this installation process.
+               If no compilers are installed on your system yet, we recommend installing the build tools: ``> sudo dnf groupinstall "Development Tools"`` (Fedora).
+            #. The first time you launch GAMS MIRO, some R packages need to be installed. They are installed either in the R installation path (``rPath/miro-library``) or in the user's home directory (``$XDG_CONFIG_HOME/miro-library`` or ``~/.config/miro-library``) depending on whether MIRO was installed for all users or only for the current user. You will be guided through this installation process.
 
             .. note::
 
@@ -138,35 +138,35 @@ Please check the `release notes <./release.html>`__.
 GAMS MIRO workspace
 ~~~~~~~~~~~~~~~~~~~
 
-The workspace is the place where `deployed apps <./deployment.html>`__ are stored and cached and logs are written. The MIRO database with all user scenarios is also located there. Furthermore all user settings and `additional R packages <./configuration_advanced.html#additional-r-packages>`__ are kept in the workspace.
+The workspace is where `deployed apps <./deployment.html>`__ are stored and cached and where logs are written. The MIRO database with all user scenarios is also located there. Furthermore, all user settings and `additional R packages <./configuration_advanced.html#additional-r-packages>`__ are kept in the workspace.
 
-On all platforms, the MIRO workspace is located at ``~/.miro``. On MacOS and Linux, ``~`` is resolved to ``$HOME``, on Windows to ``%USERPROFILE%``.
+On all platforms, the MIRO workspace is located at ``~/.miro``. On macOS and Linux, ``~`` resolves to ``$HOME``; on Windows, it resolves to ``%USERPROFILE%``.
 
 .. _uninstallation-section:
 
 Uninstall GAMS MIRO
 -------------------
 
-To uninstall the software, please follow the default procedure of your operating system. The uninstaller only deletes the data in the directory where GAMS MIRO was installed. On Windows you will be asked if you also want to permanently delete the MIRO database with all your settings. This refers to data in the `MIRO workspace <#miro-workspace>`__. If you agree, the entire directory will be deleted. On both MacOS and Linux systems, the MIRO workspace is not deleted. To remove the data permanently, you have to do this manually.
+To uninstall the software, follow the default procedure of your operating system. The uninstaller only deletes the data in the directory where GAMS MIRO was installed. On Windows, you will be asked if you also want to permanently delete the MIRO database with all your settings. This refers to data in the `MIRO workspace <#miro-workspace>`__. If you agree, the entire directory will be deleted. On macOS and Linux, the MIRO workspace is not deleted. To remove this data permanently, delete the workspace manually.
 
 .. _demo-section:
 
 Demo applications
 -----------------
 
-We provide some GAMS MIRO demo applications. You can use these to get to know some of MIRO's basic features. To run the sample applications, you must first extract them. More about this `here <./getting_started.html#demo-applications>`__.
+We provide several GAMS MIRO demo applications that introduce MIRO's basic features. To run the demo applications, you must first extract them. Learn more `here <./getting_started.html#demo-applications>`__.
 
 .. container:: miro-download-buttons
 
    .. button-link:: ./GAMS-MIRO-Demo-Apps.zip
       :color: primary
 
-      Download Demo applications
+      Download GAMS demo apps
 
    .. button-link:: ./GAMS-MIRO-Demo-Apps-GAMSPy.zip
       :color: primary
 
-      Download GAMSPy Demo apps
+      Download GAMSPy demo apps
 
 .. raw:: html
 

@@ -17,7 +17,7 @@ Introduction
 .. _model-1:
 
 
-Let's now turn a GAMS model into a MIRO app. When developing GAMS MIRO, we focused on automating this process and making it possible with very few adjustments to your model. In order to get started, it's a good idea to have a look at the GAMS code of the `demo applications <./download.html#demo-section>`__.
+Let's now turn a GAMS model into a MIRO app. When developing GAMS MIRO, we focused on automating this process so that it requires very few adjustments to your model. To get started, it's a good idea to have a look at the GAMS code of the `demo applications <./download.html#demo-section>`__.
 
 The model *transport* is one of these demo applications that come with your GAMS MIRO installation. However, for illustration purposes we now take the original *trnsport.gms* model from the GAMS `Model Library <https://www.gams.com/latest/gamslib_ml/libhtml/>`__.
 
@@ -29,7 +29,7 @@ If you want to join us in going step by step from the "raw" model to our first M
 .. admonition:: Case sensitivity
    :class: warning
 
-   MIRO specific files and directories (*conf\_<modelname>*, *data\_<modelname>*, *static\_<modelname>*, *renderer\_<modelname>*, *scripts\_<modelname>* and *<modelname>_files.txt*) must be lower case!
+   MIRO-specific files and directories (*conf\_<modelname>*, *data\_<modelname>*, *static\_<modelname>*, *renderer\_<modelname>*, *scripts\_<modelname>* and *<modelname>_files.txt*) must be lowercase!
 
 .. _creating-section:
 
@@ -74,7 +74,7 @@ Model adjustments
              symbol_3(dim4)        'NOT displayed in MIRO';
 
       Here, the parameters ``symbol_1`` and ``symbol_2`` are declared between the tags ``$onExternalInput`` and ``$offExternalInput``. They will be visible in MIRO (e.g. as tables).
-      ``symbol_3``, on the other hand, was declared outside the keywords. This parameter will not be visible in MIRO (however, of course it is still available as a GAMS symbol in your model).
+      ``symbol_3``, on the other hand, was declared outside the tags. This parameter will not be visible in MIRO (it is, of course, still available as a GAMS symbol in your model).
 
    .. tab-item:: GAMSPy
 
@@ -94,7 +94,7 @@ Model adjustments
          symbol_2 = Parameter(m, name="symbol_2", domain=[dim3], is_miro_input=True)
          symbol_3 = Parameter(m, name="symbol_3", domain=[dim4])
 
-      Here, the parameters ``symbol_1`` and ``symbol_2`` are defined using ``is_miro_input=True``. They will be visible in MIRO (e.g. as tables). ``symbol_3`` will not be visible in MIRO (however, of course it is still available as a GAMS symbol in your model).
+      Here, the parameters ``symbol_1`` and ``symbol_2`` are defined using ``is_miro_input=True``. They will be visible in MIRO (e.g. as tables). ``symbol_3`` will not be visible in MIRO (it is, of course, still available as a GAMS symbol in your model).
 
 
 The following GAMS symbols can be used in GAMS MIRO:
@@ -106,9 +106,9 @@ The following GAMS symbols can be used in GAMS MIRO:
 - `Variables (output only) <https://www.gams.com/latest/docs/UG_Variables.html>`__
 - `Equations (output only) <https://www.gams.com/latest/docs/UG_Equations.html>`__
 - `GAMS Options (not for GAMSPy) <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine>`__
-- `Double dash parameters (not for GAMSPy) <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__
+- `Double-dash parameters (not for GAMSPy) <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__
 
-The configuration of GAMS Options and double dash parameters differs from the other symbols. Learn more about this `here <#command-line>`__.
+The configuration of GAMS options and double-dash parameters differs from the other symbols. Learn more about this `here <#command-line>`__.
 
 
 
@@ -116,7 +116,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
 .. admonition:: File encoding
    :class: warning
 
-   Your GAMS model files need to be encoded with UTF-8. In GAMS Studio you can change the encoding of your file via *Edit* → *Encoding* → *convert to* ... → *UTF-8*. Other file encodings are not supported in GAMS MIRO!
+   Your GAMS model files need to be encoded with UTF-8. In GAMS Studio you can change the encoding of your file via *Edit* → *Encoding* → *convert to* ... → *UTF-8*. GAMS MIRO does not support other file encodings!
 
    .. image:: ../assets/images/studio/encoding_studio.png
       :alt: File encoding in GAMS Studio
@@ -161,7 +161,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
 
          Parameter c(i,j) 'transport cost in thousands of dollars per case';
 
-      Let's import some of the data from MIRO, namely the parameters ``a``, ``b`` and ``d`` as well as the scalar ``f``. In order to tell MIRO that you want these symbols to come from there, we now flag them with the mentioned annotations in the symbol declarations:
+      Let's import some of the data from MIRO, namely the parameters ``a``, ``b`` and ``d`` as well as the scalar ``f``. To tell MIRO that these symbols should come from there, we flag them with the tags mentioned above in the symbol declarations:
 
       .. code:: gams
 
@@ -225,7 +225,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
 
          [...]
 
-      That's it. We defined both input and output data for use in MIRO. If you use GAMS Studio, the model is now ready to be launched in MIRO. If you use the command line instead, please follow `these steps <./getting_started.html#start-via-command-line>`__ before starting MIRO.
+      That's it. We have defined both input and output data for use in MIRO. If you use GAMS Studio, the model is now ready to be launched in MIRO. If you use the command line instead, please follow `these steps <./getting_started.html#start-via-command-line>`__ before starting MIRO.
 
    .. tab-item:: GAMSPy
 
@@ -253,7 +253,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
          f = Parameter(m, name="f", records=90, description="freight in dollars per case per thousand miles")
 
 
-      Let's import some of the data from MIRO, namely the parameters ``a``, ``b`` and ``d`` as well as the scalar ``f``. In order to tell MIRO that you want these symbols to come from there, we now flag them with the mentioned argument ``is_miro_input=True``:
+      Let's import some of the data from MIRO, namely the parameters ``a``, ``b`` and ``d`` as well as the scalar ``f``. To tell MIRO that these symbols should come from there, we flag them with the argument ``is_miro_input=True``:
 
       .. code:: python
 
@@ -290,7 +290,7 @@ The configuration of GAMS Options and double dash parameters differs from the ot
          x = Variable(m, name="x", domain=[i, j], type="Positive", is_miro_output=True, description="shipment quantities in cases")
          z = Variable(m, name="z", is_miro_output=True, description="total transportation costs in thousands of dollars")
 
-      That's it. We defined both input and output data for use in MIRO and the model is ready to be launched in MIRO.
+      That's it. We have defined both input and output data for use in MIRO, and the model is ready to be launched in MIRO.
 
 
 .. _launch-miro:
@@ -323,7 +323,7 @@ Launch MIRO
 
       .. tip::
 
-         In order to launch MIRO via the command line, please follow the steps explained `here <./getting_started.html#start-via-command-line>`__.
+         To launch MIRO via the command line, follow the steps explained `here <./getting_started.html#start-via-command-line>`__.
 
    .. tab-item:: GAMSPy
 
@@ -333,7 +333,7 @@ Launch MIRO
 
 
 
-      In order to launch the MIRO app for this model via the `GAMSPy CLI <https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html>`__, we simply run the following command:
+      To launch the MIRO app for this model via the `GAMSPy CLI <https://gamspy.readthedocs.io/en/latest/user/advanced/miro.html>`__, we simply run the following command:
 
 
       .. code-block:: console
@@ -342,7 +342,7 @@ Launch MIRO
 
       where ``<path_to_your_model>`` is the path to the *transport.py* file and ``<path_to_your_MIRO_installation>`` is the path to your MIRO executable file (e.g. ``C:\Program Files\GAMS MIRO\GAMS MIRO.exe`` on Windows, ``/Applications/GAMS MIRO.app`` on macOS or ``~/GAMS-MIRO-2.9.0.AppImage`` on Linux). You can omit ``--path`` in case MIRO is installed in one of the standard locations on Windows or macOS.
 
-      Note that you can also set the MIRO installation path as an environment variable: ``MIRO_PATH``, so that you do not have to enter it every time you use the GAMSPy CLI.
+      You can also set the MIRO installation path in the environment variable ``MIRO_PATH`` so that you do not have to enter it every time you use the GAMSPy CLI.
 
 
 Congratulations! Your first MIRO app is now up and running!
@@ -351,7 +351,7 @@ Congratulations! Your first MIRO app is now up and running!
 .. image:: ../assets/images/initial-screen.png
    :alt: initial GAMS MIRO screen
 
-With the basic configuration you can load data, modify it from within the interface and start or stop a GAMS job. You also have access to the *log* and *listing* (*lst*) files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined. Since MIRO is connected to a database, you can store results there, fetch previously saved results and modify them or use them to compare with other scenarios.
+With the basic configuration you can load data, modify it from within the interface and start or stop a GAMS job. You also have access to the *log* and *listing* (*lst*) files of GAMS as well as all files generated during the run. When the model has finished successfully, you can examine the results. Since MIRO is connected to a database, you can store results there, fetch previously saved results and modify them or use them to compare with other scenarios.
 
 
 
@@ -369,7 +369,7 @@ The GAMS/MIRO data contract
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-All GAMS symbols, which are marked with the ``$onExternalInput`` / ``$offExternalInput`` or ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPY: ``is_miro_input=True`` or ``is_miro_output=True``) define the *GAMS/MIRO data contract*. This contract contains the metadata of all included symbols and is generated automatically each time MIRO is run in `development mode <./model.html#development-mode>`__. It is stored in the *<modelname>_io.json* file located in the *conf\_<modelname>* directory.
+All GAMS symbols that are marked with the ``$onExternalInput`` / ``$offExternalInput`` or ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPy: ``is_miro_input=True`` or ``is_miro_output=True``) define the *GAMS/MIRO data contract*. This contract contains the metadata of all included symbols and is generated automatically each time MIRO is run in `development mode <./model.html#development-mode>`__. It is stored in the *<modelname>_io.json* file located in the *conf\_<modelname>* directory.
 
 
 
@@ -378,7 +378,7 @@ All GAMS symbols, which are marked with the ``$onExternalInput`` / ``$offExterna
 
    The *<modelname>_io.json* file should never be touched!
 
-The database schema that GAMS MIRO uses internally depends directly on the structure of the symbols in the data contract. When you launch a MIRO application for the first time, database tables are created according to this schema. If you change the structure of your data contract in a way that is incompatible with the current database layout, MIRO will prompt you with a `database migration wizard <deployment.html#db-migration>`__ to migrate your data.
+The database schema that GAMS MIRO uses internally depends directly on the structure of the symbols in the data contract. MIRO creates the database tables according to this schema: the tables for scalars when you launch a MIRO application for the first time, and the tables for all other symbols as soon as data of the symbol is stored in the database for the first time (e.g. when the default scenario is imported at startup or when you save a scenario). If you change the structure of your data contract in a way that is incompatible with the current database layout, MIRO will prompt you with a `database migration wizard <deployment.html#db-migration>`__ to migrate your data.
 
 .. _gams-symbols:
 
@@ -388,9 +388,9 @@ GAMS symbols
 
 
 
-In this section we will see how the various GAMS symbols (sets, parameters, variables, etc.) can be imported and exported into/from MIRO.
+In this section we will see how the various GAMS symbols (sets, parameters, variables, etc.) can be imported into and exported from MIRO.
 
-**Note**: GAMS symbols do not have to be displayed in MIRO. It is clearer and usually even advisable to integrate only those symbols that should be visible and modifiable by the end user.
+**Note**: GAMS symbols do not have to be displayed in MIRO. It is clearer and usually advisable to integrate only those symbols that should be visible and modifiable by the end user.
 
 **Note**: It is not possible to use the same GAMS symbol both as input and output data in MIRO. However, there is an option to `use output data as input data <./configuration_symbols.html#symbol-links>`__.
 
@@ -555,7 +555,7 @@ When we start GAMS MIRO and load the default scenario that was automatically cre
 
 
 .. image:: ../assets/images/deploy_pickstock2.png
-   :alt: Pickstock: imput symbols displayed in MIRO
+   :alt: Pickstock: input symbols displayed in MIRO
    :class: miro-image-max-height-200pt
 
 In this example the parameter ``price`` has two indices: ``date`` and ``symbol``. Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol). The value column of a parameter is always called *value* and aliased with the explanatory text of the parameter. This type of representation of a GAMS parameter is what we call the *parameter view* or *list view*.
@@ -585,7 +585,7 @@ General
 """""""
 
 
-Tabular data can be declared and initialized in GAMS using a `table statement <https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Tables>`__ (in GAMSPy: ``is_miro_table=True``). For two and higher-dimensional parameters this provides an easier and more concise method of data entry than the list based approach, since - at least in smaller tables - each label appears only once.
+Tabular data can be declared and initialized in GAMS using a `table statement <https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Tables>`__ (in GAMSPy: ``is_miro_table=True``). For two- and higher-dimensional parameters, this provides an easier and more concise method of data entry than the list-based approach, since - at least in smaller tables - each label appears only once.
 
 A symbol declared as a table in GAMS is also displayed as such in MIRO. Each set element of the last index is displayed in a separate column. We call this the *table view* of a parameter.
 
@@ -721,14 +721,14 @@ Tables in MIRO
 """"""""""""""
 
 
-The usage of a table statement affects the `data contract <./model.html#data-contract>`__ between GAMS and MIRO. Instead of the last dimension of the symbol, its elements are now communicated as columns. The database schema that GAMS MIRO uses internally depends directly on the data contract between GAMS and MIRO, i.e. the structure of your exported parameters, equations, variables, and quantities. When you save a scenario for the first time, database tables are created according to this schema. If you change the structure of your data contract in a way that is incompatible with the current database layout, MIRO will prompt you with a `database migration wizard <deployment.html#db-migration>`__ to migrate your data.
+The usage of a table statement affects the `data contract <./model.html#data-contract>`__ between GAMS and MIRO. Instead of the last dimension of the symbol, its elements are now communicated as columns. Since the database schema that GAMS MIRO uses internally depends directly on the data contract, changing a symbol to a table (or back) changes the database layout. MIRO will then prompt you with a `database migration wizard <deployment.html#db-migration>`__ to migrate your data.
 
 
 
 
 .. tip::
 
-   Unlike using the GAMS table method, the `pivot option <./widgets.html#table-option-pivot>`__ set in the MIRO Configuration Mode, does NOT affect the structure of the data contract. The number of columns are therefore variable. If you just want to display all elements of a set side by side in a separate column you should use this option instead.
+   Unlike the GAMS table statement, the `pivot option <./widgets.html#table-option-pivot>`__ set in the MIRO Configuration Mode does NOT affect the structure of the data contract. The number of columns is therefore variable. If you just want to display each element of a set side by side in a separate column, use this option instead.
 
 **If there is a MIRO-internal pivot option, why use a table statement in GAMS at all?**
 The most important aspect here is *visualization*:
@@ -936,7 +936,7 @@ We want to configure a line chart in which the price trend of each stock symbol 
    :alt: Line chart configuration without Table statement
    :class: miro-image-max-height-250pt
 
-Notice, however, that there is an important difference between the previous example and this one. In the previous example, the structure of the table was independent of the data: when a new shipment is added, we simple add another row to the table. The number and names of the columns is static! Now the structure of the table depends on the data. If we were to import data from another stock index - say the French CAC40 - the table would have 40 columns with totally different names. Thus, the pivoting - the transformation of the table from the list view to the table view - has to be done internally: In the category *Y data* we can select a domain we want to pivot. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
+Notice, however, that there is an important difference between the previous example and this one. In the previous example, the structure of the table was independent of the data: when a new shipment is added, we simply add another row to the table. The number and names of the columns are static! Now the structure of the table depends on the data. If we were to import data from another stock index - say the French CAC40 - the table would have 40 columns with totally different names. Thus, the pivoting - the transformation of the table from the list view to the table view - has to be done internally: In the category *Y data* we can select a domain we want to pivot. If we select the domain *stock symbol* here, the tool plots a line for each individual stock symbol:
 
 
 .. image:: ../assets/images/single-col-line-domain.png
@@ -971,7 +971,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
       In the following examples, the symbol declared as a table in GAMS would still be displayed in the regular list view:
 
-      - The set of the of the affected parameter index is declared between the ``$on-/offExternalInput`` tags.
+      - The set of the affected parameter index is declared between the ``$on-/offExternalInput`` tags.
         Example:
 
         .. code:: gams
@@ -985,7 +985,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
         Here, the sets ``date`` and ``symbol`` are declared to be MIRO input elements. This means that they are populated from MIRO. At the same time the set ``symbol`` should serve as header for the parameter ``price``. As a dynamic number of set elements would result in a dynamic number of columns, this constellation is not allowed in the table view.
 
-      - The set of the of the affected parameter index is `defined implicitly <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__.
+      - The set of the affected parameter index is `defined implicitly <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__.
         Example:
 
         .. code:: gams
@@ -997,7 +997,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
            Table price(date<,symbol<) 'Price';
            $offExternalInput
 
-        Here, the sets are declared outside the ``$on-/offExternalInput`` tags but the definition, i.e. the population with elements, takes place implicitly via the data statement ``price(date<,symbol<)``. The ``<`` `signs <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ signal that the sets ``date`` and ``price`` will be defined implicitly via the parameter ``price`` (see also :ref:`here <implicit-set>`). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, the parameter ``price`` is displayed in the list view.
+        Here, the sets are declared outside the ``$on-/offExternalInput`` tags but the definition, i.e. the population with elements, takes place implicitly via the data statement ``price(date<,symbol<)``. The ``<`` `signs <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ signal that the sets ``date`` and ``symbol`` will be defined implicitly via the parameter ``price`` (see also :ref:`here <implicit-set>`). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, the parameter ``price`` is displayed in the list view.
 
       - Only multi-dimensional parameters can be pivoted. In the following example the parameter ``oneDim`` would be displayed in list view even when the table statement is used:
 
@@ -1005,7 +1005,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
            $onExternalInput
            Table oneDim(dom1) 'One dimension';
-           $onExternalOutput
+           $offExternalInput
 
       - Since the domains of a parameter declared with the table statement are static, `Universal Sets <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_UniversalSet>`__ cannot be used as the last index position:
 
@@ -1013,7 +1013,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
            $onExternalInput
            Table someParameter(dom1, dom2, *) '* as last index';
-           $onExternalOutput
+           $offExternalInput
 
    .. tab-item:: GAMSPy
 
@@ -1025,7 +1025,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
       In the following examples, the symbol declared as a table in GAMSPy will trigger an exception:
 
-      - The set of the of the affected parameter index is part of the MIRO app.
+      - The set of the affected parameter index is part of the MIRO app.
         Example:
 
         .. code:: python
@@ -1035,9 +1035,9 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
            price = Parameter(m, name="price", domain=[date,symbol], is_miro_input=True, is_miro_table=True, description="Price")
 
-        Here, the sets ``date`` and ``symbol`` are declared to be MIRO input elements. This means that they are populated from MIRO. At the same time the set ``symbol`` should serve as header for the parameter ``price``. As a dynamic number of set elements would result in a dynamic number of columns, this constellation is not allowed in the table view and GAMSPy raises an Exception.
+        Here, the sets ``date`` and ``symbol`` are declared to be MIRO input elements. This means that they are populated from MIRO. At the same time the set ``symbol`` should serve as header for the parameter ``price``. As a dynamic number of set elements would result in a dynamic number of columns, this constellation is not allowed in the table view and GAMSPy raises an exception.
 
-      - The set of the of the affected parameter index is `defined implicitly <https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition>`__.
+      - The set of the affected parameter index is `defined implicitly <https://gamspy.readthedocs.io/en/latest/user/basics/set.html#implicit-set-definition>`__.
         Example:
 
         .. code:: python
@@ -1049,7 +1049,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
         Here, the sets are not included in the MIRO app but the definition, i.e. the population with elements, takes place implicitly via the ``domain_forwarding`` attribute. This attribute signals GAMSPy that the sets ``date`` and ``symbol`` will be defined implicitly via the parameter ``price`` (see also :ref:`here <implicit-set>`). The set ``symbol`` should be the header of parameter ``price`` but at the same time the set ``symbol`` is implicitly defined in MIRO by parameter ``price``. To avoid conflicts, GAMSPy raises an exception.
 
-      - Only multi-dimensional parameters can be pivoted. In the following example, the parameter ``oneDim`` parameter cannot be defined as a table:
+      - Only multi-dimensional parameters can be pivoted. In the following example, the parameter ``oneDim`` cannot be defined as a table:
 
         .. code:: python
 
@@ -1059,7 +1059,7 @@ There are some restrictions when using the GAMS Table statement. Only sets whose
 
         .. code:: python
 
-           someParameter = Parameter(m, name="someParameter", domain=[dom1,dom2,*], is_miro_input=True, is_miro_table=True, description="* as last index")
+           someParameter = Parameter(m, name="someParameter", domain=[dom1,dom2,"*"], is_miro_input=True, is_miro_table=True, description="* as last index")
 
 
 .. _display-scalars:
@@ -1142,7 +1142,7 @@ Scalars
          In case you want each widget to be displayed on a separate sheet, there is an `option to do so <./configuration_symbols.html#aggregate-widgets>`__.
 
 
-      They are merged in a joint table in the interface by default. This means that all scalars in the GAMSPy model that are visble in MIRO are shown in the app in one single table called ``scalars``. The same is also true for output scalars. These are summarized in the results section in a table called ``scalars_out``. This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the ``scalars`` table. Thus, it improves compactness and flexibility - the database schema stays fixed even when you add or remove certain scalars.
+      They are merged in a joint table in the interface by default. This means that all scalars in the GAMSPy model that are visible in MIRO are shown in the app in one single table called ``scalars``. The same is also true for output scalars. These are summarized in the results section in a table called ``scalars_out``. This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the ``scalars`` table. Thus, it improves compactness and flexibility - the database schema stays fixed even when you add or remove certain scalars.
 
       Example:
 
@@ -1236,7 +1236,7 @@ Singleton Sets
 
             <span id="singleton-compile"></span>
 
-         Both the element label and the element text of a Singleton Set can be migrated to compile time variables using the Dollar Control Options `eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__, `evalGlobal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset>`__, and `evalLocal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset>`__. For more information see `here <#command-line>`__.
+         Both the element label and the element text of a singleton set can be migrated to compile-time variables using the Dollar Control Options `eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__, `evalGlobal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset>`__, and `evalLocal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset>`__. For more information see `here <#command-line>`__.
 
    .. tab-item:: GAMSPy
 
@@ -1260,7 +1260,7 @@ Singleton Sets
          )
 
          multidim =  Set(m, name="multidim", domain = [i,j], is_miro_input=True, records = s)
-         multidim2 = Set(m, name="multidim", domain = [i,j], is_miro_input=True, records = t)
+         multidim2 = Set(m, name="multidim2", domain = [i,j], is_miro_input=True, records = t)
 
 
       .. image:: ../assets/images/singleton-multi-table.png
@@ -1289,7 +1289,7 @@ Variables
 ^^^^^^^^^
 
 
-`Variables <https://www.gams.com/latest/docs/UG_Variables.html>`__ are entities whose values are unknown until after a model has been solved. For this reason, variables can only be integrated into MIRO to show results. Therefore, if we want to display a variable in MIRO, we need to declare it between the ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPY: ``is_miro_output=True``) .
+`Variables <https://www.gams.com/latest/docs/UG_Variables.html>`__ are entities whose values are unknown until after a model has been solved. For this reason, variables can only be integrated into MIRO to show results. Therefore, if we want to display a variable in MIRO, we need to declare it between the ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPy: ``is_miro_output=True``).
 
 Another property of variables: While a GAMS parameter has a single value associated with each unique label combination, a variable has several (``level``, ``marginal``, ``lower bound``, ``upper bound`` and ``scale``). When you tag a variable to be displayed in MIRO, all of its attributes will be displayed. If you are only interested in a subset of these attributes, you need to assign them to a parameter and tag this parameter for display in MIRO.
 
@@ -1341,7 +1341,7 @@ Equations
 ^^^^^^^^^
 
 
-Equations are treated identically with variables, i.e. they have a fixed number of 4 value columns, namely ``level``, ``marginal``, ``lower bound``, ``upper bound`` and ``scale``.
+Equations are treated the same as variables, i.e. they have a fixed number of 5 value columns, namely ``level``, ``marginal``, ``lower bound``, ``upper bound`` and ``scale``.
 Example:
 
 
@@ -1390,7 +1390,7 @@ Scalar Variables & Equations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-As with the scalars, 0-dimensional variables and equations are also specially handled to save space. Examples for 0-dimensional variables and equations are the objective function value and the objective function. Since the dimension of both types is the same, 0-dimensional variables and equations are displayed together in one table (similar to `scalars and 0/1-dimensional singleton sets <#display-scalars>`__).
+As with the scalars, 0-dimensional variables and equations are also specially handled to save space. Examples of 0-dimensional variables and equations are the objective function value and the objective function. Since the dimension of both types is the same, 0-dimensional variables and equations are displayed together in one table (similar to `scalars and 0/1-dimensional singleton sets <#display-scalars>`__).
 
 
 .. tab-set::
@@ -1405,10 +1405,10 @@ As with the scalars, 0-dimensional variables and equations are also specially ha
 
       .. code:: gams
 
-         $onExternalInput
+         $onExternalOutput
          Variable z      'total transportation costs in thousands of dollars';
          Equation cost   'define objective function';
-         $offExternalInput
+         $offExternalOutput
 
    .. tab-item:: GAMSPy
 
@@ -1439,23 +1439,23 @@ Command line parameters
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 
-In addition to GAMS symbols like parameters and scalars, MIRO allows you to set command line parameters (`GAMS Options <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine>`__ and `Double dash parameters <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__). There are two different approaches for the configuration of these double-dash parameters and GAMS options.
+In addition to GAMS symbols like parameters and scalars, MIRO allows you to set command line parameters (`GAMS Options <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine>`__ and `double-dash parameters <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__). There are two different approaches to configuring these double-dash parameters and GAMS options.
 
 
 
 
 .. note::
 
-   GAMS Options and Double dash parameters are not available in GAMSPy.
+   GAMS options and double-dash parameters are not available in GAMSPy.
 
 - **Command line:**
-  While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged with ``$onExternalInput`` / ``$offExternalInput`` (i.e. be part of the GAMS/MIRO data contract), command line parameters lack such a formal declaration. To be able to set them from MIRO, you can specify them in the `Configuration Mode <./customize.html#configurationMode>`__ (or in the `<modelname>.json <./configuration_advanced.html#widgets-commandLine>`__ file). If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters.
+  While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged with ``$onExternalInput`` / ``$offExternalInput`` (i.e. be part of the GAMS/MIRO data contract), command line parameters lack such a formal declaration. To be able to set them from MIRO, you can specify them in the `Configuration Mode <./customize.html#configurationMode>`__ (or in the `<modelname>.json <./configuration_advanced.html#widgets-commandLine>`__ file). If a GAMS option or a double-dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters.
 
   **Note:**
   The information about GAMS options and double-dash parameters associated with a scenario is lost when a scenario is exported in the form of GDX, xlsx or CSV files. When exporting a `miroscen file <./start.html#miroscen>`__, however, the information is not lost.
 
-- **Singleton Sets:**
-  Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options `eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__, `evalGlobal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset>`__, and `evalLocal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset>`__. Since Singleton Sets are handled, communicated and stored like any other GAMS symbol, this approach has the advantage (in contrast to the method above) that the information about command line parameters is not lost during GDX, xlsx or CSV export.
+- **Singleton sets:**
+  Both the element label and the element text of a singleton set can be migrated to compile-time variables using the Dollar Control Options `eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__, `evalGlobal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalglobalset>`__, and `evalLocal.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevallocalset>`__. Since singleton sets are handled, communicated and stored like any other GAMS symbol, this approach has the advantage (in contrast to the method above) that the information about command line parameters is not lost during GDX, xlsx or CSV export.
 
   .. code:: gams
 
@@ -1477,7 +1477,7 @@ In addition to GAMS symbols like parameters and scalars, MIRO allows you to set 
 
   .. tip::
 
-     If a Singleton Set is used to define a compile time variable in the GAMS model, it can be helpful to `only communicate the element text of the singleton set <./widgets.html#dropdown-option-clearvalue>`__!
+     If a singleton set is used to define a compile-time variable in the GAMS model, it can be helpful to `only communicate the element text of the singleton set <./widgets.html#dropdown-option-clearvalue>`__!
 
 .. _create-custom:
 
@@ -1504,7 +1504,7 @@ Development mode
 
 
 
-When using GAMS MIRO, it is important to understand the differences between the development and deployment of an application. In the development phase, the interface between GAMS model and MIRO application is defined, graphics and widgets are configured and general options are specified. You usually start the MIRO app via GAMS Studio or the command line during that time. The `deployment mode <./deployment.html>`__, on the other hand, describes phase where both the configuration and the data contract between GAMS and MIRO stays fixed and the end users start working with your model.
+When using GAMS MIRO, it is important to understand the differences between the development and deployment of an application. In the development phase, the interface between GAMS model and MIRO application is defined, graphics and widgets are configured and general options are specified. You usually start the MIRO app via GAMS Studio or the command line during that time. The `deployment mode <./deployment.html>`__, on the other hand, describes the phase in which both the configuration and the data contract between GAMS and MIRO stay fixed and the end users start working with your model.
 
 .. _development-files:
 
@@ -1515,17 +1515,14 @@ Files and directories
 ^^^^^^^^^^^^^^^^^^^^^
 
 
-The following steps are run through during the application startup in development mode:
+The following steps are performed when the application starts in development mode:
 
-#. The GAMS model is parsed. All symbols declared between the ``$onExternalInput`` / ``$offExternalInput`` and ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPY: ``is_miro_input=True`` or ``is_miro_output=True``) are included in the GAMS/MIRO data contract and are visible in the interface from now on. If not yet existing, a folder *conf\_<modelname>* is created in the model directory where the data contract is stored in the file `<modelname>_io.json <./faqs.html#file-io>`__.
-#. The data of the tagged symbols is extracted from the model and stored in the directory ``data_<modelname>`` as a GDX file `default.gdx <./faqs.html#file-gdx>`__. From this GDX file a special scenario named *default* is automatically saved in the MIRO database when MIRO is started.
+#. The GAMS model is parsed. All symbols declared between the ``$onExternalInput`` / ``$offExternalInput`` and ``$onExternalOutput`` / ``$offExternalOutput`` tags (in GAMSPy: ``is_miro_input=True`` or ``is_miro_output=True``) are included in the GAMS/MIRO data contract and are visible in the interface from now on. If it does not exist yet, a folder *conf\_<modelname>* is created in the model directory where the data contract is stored in the file `<modelname>_io.json <./faqs.html#file-io>`__.
+#. The data of the tagged symbols is extracted from the model and stored in the directory ``data_<modelname>`` as a GDX file `default.gdx <./faqs.html#file-default>`__. From this GDX file a special scenario named *default* is automatically saved in the MIRO database when MIRO is started.
 
+   .. tip::
 
+      You can use the ``data_<modelname>`` folder to automatically import multiple scenarios into your database when MIRO is launched. Files inside this folder are stored in the MIRO database the next time your MIRO app is launched. The file name determines the scenario name. This way, you can easily import several scenarios at once. For more information, see `here <./start.html#startup-import>`__.
 
-
-.. tip::
-
-   You can use the ``data_<modelname>`` folder to automatically import multiple scenarios into your database when MIRO is launched. Files inside this folder will be stored in the MIRO database the next time your MIRO app is launched! The name of the file determines the name of the scenario. This way you can easily import several scenarios at once. For more information, see `here <./start.html#startup-import>`__.
-
-#. If available, the configuration file `<modelname>.json <./faqs.html#file-config>`__ in the *conf\_<modelname>* folder is parsed. It contains the configuration of an app created by the user (graphics, widgets, general settings, etc.). If the file does not yet exist, it is created empty.
+#. If available, the configuration file `<modelname>.json <./faqs.html#file-config>`__ in the *conf\_<modelname>* folder is parsed. It contains the app configuration created by the user (graphics, widgets, general settings, etc.). If the file does not yet exist, it is created empty.
 #. In MIRO, several initialization steps are performed. These include setting up internal data structures.

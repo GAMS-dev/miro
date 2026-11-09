@@ -4,15 +4,15 @@ FAQs
 General
 -------
 
-What GAMS version supports MIRO?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Which GAMS versions support MIRO?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 All GAMS versions >= 30.2 support GAMS MIRO.
 
 Which operating systems are supported?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The local version of MIRO runs on Windows, macOS as well as Linux.
+MIRO Desktop runs on Windows, macOS and Linux.
 
 Does all the data for my model need to come from MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,11 +25,11 @@ model folder and import the data from this file into GAMS using the
 What languages are supported?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently GAMS MIRO ships with language files for English, German, Chinese and
-Spanish. If you would like to add another language, we are more than
-happy to add more languages to this list. For more information about how
-to generate language files see the section on `Language
-Files <./configuration_advanced.html#language-files>`__
+GAMS MIRO currently ships with language files for English, German, Chinese and
+Spanish. If you would like to add another language, we are happy to
+include it. For more information about how to generate language files,
+see the section on `Language
+Files <./configuration_advanced.html#language-files>`__.
 
 Can I contribute to improve GAMS MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,8 +39,8 @@ MIRO, you are more than welcome to share those with us! Additionally,
 you can contribute by supplying new `language
 files <./configuration_advanced.html#language-files>`__ or `custom
 renderers <./configuration_advanced.html#custom-renderers>`__! We also
-welcome any prototypes/PoCs which you think that can help others to get
-started, to improve and/or to come up with new ideas of what can be done
+welcome any prototypes/PoCs that you think can help others get
+started, improve and/or come up with new ideas of what can be done
 with GAMS MIRO and optimization in general. In any case, please contact
 miro@gams.com!
 
@@ -59,16 +59,16 @@ Can I use MIRO without a GAMS model but work with data only?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Yes, but it should be noted that GAMS MIRO is very closely interwoven
-with GAMS. In order to be able to use MIRO without GAMS, adaptations to
-the code of GAMS MIRO are necessary.
+with GAMS. To use MIRO without GAMS, the code of GAMS MIRO needs to be
+adapted.
 
-Can I use `Unicode <https://de.wikipedia.org/wiki/Unicode>`__ characters in MIRO?
+Can I use `Unicode <https://en.wikipedia.org/wiki/Unicode>`__ characters in MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Yes. Unicode characters are supported throughout MIRO. However, in case
 you use Unicode characters in your GAMS model (e.g. in the explanatory
 text), make sure that your source file is UTF-8 encoded. You can change
-your file encoding in GAMS Studio via ``Edit->Encoding->convert to...->UTF-8``.
+your file encoding in GAMS Studio via ``Edit → Encoding → convert to... → UTF-8``.
 
 After updating some system libraries on Linux, MIRO displays an error when starting an application. How can I fix it?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,23 +76,23 @@ After updating some system libraries on Linux, MIRO displays an error when start
 Most likely, updating your system libraries has resulted in the removal
 of an existing library against which one of the R dependencies was
 linked when MIRO was installed. You should see an error message similar
-to this: libicui18n.so.70: cannot open shared object file: No such file
-or directory.. The error message usually also contains the name of the
+to this: ``libicui18n.so.70: cannot open shared object file: No such file
+or directory``. The error message usually also contains the name of the
 affected R library as well as the path where the library is located. To
 fix this problem, the library must be recompiled. To force recompilation
 of one of the R libraries that MIRO depends on, simply remove the
-directory from the MIRO R library (e.g. rm -r
-~/.config/miro-library/2.3/stringi/) and add an empty file named
-INSTALLING to the root of the library path (e.g. touch
-~/.config/miro-library/2.3/INSTALLING). The next time you start MIRO,
+directory from the MIRO R library (e.g. ``rm -r
+~/.config/miro-library/<version>/stringi/``) and add an empty file named
+``INSTALLING`` to the root of the library path (e.g. ``touch
+~/.config/miro-library/<version>/INSTALLING``). The next time you start MIRO,
 the library will be recompiled and linked against the updated system
 library.
 
-What do you do in terms on security?
+What do you do in terms of security?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Every code change is peer reviewed by our experienced developers before
-it is merged to the main branch. This includes a thorough review in
+it is merged into the main branch. This includes a thorough review in
 terms of security. In addition, existing code and application logic are
 frequently re-evaluated and discussed. To be able to do this, our
 developers constantly keep up to date with the latest developments in
@@ -100,8 +100,8 @@ the Infosec community regarding new vulnerabilities as well as new
 strategies to attack software. This includes regular informal
 penetration testing by our developers on our development servers. In
 addition to manual reviews, all of our code is tested as part of our
-continuous integration pipelines using multiple static (SAST)
-application security testing tools. We also use automated tools to test
+continuous integration pipelines using multiple static application
+security testing (SAST) tools. We also use automated tools to test
 all of our third-party dependencies for known vulnerabilities (Software
 Composition Analysis). You can find the latest vulnerability report
 `here <./security_ci_report.html>`__.
@@ -118,8 +118,8 @@ create plots and widgets or change certain settings with a few mouse
 clicks, visually supported by a live preview. In addition, the
 configuration can also be done
 `manually <./configuration_advanced.html#jsonfiles>`__ via the
-<modelname>.json file inside the directory:
-<modeldirecory>/<modelname>.json.
+*<modelname>.json* file in the directory
+*<modeldirectory>/conf\_<modelname>*.
 
 Do I have visualization options other than those shipping with GAMS MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,7 +131,7 @@ MIRO's R API.
 Can I also write my own custom functions to generate input data?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Yes. MIRO has an API that allows you to use e.g. charts to produce input
+Yes. MIRO has an API that allows you to use, e.g., charts to produce input
 data. We call this feature *custom input widgets*. These are not
 available in Configuration Mode, but must be implemented manually. You
 can find more information
@@ -146,18 +146,18 @@ formatted <./start.html#excel-import-rules>`__.
 Can I set up GAMS MIRO on a server where multiple users can solve GAMS models?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Yes. Besides the presented MIRO Desktop version we also develop a `MIRO
-Server version <./server.html>`__, which will offer features like
+Yes. In addition to MIRO Desktop, we offer `MIRO
+Server <./server.html>`__, which provides features like
 multi-application management, user access management, load balancing,
 rolling updates, etc.
 
 What happens when using input data which results in infeasible or unbounded results?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-| In GAMS MIRO both the log and the lst file of the current GAMS model
+| In GAMS MIRO, both the log and the lst file of the current GAMS model
   run can be displayed. Any information about infeasibilities and
-  unboundness is also visible here. Further checks on infeasibilities
-  and unboundness are not performed. If a model is infeasible (or
+  unboundedness is also visible here. MIRO does not perform any further
+  checks for infeasibility or unboundedness. If a model is infeasible (or
   unbounded) this still leads to a normal completion of the GAMS job
   (unless you check the model status and trigger an abort based on an
   unexpected model status). A normal completion of GAMS is interpreted
@@ -167,10 +167,10 @@ What happens when using input data which results in infeasible or unbounded resu
   algorithm). If the GAMS model is aborted for any reason, this will
   also result in an abort in GAMS MIRO. A corresponding message is
   displayed in GAMS MIRO and no output is displayed.
-| **Note**: You can write an `own report /
+| **Note**: You can write your `own report /
   log <./configuration_general.html#miro-log>`__ and integrate it into
   MIRO which is then visible in the GAMS interaction section. In such a
-  custom report you can also deal with infeasibilities and unboundness.
+  custom report, you can also deal with infeasibilities and unboundedness.
 
 .. _files:
 
@@ -188,7 +188,7 @@ located in the *<modelname>/conf\_<modelname>* directory. It contains
 the metadata of all input and output symbols defined between the
 ``$onExternalInput`` / ``$offExternalInput`` and ``$onExternalOutput`` /
 ``$offExternalOutput`` tags in the corresponding GAMS model. The
-*<modelname>_io.json* file is created each time a MIRO app ist started
+*<modelname>_io.json* file is created each time a MIRO app is started
 via GAMS Studio and should not be changed. If you use the command line,
 please follow `these
 steps <./getting_started.html#start-via-command-line>`__.
@@ -202,7 +202,7 @@ steps <./getting_started.html#start-via-command-line>`__.
   in the *<modelname>/conf\_<modelname>* directory. It contains the
   configuration of graphics, input widgets, language and all other
   model-specific configurations for a MIRO app. This file can be filled
-  manually by the user. However, the easiest way for the configuration
+  manually by the user. However, the easiest way to configure an app
   is the `Configuration Mode <./customize.html#configurationMode>`__.
 | Like the *<modelname>_io.json* file, the structure of this file is
   based on a `schema <./schema.html>`__ with which the file is validated
@@ -214,9 +214,9 @@ default.gdx
 ~~~~~~~~~~~~
 
 Every time you start a MIRO app via GAMS Studio or the command line
-(i.e. in development mode), a gdx container is created in the directory
+(i.e. in development mode), a GDX container is created in the directory
 data\_<modelname>. This file contains data extracted from the GAMS model
-and will be stored in the MIRO database under the scenario name:
+and will be stored in the MIRO database under the scenario name
 *default* at the next start of your app.
 
 .. _file-miroconf:
@@ -226,8 +226,7 @@ and will be stored in the MIRO database under the scenario name:
 
 These files are generated when starting a MIRO app in development mode.
 They contain the configuration and initialization steps of an app and
-can by used by an `executable <#file-executable>`__ for a fast startup
-of MIRO. Learn more `here <./model.html#development-mode>`__.
+enable a fast startup of MIRO. Learn more `here <./model.html#development-mode>`__.
 
 Definitions
 -----------
@@ -237,7 +236,7 @@ Definitions
 What is a **model** in the context of GAMS MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We call any .gms file that you run with the command line option miro a
+We call any .gms file that you run with the command line option ``miro`` a
 model. Inside this .gms file you may include or call other files or
 applications, just as you would do with any GAMS program.
 
@@ -254,19 +253,19 @@ particular model run and which are communicated with MIRO a scenario.
 What does **Job** mean in the context of GAMS MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A *Job* describes the submission of one or more GAMS runs.
+A *job* describes the submission of one or more GAMS runs.
 
 .. _def-hypercube-job:
 
-What does **Hypercube Job** mean in the context of GAMS MIRO?
+What does **Hypercube job** mean in the context of GAMS MIRO?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A *Hypercube job* describes a set of scenarios for a particular model
-which MIRO generated automatically by expanding the cartesian product
+which MIRO generated automatically by expanding the Cartesian product
 over all selected scalars. Input widgets are automatically expanded when
 a Hypercube job is created (e.g. a slider becomes a slider range, a
-single dropdown becomes a multi-dropdown, etc.). This way you can
-configure multiple scenarios at once. For more information see the
+single dropdown becomes a multi-dropdown, etc.). This way, you can
+configure multiple scenarios at once. For more information, see the
 section about `Hypercube jobs <./hc-module.html>`__.
 
 .. _def-job-tag:
@@ -289,7 +288,7 @@ You are in *development mode* when you start a MIRO app from GAMS Studio
 to ``true``). Every time you launch MIRO in development mode, your app
 resources (configuration, README file, data files etc.) are loaded and
 validated, so your application is always in sync with your current GAMS
-source. Once you want to share your application with other people you
+source. Once you want to share your application with other people, you
 can `deploy <./deployment.html>`__ it. Deployed apps work with a
 compiled version of your resources, so they tend to launch faster.
 However, this also means that you can no longer change your app without
@@ -302,7 +301,7 @@ What license is GAMS MIRO released under?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 GAMS MIRO is released under version 3 of the GNU General Public License.
-For a copy of this license, see http://www.gnu.org/licenses/. Full
+For a copy of this license, see https://www.gnu.org/licenses/. Full
 license information, including third-party software included in MIRO,
 can be found `here <./license.html>`__. The entire source code of GAMS
 MIRO can be found on `GitHub <https://github.com/GAMS-dev/miro>`__.
@@ -313,8 +312,8 @@ Troubleshooting
 Why do I get "Domain Violation" errors when editing sets or parameters?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Modifying a parameter index in MIRO can throw a domain violation error
-because the underlying set was not imported into MIRO.
+Modifying a parameter index in MIRO can cause a domain violation error
+if the underlying set was not imported into MIRO.
 
 **Fix (GAMS):**
 
@@ -368,7 +367,7 @@ process.
 
 Ensure that all auxiliary files (Excel files, CSVs, scripts, etc.) are
 included in the `model assembly
-file <./deployment.html#model-assembly-file>`__ .
+file <./deployment.html#model-assembly-file>`__.
 
 When using the deployment option *Local multi-user (uses idir)*, the
 model executes in a temporary directory. Relative paths in ``$call`` or
@@ -395,9 +394,9 @@ series.
 
 Open the chart configuration and go to:
 
-*Filters & Domains*
+*Filter & Domains*
 
-Then select the appropriate grouping dimension (for example a stock
+Then select the appropriate grouping dimension (for example, a stock
 symbol, region, or scenario) so MIRO can separate the data correctly.
 
 Support
@@ -406,8 +405,8 @@ Support
 Who should I contact in case I have problems or remarks?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can use any of the channels you also have if you face problems with
-the core GAMS system. However, the best way is via our
+You can use the same channels as for problems with the core GAMS
+system. However, the best way is via our
 `forum <https://forum.gams.com/c/gams-miro/12>`__. This way, other users
-who might have similar questions can profit as well from the answers you
-receive. Alternatively you can also contact us by mail at miro@gams.com
+who might have similar questions can also benefit from the answers you
+receive. Alternatively, you can contact us by email at miro@gams.com.

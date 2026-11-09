@@ -8,9 +8,9 @@ Introduction
 
 When we compare optimization results across scenarios, we usually already know roughly what we are looking for: did the objective improve, which constraints are binding, which inputs actually drove the change. Finding the answer, however, still means opening several output tables, cross-referencing them with the inputs, and doing the arithmetic ourselves. Mira, GAMS MIRO's AI assistant, lets us ask for that answer directly, in plain language, and get a grounded response back - computed from the actual scenario data, not guessed from a description of it.
 
-Say we are working with the *transport* example model and have just loaded two scenarios that differ in their freight cost. MIRO's own `baseline comparison <./configuration_general.html#pivot-default-options>`__ feature already gives us a table of deltas between the two - but turning that table into an answer to "what actually changed and why" still means scanning it ourselves. Instead, we can open Mira and ask: *"Which routes changed the most between these two scenarios, and why?"* Mira queries the underlying scenario database for exactly the tables it needs, ranks the routes by how much they shifted, and reports back the answer directly together with the cost values driving that shift - the digging done for us, not a table we still have to read.
+Say we are working with the *transport* example model and have just loaded two scenarios that differ in their freight cost. MIRO's own `baseline comparison <./configuration_general.html#pivot-default-options>`__ feature already gives us a table of deltas between the two - but turning that table into an answer to "what actually changed and why" still means scanning it ourselves. Instead, we can open Mira and ask: *"Which routes changed the most between these two scenarios, and why?"* Mira queries the underlying scenario database for exactly the tables it needs, ranks the routes by how much they shifted, and reports the answer together with the cost values driving that shift - the digging done for us, not a table we still have to read.
 
-Mira is just as useful before we get to comparing scenarios at all. Before we even run a model, we can ask it to look over our inputs: *"Do any of the demand or supply values look off?"*. It reviews the input tables we point it to and calls out what stands out - missing values, unusual units, outliers, duplicates - the kind of typo or data-entry slip that is easy to miss by eye but often explains a model that solves to an unexpected result (or does not solve at all).
+Mira is just as useful before we get to comparing scenarios at all. Before we even run a model, we can ask it to look over our inputs: *"Do any of the demand or supply values look off?"* It reviews the input tables we point it to and calls out what stands out - missing values, unusual units, outliers, duplicates - the kind of typo or data-entry slip that is easy to miss by eye but often explains a model that solves to an unexpected result (or does not solve at all).
 
 .. raw:: html
 
@@ -27,9 +27,9 @@ Mira is just as useful before we get to comparing scenarios at all. Before we ev
 Enabling Mira
 -------------
 
-Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini), Microsoft Foundry and Amazon Bedrock - we only need a key for the provider(s) we intend to use. On MIRO Desktop, Mira can also use a custom OpenAI- or Anthropic-compatible server (see below). Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognises a Claude deployment by its name, so the name must contain "claude" (the default name does).
+Mira talks to a third-party large language model (LLM) provider on our behalf, so before it shows up in any app we first have to tell MIRO which provider to use and give it an API key for that provider. MIRO currently supports OpenAI, Anthropic (Claude), Google (Gemini), Microsoft Foundry and Amazon Bedrock - we only need a key for the provider(s) we intend to use. On MIRO Desktop, Mira can also use a custom OpenAI- or Anthropic-compatible server (see below). Microsoft Foundry runs models inside our own cloud tenant, so instead of a single key it needs our resource endpoint and the names of the model deployments we created there. On Microsoft Foundry, GAMS MIRO talks to Claude models via the Anthropic Messages API and to all other models via Chat Completions. It recognizes a Claude deployment by its name, so the name must contain "claude" (the default name does).
 
-Amazon Bedrock likewise runs models in our own AWS account. It needs the AWS region, a Bedrock API key and the models to offer: one model ID, or ID or ARN of an inference profile, per line (e.g. the inference profile ``global.anthropic.claude-haiku-5-5``), optionally as ``Label = model-id``. GAMS MIRO talks to all models on Amazon Bedrock via the Converse API.
+Amazon Bedrock likewise runs models in our own AWS account. It needs the AWS region, a Bedrock API key and the models to offer: one model ID, or the ID or ARN of an inference profile, per line (e.g. the inference profile ``global.anthropic.claude-haiku-5-5``), optionally as ``Label = model-id``. GAMS MIRO talks to all models on Amazon Bedrock via the Converse API.
 
 Where we configure this key depends on how our MIRO app is deployed:
 
@@ -99,7 +99,7 @@ The selected scenarios are then loaded as context for Mira. We can ask questions
 
 We type a question and press Enter to send it. While Mira is working, a spinner appears and the input is disabled; a stop button lets us cancel a request that is taking too long or that we no longer need answered. Responses render as formatted Markdown, including tables and LaTeX-style math, and each message has a copy button so we can grab the raw text for a report or an email.
 
-A model dropdown lets us switch between the providers and models an administrator has configured, and the token count at the top of the panel keeps a running total of what the conversation has cost so far - useful context, since providers bill by token. The *Clear Chat* button at the top of the panel resets the conversation (but keeps the app's current scenario context), which is the easiest way to start a fresh line of questioning without Mira carrying over unrelated earlier answers.
+A model dropdown lets us switch between the configured providers and models, and the token count at the top of the panel keeps a running total of what the conversation has cost so far - useful context, since providers bill by token. The *Clear Chat* button at the top of the panel resets the conversation (but keeps the app's current scenario context), which is the easiest way to start a fresh line of questioning without Mira carrying over unrelated earlier answers.
 
 .. tip::
 
@@ -151,7 +151,7 @@ Every query is checked against the scenarios we currently have loaded before it 
 
 Writing works the other way around: the model has no connection to our session at all, so a proposed change is only ever a description of an operation. It is the app, not the model, that resolves it against our live data, renders the before/after preview we confirm, and performs the edit - which is why every change needs our click, and why the same guardrails that apply to us editing a table by hand apply to Mira too (see `Changing Input Data <#changing-input-data>`__).
 
-The conversation itself, together with the running token count, is kept for as long as the chat panel stays open (or until we hit *Clear Chat*). Closing the panel ends the conversation and cancels a request that is still running, so follow-up questions can build on earlier answers without us having to restate the context each time.
+The conversation itself, together with the running token count, is kept for as long as the chat panel stays open (or until we hit *Clear Chat*), so follow-up questions can build on earlier answers without us having to restate the context each time. Closing the panel ends the conversation and cancels any request that is still running.
 
 .. _ai-assisted-custom-renderers:
 
@@ -182,4 +182,4 @@ To open the editor:
 
 Mira can be opened directly from there.
 
-It uses the same provider key(s) configured for the app, so nothing extra needs to be set up to use it once Mira itself is enabled.
+It uses the provider key(s) configured for the app, so once Mira is enabled, no extra setup is needed.

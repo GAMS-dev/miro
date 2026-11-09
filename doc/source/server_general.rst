@@ -17,8 +17,8 @@ with MIRO Server can be accessed from any device with a modern
 web browser. Local MIRO or GAMS installations and licenses are
 no longer necessary. This makes MIRO Server the most convenient
 solution when it comes to making apps available to end users
-all over the world. All you need as a user is a URL, valid
-credentials (optional) and you are ready to go.
+all over the world. All a user needs is a URL and, optionally,
+valid credentials.
 
 A detailed overview of the MIRO Server architecture can be
 found `here <./server_architecture.html>`__.
@@ -30,15 +30,15 @@ found `here <./server_architecture.html>`__.
    :alt: MIRO Server library
    :class: miro-image-max-height-400pt
 
-Besides the benefits of making them easily accessible, central
-hosting of MIRO apps also brings other aspects into focus:
+Besides making apps easily accessible, central hosting of
+MIRO apps offers further benefits:
 
 - `Asynchronous solving <#solve-async>`__: Submit jobs and log
   back in later to get the results.
 - `Scenario sharing <#scenario-sharing>`__: Share scenarios of
   your MIRO application(s) with other users easily from within
   the app.
-- `User- and group
+- `User and group
   management <./server_administration.html#user-groups>`__: Map
   structures of your work environment by dividing MIRO users
   into groups with different privileges. Decide who can see
@@ -76,19 +76,19 @@ The choices are:
 - **Solve model:**
 
   The workflow is identical to the synchronous solving in MIRO
-  Desktop. After clicking on *Solve model* the view changes to
+  Desktop. After clicking on *Solve model*, the view changes to
   the *GAMS interaction* section, where log and listing files
   are shown during the calculations (if they are not hidden).
-  After solving the view changes to the output section.
+  After solving, the view changes to the output section.
 
   Note that unlike MIRO Desktop, the job is now executed
   asynchronously. You can therefore close the MIRO app during
-  the calculations. From the moment you log out and log back
-  in, the job will be treated as a job that you submitted by
-  clicking *submit job* rather than *solve model*. This means
+  the calculations. Once you log out and log back
+  in, the job is treated as if you had submitted it by
+  clicking *Submit job* rather than *Solve model*. This means
   no log will be displayed anymore in the *GAMS interaction*
   section. Also, the results are not loaded automatically after
-  solving. Instead the job is moved to the `job
+  solving. Instead, the job is moved to the `job
   list <#job-list>`__. From there you can get the results after
   finishing the calculations.
 
@@ -96,8 +96,8 @@ The choices are:
   A submitted job is put directly into the `job
   list <#job-list>`__. No log is displayed, and results are not
   automatically loaded into the interface. Instead, the results
-  can be imported later. Submitting a job in this way makes
-  sense especially if you want to solve multiple jobs in a row
+  can be imported later. Submitting a job this way is
+  especially useful if you want to solve multiple jobs in a row
   without waiting for the results to come in.
 
 - **Submit Hypercube:**
@@ -110,9 +110,9 @@ If your GAMS Engine backend supports
 (e.g., Engine SaaS), you can decide which instance to use for
 each run. When you select *Submit job* or *Submit Hypercube*, a
 dialog opens with your default instance already chosen, but you
-can change it there. If you want to update your default
-instance - especially important when running jobs via the
-*Solve* button, which does not offer a selection dialog - go to
+can change it there. To update your default
+instance (especially important when running jobs via the
+*Solve model* button, which does not offer a selection dialog), go to
 *Help* → *Engine Settings*. In this dialog, you can view your
 remaining volume and disk quotas and set a different default
 instance.
@@ -126,7 +126,7 @@ Job list
 
 The job list in the GAMS interaction section lists all
 submitted jobs that are still running or whose results have not
-yet been imported. It shows for each submitted job the owner,
+yet been imported. For each submitted job, it shows the owner,
 the submission date and the specified job name. In addition,
 the current status (*scheduled*, *running* or *completed*) is
 visible.
@@ -142,8 +142,8 @@ can be loaded into the sandbox with a click on *Download
 results*. Note that this does not save a scenario in the
 database.
 
-If you want to see jobs that previously have been imported or
-discarded, you can do so by clicking on *Show history*:
+To see jobs that have previously been imported or
+discarded, click on *Show history*:
 
 
 .. image:: ../assets/images/server/job-history.png
@@ -190,7 +190,7 @@ The following rules apply:
 - Scenarios can be stored under the same name in the
   database if the owner is different.
 - Access permissions are assigned to a shared scenario. As
-  scenario owner you decide about who has read, write and/or
+  the scenario owner, you decide who has read, write and/or
   execute permissions. Users with read permissions can load
   the owner's scenario but are not authorized to edit or
   execute it. The scenario is marked with a lock symbol (🔒).
@@ -202,12 +202,12 @@ The following rules apply:
 - Users with read access can duplicate the scenario via the
   "Save as" button. They become the owner of this new
   scenario.
-- For the time a scenario is opened in MIRO, it is locked
+- While a scenario is open in MIRO, it is locked
   for other users. This prevents conflicts arising when a
   scenario is used concurrently. Locked scenarios can be
-  opened in readonly mode by others (and also saved under a
+  opened in read-only mode by others (and also saved under a
   new name). A lock symbol (🔒) next to the scenario name
-  indicates the readonly status. Users with write
+  indicates the read-only status. Users with write
   permissions for the scenario are additionally informed
   about this via a notification in the lower right corner of
   the screen.
@@ -235,23 +235,22 @@ Share a scenario
 ^^^^^^^^^^^^^^^^
 
 
-The information about whether a scenario should be shared
-with others is controlled in the 'Access permissions' tab
-under Scenario → Edit metadata.
+Whether a scenario is shared with others is controlled in
+the 'Access permissions' tab under Scenario → Edit metadata.
 
 
 .. image:: ../assets/images/server/edit-metadata.png
    :alt: Edit metadata
    :class: miro-image-max-height-200pt
 
-In the example below, Rebecca is scenario owner. She gives
+In the example below, Rebecca is the scenario owner. She gives
 the single user 'rschuchmann' and the group 'group 1' read
 permission for her scenario. Since she does not want her
 scenario data to be changed, she decides not to give write
 permissions to any other user. Members of 'group 1' usually
 only look at results and do not want to start optimization
-runs. Therefore, Rebecca only grants execution rights to
-"rschuchmann".
+runs. Therefore, Rebecca only grants execute permission to
+'rschuchmann'.
 
 
 .. image:: ../assets/images/server/access-permissions.png
@@ -301,7 +300,7 @@ assembly file `here <./deployment.html#model-assembly-file>`__.
 
 If a MIRO application runs with GAMS Engine backend, jobs are
 solved `asynchronously <#solve-async>`__. All submitted jobs
-can be found and imported in the `joblist <#job-list>`__ in the
+can be found and imported in the `job list <#job-list>`__ in the
 GAMS interaction section.
 
 .. _model-on-server:
@@ -316,10 +315,10 @@ When a model is sent from MIRO to GAMS Engine, it is executed
 in a Linux environment. This means that Windows-only tools like
 `GDXXRW <https://www.gams.com/latest/docs/T_GDXXRW.html>`__ are
 not available and a corresponding call in the model will lead
-to an error on GAMS Engine. Furthermore it has to be considered
-that Linux is case-sensitive. It should therefore be ensured
-that file system calls (file paths as well as file names) from
-within the model code are correctly capitalized. The model is
-executed in an isolated environment ("container"). Therefore it
-is important that file paths can be applied correctly (e.g. no
+to an error on GAMS Engine. Furthermore, Linux is
+case-sensitive, so make sure that file system calls (file paths
+as well as file names) in the model code are correctly
+capitalized. The model is
+executed in an isolated environment ("container"). Therefore, it
+is important that file paths can be resolved correctly (e.g. no
 hardcoded absolute paths).

@@ -8,7 +8,7 @@ Introduction
 
 The following section describes the custom file formats used in GAMS MIRO, namely *.miroapp* for app bundles and *.miroscen* for MIRO scenarios.
 
-The section is intended for people with a technical background who want to implement their own tools for handling these files, or just better understand how MIRO works under the hood.
+This section is intended for readers with a technical background who want to implement their own tools for handling these files or better understand how MIRO works under the hood.
 
 *.miroapp* files are used to bundle a MIRO app including all the model files. *.miroscen* files bundle all the data that belongs to a MIRO scenario (data as well as metadata). Both file formats are (unencrypted) ZIP files (using `zlib <https://zlib.net>`__).
 
@@ -98,16 +98,16 @@ Signed MIROAPP
 *.miroapp* files can be optionally signed to verify the integrity of the app and the authenticity of the author. `RSA <https://en.wikipedia.org/wiki/RSA_(cryptosystem)>`__ keys with a minimum length of 2048 bits are supported for signing MIRO apps. Signing a MIRO app works as follows:
 
 1. A file *.miro_hashes* is created that contains the SHA-256 hashes of all the files in the app bundle. Each line of this file identifies a file in the bundle as follows: ``<fileName>\/\<sha256Hash>`` where *fileName* is the full path of the file relative to the root of the *.miroapp* archive. The lines are sorted in ascending order.
-2. The file *.miro_hashes* created in 1) is hashed using the SHA-512 algorithm and then signed with the RSA private key using the *EVP_PKEY_sign* function of openssl. The resulting signature is written to the binary file: *.miro_sig*.
+2. The file *.miro_hashes* created in 1) is hashed using the SHA-512 algorithm and then signed with the RSA private key using the *EVP_PKEY_sign* function of OpenSSL. The resulting signature is written to the binary file: *.miro_sig*.
 3. The RSA public key is written to a file *.miro_pubkey*.
 4. The files *.miro_hashes*, *.miro_sig* and *.miro_pubkey* are appended to the root of the .miroapp ZIP archive.
 
 To validate the authenticity of the app, it is first checked whether the app is signed (the files *.miro_hashes* and *.miro_sig* exist). If this is the case, the integrity of the MIRO app is checked as follows:
 
 1. All files of the archive are listed, except the signature files (*.miro_hashes*, *.miro_sig* and *.miro_pubkey*).
-2. The signatures of all files found in the archive are calculated and a *.miro_hashes_actual* file is created using the same scheme as described in step 1).
+2. The SHA-256 hashes of all files found in the archive are calculated and a *.miro_hashes_actual* file is created using the same scheme as described in step 1).
 3. The *.miro_hashes* file is compared with the *.miro_hashes_actual* file. If they are not identical, MIRO reports an invalid signature.
-4. The SHA-512 hash of the *.miro_hashes* file is computed and the signature *.miro_sig* is verified using the *EEVP_PKEY_verify* function of openssl. To verify the signature, all public keys registered on the computer where MIRO is installed are tried. If none of the public keys work, the *.miro_pubkey* public key included in the archive is tried. If this does not work either, MIRO reports an invalid signature. If it works, MIRO computes the OpenSSH fingerprint (using the SHA256 hashing algorithm) of this key and the user is asked if she wants to trust this key. If the user agrees, the *.miro_pubkey* public key is added to the list of known public keys and the app is imported.
+4. The SHA-512 hash of the *.miro_hashes* file is computed and the signature *.miro_sig* is verified using the *EVP_PKEY_verify* function of OpenSSL. To verify the signature, all public keys registered on the computer where MIRO is installed are tried. If none of the public keys work, the *.miro_pubkey* public key included in the archive is tried. If this does not work either, MIRO reports an invalid signature. If it works, MIRO computes the OpenSSH fingerprint (using the SHA256 hashing algorithm) of this key and the user is asked whether to trust this key. If the user agrees, the *.miro_pubkey* public key is added to the list of known public keys and the app is imported.
 
 .. _miroscen-file:
 
@@ -179,7 +179,7 @@ The JSON schema used to validate the *metadata.json* is included below:
                    "type":"string"
                },
                "execPerm": {
-                   "description":"Whether the model can see the scenario (the attachment is downloaded to the working directory before a run).",
+                   "description":"Whether the model can read the attachment (if true, the attachment is downloaded to the working directory before a run).",
                    "type":"boolean"
                }
                }

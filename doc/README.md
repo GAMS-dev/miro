@@ -9,20 +9,46 @@ Legacy [PrettyDocs](https://github.com/xriley/PrettyDocs-Theme) assets remain in
 not used as the Sphinx theme or published as a complete asset tree.
 
 # Documentation style guide
-This style guide aims to standardize the structure and style of the documentation for GAMS MIRO. When you write a new chapter, please follow these guidelines:
+Follow these guidelines when you write or edit the GAMS MIRO documentation.
 
-1. Use lively language: write as if you are a teacher in a classroom and use "**we**" when you explain something.
-1. At the beginning of each chapter, first describe the problem to be solved. Then, use an example and explain how this problem can be solved using GAMS MIRO. If needed, go into technical details at the end of each section. Use a new subsection for this. These technical subsections shall make sure that the reader can not only implement the example, but has an understanding of the inner workings of GAMS MIRO.
-1. Use images and gifs to support your examples.
-1. Try to use the trnsport example whenever you can and if not use any of the other example models that come with GAMS MIRO.
-1. Try to keep the subject of your sentence close to the verb.
-1. Make sure the **message** you want to convey in your sentence is in the *stress position*: it is located right before a colon, semicolon or period. (to learn more, read the articles by [George D. Gopen](https://www.georgegopen.com/the-litigation-articles.html))
-1. Make sure, each sentence is connected to the previous one: your sentences must lead seamlessly forward. Use back references at the beginning of each sentence.
-1. Use uniform terms. Especially when it comes to certain features of GAMS MIRO, specific expressions should remain.
+## Structure
 
+1. Start each chapter with the problem it solves. Then show how GAMS MIRO solves it, using an example.
+1. Put technical details in a separate subsection at the end. After reading it, the reader should understand how the feature works, not only how to reproduce the example.
+1. Use screenshots and GIFs to support the examples. Keep them current: replace an image when the UI it shows changes.
+1. Use the `transport` demo app whenever possible (it is based on the `trnsport` model from the GAMS Model Library). Otherwise, use another example app that ships with GAMS MIRO.
 
-#### Sources:
-[https://www.georgegopen.com/the-litigation-articles.html](https://www.georgegopen.com/the-litigation-articles.html)
+## Voice and tone
+
+1. Write like a teacher in a classroom: use "**we**" when walking through an example and "**you**" when telling readers what they can do.
+1. Be clear and concise. Prefer short sentences, active voice and everyday words. Cut filler such as "simply", "basically", "in order to" and "please note that".
+1. Keep the subject of a sentence close to its verb.
+1. Put the most important information in the *stress position*: at the end of the sentence, right before the period, colon or semicolon. See the articles by [George D. Gopen](https://www.georgegopen.com/the-litigation-articles.html).
+1. Connect each sentence to the previous one. Start with information the reader already knows and end with what is new.
+1. Use American English.
+
+## Terminology
+
+Use the same term for the same thing everywhere. In particular:
+
+| Use | Do not use |
+| --- | --- |
+| GAMS MIRO on first mention in a chapter, MIRO afterwards | WebUI, web UI, Miro |
+| MIRO Desktop, MIRO Server | MIRO desktop, MIRO server, MIRO Desktop app |
+| MIRO app (or MIRO application) | MIRO model, dashboard |
+| Base Mode, Configuration Mode, Hypercube Mode | configuration mode, config mode |
+| Mira (the MIRO AI assistant) | MIRA, MIRO AI, chatbot |
+| GAMS Engine, GAMS Studio, GAMSPy | Engine (alone), Gamspy |
+| dataset | data set |
+| dropdown | drop-down, drop down |
+| input symbol, output symbol | input/output parameter (unless it is one) |
+| click | click on |
+
+## Formatting
+
+1. Write UI labels exactly as they appear in the app and in italics (for example, *Solve model*).
+1. Format file names, paths, options, symbol names and code with double backticks.
+1. Use admonitions (`.. note::`, `.. tip::`, `.. warning::`, `.. admonition::`) sparingly, for information the reader must not miss.
 
 # Sphinx documentation
 

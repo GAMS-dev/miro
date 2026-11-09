@@ -19,7 +19,7 @@ conditions:
 - **Be a member of a user group** that has been granted access
   to an app registered in MIRO.
 
-In other words: Either you are an Engine user with the required
+In other words: either you are an Engine user with the required
 execute permission, **or** you belong to a group that has been
 assigned to at least one MIRO app.
 
@@ -75,15 +75,15 @@ Access
 ~~~~~~
 
 
-In the Admin panel of MIRO Server you can add new MIRO apps and
-delete existing ones. Among other things, access to individual
-apps can also be controlled here via a user group system.
+In the admin panel of MIRO Server, you can add new MIRO apps and
+delete existing ones. You can also control access to individual
+apps via user groups.
 
 A user with `read, write and execute
 permissions <https://www.gams.com/engine/administration.html#namespaces>`__
-on the namespace that MIRO Server uses will be considered as a
-MIRO Server administrator. As an administrator, the tab 'Admin
-Panel' is additionally displayed next to the 'Home' tab:
+on the namespace that MIRO Server uses is considered a
+MIRO Server administrator. Administrators additionally see the
+'Admin Panel' tab next to the 'Home' tab:
 
 
 
@@ -99,7 +99,7 @@ Panel' is additionally displayed next to the 'Home' tab:
    :alt: Administrator header bar
    :class: miro-image-max-height-400pt
 
-A click on *Admin Panel* opens a overview with all deployed
+Clicking on *Admin Panel* opens an overview of all deployed
 apps:
 
 
@@ -111,15 +111,15 @@ apps:
 authentication:**
 
 When MIRO Server is used without authentication, there is no
-login screen anymore. Everyone accessing the MIRO Server
-landing page will end up on the
+login screen. Everyone accessing the MIRO Server
+landing page ends up in the
 `library <./server_general.html#app-overview>`__. Accordingly,
-there is no longer a distinction between admininistrator and
-normal user (i.e. there is no admin panel button). In this case
+there is no distinction between administrator and
+normal user (i.e. there is no admin panel button). In this case,
 you can reach the admin panel via a `direct
 link <#direct-app-link>`__, just like with MIRO apps. The app
 id is *admin* in this case:
-`mydomain.com/app_direct/admin/ <mydomain.com/app_direct/admin/>`__
+``mydomain.com/app_direct/admin/``
 
 .. _add-app:
 
@@ -139,11 +139,11 @@ added easily via drag & drop or by clicking on the last tile:
 
 The dialog that opens shows a preview of the deployed app
 including logo, title and description, which can be modified.
-Note that the maximum file size for the logo is 1 mb.
+Note that the maximum file size for the logo is 1 MB.
 
 Further settings that can be made before adding the app:
 
-- Access groups (optional):
+- **Access groups (optional):**
   By default, any Engine user who has access to the namespace
   used by MIRO Server can see all apps. To limit who is allowed
   to use the app you want to add, you can optionally assign
@@ -217,14 +217,14 @@ Further settings that can be made before adding the app:
   - Dark blue ("darkblue")
   - Red wine ("redwine")
 
-When all settings are done, add the app by clicking on 'Save'.
+Once all settings are made, add the app by clicking on 'Save'.
 The app is then validated and added to the library.
 
 .. _scenario-data:
 
 **Scenario data:** All scenarios that are `bundled with the
 app <./deployment.html#bundle-scenarios>`__ are stored in the
-MIRO Server database. The user who adds the app will become the
+MIRO Server database. The user who adds the app becomes the
 scenario owner. All users with access to the app have read and
 execute permissions for these scenarios.
 
@@ -254,9 +254,9 @@ Add scenario data
 ~~~~~~~~~~~~~~~~~
 
 
-In addition to the possibility of `bundling scenario data with
-an app <./deployment.html#bundle-scenarios>`__, scenarios can
-also be added subsequently by dragging and dropping the data
+In addition to `bundling scenario data with
+an app <./deployment.html#bundle-scenarios>`__, you can
+add scenarios later by dragging and dropping the data
 files (*gdx*, *miroscen*, *xlsx*, *xlsm*, *xls*, *zip*) onto
 the respective app.
 
@@ -301,16 +301,16 @@ Direct links
 
 In addition to the app overview of the MIRO Server library,
 apps can also be accessed via a direct link. There are two
-slightly different variants. In both variants the `app
-id <./deployment.html#app-id>`__ is part of the link. By
+slightly different variants. In both variants, the `app
+ID <./deployment.html#app-id>`__ is part of the link. By
 default, this ID is the lowercase name of the main GMS file
 (without the .gms extension), but it can be customized during
 app development.
 
 - <miro_server_url>/app/<app_id> (e.g.
   `https://miro.gams.com/gallery/app/transport/ <https://miro.gams.com/gallery/app/transport/>`__):
-  When accessing a MIRO app under this link, the app itself
-  will be available via an iframe. The top of the page contains
+  When accessing a MIRO app via this link, the app itself
+  is displayed in an iframe. The top of the page contains
   the navigation bar which brings you back to the landing page
   of MIRO Server (library).
 - <miro_server_url>/app_direct/<app_id> (e.g.
@@ -346,13 +346,13 @@ User Groups
 ~~~~~~~~~~~
 
 
-In GAMS Engine users can be assigned to groups (read more about
+In GAMS Engine, users can be assigned to groups (read more about
 user groups in the `GAMS Engine
 documentation <https://www.gams.com/engine/administration.html#user-groups>`__).
 These groups can be used to control who can see which MIRO app
 hosted on MIRO Server. In the following example, there are
 three groups A, B and C. Users in group A have access to 4
-apps, users in group B have access to 3 other apps. Group C
+apps, and users in group B have access to 3 other apps. Group C
 users can access 2 apps, one of which is also used by another
 group.
 
@@ -362,8 +362,7 @@ group.
    :height: 282px
 
 All users access MIRO Server via the same URL. However, as a
-member of a group, you don't see anything from other apps from
-other groups.
+member of a group, you do not see the apps of other groups.
 
 
 
@@ -380,9 +379,9 @@ other groups.
    User groups to be used in MIRO Server must be lowercase.
    Groups that contain uppercase letters are ignored.
 
-Creating user groups and assigning users to them is done
-quickly. So it's very easy to control who can access which apps
-with this approach.
+Creating user groups and assigning users to them is quick,
+so this approach makes it easy to control who can access which
+apps.
 
 - `Learn how to create groups and add users in GAMS
   Engine <https://www.gams.com/engine/administration.html#user-groups>`__
@@ -400,7 +399,7 @@ In this approach, users are separated from each other not by
 groups, but by separate MIRO Server instances. The example
 setup is as follows: There are 3 different MIRO Server
 instances, each accessible under a different URL. The MIRO
-server instances all access the same GAMS Engine instance, but
+Server instances all access the same GAMS Engine instance, but
 use different namespaces. Using groups is of course still
 possible, but not necessary in this example.
 
@@ -417,5 +416,5 @@ possible, but not necessary in this example.
    Note that in this setup it is not possible to share
    individual apps with multiple groups. Apps have to be
    added and maintained separately in each MIRO Server
-   instance. Except that they use the same GAMS Engine, the
-   three instances have nothing to do with each other.
+   instance. Apart from sharing the same GAMS Engine, the
+   three instances are completely independent.

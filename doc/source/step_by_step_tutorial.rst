@@ -13,11 +13,11 @@ From GAMSPy Model to GAMS MIRO App
 
 In this tutorial, we will explore the powerful features of GAMS MIRO to generate an application tailored to your optimization problem. Step by step, we will build the MIRO application for this `gallery <https://miro.gams.com/gallery/app_direct/bess/>`__ example.
 
-To be able to follow this tutorial, we assume that you have already worked with GAMS or GAMSPy, as we will start with a given GAMSPy model. The content of the first section is GAMSPy specific, everything after that applies to both GAMS and GAMSPy. So if you are working with a GAMS model, you can check the `documentation <https://www.gams.com/miro/model.html#model-adjustments>`__ for the syntax, still it might be helpful to follow the tutorial for additional explanations. Otherwise, you just need to have `MIRO <https://www.gams.com/miro/download.html>`__ installed (this tutorial is based on version 2.12.0, if you are using an older version, some of the features we will go through may be missing), and some R knowledge might help in the last part of the tutorial, but is not required. All necessary R functions will be explained, so if you have worked with a similar language before, you are good to go!
+To be able to follow this tutorial, we assume that you have already worked with GAMS or GAMSPy, as we will start with a given GAMSPy model. The content of the first section is GAMSPy-specific; everything after that applies to both GAMS and GAMSPy. If you are working with a GAMS model, check the `documentation <https://www.gams.com/miro/model.html#model-adjustments>`__ for the syntax; following the tutorial may still be helpful for the additional explanations. Otherwise, you just need to have `MIRO <https://www.gams.com/miro/download.html>`__ installed (this tutorial is based on version 2.12.0; if you are using an older version, some of the features we will go through may be missing). Some R knowledge might help in the last part of the tutorial, but is not required. All necessary R functions will be explained, so if you have worked with a similar language before, you are good to go!
 
-As already mentioned, you can start with either a GAMS or a GAMSPy implementation; we’ll be working with a GAMSPy model. Our first step will be to define the application’s inputs and outputs - this is the only part of the process that differs depending on whether you are using GAMS or GAMSPy. After that, the configuration process is the same for both.
+As already mentioned, you can start with either a GAMS or a GAMSPy implementation; we’ll be working with a GAMSPy model. Our first step will be to define the application’s inputs and outputs—this is the only part of the process that differs depending on whether you are using GAMS or GAMSPy. After that, the configuration process is the same for both.
 
-We’ll start by showing you how to specify inputs and outputs in your GAMSPy model. Then we will see how to visualize data in MIRO using only these definitions. This step can be extremely helpful during model development: it allows you to quickly plot and inspect the output data to make sure your results make sense. If something doesn’t look right, you have a clear starting point for investigating potential errors in you model implementation.
+We’ll start by showing you how to specify inputs and outputs in your GAMSPy model. Then we will see how to visualize data in MIRO using only these definitions. This step can be extremely helpful during model development: it allows you to quickly plot and inspect the output data to make sure your results make sense. If something doesn’t look right, you have a clear starting point for investigating potential errors in your model implementation.
 
 After we’ve covered the basics of visualization, in the second part of this tutorial we’ll move on to the Configuration Mode. Here you can configure many default settings without editing any code, making it easy to customize your application for different needs. Since built-in options are sometimes not enough, the third part of this tutorial will show you how to add custom renderers and widgets to give you maximum control over the user interface. Finally, we’ll examine advanced customization tips and tricks that can make your MIRO application even more powerful and tailored to your needs.
 
@@ -502,7 +502,7 @@ When implementing the model, it can be helpful to flag variables as outputs by a
    )
 
 
-In general, we can designate any variable or parameter as an MIRO output. When implementing the model, it makes sense to simply define all variables as output, so you can easily visualize the results. Sometimes it makes sense to define parameters as outputs that depend on the variables. A straightforward example in our model is to create dedicated parameters for the three cost components, allowing us to display these values directly in the MIRO application:
+In general, we can designate any variable or parameter as a MIRO output. When implementing the model, it makes sense to simply define all variables as output, so you can easily visualize the results. Sometimes it makes sense to define parameters as outputs that depend on the variables. A straightforward example in our model is to create dedicated parameters for the three cost components, allowing us to display these values directly in the MIRO application:
 
 .. code:: python
 
@@ -599,7 +599,7 @@ Effective Data Validation Using Log Files
 
 Finally, we will briefly discuss data validation. This is critical to ensuring the accuracy and reliability of optimization models. Log files are key to checking the consistency of input data, and generating reports on inconsistencies helps prevent errors and user frustration. Here we will only verify that our input values are all non-negative. While finding effective validation checks can be challenging, clearly identifying the constraints or values causing infeasibility can significantly improve the user experience.
 
-In MIRO, you have the option to create a custom log file. However, since we are using GAMSPy, we can also directly write to stdout for logging. If we follow the specified `MIRO log syntax <https://www.gams.com/miro/configuration_general.html#miro-log-syntax>`__ , any invalid data will be highlighted directly above the corresponding input data sheet in MIRO.
+In MIRO, you have the option to create a custom log file. However, since we are using GAMSPy, we can also directly write to stdout for logging. If we follow the specified `MIRO log syntax <https://www.gams.com/miro/configuration_general.html#miro-log-syntax>`__, any invalid data will be highlighted directly above the corresponding input data sheet in MIRO.
 
 The syntax that must be used for MIRO to jump directly to the table with the incorrect data is as follows:
 
@@ -1215,7 +1215,7 @@ Input
 ^^^^^
 
 
-At first the input parameters are empty. By clicking on *Load data*, we can load the default values defined by the records option in our GAMSPy code.
+At first, the input parameters are empty. By clicking on *Load data*, we can load the default values defined by the records option in our GAMSPy code.
 
 If our input parameters are correctly set up, we can modify them and then click *Solve model* to compute solutions for new input values.
 
@@ -1255,7 +1255,7 @@ MIRO separates scalar outputs into scalar parameters and scalar variables/equati
 
 As you can see, for scalar variables it contains not only the value of the scalar (``level``), but also ``marginal``, ``lower``, ``upper`` and ``scale``. And since scalar parameters don’t have these attributes, they are treated separately.
 
-For multi-dimensional output variables, we can again use the Pivot tool. For example, suppose we want to see how much power each generator is supplying at any given time. We can open the output variable containing the power values of the generators, pivot by generator, and filter by the \`level’ value. Next, we select the *Stacked Bar Chart* option, which gives us this view:
+For multi-dimensional output variables, we can again use the Pivot tool. For example, suppose we want to see how much power each generator is supplying at any given time. We can open the output variable containing the power values of the generators, pivot by generator, and filter by the ``level`` value. Next, we select the *Stacked Bar Chart* option, which gives us this view:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/output_generators_stacked_bar.png
@@ -1263,7 +1263,7 @@ For multi-dimensional output variables, we can again use the Pivot tool. For exa
 
 We can see that *gen1* is the most expensive generator. It is used a bit at the beginning, then it is turned off after its minimum up time of four hours. And after another four hours it is turned on again, which also fulfills the minimum down time. As you can see, *gen0* is the cheapest in both unit and fixed costs, so it is always at full power. All in all, we see that the minimum uptime and downtime constraints are met, and that each active generator stays within its power limits. If any of these constraints were violated, we would know exactly which part of the model to revisit.
 
-Let’s look at another example. Recall that we combined all power values with the given load demand into a single parameter so we could verify if the load demand is indeed met and how each source contributes at each hour. If we chose a *Stacked Bar Chart*, we can not easily compare the load demand with the sum of the power sources. Instead, we:
+Let’s look at another example. Recall that we combined all power values with the given load demand into a single parameter so we could verify if the load demand is indeed met and how each source contributes at each hour. If we chose only a *Stacked Bar Chart*, we could not easily compare the load demand with the sum of the power sources. Instead, we:
 
 1. Select *Stacked Bar Chart*.
 2. Click the :fas:`square-plus` icon to add a new view.
@@ -1312,7 +1312,7 @@ You should see the following:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/start_config_mode.png
-   :alt: Result of pivot tool for Balance
+   :alt: Application started in Configuration Mode
 
 The `Configuration Mode <https://www.gams.com/miro/customize.html>`__ gives us access to a wealth of out-of-the-box customization options, so we don’t need to write any code for now.
 
@@ -1325,7 +1325,7 @@ Let’s start by adjusting some general settings. We can give our application a 
 
 
 .. image:: ../assets/images/step_by_step_tutorial/logo_read_me.png
-   :alt: Result of pivot tool for Balance
+   :alt: General settings with logo and README
 
 
 Symbols
@@ -1336,7 +1336,7 @@ Next, we move to the `Symbols <https://www.gams.com/miro/configuration_symbols.h
 
 
 .. image:: ../assets/images/step_by_step_tutorial/gen_input.png
-   :alt: Result of pivot tool for Balance
+   :alt: Symbol settings
 
 
 Tables
@@ -1350,11 +1350,11 @@ Input Widgets
 ^^^^^^^^^^^^^
 
 
-Input widgets are all items that communicate input data with the model. We have several inputs and we will customize them in the `Input Widgets <https://www.gams.com/miro/widgets.html>`__ section. Let’s take a look at our scalar inputs first. We can choose between sliders, drop down menus, checkboxes, or numeric inputs. Here, we’ll set them to sliders. If we don’t want to impose any restrictions on the value (minimum, maximum and increment), we would stay with numeric inputs. The best choice depends on the nature of the input data.
+Input widgets are all items that communicate input data with the model. We have several inputs and we will customize them in the `Input Widgets <https://www.gams.com/miro/widgets.html>`__ section. Let’s take a look at our scalar inputs first. We can choose between sliders, dropdown menus, checkboxes, or numeric inputs. Here, we’ll set them to sliders. If we don’t want to impose any restrictions on the value (minimum, maximum and increment), we would keep numeric inputs. The best choice depends on the nature of the input data.
 
 
 .. image:: ../assets/images/step_by_step_tutorial/input.png
-   :alt: Result of pivot tool for Balance
+   :alt: Input widget settings
 
 For our multidimensional inputs, tables are the only direct option in Configuration Mode. We can pick from three table types. Because our current datasets are relatively small and we don’t plan significant editing, we’ll stick with the default table. If we anticipate working with massive datasets, switching to the performance-optimized *Big Data Table* is wise. If you know you will be doing a lot of data slicing in your table, you should choose the *Pivot Table*. For more details on table types, see the `documentation <https://www.gams.com/miro/widgets.html#widget-table>`__.
 
@@ -1367,35 +1367,35 @@ Graphs
 
 Finally, let’s explore the `Graphs <https://www.gams.com/miro/charts.html>`__. This is where we can experiment with data visualization. For every multidimensional symbol (input or output), we can define a default visualization. We can choose from the most common plot types or use the Pivot Table again, which we used during rapid prototyping. If we’ve already created useful views, we can now set them as defaults so that anyone opening the application immediately sees the relevant charts.
 
-We won’t cover every possibility here because we looked at the Pivot tool in detail earlier. However, let’s check out a small example using *value boxes* for our output. First, we select a scenario (currently, only the default scenario is available). Then we pick the GAMS symbol \*_scalars_out: Output Scalars\* and choose the charting type *Valuebox for scalar values*. From there, we can specify the order of the value boxes, their colors, and units. After clicking *Save*, we launch the application in Base Mode and see something like this:
+We won’t cover every possibility here because we looked at the Pivot tool in detail earlier. However, let’s check out a small example using *value boxes* for our output. First, we select a scenario (currently, only the default scenario is available). Then we pick the GAMS symbol *_scalars_out: Output Scalars* and choose the charting type *Valuebox for scalar values*. From there, we can specify the order of the value boxes, their colors, and units. After clicking *Save*, we launch the application in Base Mode and see something like this:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/output_value_boxes.png
-   :alt: Result of pivot tool for Balance
+   :alt: Output value boxes
 
 We can also add the views we set up in the previous section.
 
 If you are looking for something specific, check out the `documentation <https://www.gams.com/miro/charts.html>`__, which provides an extensive guide to all available plot types.
 
-Each change we make in the Configuration Mode is automatically saved to ``<model_name>.json``. In the documentation you will find the corresponding json snippets you would need to add, but don't worry, this is exactly what the Configuration Mode does when you save a graph!
+Each change we make in the Configuration Mode is automatically saved to ``<model_name>.json``. In the documentation you will find the corresponding JSON snippets you would need to add. But don't worry: this is exactly what the Configuration Mode does when you save a graph!
 
-Finally, in the *Charting Type* drop down menu you will also find the *Custom Renderer* option, which we will talk about in the next part.
+Finally, in the *Charting Type* dropdown menu you will also find the *Custom Renderer* option, which we will talk about in the next part.
 
 
 Scenario analysis
 ^^^^^^^^^^^^^^^^^
 
 
-MIRO has several build-in `scenario comparison modes <https://www.gams.com/miro/start.html#scenario-comparison>`__ that allow to compare the input and/or output data of different model runs. While most compare modes are available out of the box, you can enable a dashboard for scenario data comparison with some app-specific configuration. We will introduce the `dashboard compare <https://www.gams.com/miro/configuration_json_only.html#dashboard-compare>`__ in the next section. The process for setting this up will be explained after the regular dashboard renderer is `introduced <#dashboard-comparison>`__.
+MIRO has several built-in `scenario comparison modes <https://www.gams.com/miro/start.html#scenario-comparison>`__ that allow you to compare the input and/or output data of different model runs. While most compare modes are available out of the box, you can enable a dashboard for scenario data comparison with some app-specific configuration. We will introduce the `dashboard compare <https://www.gams.com/miro/configuration_json_only.html#dashboard-compare>`__ in the next section. The process for setting this up will be explained after the regular dashboard renderer is `introduced <#dashboard-comparison>`__.
 
 
 Database management
 ^^^^^^^^^^^^^^^^^^^
 
 
-Finally the Configuration Mode also allows you to backup, remove or restore a `database <https://www.gams.com/miro/configuration_database.html>`__.
+Finally, the Configuration Mode also allows you to back up, remove or restore a `database <https://www.gams.com/miro/configuration_database.html>`__.
 
-Since all these configurations do not take much time, this could be your first draft for your management. Now they can get an idea of what the final product might look like, and you can go deeper and add any further customizations you need. How to do this is explained in the next part.
+Since all these configurations do not take much time, this could serve as a first draft for your management. They can get an idea of what the final product might look like, and you can go deeper and add any further customizations you need. How to do this is explained in the next part.
 
 
 .. _key-takeaways-2:
@@ -1412,13 +1412,16 @@ Dashboard
 
 
 
-You may have already noticed the *Dashboard* option in the *Graphs* section of the MIRO documentation. If we have several saved `views <#output>`__ - perhaps some combined with Key Performance Indicators (KPIs) - a dashboard can provide an organized overview of our application output.
+You may have already noticed the *Dashboard* option in the *Graphs* section of the MIRO documentation. If we have several saved `views <#output>`__—perhaps some combined with Key Performance Indicators (KPIs)—a dashboard can provide an organized overview of our application output.
 
-Creating a dashboard is not directly possible from Configuration Mode. Instead, we need to edit our ``<model_name>.json`` file. To add a dashboard, we will follow the explanation in the `documentation <https://www.gams.com/miro/charts.html#dashboard>`__. Here we will only discuss the parts we use, for more information check the documentation.
+Creating a dashboard is not directly possible from Configuration Mode. Instead, we need to edit our ``<model_name>.json`` file. To add a dashboard, we will follow the explanation in the `documentation <https://www.gams.com/miro/charts.html#dashboard>`__. Here we will only discuss the parts we use; for more information, check the documentation.
 
-Before we modify the JSON file, we need to decide how we want the final dashboard to look. Specifically, we should choose: 1. *Value Boxes (Tiles)*: Which scalar values we want to highlight, and whether they serve as KPIs. 2. *Associated Views*: Which views will be linked to each value box. Most likely, we can reuse the views we created earlier.
+Before we modify the JSON file, we need to decide how we want the final dashboard to look. Specifically, we should choose:
 
-We find our ``<model_name>.json`` file in the ``conf_ <model_name>`` directory. Here, we look for the ``dataRendering`` key—or define it if it doesn’t exist (it won’t, if you followed this tutorial). We need to pick an output symbol to serve as our main parameter, but the choice isn’t critical—we can add other symbols later as needed. We just can’t have another renderer for this specific symbol if we choose to have more output tabs than just the dashboard.
+1. *Value Boxes (Tiles)*: Which scalar values we want to highlight, and whether they serve as KPIs.
+2. *Associated Views*: Which views will be linked to each value box. Most likely, we can reuse the views we created earlier.
+
+We find our ``<model_name>.json`` file in the ``conf_<model_name>`` directory. Here, we look for the ``dataRendering`` key—or define it if it doesn’t exist (it won’t, if you followed this tutorial). We need to pick an output symbol to serve as our main parameter, but the choice isn’t critical—we can add other symbols later as needed. We just can’t have another renderer for this specific symbol if we choose to have more output tabs than just the dashboard.
 
 For this example, we’ll choose ``"_scalarsve_out"``. This symbol contains all scalar output values of variables and equations. Because we probably won’t create an individual renderer for them, it’s a convenient symbol choice for our dashboard.
 
@@ -1453,16 +1456,16 @@ Here’s the basic layout of our dashboard configuration for the symbol ``"_scal
      },
    }
 
-If we already had other renderers, they would appear under ``dataRendering`` as well, we’ll add ours in the next section.
+If we already had other renderers, they would appear under ``dataRendering`` as well; we’ll add ours in the next section.
 
-To keep the code snippets concise, we will only look at the options we changed and have the full json at the end.
+To keep the code snippets concise, we will only look at the options we changed and show the full JSON at the end.
 
 
 Adding Additional Data
 ^^^^^^^^^^^^^^^^^^^^^^
 
 
-Usually, we don’t immediately know every dataset we need. In this tutorial, however, we already plan to use ``"report_output"``, ``"gen_power"``, ``"battery_power"`` and ``"external_grid_power"`` since we already have an idea of which views we want to display. But of course you can add or remove symbols at any time. Further we will add the input symbol ``"generator_specifications"`` to easily check if the generator characteristic are fulfilled. All needed symbols are added to ``"additionalData"``:
+Usually, we don’t immediately know every dataset we need. In this tutorial, however, we already plan to use ``"report_output"``, ``"gen_power"``, ``"battery_power"`` and ``"external_grid_power"`` since we already have an idea of which views we want to display. But of course you can add or remove symbols at any time. Furthermore, we add the input symbol ``"generator_specifications"`` to easily check whether the generator characteristics are met. All needed symbols are added to ``"additionalData"``:
 
 .. code:: json
 
@@ -1525,9 +1528,9 @@ Data Views
 ^^^^^^^^^^
 
 
-Next, under ``"dataViews"``, we define which charts or tables belong to each value box. A data view is displayed when the corresponding value box is clicked on in the dashboard. Multiple charts and tables can be displayed. We only connect data views to the first four value boxes, leaving the last two without any dedicated view. This is done by simply not specifying a data view for those id’s.
+Next, under ``"dataViews"``, we define which charts or tables belong to each value box. A data view is displayed when the corresponding value box is clicked in the dashboard. Multiple charts and tables can be displayed. We only connect data views to the first four value boxes, leaving the last two without any dedicated view. This is done by simply not specifying a data view for those ids.
 
-The key of a data view (e.g. ``"battery_power"``) must match the id of a value box in ``"valueBoxes"``. We start each data view with the ``id`` from the corresponding value box, then we assign a list of objects to it. Each object within the list has a key (e.g., ``"BatteryTimeline"``) that references a chart or table we will define next in ``"dataViewsConfig"``, and as value we assign the optional title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object, as is done for ``"gen_power"``.
+The key of a data view (e.g., ``"battery_power"``) must match the id of a value box in ``"valueBoxes"``. We start each data view with the ``id`` from the corresponding value box, then we assign a list of objects to it. Each object within the list has a key (e.g., ``"BatteryTimeline"``) that references a chart or table we will define next in ``"dataViewsConfig"``, and as its value we assign the optional title that will be displayed above the view in the dashboard. If you want to have more than one chart/table in a view, just add a second element to the object, as is done for ``"gen_power"``.
 
 .. code:: json
 
@@ -1552,7 +1555,14 @@ Configuring Charts and Tables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the `documentation <https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig>`__. The easiest way to add charts/tables is: 1. Create views in the application via the pivot tool. 2. Save these views. 3. Download the JSON configuration for the views (via *Scenario* (top right corner of the application) -> *Edit metadata* -> *View*). 4. Copy the JSON configuration to the ``"dataViewsConfig"`` section. Most of the configuration can be copied directly. We just need to change the way we define which symbol the view is based on. It is no longer defined outside, but we will add ``"data: "report_output"`` to specify the symbol, otherwise MIRO will base the view on ``"_scalarsve_out"`` since that is the variable the renderer is based on.
+The only thing left to do is to specify the actual charts/tables to be displayed. This is also explained in detail in the `documentation <https://www.gams.com/miro/charts.html#dashboard-dataviewsconfig>`__. The easiest way to add charts/tables is:
+
+1. Create views in the application via the pivot tool.
+2. Save these views.
+3. Download the JSON configuration for the views (via *Scenario* (top right corner of the application) → *Edit metadata* → *Views*).
+4. Copy the JSON configuration to the ``"dataViewsConfig"`` section.
+
+Most of the configuration can be copied directly. We just need to change the way we define which symbol the view is based on. Instead of defining it outside, we add ``"data": "report_output"`` to specify the symbol; otherwise, MIRO will base the view on ``"_scalarsve_out"`` since that is the variable the renderer is based on.
 
 .. code:: diff
 
@@ -1707,9 +1717,9 @@ Finally, we end up with this dashboard:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/dashboard_animation.gif
-   :alt: Result of pivot tool for Balance
+   :alt: Final dashboard
 
-Now that we've combined multiple outputs into a single dashboard, it makes sense to hide the tabs for the individual output symbols and rename the dashboard tab for clarity (in the config mode). Just a heads up, you should keep ``"report_output"``, we will add a custom renderer for it in the next part.
+Now that we've combined multiple outputs into a single dashboard, it makes sense to hide the tabs for the individual output symbols and rename the dashboard tab for clarity (in Configuration Mode). Note that you should keep ``"report_output"``, as we will add a custom renderer for it in the next part.
 
 It is also possible to add custom code to the dashboard. However, since this requires a bit more effort and you need to know how to create a custom renderer in the first place, we will leave this for the next part.
 
@@ -1722,13 +1732,13 @@ As mentioned before, MIRO provides three built-in `scenario comparison <https://
 
 
 .. image:: ../assets/images/step_by_step_tutorial/compare_dashboards.png
-   :alt: Result of pivot tool for Balance
+   :alt: Split view comparison of two dashboards
 
-If you need to compare more than two scenarios, you can use the *Tab view* comparison mode, which organizes any number of scenarios (and their renderers) into separate tabs. Finally, the *Pivot view* comparison mode merges all scenario data into one pivot table for each symbol. It is the same pivot tool with its many possibilities that we have already used so much.
+If you need to compare more than two scenarios, you can use the *Tab view* comparison mode, which organizes any number of scenarios (and their renderers) into separate tabs. Finally, the *Pivot view* comparison mode merges all scenario data into one pivot table for each symbol. It is the same pivot tool we have already used extensively.
 
-In addition to these ready-to-use comparison modes and `custom compare modules <https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode>`__, there is another one, `dashboard comparison mode <https://www.gams.com/miro/configuration_json_only.html#dashboard-compare>`__, which must be configured specifically for the app before it can be used. We will do this in the following.
+In addition to these ready-to-use comparison modes and `custom compare modules <https://www.gams.com/miro/configuration_json_only.html#custom-compare-mode>`__, there is another one, `dashboard comparison mode <https://www.gams.com/miro/configuration_json_only.html#dashboard-compare>`__, which must be configured specifically for the app before it can be used. We will configure it next.
 
-The configuration of our regular dashboard renderer can be largely adopted, we just need to make some small adjustments:
+The configuration of our regular dashboard renderer can largely be reused; we just need to make some small adjustments:
 
 1. We just configured the dashboard in the ``dataRendering`` section of the ``<model_name>.json`` file. For scenario comparison, the configuration should be placed in a separate section called ``compareModules``.
 
@@ -1797,11 +1807,11 @@ The additional scenario dimension also changes the appearance of the graphs. Som
 
 
 .. image:: ../assets/images/step_by_step_tutorial/scenario_pivot_compare.png
-   :alt: Result of pivot tool for Balance
+   :alt: Pivot view comparison of two scenarios
 
 As you can see, the values for both scenarios are stacked on top of each other, so it's no longer easy to see if the load is fulfilled. Comparing the scenarios becomes difficult. To fix this, click the :fas:`square-plus` icon to add a new view (or the *edit* button to edit an existing one). In the view settings dialog that opens, find "Group stacks by dimension" and add the scenario dimension. This will group the stacked bars by scenario.
 
-We can also adjust the coloring so that the value for, e.g., ``"generators"``, is the same across all scenarios. The "Series Styling" tab in the view menu allows to assign custom colors to individual series. So you could assign the same color to each series containing ``"generators"``. Keep in mind that this approach is not generic as the scenario name is part of the dimensions. A generic, scenario-independent approach is to define a color pattern for all series that contain ``"generators"``. This can be done in the JSON file itself (read more about this `here <https://www.gams.com/miro/charts.html#series-patterns>`__).
+We can also adjust the coloring so that the value for, e.g., ``"generators"``, is the same across all scenarios. The "Series Styling" tab in the view menu allows you to assign custom colors to individual series. So you could assign the same color to each series containing ``"generators"``. Keep in mind that this approach is not generic, as the scenario name is part of the dimensions. A generic, scenario-independent approach is to define a color pattern for all series that contain ``"generators"``. This can be done in the JSON file itself (read more about this `here <https://www.gams.com/miro/charts.html#series-patterns>`__).
 
 The ``"Balance"`` view could look like this:
 
@@ -1860,11 +1870,11 @@ The ``"Balance"`` view could look like this:
      "userFilter": "_scenName"
    }
 
-The scenario comparison dashboard is ready! It now displays the data of all selected scenarios in the dashboard we are familiar with. The value boxes are empty by default. You can use a drop down menu above them to select a scenario from which the corresponding values are displayed. Now you can see directly how the costs of the BESS affect the use of the generators etc.
+The scenario comparison dashboard is ready! It now displays the data of all selected scenarios in the dashboard we are familiar with. The value boxes are empty by default. You can use a dropdown menu above them to select a scenario from which the corresponding values are displayed. Now you can see directly how the costs of the BESS affect the use of the generators, etc.
 
 
 .. image:: ../assets/images/step_by_step_tutorial/dashboard_compare.gif
-   :alt: Result of pivot tool for Balance
+   :alt: Dashboard comparison
 
 
 .. raw:: html
@@ -1882,7 +1892,7 @@ Key Takeaways
 - **Comprehensive Overview**: Although configuring the dashboard requires some effort, it provides a unified view of all scenarios.
 - **Easy Comparison**: Quickly compare multiple scenarios within a single dashboard for better insights.
 
-After exploring all the out-of-the-box customizations for our application, the next step is to dive into the custom code extensions that MIRO offers. This will be the focus of our third and final part, where we will demonstrate how to write custom renderers, widgets, and importer/exporter functions in R. Don’t worry if you’ve never worked with R before-we’ll introduce you to all the necessary R functions.
+After exploring all the out-of-the-box customizations for our application, the next step is to dive into the custom code extensions that MIRO offers. This will be the focus of our third and final part, where we will demonstrate how to write custom renderers, widgets, and importer/exporter functions in R. Don’t worry if you’ve never worked with R before—we’ll introduce you to all the necessary R functions.
 
 .. _fine-tuning-with-custom-code:
 
@@ -1892,7 +1902,7 @@ Fine Tuning with Custom Code
 
 
 
-In the first part of this tutorial we went from a GAMSPy model to a first basic GAMS MIRO application for this `gallery <https://miro.gams.com/gallery/app_direct/bess/>`__ example. In the second part we got familiar with the Configuration Mode. Nevertheless, sometimes we want to customize our MIRO application even more. MIRO supports this via custom code, specifically in R, which allows us to go beyond the standard visualizations.
+In the first part of this tutorial, we went from a GAMSPy model to a first basic GAMS MIRO application for this `gallery <https://miro.gams.com/gallery/app_direct/bess/>`__ example. In the second part, we got familiar with the Configuration Mode. Nevertheless, sometimes we want to customize our MIRO application even more. MIRO supports this via custom code, specifically in R, which allows us to go beyond the standard visualizations.
 
 
 Custom Renderer
@@ -1909,7 +1919,10 @@ Renderer Structure
 """"""""""""""""""
 
 
-First, we need to understand what the general structure of a custom renderer is in MIRO. For this we will closely follow the `documentation <https://www.gams.com/miro/configuration_advanced.html#custom-renderers>`__. MIRO leverages R Shiny under the hood, which follows a two-function approach: 1. Placeholder function (server output): Where we specify the UI elements (plots, tables, etc.) and where they will be rendered. 2. Rendering function: Where we do the data manipulation, define the reactive logic, and produce the final display.
+First, we need to understand what the general structure of a custom renderer is in MIRO. For this we will closely follow the `documentation <https://www.gams.com/miro/configuration_advanced.html#custom-renderers>`__. MIRO leverages R Shiny under the hood, which follows a two-function approach:
+
+1. Placeholder function (server output): Where we specify the UI elements (plots, tables, etc.) and where they will be rendered.
+2. Rendering function: Where we do the data manipulation, define the reactive logic, and produce the final display.
 
 For more background on Shiny, see `R Shiny’s official website <https://shiny.posit.co/>`__.
 
@@ -1927,11 +1940,11 @@ A typical MIRO custom renderer follows this template (using ``battery_power`` as
 
    }
 
-If you are not using the Configuration Mode, you must save these functions in a file named ``mirorenderer_<lowercaseSymbolName>.R`` inside the ``renderer_<model_name>`` directory. However, if you are using the Configuration Mode, you can add the custom renderer directly under the *Graphs* by setting its *charting type* to *Custom renderer*. The Configuration Mode will automatically create the folder structure and place your R code in the correct location when you save.
+If you are not using the Configuration Mode, you must save these functions in a file named ``mirorenderer_<lowercaseSymbolName>.R`` inside the ``renderer_<model_name>`` directory. However, if you are using the Configuration Mode, you can add the custom renderer directly in the *Graphs* section by setting its *charting type* to *Custom renderer*. The Configuration Mode will automatically create the folder structure and place your R code in the correct location when you save.
 
 
 .. image:: ../assets/images/step_by_step_tutorial/empty_config_mode.png
-   :alt: Result of pivot tool for Balance
+   :alt: Empty custom renderer in Configuration Mode
 
 
 Placeholder Function
@@ -1957,7 +1970,7 @@ In our first example, we only want to draw a single plot of the BESS storage lev
 
 Note that instead of writing ``plotOutput("cumsumPlot", ...)``, we use ``plotOutput(ns("cumsumPlot"), ...)`` to ensure that the ``cumsumPlot`` is uniquely identified throughout the application.
 
-We only have one plot here, but you can create as many UI elements as you need. To get a better overview what is possible check the R Shiny documentation, e.g. their section on `Arrange Elements <https://shiny.posit.co/r/layouts/arrange/>`__.
+We only have one plot here, but you can create as many UI elements as you need. For an overview of what is possible, check the R Shiny documentation, e.g., their section on `Arrange Elements <https://shiny.posit.co/r/layouts/arrange/>`__.
 
 
 Rendering Function
@@ -1969,9 +1982,9 @@ Next, we implement the actual renderer, which handles data manipulation and visu
 - Output functions: These functions determine how the data is displayed, such as ``plotOutput()``.
 - Rendering functions: These are functions in Shiny that transform your data into visual elements, such as plots, tables, or maps. For example, ``renderPlot()`` is a reactive plot suitable for assignment to an output slot.
 
-Now we need a connection between our placeholder and the renderer. To do this, we look at the arguments the rendering function gets
+Now we need a connection between our placeholder and the renderer. To do this, we look at the arguments the rendering function gets:
 
-- ``input``: Access to Shiny inputs, i.e. elements that generate data, such as sliders, text input,… (``input$hour``).
+- ``input``: Access to Shiny inputs, i.e., elements that generate data, such as sliders, text input,… (``input$hour``).
 - ``output``: Controls elements that visualize data, such as plots, maps, or tables (``output$cumsumPlot``).
 - ``session``: Contains user-specific information.
 - ``data``: The data for the visualization is specified as an R `tibble <https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html>`__. If you’ve specified multiple datasets in your MIRO application, the data will be a named list of tibbles. Each element in this list corresponds to a GAMS symbol (``data$battery_power``).
@@ -1997,9 +2010,9 @@ We will now return to the Configuration Mode and start building our first render
    10 hour09     0        0  -Inf   Inf     1
    # i 14 more rows
 
-Since we have not specified any additional data sets so far, ``data`` directly contains the variable ``battery_power``, which is the GAMS symbol we put in the mirorender name. For our plot of the storage levels we now need the values from the ``level`` column, which we can access in R with ``data$level``. More on subsetting tibbles can be found `here <https://tibble.tidyverse.org/reference/subsetting.html>`__.
+Since we have not specified any additional datasets so far, ``data`` directly contains the variable ``battery_power``, which is the GAMS symbol in the renderer’s function names. For our plot of the storage levels, we now need the values from the ``level`` column, which we can access in R with ``data$level``. More on subsetting tibbles can be found `here <https://tibble.tidyverse.org/reference/subsetting.html>`__.
 
-Let’s now finally make our first plot! First we need to calculate the data we want to plot, which we store in ``storage_level``. The values in ``battery_power`` are from the city’s perspective; negative means charging the BESS, positive means discharging. We negate the cumulative sum to get the actual storage level. We use the standard R ``barplot()`` (`documentation <https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot>`__) for visualization, but any plotting library can be used. Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable. The code should look like this:
+Let’s now finally make our first plot! First, we need to calculate the data we want to plot, which we store in ``storage_level``. The values in ``battery_power`` are from the city’s perspective; negative means charging the BESS, positive means discharging. We negate the cumulative sum to get the actual storage level. We use the standard R ``barplot()`` (`documentation <https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/barplot>`__) for visualization, but any plotting library can be used. Finally, we just need to pass this reactive plot to a render function and assign it to the appropriate output variable. The code should look like this:
 
 .. code:: R
 
@@ -2012,9 +2025,9 @@ If you press *Update* again, you should get this:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/cumsum_first_draft.png
-   :alt: Result of pivot tool for Balance
+   :alt: First draft of the storage level plot
 
-Now let’s make this graph prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn’t go all the way to the top. To change this, we can set it to the maximum value of our data. But what might be more interesting is to see the current storage value compared to the maximum possible. As you may remember, this maximum storage level is also part of our optimization. So now we need to add data from other model symbols to our renderer. First go to *Advanced options* and then by clicking on *Additional datasets to communicate with the custom renderer* we will see all the symbols we can add to the renderer. Since we need the data from the scalar variable ``battery_storage``, we add ``"_scalarsve_out"``. Going back to the *Main* tab, we now need to change how we access the data, since ``data`` is no longer a single tibble, but a named list of tibbles. In the example below we use ``filter()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter>`__) and ``pull()`` (`documentation <https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull>`__) to extract the desired data. Note that ``%>%`` is the pipe operator, which is used to pass the result of an expression or function as the input to the next function in a sequence, improving the readability and flow of your code.
+Now let’s make this graph prettier. Aside from adding a title, labels, etc., take a look at the y-axis. As you can see, it doesn’t go all the way to the top. To change this, we can set it to the maximum value of our data. But it might be more interesting to see the current storage value compared to the maximum possible. As you may remember, this maximum storage level is also part of our optimization. So now we need to add data from other model symbols to our renderer. First, go to *Advanced options* and then by clicking on *Additional datasets to communicate with the custom renderer* we will see all the symbols we can add to the renderer. Since we need the data from the scalar variable ``battery_storage``, we add ``"_scalarsve_out"``. Going back to the *Main* tab, we now need to change how we access the data, since ``data`` is no longer a single tibble, but a named list of tibbles. In the example below, we use ``filter()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter>`__) and ``pull()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/pull>`__) to extract the desired data. Note that ``%>%`` is the pipe operator, which is used to pass the result of an expression or function as the input to the next function in a sequence, improving the readability and flow of your code.
 
 .. code:: R
 
@@ -2022,11 +2035,11 @@ Now let’s make this graph prettier. Aside from adding a title, labels, etc., t
      filter(scalar == "battery_storage") %>%
      pull(level)
 
-We will use the ``"battery_storage"`` for adding a horizontal line with ``abline()`` (`documentation <https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline>`__). Adding some more layout settings leads us to:
+We use ``max_storage`` to add a horizontal line with ``abline()`` (`documentation <https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/abline>`__). Adding some more layout settings leads us to:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/cumsum_final_conifg_mode.png
-   :alt: Result of pivot tool for Balance
+   :alt: Final storage level plot
 
 .. dropdown:: Click to see the full code of the renderer
 
@@ -2059,7 +2072,7 @@ We will use the ``"battery_storage"`` for adding a horizontal line with ``abline
 
 By clicking *Save*, the Configuration Mode generates the file structure and JSON configuration automatically. Again, if you are not using the Configuration Mode, you will need to add this manually. The template can be found in the `documentation <https://www.gams.com/miro/configuration_advanced.html#custom-renderers>`__.
 
-Congratulations you created your first renderer!
+Congratulations, you have created your first renderer!
 
 Now that we have created our first small custom renderer, we can start working on some more complex renderers.
 
@@ -2068,7 +2081,7 @@ A more complex renderer
 """""""""""""""""""""""
 
 
-We are going to make a simple Sankey diagram for our power flow. We will base this renderer on our ``report_output`` variable which contains the three power variables and the load demand. It will show the current power flow at a given hour. To change the hour we will add a slider. This results in the following placeholder function:
+We are going to make a simple Sankey diagram for our power flow. We will base this renderer on our ``report_output`` parameter, which contains the three power variables and the load demand. It will show the current power flow at a given hour. To change the hour, we will add a slider. This results in the following placeholder function:
 
 .. code:: R
 
@@ -2083,7 +2096,7 @@ We are going to make a simple Sankey diagram for our power flow. We will base th
      )
    }
 
-Since we just want both elements on top of each other, we use a ``tagList()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/0.9.1/topics/tagList>`__). First we have our slider, which we give an id, again using the ``ns()`` function to prefix it. We set ``min``, ``max``, initial ``value`` and ``step``\ size. Second, we have a plot for which we use ``plotlyOutput()`` (`documentation <https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny>`__), since we will be using the *plotly* library to generate the Sankey plot. Because plotly is not part of MIRO’s core, we must add the package to our environment. This can be done in the same way as the additional data in the *Advanced options* menu. This also means that we need to specify the package name explicitly using the *double colon operator*. Again, if you are not using the Configuration Mode, follow the `documentation <https://www.gams.com/miro/configuration_advanced.html#additional-r-packages>`__.
+Since we just want both elements on top of each other, we use a ``tagList()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/0.9.1/topics/tagList>`__). First we have our slider, which we give an id, again using the ``ns()`` function to prefix it. We set ``min``, ``max``, initial ``value`` and ``step`` size. Second, we have a plot for which we use ``plotlyOutput()`` (`documentation <https://www.rdocumentation.org/packages/plotly/versions/4.10.4/topics/plotly-shiny>`__), since we will be using the *plotly* library to generate the Sankey plot. Because plotly is not part of MIRO’s core, we must add the package to our environment. This can be done in the same way as the additional data in the *Advanced options* menu. This also means that we need to specify the package name explicitly using the *double colon operator*. Again, if you are not using the Configuration Mode, follow the `documentation <https://www.gams.com/miro/configuration_advanced.html#additional-r-packages>`__.
 
 Now that we have some placeholders, we need to fill them. Let us begin to set up our Sankey diagram. First, we need to decide which nodes we need. We will add one for the BESS, the generators, the external grid, and the city. You need to remember the order so that you can assign the links correctly later.
 
@@ -2100,7 +2113,7 @@ Now that we have some placeholders, we need to fill them. Let us begin to set up
      )
    )
 
-With the nodes defined we need to set the links. Each link has a source, a target and a value. The possible sources and targets are defined by our given nodes. We will define lists for all three and fill them based on our data.
+With the nodes defined, we need to set the links. Each link has a source, a target and a value. The possible sources and targets are defined by our given nodes. We will define lists for all three and fill them based on our data.
 
 .. code:: R
 
@@ -2110,7 +2123,7 @@ With the nodes defined we need to set the links. Each link has a source, a targe
        value =  sankey_value
    )
 
-To be able to display the power value of the correct time point we need to get the hour from our slider, which we get from our ``input`` parameter.
+To be able to display the power value of the correct time point, we need to get the hour from our slider, which we get from our ``input`` parameter.
 
 .. code:: R
 
@@ -2118,9 +2131,9 @@ To be able to display the power value of the correct time point we need to get t
 
 Note that we use ``sprintf()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/sprintf>`__) to get the same string we use to represent the hour in our GAMS symbols, so that we can filter the data for the correct hour.
 
-Here we need to be careful: ``input`` is a reactive variable, it automatically updates the diagram when the slider is updated. This means we need to put it in a reactive context. For example, in R you can use ``observe()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe>`__). However, since our rendering depends on only one input and only one output, we keep it simple and place all our calculations inside ``renderPlotly()``. We can do this because rendering functions are also observers. If you want to learn more about R Shiny’s reactive expressions, you can find a more detailed tutorial `here <https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/>`__.
+Here we need to be careful: ``input`` is reactive: it automatically updates the diagram when the slider is updated. This means we need to put it in a reactive context. For example, in R you can use ``observe()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe>`__). However, since our rendering depends on only one input and only one output, we keep it simple and place all our calculations inside ``renderPlotly()``. We can do this because rendering functions are also observers. If you want to learn more about R Shiny’s reactive expressions, you can find a more detailed tutorial `here <https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/>`__.
 
-With that figured out, we need to extract the correct power values. First we need to select the correct power type, then the current hour and add it to the links if it is not zero. Because GAMS doesn’t store zeros, we need to check if a row exists for each hour-power combination. Here you see how to do it for the ``battery_power``:
+With that figured out, we need to extract the correct power values. First, we need to select the correct power type, then the current hour, and add the value to the links if it is not zero. Because GAMS doesn’t store zeros, we need to check if a row exists for each hour-power combination. Here you see how to do it for the ``battery_power``:
 
 .. code:: R
 
@@ -2137,7 +2150,7 @@ With that figured out, we need to extract the correct power values. First we nee
       extern_to_display <- filter(data, power_output_header == "external_grid") %>%
         filter(j == hour_to_display)
 
-Now that we have our values, we need to add them to our link list. But remember to make sure that the value exists (here using ``dim()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dim>`__)), and for the BESS we need to keep in mind that we can have positive and negative power flows, either from the city to the BESS or the other way around! Here is a way to add the BESS links:
+Now that we have our values, we need to add them to our link list. But we need to make sure that the value exists (here using ``dim()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/dim>`__)), and for the BESS we need to keep in mind that we can have positive and negative power flows, either from the city to the BESS or the other way around! Here is a way to add the BESS links:
 
 .. code:: R
 
@@ -2279,7 +2292,7 @@ Now we can inspect the hourly power flow between generators, the external grid, 
 
 
 .. image:: ../assets/images/step_by_step_tutorial/sankey_animation.gif
-   :alt: Result of pivot tool for Balance
+   :alt: Animated Sankey diagram
 
 Hopefully you now have a better idea of what is possible with custom renderers and how to easily use the Configuration Mode to implement them.
 
@@ -2288,7 +2301,7 @@ Custom Dashboard
 ^^^^^^^^^^^^^^^^
 
 
-Now that we know so much more about custom renderers, let us embed custom code in our `dashboard <#dashboard-renderer>`__. We will add the simple renderer for the storage level of the BESS. We follow the `documentation <https://www.gams.com/miro/charts.html#dashboard-custom-code>`__ closely for this. To add custom code to the renderer, we no longer just use json, but we use the dashboard as a custom renderer. The dashboard renderer has been prepared to do this with minimal effort.
+Now that we know so much more about custom renderers, let us embed custom code in our `dashboard <#dashboard>`__. We will add the simple renderer for the storage level of the BESS. We follow the `documentation <https://www.gams.com/miro/charts.html#dashboard-custom-code>`__ closely for this. To add custom code to the renderer, we no longer use JSON alone; instead, we use the dashboard as a custom renderer. The dashboard renderer has been prepared to do this with minimal effort.
 
 1. Download the `latest dashboard renderer file <https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/dashboard.R>`__ from the GAMS MIRO repository on GitHub and put it with the other renderers in your ``renderer_<model_name>`` directory.
 
@@ -2316,7 +2329,7 @@ Now that we know so much more about custom renderers, let us embed custom code i
 
 Remember that the dashboard is rendered for the symbol ``"_scalarsve_out"``. As with the other renderers, be sure to replace it with the symbol name you want to render if you create a dashboard for a different symbol.
 
-3. In the ``dataRendering`` section of the ``<model_name>.json`` file change the ``"outType"`` of the symbol to render from ``"dashboard"`` to ``"mirorenderer_<symbolname>"``
+3. In the ``dataRendering`` section of the ``<model_name>.json`` file, change the ``"outType"`` of the symbol to render from ``"dashboard"`` to ``"mirorenderer_<symbolname>"``.
 
 .. code:: diff
 
@@ -2345,7 +2358,7 @@ To add custom code, we first need to decide where to put it. Here we will add it
      ...
    }
 
-In the corresponding ``"dataViewsConfig"`` section we now assign an arbitrary string, e.g. ``"BatteryStorage": "customCode"``, instead of a view configuration as before:
+In the corresponding ``"dataViewsConfig"`` section we now assign an arbitrary string, e.g., ``"BatteryStorage": "customCode"``, instead of a view configuration as before:
 
 .. code:: text
 
@@ -2391,7 +2404,7 @@ Dashboard Comparison with Custom Code
 """""""""""""""""""""""""""""""""""""
 
 
-You can also introduce custom renders to the dashboard comparison. Since this is quite similar to what we just did, we won't go over it again here. If you want to include the custom renderer, simply follow the `documentation <https://www.gams.com/miro/configuration_json_only.html#custom-dashboard-compare>`__. Just note that you cannot directly copy your old custom renderer; you'll need to adapt it to the new data structure, which now includes the scenario dimension!
+You can also introduce custom renderers to the dashboard comparison. Since this is quite similar to what we just did, we won't go over it again here. If you want to include the custom renderer, simply follow the `documentation <https://www.gams.com/miro/configuration_json_only.html#custom-dashboard-compare>`__. Just note that you cannot directly copy your old custom renderer; you'll need to adapt it to the new data structure, which now includes the scenario dimension!
 
 
 Custom Widget
@@ -2404,7 +2417,7 @@ In MIRO, each symbol tab provides both a tabular and a graphical data representa
 
 Currently, the Configuration Mode does not offer direct support for implementing custom input widgets, but we can create them the same way we create a custom renderer and then make a few changes to convert it into a widget.
 
-First, we develop a placeholder function that displays both a plot and a data table. For the table we will use R Shinys `DataTables <https://shiny.posit.co/r/articles/build/datatables/>`__. To do this, you must first add `DT <https://www.rdocumentation.org/packages/DT/versions/0.16>`__ to the additional packages and prefix the corresponding functions in the code. To define the output we use ``DT:DTOutput()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableOutput>`__):
+First, we develop a placeholder function that displays both a plot and a data table. For the table, we will use R Shiny’s `DataTables <https://shiny.posit.co/r/articles/build/datatables/>`__. To do this, you must first add `DT <https://www.rdocumentation.org/packages/DT/versions/0.16>`__ to the additional packages and prefix the corresponding functions in the code. To define the output, we use ``DT::DTOutput()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.33/topics/dataTableOutput>`__):
 
 .. code:: R
 
@@ -2416,7 +2429,7 @@ First, we develop a placeholder function that displays both a plot and a data ta
      )
    }
 
-Before we make it interactive, let’s fill in our placeholders. For the table, we assign it with ``DT:renderDT()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.28/topics/dataTableOutput>`__), where we define the ``DT:datatable()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.16/topics/datatable>`__) and we will round our cost values with ``DT:formatRound()`` (`documentation <https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html>`__):
+Before we make it interactive, let’s fill in our placeholders. For the table, we assign it with ``DT::renderDT()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.28/topics/dataTableOutput>`__), where we define the ``DT::datatable()`` (`documentation <https://www.rdocumentation.org/packages/DT/versions/0.16/topics/datatable>`__) and we will round our cost values with ``DT::formatRound()`` (`documentation <https://search.r-project.org/CRAN/refmans/DT/html/formatCurrency.html>`__):
 
 .. code:: R
 
@@ -2492,9 +2505,9 @@ Now you should see something like this:
 
 
 .. image:: ../assets/images/step_by_step_tutorial/widget_first_version.png
-   :alt: Result of pivot tool for Balance
+   :alt: First version of the custom widget
 
-At this point, any changes we make in the table do not reflect in the plot. To fix this, we need `reactive expressions <https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/>`__. We need to add them for each interaction that should result in an update.
+At this point, any changes we make in the table are not reflected in the plot. To fix this, we need `reactive expressions <https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/>`__. We need to add them for each interaction that should result in an update.
 
 First, we define a variable ``rv`` for our `reactiveValues <https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/reactiveValues>`__.
 
@@ -2504,7 +2517,7 @@ First, we define a variable ``rv`` for our `reactiveValues <https://www.rdocumen
      timewise_input_data = NULL
    )
 
-To set ``rv$timewise_input_data`` we ``observe()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe>`__) the initial ``data``. If it changes we set our reactive value to the data.
+To set ``rv$timewise_input_data``, we ``observe()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.9.1/topics/observe>`__) the initial ``data``. If it changes, we set our reactive value to the data.
 
 .. code:: R
 
@@ -2538,7 +2551,7 @@ If the new value of the entry would be empty (``""``), we want to reset the tabl
      DT::replaceData(tableProxy, isolate(rv$timewise_input_data), resetPaging = FALSE, rownames = FALSE)
    }
 
-Finally, we now need to reference ``rv$timewise_input_data`` instead of ``data`` in the plot renderer, so that the plot is updated whenever a table cell changes.
+Finally, we need to reference ``rv$timewise_input_data`` instead of ``data`` in the plot renderer, so that the plot is updated whenever a table cell changes.
 
 .. dropdown:: Click to see the full code of the current state
 
@@ -2631,14 +2644,14 @@ Finally, we now need to reference ``rv$timewise_input_data`` instead of ``data``
         })
       }
 
-After these changes, we have a reactive table-plot combination, but it still behaves like an output renderer. We need to take a few final steps to turn this into a `custom input widget <https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets>`__ so that the new data can be used to solve!
+After these changes, we have a reactive table-plot combination, but it still behaves like an output renderer. We need to take a few final steps to turn this into a `custom input widget <https://www.gams.com/miro/configuration_json_only.html#custom-input-widgets>`__ so that the new data is used when solving the model!
 
 
 From Custom Renderer To Custom Widget
 """""""""""""""""""""""""""""""""""""
 
 
-To turn the renderer into a widget, we save our renderer in the Configuration Mode and go to the directory where it was saved. Here we first need to change the name of the file to ``mirowidget_timewise_load_demand_and_cost_external_grid_data.R`` Now we need to rename the functions:
+To turn the renderer into a widget, we save our renderer in the Configuration Mode and go to the directory where it was saved. Here we first need to change the name of the file to ``mirowidget_timewise_load_demand_and_cost_external_grid_data.R``. Now we need to rename the functions:
 
 .. code:: diff
 
@@ -2662,7 +2675,7 @@ We need to make some small changes to our code. The ``data`` parameter is no lon
    + rv$timewise_input_data <- data()
     })
 
-All code is executed when the application is started, even though no actions have been performed yet. The ``init`` is used to execute actions in ``observe()`` only after this initial execution. It ensures that the reactive logic is not executed until the application is fully initialized and all data is loaded. Since we only have one ``observe()`` we set it to ``True`` here, if we had more we would set ``init`` to ``True`` in the last ``observe()`` block.
+All code is executed when the application is started, even though no actions have been performed yet. The ``init`` is used to execute actions in ``observe()`` only after this initial execution. It ensures that the reactive logic is not executed until the application is fully initialized and all data is loaded. Since we only have one such ``observe()``, we set it to ``TRUE`` there; if we had more, we would set ``init`` to ``TRUE`` in the last ``observe()`` block.
 
 .. code:: R
 
@@ -2671,7 +2684,7 @@ All code is executed when the application is started, even though no actions hav
      return()
    }
 
-Now, we need to return the input data to be passed to GAMS(Py). For this, we provide a ``reactive()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.10.0/topics/reactive>`__) wrapper around ``rv$timewise_input_data``. It ensures that the current state of the data is available as a reactive output, allowing us to pass the new data to the model. Otherwise *Solve model* would still use the old data!
+Now, we need to return the input data to be passed to GAMS(Py). For this, we provide a ``reactive()`` (`documentation <https://www.rdocumentation.org/packages/shiny/versions/1.10.0/topics/reactive>`__) wrapper around ``rv$timewise_input_data``. It ensures that the current state of the data is available as a reactive output, allowing us to pass the new data to the model. Otherwise, *Solve model* would still use the old data!
 
 .. code:: R
 
@@ -2799,7 +2812,7 @@ Finally, we need to remove the renderer in ``<model_name>.json`` and instead add
 
 Congratulations—our new custom widget combines a table and a plot, with both updating interactively. At this point, *Solve model* will use our updated table whenever we change values and re-run the model.
 
-Now that you’ve mastered the basics of custom renderers in MIRO, you can explore more creative implementations. If you need more inspiration on what you can do with the custom renderer, take a look at the `MIRO gallery <https://miro.gams.com/>`__, e.g. take a look at some applications with maps (`TSP <https://miro.gams.com/gallery/app_direct/tsp/>`__ or `VRPTW <https://miro.gams.com/gallery/app_direct/vrptw/>`__).
+Now that you’ve mastered the basics of custom renderers in MIRO, you can explore more creative implementations. If you need more inspiration on what you can do with the custom renderer, take a look at the `MIRO gallery <https://miro.gams.com/>`__, e.g., some applications with maps (`TSP <https://miro.gams.com/gallery/app_direct/tsp/>`__ or `VRPTW <https://miro.gams.com/gallery/app_direct/vrptw/>`__).
 
 
 .. _key-takeaways-4:
@@ -2846,9 +2859,9 @@ For our custom importer, we need to create a new file in the ``renderer_<model_n
 
    }
 
-Here we will only go over the parameters we will be using, for information on the others see the `documentation <https://www.gams.com/miro/configuration_json_only.html#custom-import-export>`__. The ``"symNames"`` parameter is a character vector that specifies the names of the symbols for which data is to be retrieved. There is also an optional ``"localFile"`` parameter, which is a data frame containing one row for each uploaded file. What kind of data you can upload here is specified in ``<model_name>.json``.
+Here we will only go over the parameters we use; for information on the others, see the `documentation <https://www.gams.com/miro/configuration_json_only.html#custom-import-export>`__. The ``"symNames"`` parameter is a character vector that specifies the names of the symbols for which data is to be retrieved. There is also an optional ``"localFile"`` parameter, which is a data frame containing one row for each uploaded file. What kind of data you can upload here is specified in ``<model_name>.json``.
 
-We also need to add the importer to the ``<model_name>.json``, to do this we simply add a new key ``"customDataImport"``:
+We also need to add the importer to ``<model_name>.json``. To do this, we add a new key ``"customDataImport"``:
 
 .. code:: json
 
@@ -2860,9 +2873,9 @@ We also need to add the importer to the ``<model_name>.json``, to do this we sim
      }
    ]
 
-Where we simply specify the ``"label"`` the importer will have when you select it under *Load data* in the MIRO application. ``"functionName"`` specifies the name of our custom import function in ``miroimport.R``. And ``"symNames"`` specifying which GAMS symbols the importer handles.
+Here, ``"label"`` is the name the importer will have when you select it under *Load data* in the MIRO application, ``"functionName"`` is the name of our custom import function in ``miroimport.R``, and ``"symNames"`` specifies which GAMS symbols the importer handles.
 
-If you want to allow the user to upload files, you need to add ``"localFileInput"``, which could look like this
+If you want to allow the user to upload files, you need to add ``"localFileInput"``, which could look like this:
 
 .. code:: text
 
@@ -2904,16 +2917,7 @@ Now we can start our MIRO application and use the importer, but since we haven�
 
 After saving, we can reload MIRO and select *Gen specs import* under *Load data*. The generator names will update accordingly, proving our custom code works. Although this example is hardcoded, the same framework can fetch data from any source, fix column names to fit MIRO’s symbols (stored in ``"symbolNames"``), or perform more complicated transformations such as database queries.
 
-In a real scenario with database queries, you’ll likely store credentials in a secure environment. MIRO allows you to specify environments; this is where we store our credentials. For MIRO `Desktop <https://www.gams.com/miro/deployment.html#custom-environments>`__, create a JSON file—e.g., *miro-env.js*—that looks like:
-
-.. code:: json
-
-   {
-       "DB_USERNAME": "User1",
-       "DB_PASSWORD": "<your-password>"
-   }
-
-Now in MIRO Desktop go to *File* and then to *Preferences*. Under *Environment* you can now upload the json file. You can access these credentials via ``Sys.getenv()`` inside your importer, for example:
+In a real scenario with database queries, you’ll likely store credentials in a secure environment. MIRO allows you to specify environments; this is where we store our credentials. In MIRO Desktop, go to *File* → *Preferences* (*GAMS MIRO* → *Preferences* on macOS), open the `Environment <https://www.gams.com/miro/deployment.html#custom-environments>`__ section, and click *Add variable* to define, e.g., ``DB_USERNAME`` and ``DB_PASSWORD``. You can access these credentials via ``Sys.getenv()`` inside your importer, for example:
 
 .. code:: R
 
@@ -2960,7 +2964,7 @@ A custom exporter works similarly. We need to add a ``miroexport.R`` to the ``re
 
    }
 
-Where ``"data"`` is again a named list of tibbles containing all input and output symbols of the model and ``"path"`` is the path to the (temporary) file provided to the user for download (optional). This depends on how you specified it in the json file:
+Where ``"data"`` is again a named list of tibbles containing all input and output symbols of the model and ``"path"`` is the path to the (temporary) file provided to the user for download (optional). This depends on how you specified it in the JSON file:
 
 .. code:: json
 
@@ -2977,7 +2981,7 @@ Where ``"data"`` is again a named list of tibbles containing all input and outpu
      ]
    }
 
-Again, we need to link the ``"functionName"``, and if we want to create an output file, we need to specify it in ``"localFileOutput"``. Here, we’ve chosen to generate a markdown file.
+Again, we need to link the ``"functionName"``, and if we want to create an output file, we need to specify it in ``"localFileOutput"``. Here, we’ve chosen to generate a Markdown file.
 
 Inside ``miroexport_Markdown()``, we do whatever tasks we want, such as:
 
@@ -2985,7 +2989,7 @@ Inside ``miroexport_Markdown()``, we do whatever tasks we want, such as:
 - Generating a downloadable file.
 - Merging input parameters with output results in a custom format.
 
-Below is an example that writes a small Markdown report. Helpful functions in this case are ``writeLines()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/writeLines>`__), ``paste()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste>`__), ``filter()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter>`__), ``pull()`` (`documentation <https://www.rdocumentation.org/packages/lplyr/versions/0.1.6/topics/pull>`__), ``apply()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/apply>`__) …
+Below is an example that writes a small Markdown report. Helpful functions in this case are ``writeLines()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/writeLines>`__), ``paste()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste>`__), ``filter()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter>`__), ``pull()`` (`documentation <https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/pull>`__), ``apply()`` (`documentation <https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/apply>`__) …
 
 Your result could look something like this:
 
@@ -3089,7 +3093,7 @@ Deployment
 
 
 
-As a very last step, you will probably want to deploy your new shiny MIRO application. Covering deployment in detail would go beyond the scope of this tutorial, so we encourage you to read the documentation: `Deployment <https://www.gams.com/miro/deployment.html>`__. And when you are add it also check out `GAMS MIRO Server <https://www.gams.com/miro/server.html>`__ if you are interested in running MIRO in the cloud.
+As a very last step, you will probably want to deploy your new MIRO application. Covering deployment in detail would go beyond the scope of this tutorial, so we encourage you to read the documentation: `Deployment <https://www.gams.com/miro/deployment.html>`__. While you are at it, also check out `GAMS MIRO Server <https://www.gams.com/miro/server.html>`__ if you are interested in running MIRO in the cloud.
 
 
 Conclusion

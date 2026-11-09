@@ -89,7 +89,7 @@ Minor new features and improvements
   division-by-zero or inflated percentage/normalized results caused by
   floating-point noise around zero.
 
-- `Custom theme colors <./configuration_colors.html#custom-theme-colors>`__: The main background color can now also be set for Light mode. The body background color has been removed, as the new layout no longer shows it; existing color themes continue to work without changes. The highlighted sidebar entry now automatically adjusts its color to stay readable on dark sidebars.
+- `Custom theme colors <./configuration_colors.html#custom-theme-colors>`__: The main background color can now also be set for light mode. The body background color has been removed, as the new layout no longer shows it; existing color themes continue to work without changes. The highlighted sidebar entry now automatically adjusts its color to stay readable on dark sidebars.
 - Add option to `prevent attachments from overwriting model files <./configuration_general.html#protect-model-files>`__.
 
 Bug fixes
@@ -196,7 +196,7 @@ New features
 ~~~~~~~~~~~~
 
 - Custom Language Support: Add support for `custom language
-  files <./configuration_general.html#custom-language>`__, allowing to
+  files <./configuration_general.html#custom-language>`__, allowing you to
   override and personalize all or individual interface text and labels.
 
 .. _minor-new-features-and-improvements-1:
@@ -225,7 +225,7 @@ Minor new features and improvements
 
   - Redesign of the initial screen (no apps), as well as general design
     improvements.
-  - App no longer have a dedicated launch button. Instead, the entire
+  - Apps no longer have a dedicated launch button. Instead, the entire
     app card is clickable now.
 
 - `Dashboard renderer <./charts.html#dashboard>`__ and `dashboard
@@ -1473,7 +1473,7 @@ Bug fixes
   compare mode <./start.html#compare-pivot>`__.
 - Fix issue with view IDs containing whitespace characters at the
   beginning or end.
-- Fix incomplete error checks for defaut views for `MIRO Pivot
+- Fix incomplete error checks for default views for `MIRO Pivot
   renderers <./charts.html#pivot-chart>`__.
 - Fix issues with installing additional packages that contain
   precompiled binaries on macOS.
@@ -1557,9 +1557,11 @@ New features
   Configuration Mode <./charts.html#custom-graphics>`__. This should
   increase productivity when developing custom renderers. Your existing
   renderers will still work, but will not be recognized by this new
-  editor. To learn how to migrate them to be compatible with the new
-  editor, see
-  `here <./configuration_advanced.html#migrate-custom-renderers>`__.
+  editor. To make them compatible with the new editor, name the
+  functions ``mirorenderer_<symbolName>Output`` and
+  ``renderMirorenderer_<symbolName>`` and the file
+  ``mirorenderer_<symbolname>.R``. Declare only one output/render
+  function per file.
 - Scenarios in Base Mode can now be queried, loaded and exported via the
   new `Batch Load module <./start.html#scenario-loading>`__ that was
   previously only available in Hypercube Mode.
@@ -1655,7 +1657,7 @@ GAMS MIRO 1.3.1
 
 (2021-02-18)
 
-- Fix issue with downloading attachmets from sandbox in certain
+- Fix issue with downloading attachments from sandbox in certain
   situations.
 - Fix issue with detecting inconsistent database tables when running on
   MIRO Server.
@@ -1825,7 +1827,7 @@ Bug fixes
 - Fix issue where submitting a Hypercube job caused an error when having
   configured slider that is not expanded in Hypercube Mode.
 - Fix issue where numericinput would send wrong values in certain
-  situatios.
+  situations.
 - Fix issue where custom R packages were reinstalled every time MIRO was
   restarted.
 - Fix issue where setting custom MIRO app/log paths did not work.
@@ -1872,7 +1874,7 @@ GAMS MIRO 1.2.2
 - Fix issue with input widgets being part of input groups.
 - Fix a rare case where scalars were not imported when importing data
   from local files.
-- Force the tab comparison mode the default comparison mode in Hypercube
+- Force the tab comparison mode to be the default comparison mode in Hypercube
   Mode because the scenarios selected for comparison will be loaded in
   this mode (this overwrites the *defCompMode* setting).
 - Fix issue where downloading attachments did not work properly in
@@ -1894,7 +1896,7 @@ GAMS MIRO 1.2.1
   user gets an error when clicking on *save* twice.
 - When removing database tables, show only one dialog instead of two.
 - Fix issue in the MIRO Pivot renderer where filter dropdown would be
-  irresponsive after loading view with unknown filters.
+  unresponsive after loading view with unknown filters.
 - Fix issue in the MIRO Pivot renderer where table/charts would be
   rendered more often than necessary.
 - MIRO Pivot renderer: Change the settings of bar charts so that they
@@ -2042,7 +2044,7 @@ GAMS MIRO 1.1.2
 - Fix bug where no groups specified in map configuration would lead to
   crash on next startup of Configuration Mode.
 - Fix set configuration: Only show those tools that can be configured
-  with with a set
+  with a set
 - Fix bugs in Configuration mode with animation options.
 - Fix bug that caused a line chart configuration to not be recognized as
   such in some situations when using a GAMS table symbol.
@@ -2055,7 +2057,7 @@ GAMS MIRO 1.1.2
 - Fix bug in date & date range selector configuration that caused
   startview and weekstart option to be overwritten on next start of
   Configuration Mode.
-- Fix bug in the configuration schema of the texinput widget that caused
+- Fix bug in the configuration schema of the textinput widget that caused
   an error when configuring an empty starting value or placeholder.
 
 GAMS MIRO 1.1.1
@@ -2160,7 +2162,7 @@ Bug fixes
 - An error that should only occur if the list/log file exceeds a certain
   file size was incorrectly displayed when starting a new GAMS run.
 - Model names that included an underscore "\_" caused MIRO to throw an
-  exception when downloading scenario data in Hyperube Mode.
+  exception when downloading scenario data in Hypercube Mode.
 - Did not properly set *idir* when running Hypercube jobs locally
   (currently, model has to be adjusted to work with idir).
 - Fix bug that caused Hypercube to crash when configuring a dropdown
@@ -2168,7 +2170,7 @@ Bug fixes
 - Fix bug that caused Hypercube job to fail when a multi dropdown menu
   is empty.
 - Fix bug that caused wrong value to be written to GDX when having an
-  empty multi-dropown menu (no elements selected)
+  empty multi-dropdown menu (no elements selected)
 - Fix bug that caused datatables without numeric columns to throw an
   error (e.g. for *sets*)
 - Fix bug where attachments with execute permissions were not extracted
@@ -2307,7 +2309,7 @@ Minor new features and improvements
   in the
   `eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__
   option to evaluate the value/text at compile time and place it into a
-  scoped compile-time variable. This is useful any information about
+  scoped compile-time variable. This is useful because any information about
   double-dash parameters and GAMS options configured via Configuration
   Mode gets lost when exporting a scenario as a GDX file. Read more
   `here <./model.html#display-sinset>`__.
@@ -2317,7 +2319,7 @@ Minor new features and improvements
   `\_gmsopt\_ <./configuration_advanced.html#widgets-commandLine>`__.
 - Double-dash parameters and GAMS options can now have the same name as
   GAMS symbols.
-- Maximum number of symbol tabs visible in Inpupt/Output section set to
+- Maximum number of symbol tabs visible in Input/Output section set to
   5 (rest available via dropdown).
 - Bootstrap dropdown menus are now right aligned per default. They will
   be left-aligned when space on left is not sufficient.

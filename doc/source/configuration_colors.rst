@@ -6,7 +6,7 @@ Colors
 Custom theme colors
 -------------------
 
-The *Custom theme colors* panel lets you brand each MIRO app - or all apps at once - by supplying just a handful of key colors. MIRO then derives a complete palette, applies it live to the running interface, and stores your choices either inside the app or as a global MIRO Desktop theme. Separate palettes can be maintained for *Light* and *Dark* mode so your design looks right in either setting.
+The *Custom theme colors* panel lets you brand each MIRO app (or all apps at once) by supplying just a handful of key colors. MIRO then derives a complete palette, applies it live to the running interface, and stores your choices either inside the app or as a global MIRO Desktop theme. Separate palettes can be maintained for *Light* and *Dark* mode so your design looks right in either setting.
 
 .. image:: ../assets/images/configuration_mode/colortheme_1.png
    :alt: Configure a custom color theme
@@ -38,12 +38,12 @@ To create a custom palette, enter the colors listed below; MIRO calculates every
 
 The surface colors **Sidebar** and **Header** are auto-generated from the primary palette unless *Manually set surface colors* is checked. In Light mode, this option additionally lets you set the **Main background color**, which is white by default. Toggle the checkbox to assume full control or to return to automatic calculation. MIRO makes sure that the highlighted sidebar entry stays readable on the chosen sidebar color: if the primary color does not contrast enough with it, a lighter or darker shade of the primary color is used instead.
 
-To reset a single Color, simply delete its hex value in the Color-picker and click anywhere outside the control. The picker immediately reverts to the default defined by the theme hierarchy:
+To reset a single color, delete its hex value in the color picker and click anywhere outside the control. The picker immediately reverts to the default defined by the theme hierarchy:
 
 1. **App-specific theme** - If the open app already has custom colors configured at startup, these act as defaults in the picker.
-2. **Global desktop theme** - If no app-specific Colors exist, MIRO falls back to the global theme selected under `MIRO Desktop Preferences <./deployment.html#sbs-customize-app>`__ *→ Color theme*.
+2. **Global desktop theme** - If no app-specific colors exist, MIRO falls back to the global theme selected under `MIRO Desktop Preferences <./deployment.html#sbs-customize-app>`__ *→ Color theme*.
 
-These defaults are fixed for the duration of a Configuration-mode session; changing the global theme or adding an app theme only takes effect the next time you open the editor.
+These defaults are fixed for the duration of a Configuration Mode session; changing the global theme or adding an app theme only takes effect the next time you open the editor.
 
 Saving Options
 ~~~~~~~~~~~~~~
@@ -58,7 +58,7 @@ Adjust the colors until the live preview looks right, then pick the save option 
    * - **Save for this app**
      - Embeds the palette in the app. The colors ship with exported apps and cannot be modified later.
    * - **Save for all apps**
-     - Stores a global theme used by every MIRO app on the device. Can be enabled under `MIRO Desktop Preferences <./deployment.html#sbs-customize-app>`__ *→ Color theme → Custom*. Color themes embedded in an app (button '*Save for this app*') overwrite the global theme.
+     - Stores a global theme used by every MIRO app on the device. Enable it under `MIRO Desktop Preferences <./deployment.html#sbs-customize-app>`__ *→ Color theme → Custom*. Color themes embedded in an app (button '*Save for this app*') override the global theme.
    * - **Delete for this app**
      - Removes the app-specific theme and reverts to the global default.
 
@@ -72,13 +72,13 @@ If you use MIRO Server and want to use a custom color theme for all apps hosted 
 .. admonition:: Note:
    :class: warning
 
-   Color themes embedded in an app (button '*Save for this app*' in `Custom theme colors <#custom-theme-colors>`__) overwrite a global MIRO Server theme. However, this does not affect the login screen and the app overview page.
+   Color themes embedded in an app (button '*Save for this app*' in `Custom theme colors <#custom-theme-colors>`__) override a global MIRO Server theme. However, this does not affect the login screen and the app overview page.
 
 .. image:: ../assets/images/configuration_mode/colortheme_2.png
    :alt: MIRO Server colors
    :class: miro-image-padding-bottom-25pt
 
-To create a custom palette, enter the colors listed below;
+To create a custom palette, enter the colors listed below:
 
 .. list-table::
    :header-rows: 1
@@ -94,10 +94,10 @@ To create a custom palette, enter the colors listed below;
    * - **Login header background**
      - Color for the strip at the top of the sign-in screen that houses the logo.
 
-In the screenshot below you can see where which color is used on the login page.
+The screenshot below shows where each color is used on the login page.
 
 .. image:: ../assets/images/configuration_mode/miroservercolors.png
    :alt: MIRO Server login screen
    :class: miro-image-padding-bottom-25pt
 
-If you are happy with the colors, you can export a *colors_custom.css* file by clicking on the button *Download for MIRO Server*. Continue `here <./server_setup.html#server-customize>`__ to see how to integrate the file into MIRO Server.
+If you are happy with the colors, you can export a *colors_custom.css* file by clicking *Download for MIRO Server*. Continue `here <./server_setup.html#server-customize>`__ to see how to integrate the file into MIRO Server.

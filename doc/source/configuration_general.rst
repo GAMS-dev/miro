@@ -28,7 +28,7 @@ Logo
 ~~~~
 
 Upload a custom logo (png/jpg file) for your MIRO app, which is
-displayed in the upper left corner. Best ratio: 4,6:1.
+displayed in the upper left corner. Best ratio: 4.6:1.
 
 |App logo|
 
@@ -52,7 +52,7 @@ Default dark mode:
    :class: success
 
    In addition to the color mode, various color themes can be selected.
-   This setting is done for all apps in the `global MIRO
+   This setting applies to all apps and is made in the `global MIRO
    settings <./deployment.html#sbs-customize-app>`__.
 
 Custom CSS
@@ -68,7 +68,7 @@ directory.
 Readme File
 ~~~~~~~~~~~
 
-You have the possibility to integrate a README file into the MIRO
+You can integrate a README file into the MIRO
 application. Its content is displayed in the input section in the first
 tab and is therefore the first thing the user sees after starting the
 application. This tab can be used by the developer to introduce and
@@ -99,8 +99,9 @@ user starts working with it.
     own line, use two dollar signs: ``$$``.
 
   | **Example:**
-  | This integral ``$\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$`` is rendered inline.
-    is rendered as: This integral ``$\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$`` is rendered inline.
+  | ``This integral $f(x) = \int_{-\infty}^\infty \hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi$ is rendered inline.``
+  | is rendered as:
+  | This integral :math:`f(x) = \int_{-\infty}^\infty \hat f(\xi)\,e^{2 \pi i \xi x}\,d\xi` is rendered inline.
 
   A list of all TeX functions supported by MIRO can be found
   `here <https://katex.org/docs/supported.html>`__. To write a literal
@@ -151,7 +152,7 @@ change in your custom file, not the entire set of translations.
 
 The custom file must be a valid JSON file (.json) and follow the exact
 structure of the default language files. The different language files to
-use as a template can be found here here:
+use as a template can be found here:
 https://github.com/GAMS-dev/miro/tree/master/src/conf. For a technical
 definition of the required structure, the JSON schema is available
 `here <https://github.com/GAMS-dev/miro/blob/master/src/conf/language_schema.json>`__.
@@ -162,7 +163,7 @@ exist, you need to create it manually.
 Example: The default
 `en.json <https://github.com/GAMS-dev/miro/blob/master/src/conf/en.json>`__
 file contains the following labels which define the text that is
-displayed in the sidebar menu.:
+displayed in the sidebar menu:
 
 .. code:: text
 
@@ -218,9 +219,9 @@ Default Scenario
 Allows you to pre-populate tables and widgets with data when starting
 MIRO. If this option is set and a scenario name is specified, MIRO looks
 for the corresponding scenario in the database at the application
-startup and automatically loads all data into the interface. In case
-always the same input data is used as base data, the step of importing
-data into MIRO can be skipped with this option.
+startup and automatically loads all data into the interface. If you
+always use the same base data, this option saves you from importing it
+manually.
 
 On MIRO Server, MIRO first looks for a scenario with this name owned by
 the current user. If there is none, the scenario of the user who added or
@@ -268,11 +269,11 @@ Output attachments allow you to automatically attach files after a GAMS
 run has been successfully completed. This lets you store additional
 results alongside the ones displayed in the UI. In addition, MIRO gives
 you the option to choose what should happen when an attachment is not
-found after a successful GAMS run. Should the user be informed of this
-by an error message or should it be silently ignored. You can also
+found after a successful GAMS run: MIRO can either show an error
+message or silently ignore it. You can also
 choose to automatically extract the attachment to the working directory
 when you start another GAMS run with this scenario. This function adds a
-state to your scenarios. Per default, scenarios in MIRO are stateless.
+state to your scenarios. By default, scenarios in MIRO are stateless.
 This means that running two consecutive GAMS runs with the same input
 data will result in the same output data. By adding an attachment to the
 scenario that GAMS is allowed to read on consecutive executions, the
@@ -322,7 +323,7 @@ Excel Export: Metadata
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Include a metadata sheet in the Excel file when exporting a scenario.
-The metatdata sheet contains information about the user name, the
+The metadata sheet contains information about the user name, the
 scenario name and the time the scenario was created.
 
 |Metadata sheet|
@@ -393,8 +394,8 @@ Extra Command Line Arguments
 With this option, command line arguments can be specified that are set
 for each GAMS/GAMSPy run that is started from MIRO. This can be GAMS
 options like limrow=10 or threads=4 but also custom double-dash
-parameters. Note, that the these command line arguments are static; they
-can not be changed by the user from MIRO.
+parameters. Note that these command line arguments are static; they
+cannot be changed by the user from MIRO.
 
 .. admonition:: Note:
    :class: warning
@@ -442,7 +443,7 @@ section *GAMS interaction* or not.
 Custom Log File
 ~~~~~~~~~~~~~~~
 
-You can write a custom MIRO log file and display this in MIRO. Per
+You can write a custom MIRO log file and display it in MIRO. By
 default, the GAMS *log* and *listing* (*lst*) files are visible in the
 *GAMS interaction* section. Besides these files generated by GAMS you
 can also write your own log (e.g. with the `Put Writing
@@ -640,7 +641,7 @@ remain visible. The presentation mode can be very useful for users who
 do not want to play around with the data in the pivot tool, but only
 want to view predefined views/reports. You can switch between the
 standard view and the presentation mode at any time by clicking on
-|Refresh scenarios button| .
+|Refresh scenarios button|.
 
 Show table summary
 ^^^^^^^^^^^^^^^^^^
@@ -662,7 +663,7 @@ pixels wide.
 Hide empty columns
 ^^^^^^^^^^^^^^^^^^
 
-If enabled, this option allows to hide empty table columns of the
+If enabled, this option hides empty table columns of the
 currently visible data. Read more about this option
 `here <./charts.html#hide-empty-columns>`__.
 

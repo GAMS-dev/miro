@@ -10,9 +10,9 @@ Introduction
 
 Once you are happy with the MIRO application you developed, you can deploy it. This chapter guides you through this process.
 
-Deploying a MIRO application is the process of exporting and installing your app so that it can be easily shared and used in the daily business of your end users. Before you can deploy an app, it needs to be fully set up: no further changes to the model or the configuration can be made once it is deployed. In case you did not configure your MIRO app yet, read the chapters about `model preparation <./model.html>`__ and `configuration <./customize.html>`__.
+Deploying a MIRO application is the process of exporting and installing your app so that it can be easily shared and used in the daily business of your end users. Before you can deploy an app, it needs to be fully set up: no further changes to the model or the configuration can be made once it is deployed. If you have not configured your MIRO app yet, read the chapters about `model preparation <./model.html>`__ and `configuration <./customize.html>`__.
 
-In order to deploy a MIRO app, you first need to create a `model assembly file <#model-assembly-file>`__. All other things described in the following section, like logo, title, web app manifest file, signing the app, are optional.
+In order to deploy a MIRO app, you first need to create a `model assembly file <#model-assembly-file>`__. Everything else described in the following section (e.g. logo, title, web app manifest, app signature) is optional.
 
 .. _sbs-create-app:
 
@@ -24,7 +24,7 @@ Create an app bundle
 Model assembly file
 ~~~~~~~~~~~~~~~~~~~
 
-Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called ``<modelname>_files.txt`` or use *GAMS Studio* to create this file for you. For the latter go to *MIRO* → *Assembly and Deploy*. In the *Assembly File* section you can select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s).
+Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called ``<modelname>_files.txt`` or use *GAMS Studio* to create this file for you. For the latter, go to *MIRO* → *Assembly and Deploy*. In the *Assembly File* section you can select those folders and files which are needed. If you select a folder, all files in it will be included. To include only individual files of a folder, expand the folder and select the corresponding file(s).
 
 
 .. image:: ../assets/images/deployment/model-assembly.png
@@ -53,7 +53,7 @@ If you want to create the text file on your own, specify the relative paths to t
    inc/inc2.inc
 
 
-This would result in the files ``example.gms``, ``inc/inc1.inc``, ``inc/inc2.inc`` and the entire directory ``data`` to be included.
+This would result in the files ``example.gms``, ``inc/inc1.inc``, ``inc/inc2.inc`` and the entire directory ``data`` being included.
 
 .. _bundle-scenarios:
 
@@ -62,7 +62,7 @@ This would result in the files ``example.gms``, ``inc/inc1.inc``, ``inc/inc2.inc
 Bundling Data with your App
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In case you want to distribute scenario data with your MIRO application, you can do so by simply placing MIROSCEN, GDX, CSV or XLSX files in the ``data_<modelname>`` directory. When your MIRO app is started for the first time, these datasets will be stored in the MIRO database. The filename is used as the scenario name. To learn more, read the chapter on `importing multiple scenarios on startup <./start.html#startup-import>`__. Note that the owner of these scenarios is the user that launches the MIRO app for the first time!
+If you want to distribute scenario data with your MIRO application, simply place MIROSCEN, GDX, CSV or XLSX files in the ``data_<modelname>`` directory. When your MIRO app is started for the first time, these datasets will be stored in the MIRO database. The filename is used as the scenario name. To learn more, read the chapter on `importing multiple scenarios on startup <./start.html#startup-import>`__. Note that the owner of these scenarios is the user that launches the MIRO app for the first time!
 
 .. _default-logo:
 
@@ -83,7 +83,7 @@ When adding the MIRO app to the MIRO library, the user has the option to choose 
 Favicon
 ~~~~~~~
 
-A favicon, short for "favorites icon", is a small, typically 16x16 pixel icon associated with a website or web application, displayed in the browser's address bar, tab, and bookmarks. To customize the favicon for your application, particularly when running on MIRO Server or accessing it via a browser in MIRO Desktop, simply place a file named ``favicon.ico`` in the ``static_<modelname>`` directory. Please ensure that the ``favicon.ico`` file does not exceed 100KB in size. This will override the default favicon, providing a unique visual identity for your app.
+A favicon, short for "favorites icon", is a small, typically 16x16 pixel icon associated with a website or web application, displayed in the browser's address bar, tab, and bookmarks. To customize the favicon for your application, particularly when running on MIRO Server or accessing it via a browser in MIRO Desktop, simply place a file named ``favicon.ico`` in the ``static_<modelname>`` directory. Please ensure that the ``favicon.ico`` file does not exceed 100 KB in size. This will override the default favicon, providing a unique visual identity for your app.
 
 .. _default-title-description:
 
@@ -122,15 +122,15 @@ The version information is displayed in the top right corner of your application
 App ID
 ~~~~~~
 
-Each MIRO app has its own identifier. When using MIRO Server, the app ID determines the `URL <./server_administration.html#direct-app-link>`__ under which the app can be reached. The ID is also used to access an app via the MIRO Server `REST API <./server_api.html>`__. Within a MIRO instance (MIRO Desktop or MIRO Server), each ID must be unique. The default app id is the lowercase modelname, i.e. the lowercase name of the main GMS file (without .gms extension).
+Each MIRO app has its own identifier. When using MIRO Server, the app ID determines the `URL <./server_administration.html#direct-app-link>`__ under which the app can be reached. The ID is also used to access an app via the MIRO Server `REST API <./server_api.html>`__. Within a MIRO instance (MIRO Desktop or MIRO Server), each ID must be unique. The default app ID is the lowercase model name, i.e. the lowercase name of the main GMS file (without the .gms extension).
 
-An app id must meet the following requirements:
+An app ID must meet the following requirements:
 
 - Max. 60 characters
 - Must only contain lowercase ASCII characters, digits, ``_`` or ``-``
 - Has to start with a lowercase ASCII character or digit
 
-If the default app id does not meet the requirements (note that the default ID is always derived with lowercase characters), an alternative id must be specified manually. This can be done in the ``app_info.json`` inside the ``static_<modelname>`` folder.
+If the default app ID does not meet these requirements (note that the default ID is always lowercase), you must specify an alternative ID manually. This can be done in the ``app_info.json`` inside the ``static_<modelname>`` folder.
 
 .. code:: json
 
@@ -140,14 +140,14 @@ If the default app id does not meet the requirements (note that the default ID i
        "appId": "my_app123"
    }
 
-Note that unlike the title and description, the app id cannot be changed after the app has been deployed.
+Note that unlike the title and description, the app ID cannot be changed after the app has been deployed.
 
 
 
 
 .. tip::
 
-   The app id can be used to register multiple MIRO apps based on the same model by assigning an individual ID for each app.
+   The app ID can be used to register multiple MIRO apps based on the same model by assigning an individual ID for each app.
 
 App Environment
 ~~~~~~~~~~~~~~~~
@@ -156,7 +156,7 @@ App Environment
 
 When writing custom code, such as `custom data connectors <configuration_json_only.html#custom-import-export>`__ or `custom renderers <./configuration_advanced.html#custom-renderers>`__, you may need to use secrets like API keys. Additionally, you may want to give administrators the ability to customize certain parts of your app when they add it to the library. In both cases, environment variables can be very useful.
 
-To help administrators set these variables correctly, you can document them in the ``app_info.json`` file. To do this, you can add a new ``"environment"`` section:
+To help administrators set these variables correctly, you can document them in the ``app_info.json`` file. To do this, add an ``"environment"`` section:
 
 .. code:: json
 
@@ -177,7 +177,7 @@ To help administrators set these variables correctly, you can document them in t
 
 As you can see, we have documented two environment variables required by our app: ``MIRO_IMPORTER_API_KEY`` and ``MIRO_RENDERER_SHOW_ADVANCED``. For each variable, we can provide a description as well as a default value, which the administrator can modify when adding the app.
 
-These variables can then be accessed in your R code as follows: ``Sys.getenv("MIRO_IMPORTER_API_KEY", NULL)`` (second argument is the default value if variable is unset).
+These variables can then be accessed in your R code as follows: ``Sys.getenv("MIRO_IMPORTER_API_KEY", "")`` (the second argument is the value returned if the variable is unset).
 
 .. _web-app-manifest:
 
@@ -229,11 +229,11 @@ MIRO applications contain a lot of code (the GAMS model, custom renderers, etc.)
 
 In the following section we will explain how developers of MIRO apps can sign their apps.
 
-To sign your apps, you need to have an RSA keypair. If you do not already have one, you can create one e.g. using your SSH client: on macOS/Linux you can use `OpenSSH <https://www.openssh.com>`__: ``>ssh-keygen -t rsa`` or `PuTTY <https://www.putty.org>`__ on Windows: open the PuTTYgen tool, select RSA with a size of at least 2048 bits, follow the instructions and store the private key. Afterwards, you will need to convert your key to the PEM format. To do so, load the private key with PuTTYgen, go to the *Conversions* menu and select *Export OpenSSH key (force new file format)*.
+To sign your apps, you need an RSA key pair. If you do not already have one, you can create one e.g. using your SSH client: on macOS/Linux you can use `OpenSSH <https://www.openssh.com>`__: ``>ssh-keygen -t rsa`` or `PuTTY <https://www.putty.org>`__ on Windows: open the PuTTYgen tool, select RSA with a size of at least 2048 bits, follow the instructions and store the private key. Afterwards, you will need to convert your key to the PEM format. To do so, load the private key with PuTTYgen, go to the *Conversions* menu and select *Export OpenSSH key (force new file format)*.
 
-Once you have your private key, you should create a directory called ``signature`` in the *MIRO workspace path*. The location of the *MIRO workspace path* can be found in the *Preferences* window. Inside the ``signature`` directory, place your key file and name it ``private-key.pem``. If you have encrypted your key with a passphrase, place a file named ``key-passphrase`` (no extension) next to your private key. This file should contain only the passphrase for your key.
+Once you have your private key, create a directory called ``signature`` in the *MIRO workspace path*. The location of the *MIRO workspace path* can be found in the *Preferences* window. Inside the ``signature`` directory, place your key file and name it ``private-key.pem``. If you have encrypted your key with a passphrase, place a file named ``key-passphrase`` (no extension) next to your private key. This file should contain only the passphrase for your key.
 
-Public keys that you have trusted are stored (in PEM format) in a directory named: ``known_keys`` in your *MIRO workspace path*.
+Public keys that you have trusted are stored (in PEM format) in a directory named ``known_keys`` in your *MIRO workspace path*.
 
 
 
@@ -247,7 +247,7 @@ Public keys that you have trusted are stored (in PEM format) in a directory name
 Export app
 ~~~~~~~~~~
 
-Once you specified the files that belong to your model, you are ready to export your MIRO app!
+Once you have specified the files that belong to your model, you are ready to export your MIRO app!
 
 .. tab-set::
 
@@ -260,13 +260,13 @@ Once you specified the files that belong to your model, you are ready to export 
          :alt: Deploy MIRO model
          :class: miro-image-max-height-350pt
 
-      In GAMS Studio, select *Assembly and Deploy*. In the *Deploy Configuration* section, you need to decide how your model shall be executed (*execution environment*). There are three options:
+      In GAMS Studio, select *Assembly and Deploy*. In the *Deploy Configuration* section, you need to decide how your model should be executed (*execution environment*). There are three options:
 
       #. Multi-user: This option allows your app to be used by multiple users simultaneously. Your model files are extracted at a random location, which is different for each user, and your model is executed from there.
-      #. Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you can NOT have multiple users accessing your MIRO app at the same time.
+      #. Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you cannot have multiple users accessing your MIRO app at the same time.
       #. .. _local-multi-user:
 
-         Local multi-user (uses *idir*): With this third option, your model is again executed from a random location, but this time no model data is extracted here. Instead, GAMS is executed with an `input directory <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir>`__ pointing to the path where your model files are located. Choose this option ONLY if you have many large files that belong to your model and extracting them would take a long time. Be aware that due to the fact that ``idir`` is used, your model might brake! For example, if you use ``$call`` or the execution-time equivalent ``execute`` (or related functions), the relative paths used in these calls will no longer exist (since the `curdir <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir>`__ is now a random location). The solution is to prefix all these relative paths with ``%gams.idir1%``. For example, in order to import an Excel file ``test.xlsx``, GDXXRW needs to be called like this: ``$call gdxxrw i=%gams.idir1%test.xlsx``. Alternatively, you can also use absolute paths (e.g. via ``$setNames "%gams.input%" fp fn fe`` (see `here <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames>`__).
+         Local multi-user (uses *idir*): With this third option, your model is again executed from a random location, but this time no model data is extracted here. Instead, GAMS is executed with an `input directory <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir>`__ pointing to the path where your model files are located. Choose this option ONLY if you have many large files that belong to your model and extracting them would take a long time. Be aware that due to the fact that ``idir`` is used, your model might break! For example, if you use ``$call`` or the execution-time equivalent ``execute`` (or related functions), the relative paths used in these calls will no longer exist (since the `curdir <https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOcurdir>`__ is now a random location). The solution is to prefix all these relative paths with ``%gams.idir1%``. For example, to import an Excel file ``test.xlsx``, GDXXRW needs to be called like this: ``$call gdxxrw i=%gams.idir1%test.xlsx``. Alternatively, you can also use absolute paths (e.g. via ``$setNames "%gams.input%" fp fn fe``, see `here <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames>`__).
 
       Adjusting all affected paths is potentially a lot of work, so we strongly advise against using this option unless you know what you are doing!
 
@@ -276,7 +276,7 @@ Once you specified the files that belong to your model, you are ready to export 
       .. admonition:: Advice
          :class: warning
 
-         We advise you to test your MIRO app before distributing it. GAMS Studio offers an option *test deployment*. This simulates how your end users will experience the MIRO app (MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the `model assembly file <#model-assembly-file>`__.
+         We advise you to test your MIRO app before distributing it. GAMS Studio offers a *test deployment* option. This simulates how your end users will experience the MIRO app (MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the `model assembly file <#model-assembly-file>`__.
 
 
       If everything is set, click on *Deploy*. That's it! A new file ``<modelname>.miroapp`` is created in your model directory. You can now distribute this MIRO app directly to your end users!
@@ -287,7 +287,7 @@ Once you specified the files that belong to your model, you are ready to export 
 
 
 
-         In case you want to use the command line instead of GAMS Studio to export your MIRO app, you should proceed as follows: First, set the environment variable ``MIRO_BUILD`` to ``true`` and ``MIRO_MODEL_PATH`` to the absolute path of your main ``.gms`` file (see `here <./getting_started.html#start-via-command-line>`__ for more information on how to set these environment variables on your operating system). The environment variables used to control what execution mode to choose are listed in the following table:
+         In case you want to use the command line instead of GAMS Studio to export your MIRO app, proceed as follows: first, set the environment variable ``MIRO_BUILD`` to ``true`` and ``MIRO_MODEL_PATH`` to the absolute path of your main ``.gms`` file (see `here <./getting_started.html#start-via-command-line>`__ for more information on how to set these environment variables on your operating system). The environment variables that control the execution mode are listed in the following table:
 
 
          +------------------------------+---------------------------------------------------------+
@@ -306,14 +306,14 @@ Once you specified the files that belong to your model, you are ready to export 
          .. admonition:: Test deployment
             :class: warning
 
-            In order to test the deployment you chose, set ``MIRO_DEV_MODE`` to ``true``, ``MIRO_BUILD`` to ``false`` and ``MIRO_TEST_DEPLOY`` to ``true``.
+            To test the deployment you chose, set ``MIRO_DEV_MODE`` to ``true``, ``MIRO_BUILD`` to ``false`` and ``MIRO_TEST_DEPLOY`` to ``true``.
 
 
    .. tab-item:: GAMSPy
 
       .. _deploy-gamspy:
 
-      In order to deploy a GAMSPy/MIRO app, you first need to create a `model assembly file <#model-assembly-file>`__. If everything is set, simply run the command below. That's it! A new file ``<modelname>.miroapp`` is created in your model directory. You can now distribute this MIRO app directly to your end users!
+      To deploy a GAMSPy/MIRO app, you first need to create a `model assembly file <#model-assembly-file>`__. If everything is set, simply run the command below. That's it! A new file ``<modelname>.miroapp`` is created in your model directory. You can now distribute this MIRO app directly to your end users!
 
 
       .. code-block:: console
@@ -321,7 +321,7 @@ Once you specified the files that belong to your model, you are ready to export 
          > gamspy run miro --mode="deploy" --model <path_to_your_model> [--path <path_to_your_MIRO_installation>]
 
 
-      where ``<path_to_your_model>`` is the path to your main *.py* file and ``<path_to_your_MIRO_installation>`` is the path to your MIRO executable file (e.g. ``C:\Program Files\GAMS MIRO\GAMS MIRO.exe`` on Windows, ``/Applications/GAMS MIRO.app`` on macOS or or ``/usr/bin/com.gams.miro`` on Debian/Ubuntu if installed via ``.deb`` file or ``~/GAMS-MIRO-2.9.0.AppImage`` on other Linux distros). You can omit ``--path`` in case MIRO is installed in one of the standard locations on Windows or macOS.
+      where ``<path_to_your_model>`` is the path to your main *.py* file and ``<path_to_your_MIRO_installation>`` is the path to your MIRO executable file (e.g. ``C:\Program Files\GAMS MIRO\GAMS MIRO.exe`` on Windows, ``/Applications/GAMS MIRO.app`` on macOS, ``/usr/bin/com.gams.miro`` on Debian/Ubuntu if installed via ``.deb`` file, or ``~/GAMS-MIRO-<version>.AppImage`` on other Linux distros). You can omit ``--path`` in case MIRO is installed in one of the standard locations on Windows or macOS.
 
       Note that you can also set the MIRO installation path as an environment variable: ``MIRO_PATH``, so that you do not have to enter it every time you use the GAMSPy CLI.
 
@@ -347,14 +347,14 @@ To install a new MIRO app, launch GAMS MIRO Desktop. You will see your personal 
 .. image:: ../assets/images/deployment/gallery.png
    :alt: GAMS MIRO library with example apps
 
-To add a new app to the library, either double click the app in your file browser (only on Windows/macOS) or click on "Edit" (``Ctrl`` + ``E`` or ``⌘`` + ``E`` on macOS) and drag&drop the app onto the "+" button. Alternatively, you can click on the "+" button and browse to the location of the new app manually.
+To add a new app to the library, either double-click the app in your file browser (only on Windows/macOS) or click on "Edit" (``Ctrl`` + ``E`` or ``⌘`` + ``E`` on macOS) and drag and drop the app onto the "+" button. Alternatively, you can click on the "+" button and browse to the location of the new app manually.
 
 
 .. image:: ../assets/images/deployment/add-app.png
    :alt: Add app dialog of the GAMS MIRO library
    :class: miro-image-max-height-350pt
 
-Once MIRO validated the new app, you can assign a title, a short description as well as a logo.
+Once MIRO has validated the new app, you can assign a title, a short description as well as a logo.
 
 
 .. image:: ../assets/images/deployment/edit-app.png
@@ -371,7 +371,7 @@ Customize your Installed MIRO Apps
 ----------------------------------
 
 
-The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on File → Preferences (or GAMS MIRO → Preferences if you are on macOS). Alternatively, press ``F7`` (or ``⌘`` + ``,`` on macOS). You will notice that settings are grouped into several categories: *General*, *Paths*, *GAMS Engine*, *Mira* (the AI assistant), and *Environment*. In the *General* category you can specify whether you want to launch your MIRO apps in a new MIRO Desktop window or in your default browser. You can set the language, the color theme, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).
+The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings, click on File → Preferences (or GAMS MIRO → Preferences if you are on macOS). Alternatively, press ``F7`` (or ``⌘`` + ``,`` on macOS). You will notice that settings are grouped into several categories: *General*, *Paths*, *GAMS Engine*, *Mira* (the AI assistant), and *Environment*. In the *General* category you can specify whether you want to launch your MIRO apps in a new MIRO Desktop window or in your default browser. You can set the language, the color theme, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).
 
 In the *Paths* section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS version or MIRO Desktop was unable to locate GAMS automatically, you can set the path to GAMS here. On Linux, you can also specify the path to the required R installation here.
 
@@ -379,17 +379,17 @@ In the *Paths* section, you can control the location where your MIRO apps are st
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Option                              | Description                                                                                                                                                                                                                                                                                                                              |
 +=================+=====================================+==========================================================================================================================================================================================================================================================================================================================================+
-| **General**     | Launch MIRO apps in your browser?   | If this option is set, MIRO applications are started in the users default web browser. If not set, the internal chromium browser is used instead.                                                                                                                                                                                        |
+| **General**     | Launch MIRO apps in your browser?   | If this option is set, MIRO applications are started in the user's default web browser. If not set, the internal Chromium browser is used instead.                                                                                                                                                                                       |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Language                            | Sets the language. The user can choose between English, German, Chinese and Spanish. Further languages are planned.                                                                                                                                                                                                                      |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                 | Color theme                         | Sets the color theme for all apps. The following themes are available: "Default theme", "Black and white", "Green forest", "Tawny", "Dark blue", "Red wine". if you have created a `custom theme <./configuration_colors.html#custom-theme-colors>`__ for all apps, another entry "Custom" will appear here.                             |
+|                 | Color theme                         | Sets the color theme for all apps. The following themes are available: "Default theme", "Black and white", "Green forest", "Tawny", "Dark blue", "Red wine". If you have created a `custom theme <./configuration_colors.html#custom-theme-colors>`__ for all apps, another entry "Custom" will appear here.                             |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Logging level                       | Determines the logging scope. *TRACE* = very high, *FATAL* = very low                                                                                                                                                                                                                                                                    |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Number of days log files are stored | A value of -1 means that the logs are never deleted.                                                                                                                                                                                                                                                                                     |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Paths**       | MIRO workspace path                 | Path to the working directory of GAMS MIRO. Deployed apps, scenario data and log files are stored here. On Windows the default location is ``C:\Users\<username>\.miro``                                                                                                                                                                 |
+| **Paths**       | MIRO workspace path                 | Path to the working directory of GAMS MIRO. Deployed apps, scenario data and log files are stored here. On Windows, the default location is ``C:\Users\<username>\.miro``                                                                                                                                                                |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | GAMS path                           | Path to the GAMS installation folder.                                                                                                                                                                                                                                                                                                    |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -397,7 +397,7 @@ In the *Paths* section, you can control the location where your MIRO apps are st
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Log path                            | Location where the log files should be saved.                                                                                                                                                                                                                                                                                            |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                 | R path (Linux only)                 | Path to the R location. A current R version (3.6 or later) is required for using GAMS MIRO. Since R is bundled with MIRO on Windows and MacOS, this option is only available on Linux systems.                                                                                                                                           |
+|                 | R path (Linux only)                 | Path to the R location. A current R version (4.0 or later) is required for using GAMS MIRO. Since R is bundled with MIRO on Windows and macOS, this option is only available on Linux systems.                                                                                                                                           |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | **GAMS Engine** | Execution of models on GAMS Engine? | If enabled, GAMS jobs will be `run in the cloud <./server.html>`__ instead of on the local machine.                                                                                                                                                                                                                                      |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -407,9 +407,9 @@ In the *Paths* section, you can control the location where your MIRO apps are st
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                 | Login via                           | Login method to use. Options supported by MIRO are: *Username/Password* for logging in with username and password, *JWT* for logging in with an authentication token (can e.g. be generated from the Engine UI) or using an `LDAP/OAuth2/OIDC identity provider <https://www.gams.com/engine/administration.html#identity-providers>`__. |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **AI Assistant**| Enable Mira, the AI assistant?      | Makes `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, available for MIRO apps installed on this machine, unless an app has explicitly opted out of it in its own `Configuration Mode <./configuration_general.html>`__.                                                                                                        |
+| **Mira**        | Enable Mira, the AI assistant?      | Makes `Mira <./ai_assistant.html>`__, GAMS MIRO's AI assistant, available for MIRO apps installed on this machine, unless an app has explicitly opted out of it in its own `Configuration Mode <./configuration_general.html>`__.                                                                                                        |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                 | API keys                            | Once AI Features are enabled, enter an API key for each provider you want to make available (OpenAI, Anthropic, Google, Microsoft Foundry, Amazon Bedrock). MIRO validates each key against the provider as soon as you enter it. See `Enabling Mira <./ai_assistant.html#enabling-ai-assistant>`__ for details.                         |
+|                 | API keys                            | Once Mira is enabled, enter an API key for each provider you want to make available (OpenAI, Anthropic, Google, Microsoft Foundry, Amazon Bedrock). MIRO validates each key against the provider as soon as you enter it. See `Enabling Mira <./ai_assistant.html#enabling-ai-assistant>`__ for details.                                 |
 +-----------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 .. _custom-environments:
@@ -420,9 +420,9 @@ In the *Environment* section, you can define environment variables to be used by
 
 Click *Add variable* to add a new row, enter the name and value of the variable and click *Apply* to save your changes.
 
-Environment variables names must consist solely of uppercase letters, digits and '\_' (underscore) and must not start with a digit. Note that the ``PATH`` environment variable is special in that MIRO prepends it to the already existing ``PATH``.
+Environment variable names must consist solely of uppercase letters, digits and '\_' (underscore) and must not start with a digit. Note that the ``PATH`` environment variable is special in that MIRO prepends it to the already existing ``PATH``.
 
-As an example, let's say we want to run the analysis script that comes with the *pickstock* example. We do this by first setting up a Python environment for it:
+As an example, let's say we want to run the batch analysis script that comes with the *pickstock* example. This Jupyter notebook is run from the `Batch Load <./start.html#scenario-loading>`__ module. We first set up a Python environment for it:
 
 .. tab-set::
 
@@ -436,7 +436,7 @@ As an example, let's say we want to run the analysis script that comes with the 
          > python -m venv venv
          > venv\Scripts\activate.bat
          (venv) > pip install jupyter pandas matplotlib
-         (venv) > python <path_to_gams>\apifiles\Python\api_39\setup.py build -b %TEMP% install
+         (venv) > pip install "gamsapi[control]==<GAMS version>"
 
 
    .. tab-item:: macOS / Linux
@@ -448,9 +448,11 @@ As an example, let's say we want to run the analysis script that comes with the 
          > python -m venv venv
          > source venv/bin/activate
          (venv) > pip install jupyter pandas matplotlib
-         (venv) > python <path_to_gams>/apifiles/Python/api_39/setup.py build -b ${TMPDIR} install
+         (venv) > pip install "gamsapi[control]==<GAMS version>"
 
 
+
+The last command installs the `GAMS Python API <https://www.gams.com/latest/docs/API_PY_GETTING_STARTED.html>`__. Replace ``<GAMS version>`` with the version of your GAMS installation, e.g. ``pip install "gamsapi[control]==54.6.1"`` for GAMS 54.6.1.
 
 Now all we have to do is tell MIRO to use this Python environment by adding it to the ``PATH``: add a variable named ``PATH`` with the value ``<path_to_venv>/venv/bin`` (``<path_to_venv>\venv\Scripts`` on Windows).
 
@@ -482,4 +484,4 @@ Note that as an alternative to migrating existing data, we also have the option 
 
 .. warning::
 
-   Before you migrate the data, you should perform a backup of your database. If you are using MIRO Desktop, you can do this via the `Configuration Mode <./configuration_database.html>`__. For MIRO Server, please refer to the official `PostgreSQL documentation <https://www.postgresql.org/docs/current/backup.html>`__.
+   Before you migrate the data, you should back up your database. If you are using MIRO Desktop, you can do this via the `Configuration Mode <./configuration_database.html>`__. For MIRO Server, please refer to the official `PostgreSQL documentation <https://www.postgresql.org/docs/current/backup.html>`__.

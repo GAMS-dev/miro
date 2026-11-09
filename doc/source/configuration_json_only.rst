@@ -5,11 +5,11 @@ Options not Available in Configuration Mode
 
 Custom data connectors
 ----------------------
-MIRO allows you to `import <./start.html#import-data>`__ and `export <./start.html#save-export-delete>`__ scenario data in a number of file formats. However, you may have data in a custom format
+MIRO allows you to `import <./start.html#import-data>`__ and `export <./start.html#save-export-delete>`__ scenario data in several file formats. However, your data may be in a format
 that MIRO does not support, or you may want to pull and push data directly from an external database. In these cases, you need to write your own data connector in the form of an R function that you
 can connect to MIRO. Custom data connectors should be saved as ``miroimport.R`` or ``miroexport.R`` files and placed in the ``renderer_<modelname>`` directory.
 
-MIRO allows you to define multiple import and multiple export functions. They are accessible via the *Load data* and *Export scenario* dialogs.
+You can define multiple import and export functions. They are accessible via the *Load data* and *Export scenario* dialogs.
 
 |Custom data import and export functions displayed in the data load and export dialogs|
 
@@ -96,7 +96,7 @@ Also, we can use the ``symNames`` setting to restrict which symbols our import f
 The optional ``localFileInput`` object tells MIRO that our custom import function expects a local file to be uploaded. If the importer does not need a file (e.g. if it only fetches current values
 from a remote database), we can omit this object.
 
-To learn more about the different configuration options for custom import functions, below is the full schema against which your configuration will be validated.
+Below is the full schema against which your configuration of custom import functions is validated.
 
 .. note::
 
@@ -193,8 +193,8 @@ For exporting data, a custom export function with the following signature should
 
    }
 
-where ``data`` is a named list of tibbles, where the names are the names of the symbols (the same structure as the return value of a custom import function), and ``path`` is the file path of the
-(temporary) file provided to the user for download (optional). In addition, you have access to the `metadata <configuration_advanced.html#custom-renderer-metadata>`__,
+where ``data`` is a named list of tibbles, where the names are the names of the symbols (the same structure as the return value of a custom import function), and ``path`` is the (optional) path of the
+(temporary) file provided to the user for download. In addition, you have access to the `metadata <configuration_advanced.html#custom-renderer-metadata>`__,
 `attachments <configuration_advanced.html#custom-renderer-attachments>`__ and `views <configuration_advanced.html#custom-renderer-views>`__ of the sandbox scenario. The directory
 ``renderer_<modelname>`` can be accessed via the ``customRendererDir`` argument (e.g. to access additional files placed in the same directory).
 
@@ -224,7 +224,7 @@ and add the following to the ``transport.json`` file:
      ]
    }
 
-You will notice that the configuration object is very similar to that of the custom import functions, except that the optional ``localFileOutput`` object now specifies the properties of the file to
+The configuration object is very similar to that of the custom import functions, except that the optional ``localFileOutput`` object now specifies the properties of the file to
 be downloaded. We can omit this object if our export function does not create a file to be downloaded, but forwards the data to a remote service, for example.
 
 Below is the validation schema for custom exporters:
@@ -317,7 +317,7 @@ allow you to return data back to MIRO.
    The API of the custom input widgets has been changed with MIRO 2.0. Documentation for API version 1 (MIRO 1.x) can be found in the `MIRO GitHub repository <https://github.com/GAMS-dev/miro/blob/v1.3.2/doc/customize.html>`__.
 
 To understand how this works, we will look at an example app that allows you to solve `Sudokus <https://en.wikipedia.org/wiki/Sudoku>`__. We would like to visualize the Sudoku in a 9x9 grid that is
-divided into 9 subgrids - 3x3 cells each. We will use the same tool that we use to display input tables in MIRO, but we could have used any other R package or even a combination of those. Let's
+divided into 9 subgrids of 3x3 cells each. We will use the same tool that MIRO uses to display input tables, but we could have used any other R package or even a combination of packages. Let's
 first look at the boilerplate code required for any custom input widget:
 
 .. code-block:: r
@@ -331,19 +331,19 @@ first look at the boilerplate code required for any custom input widget:
      return(reactive(data()))
    }
 
-You will notice that the boilerplate code for custom widgets is almost identical to that of `custom renderers <./configuration_advanced.html#custom-renderers>`__. The main difference to a custom
+The boilerplate code for custom widgets is almost identical to that of `custom renderers <./configuration_advanced.html#custom-renderers>`__. The main difference from a custom
 renderer is that we now have to return the input data to be passed to GAMS. Note that we return the data wrapped inside a `reactive
-expression <https://shiny.rstudio.com/tutorial/written-tutorial/lesson6/>`__. This will ensure that you always return the current state of your data. When the user interacts with your widget, the
+expression <https://shiny.posit.co/r/getstarted/shiny-basics/lesson6/>`__. This will ensure that you always return the current state of your data. When the user interacts with your widget, the
 data is updated.
 
 The other important difference from custom renderers is that the ``data`` argument here is also a reactive expression (or a list of reactive expressions in case you specified additional
 datasets to be communicated with your widget), NOT a `tibble <https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html>`__.
 
-Let's get back to the Sudoku example we mentioned earlier. We place a file ``mirowidget_initial_state.R`` within the custom renderer directory of our app: ``<modeldirectory>renderer_sudoku``. The output
-and render functions for custom widgets should be named ``mirorwidget_<symbolName>output`` and ``renderMirowidget_<symbolName>`` respectively, where ``symbolName`` is the lowercase name of the GAMS symbol
+Let's get back to the Sudoku example we mentioned earlier. We place a file ``mirowidget_initial_state.R`` in the custom renderer directory of our app: ``<modeldirectory>/renderer_sudoku``. The output
+and render functions for custom widgets should be named ``mirowidget_<symbolName>Output`` and ``renderMirowidget_<symbolName>`` respectively, where ``symbolName`` is the lowercase name of the GAMS symbol
 for which the widget is defined.
 
-To tell MIRO about which input symbol(s) should use our new custom widget, we have to edit the ``sudoku.json`` file located in the ``<modeldirectory>/conf_<modelname>`` directory. To use our custom widget
+To tell MIRO which input symbol(s) should use our new custom widget, we have to edit the ``sudoku.json`` file located in the ``<modeldirectory>/conf_<modelname>`` directory. To use our custom widget
 for an input symbol named ``initial_state`` in our model, the following needs to be added to the configuration file:
 
 .. code-block:: json
@@ -390,12 +390,12 @@ Let's concentrate again on the renderer functions and extend the boilerplate cod
      }
    }
 
-Let's disect what we just did: First, we defined our two renderer functions ``mirowidget_initial_stateOutput`` and ``renderMirowidget_initial_state``. Since we want to use the R package
+Let's dissect what we just did: First, we defined our two renderer functions ``mirowidget_initial_stateOutput`` and ``renderMirowidget_initial_state``. Since we want to use the R package
 `rhandsontable <https://jrowen.github.io/rhandsontable/>`__ to display our Sudoku grid, we have to use the placeholder function ``rHandsontableOutput`` as well as the corresponding renderer function
-``renderRHandsontable``. If you are wondering what the hell placeholder and renderer functions are, read the section on `custom renderers <./configuration_advanced.html#custom-renderers>`__.
+``renderRHandsontable``. If you are wondering what placeholder and renderer functions are, read the section on `custom renderers <./configuration_advanced.html#custom-renderers>`__.
 
 Note that we use the option ``isInput`` we specified previously to determine whether our table should be read-only or not. Furthermore, we only return a reactive expression when we use the
-renderer function to return data - in the case of a custom input widget. Note that for input widgets, we need to run the reactive expression (``data()``) to get the tibble with our input
+renderer function to return data, i.e., for a custom input widget. Note that for input widgets, we need to run the reactive expression (``data()``) to get the tibble with our input
 data. Whenever the data changes (for example, because the user uploaded a new CSV file), the reactive expression is updated, which in turn causes our table to be re-rendered with the new data (due
 to the reactive nature of the ``renderRHandsontable`` function). The concept of reactive programming is a bit difficult to understand at first, but once you do, you'll appreciate how handy it is.
 
@@ -403,8 +403,8 @@ A detail you might stumble upon is the expression ``hot_to_r(input$sudoku)``. Th
 `rhandsontable <https://jrowen.github.io/rhandsontable/>`__ tool provides. What's important is that we return an R data frame that has exactly the number of columns MIRO expects our input symbol to
 have (in this example ``initial_state``).
 
-That's all there is to it! We configured our first custom widget. To use the same renderer for the results that are stored in a GAMS symbol called ``result``, simply add the following lines to the
-sudoku.json file. Note that we do not set the option ``isInput`` here.
+That's all there is to it! We configured our first custom widget. To use the same renderer for the results that are stored in a GAMS symbol called ``result``, add the following lines to the
+``sudoku.json`` file. Note that we do not set the option ``isInput`` here.
 
 .. code-block:: json
 
@@ -417,7 +417,7 @@ sudoku.json file. Note that we do not set the option ``isInput`` here.
 The full version of the custom widget described here as well as the corresponding GAMS model *Sudoku* can be found in the MIRO model library. There you will also find an example of how to create a
 widget that defines multiple symbols. In this case, the ``data`` argument is a named list of reactive expressions, where the names are the lowercase names of the GAMS symbols. Similarly,
 you must also return a named list of reactive expressions. Defining a custom input widget for multiple GAMS symbols is as simple as listing all the additional symbols you want your widget to define
-in the ``"widgetSymbols"`` array of your widget configuration. Below you find the configuration for the ``initial_state`` widget as used in the Sudoku example.
+in the ``"widgetSymbols"`` array of your widget configuration. Below is the configuration of the ``initial_state`` widget as used in the Sudoku example.
 
 .. code-block:: json
 
@@ -439,14 +439,14 @@ MIRO cannot tell from your code whether your widget lets users edit its data. If
 
 Note that custom widgets cannot be automatically expanded to use them for `Hypercube jobs <./hc-module.html>`__. Therefore, if you include scalar symbols in custom widgets (either as the symbol for
 which the widget is defined or via ``"widgetSymbols"``) and still want to include these symbols in the Hypercube job configuration, you must also define a scalar widget configuration for Hypercube
-jobs. You can do this with the ``"hcubeWidgets"`` configuration option. Below you will find an example of the scalar ``force_unique_sol``, which is to be used both as a custom widget and as a slider in
+jobs. You can do this with the ``"hcubeWidgets"`` configuration option. Below is an example of the scalar ``force_unique_sol``, which is used both as a custom widget and as a checkbox in
 the `Hypercube module <./hc-module.html>`__:
 
 .. code-block:: json
 
    {
      "activateModules": {
-       "hcubeModule": true
+       "hcube": true
      },
      "hcubeWidgets": {
        "force_unique_sol": {
@@ -470,14 +470,14 @@ the `Hypercube module <./hc-module.html>`__:
      }
    }
 
-The checkbox is then expanded to a dropdown menu in the Hypercube submission dialog (see `this table <./hc-module.html#widget-expansion-table>`__, which widgets are supported and how they are
+The checkbox is then expanded to a dropdown menu in the Hypercube submission dialog (see `this table <./hc-module.html#widget-expansion-table>`__ for which widgets are supported and how they are
 expanded in the Hypercube submission dialog).
 
 .. _dashboard-compare:
 
 Dashboard scenario comparison
 -----------------------------
-The Dashboard scenario comparison is a tool that displays the data of several selected scenarios in an interactive dashboard. To be able to use this scenario comparison mode, an
+The dashboard scenario comparison is a tool that displays the data of several selected scenarios in an interactive dashboard. To be able to use this scenario comparison mode, an
 application-specific configuration is required. All information about the dashboard and its configuration can be found in the section on the regular `dashboard
 renderer <./charts.html#dashboard>`__.
 
@@ -487,7 +487,7 @@ scenario comparison configuration only differs from the regular dashboard in a f
 
 - The configuration in the ``<modelname>.json`` file is not carried out under ``dataRendering``, but in a separate section ``compareModules``.
 
-- Unlike a standard renderer, a scenario comparison module is not configured for an individual symbol, but is symbol-unspecific. Consequently, the scenario comparison modules always has access to
+- Unlike a standard renderer, a scenario comparison module is not configured for an individual symbol, but is symbol-unspecific. Consequently, the scenario comparison module always has access to
   all input and output symbol data. It is therefore not necessary to list all the desired symbols whose data is to be accessed in the dashboard under ``additionalData``.
 
 - Instead of the ``"outType"`` in the dashboard configuration, a ``"type": "dashboard"`` is specified here.
@@ -544,11 +544,11 @@ A few notes on the specifics of the ``"dataViewsConfig"`` configuration:
 
 - In principle, you can adopt the complete configuration of a standard dashboard and also use it in the scenario comparison. Note, however, that your data displayed in tables and charts now has one
   more dimension, namely the scenario dimension, in which the scenarios to be compared are identified by name. This additional ``"_scenName"`` dimension must be added in the views under
-  ``"dataViewsConfig"``. To not pre-select a scenario but show all selected ones leave the value at ``null``.
+  ``"dataViewsConfig"``. To show all selected scenarios instead of preselecting one, leave the value at ``null``.
 - The additional scenario dimension will also change the appearance of the charts. Some visualizations that were suitable for normal output no longer make sense for displaying multiple scenarios.
   In this case, the view configuration (distribution of the dimensions in rows/cols/aggregation, etc.) can be adjusted if necessary. The `pivot comparison mode <./start.html#compare-pivot>`__ can
   help here to prepare the views.
-- If the value boxes are to display numbers (``"valueScalar"`` property), a drop down menu appears in the dashboard above the value boxes. Here you can select the scenario from which the values are to
+- If the value boxes are to display numbers (``"valueScalar"`` property), a dropdown menu appears in the dashboard above the value boxes. Here you can select the scenario from which the values are to
   be displayed.
 - As the dashboard is not configured for a specific symbol, the symbol data to be used for a chart/table must be specified in each view in ``"dataViewsConfig"`` (``"data"`` property).
 
@@ -612,27 +612,27 @@ Based on the example from the regular dashboard, the configuration for the scena
 .. _custom-dashboard-compare:
 
 **Using custom code in the dashboard comparison**
-As in the normal dashboard, one can also provide custom R code, which is rendered instead of the charts/tables configured in ``"dataViewsConfig"``. To do this, proceed as follows:
+As in the regular dashboard, you can also provide custom R code, which is rendered instead of the charts/tables configured in ``"dataViewsConfig"``. To do this, proceed as follows:
 
 #. Download the `latest dashboard scenario comparison renderer file <https://github.com/GAMS-dev/miro/blob/master/src/modules/renderers/mirocompare_dashboard.R>`__ from the MIRO repository on
-   GitHub and put it into your renderer\_<modelname> directory. If the folder does not already exist, you can create it manually.
+   GitHub and put it into your renderer\_<modelname> directory. If the directory does not exist yet, create it manually.
 
 #. In the mirocompare_dashboard.R file, make the following changes:
 
    .. code-block:: diff
 
       - dashboardCompareOutput <- function(id, height = NULL, options = NULL, path = NULL, ...) {
-      + mirocompare_<id>Output <- function(id, height = NULL, options = NULL, path = NULL) {
+      + mirocompare_<id>Output <- function(id, height = NULL, options = NULL, path = NULL, ...) {
         [...]
       }
-      - renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
-      + renderMirocompare_<id> <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...) {
+      - renderDashboardCompare <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, ...) {
+      + renderMirocompare_<id> <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, ...) {
         [...]
       }
 
    Replace the <id> above with any id that you want to use for your custom scenario comparison. You will need this ``id`` again in step 4.
 
-#. In the <modelname>.json file add a section ``customCompareModules`` and move the dashboard configuration from ``compareModules`` into it. If you only have the one dashboard configuration in
+#. In the <modelname>.json file, add a section ``customCompareModules`` and move the dashboard configuration from ``compareModules`` into it. If you only have the one dashboard configuration in
    ``compareModules``, then you can simply rename compareModules to customCompareModules.
 
 #. Instead of the ``"type"`` in the dashboard scenario comparison configuration, add an entry ``"id"`` and give it the name you used in step 2. As before, the label is displayed when you select the
@@ -656,7 +656,7 @@ As in the normal dashboard, one can also provide custom R code, which is rendere
         ]
       }
 
-#. That's it. You can now extend the dashboard scenario comparison renderer as a custom scenario comparison module. Since the procedure is identical to the regular dashboard render from now on,
+#. That's it. You can now extend the dashboard scenario comparison renderer as a custom scenario comparison module. Since the procedure is identical to the regular dashboard renderer from now on,
    please refer to the second half of the `corresponding section <./charts.html#dashboard-custom-code>`__.
 
 .. _custom-dashboard-compare-select-baseline:
@@ -675,17 +675,16 @@ As in the normal dashboard, one can also provide custom R code, which is rendere
 
 Custom scenario comparison
 --------------------------
-GAMS MIRO natively supports three (+ one `configurable <./configuration_json_only.html#dashboard-compare>`__ ) modes for scenario comparison: split view, tab view, and pivot view. But what if you
-are interested in different statistics or charts tailored to compare multiple scenarios? For this purpose, there are user-defined scenario comparison modules. The data can be loaded into the custom
-comparison modules via the `Batch Load <./start.html#scenario-loading>`__ module. The drop-down menu for selecting the comparison mode in which the selected scenarios are to be loaded is expanded
-accordingly.
+GAMS MIRO natively supports three (+ one `configurable <./configuration_json_only.html#dashboard-compare>`__) modes for scenario comparison: split view, tab view, and pivot view. But what if you
+are interested in different statistics or charts tailored to compare multiple scenarios? For this purpose, you can define custom scenario comparison modules. The data can be loaded into the custom
+comparison modules via the `Batch Load <./start.html#scenario-loading>`__ module. The dropdown menu for selecting the comparison mode is extended accordingly.
 
 |Custom comparison module selection in Batch Load module|
 Custom scenario comparison modules work in a similar way to `custom renderers <./configuration_advanced.html#custom-renderers>`__. Therefore, we strongly recommend that you read the chapter on
 custom renderers first. Just like a custom renderer, a custom scenario comparison module consists of a JSON configuration block and an *.R* file containing the code in your application's renderer
 directory (renderer\_<modelname>). Let's go through this process by creating a new comparison module for the *pickstock* model.
 
-We start by creating the boilerplate code for our renderer in a new file ``mirocompare_<id>.R`` inside the ``renderer_pickstock`` directory where ``<id>`` is the ID of our custom comparison module. The ID
+We start by creating the boilerplate code for our renderer in a new file ``mirocompare_<id>.R`` inside the ``renderer_pickstock`` directory, where ``<id>`` is the ID of our custom comparison module. The ID
 can be freely chosen. It must be 2-20 characters long and contain only ASCII lowercase letters or digits. We choose the name ``maxstock1`` for our example and create the file ``mirocompare_maxstock1.R``
 accordingly.
 
@@ -702,7 +701,7 @@ Just like custom renderers, custom scenario comparison modules consist of two fu
    }
 
 If you have already written your own renderers, the argument list of the output and renderer functions will look familiar. Therefore, we will focus on the differences: First, unlike custom
-renderers, the data argument is not a dataframe, but an `R6 <https://r6.r-lib.org/index.html>`__ object of class ``CustomComparisonData``. The different methods of this class are described in the `next
+renderers, the ``data`` argument is not a data frame, but an `R6 <https://r6.r-lib.org/index.html>`__ object of class ``CustomComparisonData``. The different methods of this class are described in the `next
 section <#custom-comparison-data>`__. Second, you have access to the attachment data of the scenarios via the ``data$getAttachmentData()`` method instead of a separate object.
 
 `Views <configuration_advanced.html#custom-renderer-views>`__ can be used in custom comparison renderers just like in custom renderers for output data.
@@ -746,7 +745,7 @@ In order to use this custom comparison module in MIRO, we have to append the fol
      ]
    }
 
-The only mandatory fields are ``"id"`` and ``label``. The label is displayed when selecting the comparison mode and the ``id`` is used internally to identify your module. You can specify an optional object with
+The only mandatory fields are ``"id"`` and ``"label"``. The label is displayed when selecting the comparison mode and the ``id`` is used internally to identify your module. You can specify an optional object with
 ``options`` provided to the output and renderer functions. This is especially useful if you want to reuse the same renderer function with different ``options``. In this case, the ``id`` of the comparison
 module is not the same as the ``id`` of the output/renderer function. Therefore, you must specify the ``id`` of the renderer function using the ``externalRendererId`` field. Additional R ``packages`` required for
 your comparison module can be specified via the ``packages`` field. Set ``selectBaseline`` to ``true`` to let users select a baseline scenario when loading scenarios into your comparison module. The baseline scenario is always the first scenario passed to your renderer function, and the sandbox scenario is only included if the user selects it. If your renderer is based on the previous dashboard comparison renderer, read the `migration note <#custom-dashboard-compare-select-baseline>`__ before enabling this option.
@@ -851,7 +850,7 @@ Get symbol data
 
 .. rubric:: Value
 
-An unnamed list of dataframes (tibbles).
+An unnamed list of data frames (tibbles).
 
 .. rubric:: Description
 
@@ -868,12 +867,12 @@ Get metadata
 
 .. rubric:: Value
 
-An unnamed list of dataframes (tibbles) with columns: ``_sid`` (integer: internal scenario ID), ``_uid`` (character: username of scenario owner), ``_sname`` (character: scenario name), ``_stime`` (character:
+An unnamed list of data frames (tibbles) with columns: ``_sid`` (integer: internal scenario ID), ``_uid`` (character: username of scenario owner), ``_sname`` (character: scenario name), ``_stime`` (character:
 timestamp of the last change, format: yyyy-mm-dd HH:MM:SS), ``_stag`` (character: comma-separated list of scenario tags).
 
 .. rubric:: Description
 
-This method allows you to retrieve the metadata (e.g. scenario name, scenario owner, etc.) for all loaded scenarios. The order is the same as the ``data$get(symbolName)`` method.
+This method allows you to retrieve the metadata (e.g. scenario name, scenario owner, etc.) for all loaded scenarios. The order is the same as for the ``data$get(symbolName)`` method.
 
 Get attachment (meta)data
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -887,35 +886,35 @@ Get attachment (meta)data
 
 ================== ==========================================================================================================================
 scenIds            integer vector of scenario IDs (as returned by ``getMetadata()`` method) or ``NULL`` to include all loaded scenarios
-fileNames          character vector of attachment filenames to filter or ``NULL`` to include all loaded scenarios
+fileNames          character vector of attachment filenames to filter or ``NULL`` to include all attachments
 includeContent     boolean specifying whether to include ``fileContent`` column with attachment data
 includeSandboxScen boolean specifying whether to include attachments of the sandbox scenario (will be included with scenario ID (``_sid``) of ``0``) or ``NULL`` to include them only if the sandbox scenario is part of the comparison
 ================== ==========================================================================================================================
 
 .. rubric:: Value
 
-An dataframe (tibble) with columns: ``_sid`` (integer: internal scenario ID, 0 for sandbox scenario), ``fileName`` (character: filename of the attachment), ``execPerm`` (logical: whether model is allowed to
+A data frame (tibble) with columns: ``_sid`` (integer: internal scenario ID, 0 for sandbox scenario), ``fileName`` (character: filename of the attachment), ``execPerm`` (logical: whether model is allowed to
 read attachment), ``fileContent`` (`blob <https://cran.r-project.org/web/packages/blob/index.html>`__: attachment data, only included if ``includeContent`` is ``TRUE``).
 
 .. rubric:: Description
 
-This method allows you to retrieve the metadata (e.g. scenario name, scenario owner, etc.) for all loaded scenarios. The order is the same as the ``data$get(symbolName)`` method.
+This method allows you to retrieve the attachments (metadata and, optionally, content) of the loaded scenarios.
 
 .. _table-dropdown:
 
-Drop-down menu in input table
------------------------------
-An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a drop-down menu. This can greatly simplify the usability of input tables. When
-used properly, another advantage of providing dropdown menus is the prevention of invalid or inconsistent user input data.
+Dropdown menu in input table
+----------------------------
+An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a dropdown menu. This can greatly improve the usability of input tables. When
+used properly, dropdown menus also prevent invalid or inconsistent user input.
 
-The configuration of the drop-down menus is done column by column. In the following figure the column 'canning plants' (GAMS symbol ``Table d(i,j) 'distance in thousands of miles'``) has been
-configured to use a drop-down menu:
+Dropdown menus are configured column by column. In the following figure, the column 'canning plants' (GAMS symbol ``Table d(i,j) 'distance in thousands of miles'``) has been
+configured to use a dropdown menu:
 
 |Dropdown menu instead of normal cell|
-The choices of a drop-down menu can be either predefined (static choices) or filled dynamically:
+The choices of a dropdown menu can be either predefined (static choices) or filled dynamically:
 
 - **Static choices:**
-  Static choices are predefined in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file by the app developer. The following configuration results in the drop-down menu in the
+  Static choices are predefined in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file by the app developer. The following configuration results in the dropdown menu in the
   figure above:
 
   .. code-block:: json
@@ -933,24 +932,25 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
              }
            }
          }
+       }
      }
 
-  The configuration is done in section "inputWidgets" for each input table (here: *d*) separately. In "dropdownCols" the individual table columns are specified (here: column "i"), which should have
-  drop-down menus. The key "static" followed by an array defines the static drop-down choices. For the "colType" key you can choose between "dropdown" and "autocomplete" (default). While "dropdown"
-  always displays all choices at once, "autocomplete" updates the displayed choices according to an autocomplete.
+  The configuration is done in the "inputWidgets" section for each input table (here: *d*) separately. In "dropdownCols", we specify the table columns (here: column "i") that should have
+  dropdown menus. The key "static" followed by an array defines the static dropdown choices. For the "colType" key you can choose between "dropdown" and "autocomplete" (default). While "dropdown"
+  always displays all choices at once, "autocomplete" filters the displayed choices as the user types.
 
   .. tip::
 
-     If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as table type to be used (3) and click on save (4).
+     If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as the table type (3) and click on save (4).
 
      |Table configuration|
 
 - **Dynamic choices:**
 
   Choices are dynamically filled by the cells of a column in another table. In the following example, the GAMS symbol ``Table d(i,j) 'distance in thousands of miles'`` is configured so that the
-  column *i* ("canning plants") displays a drop-down menu whose choices are fetched from the entries in the column of the same name in the symbol table *a* ("Capacity").
+  column *i* ("canning plants") displays a dropdown menu whose choices are fetched from the entries in the column of the same name in the symbol table *a* ("Capacity").
 
-  This is what happens in the app: In the table "Capacity" the user can make any entries. If she edits the column "canning plants", the entries there are passed as choices to the dropdown menu of
+  This is what happens in the app: In the table "Capacity", the user can make any entries. If they edit the column "canning plants", the entries are passed as choices to the dropdown menu of
   the "distance in thousands of miles" table:
 
   |Dynamic dropdown choices|
@@ -973,10 +973,11 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
              }
            }
          }
+       }
      }
 
   Instead of a "static" key, there are now two keys "symbol" and "column". The value of the "symbol" key ("a" → "capacity" table) defines the symbol table whose "column" ("i" → "canning plants") is
-  to be used to fill the drop-down menu.
+  to be used to fill the dropdown menu.
 
 .. raw:: html
 
@@ -1024,9 +1025,9 @@ The choices of a drop-down menu can be either predefined (static choices) or fil
 
 .. note::
 
-   * The drop-down menu feature is only supported for the default input table type, not for big data tables or pivot tables.
-   * User data is validated only during manual edits, i.e. when the user directly edits the values of individual cells. When the data is imported from external files or the database, there is no validation between the data and the drop-down menu choices.
-   * If you have edited the table configuration of a symbol manually in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file, you should not use the Configuration mode for this symbol anymore. This could overwrite your manual edits!
+   * The dropdown menu feature is only supported for the default input table type, not for big data tables or pivot tables.
+   * User data is validated only during manual edits, i.e. when the user directly edits the values of individual cells. When the data is imported from external files or the database, there is no validation between the data and the dropdown menu choices.
+   * If you have edited the table configuration of a symbol manually in the `<modelname>.json <./configuration_advanced.html#jsonfiles>`__ file, you should not use the Configuration Mode for this symbol anymore. This could overwrite your manual edits!
 
 .. _table-validate-columns:
 
@@ -1041,8 +1042,8 @@ criteria. As with dropdown menu columns, the configuration is done column by col
 - exclude: A vector of unacceptable numeric values
 - allowInvalid: Logical specifying whether invalid data will be accepted. Invalid data cells will then be colored red.
 
-The configuration is done in section ``inputWidgets`` for each input table separately. In ``validateCols`` the individual table columns are specified, which should be validated. In the following
-example a symbol ``d`` is used. Column 'new-york' has been configured so that only values between 1-10 are considered valid, excluding 9. If the user enters a non-valid value, MIRO accepts it, but
+The configuration is done in the ``inputWidgets`` section for each input table separately. In ``validateCols``, we specify the table columns to be validated. In the following
+example, a symbol ``d`` is used. Column 'new-york' has been configured so that only values between 1 and 10 are considered valid, excluding 9. If the user enters an invalid value, MIRO accepts it, but
 highlights the corresponding cell in red. In the column 'topeka' only the values 11, 12 and 14 are accepted.
 
 .. code-block:: json
@@ -1075,7 +1076,7 @@ highlights the corresponding cell in red. In the column 'topeka' only the values
 
 .. tip::
 
-   If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as table type to be used (3) and click on save (4).
+   If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Under "Input widgets" → "All symbols / widgets", select the desired symbol (1), choose the widget type "Table" (2), make sure that "Default" is selected as the table type (3) and click on save (4).
 
 .. _dropdownCols-json-schema-2:
 
@@ -1133,7 +1134,7 @@ highlights the corresponding cell in red. In the column 'topeka' only the values
 
 Column width of an input table
 ------------------------------
-With the ``colWidths`` option it is possible to adjust the column width of individual tables (in pixels). The Configuration Mode supports the specification of one column width for all columns of the
+With the ``colWidths`` option, you can adjust the column widths (in pixels) of individual tables. The Configuration Mode supports the specification of one column width for all columns of the
 table. To specify the width of each column individually, the `<modelname>.json <./faqs.html#file-config>`__ file must be modified manually. Note that using individual column widths is not
 compatible with the `pivotCols <./widgets.html#table-option-pivot>`__ option.
 
@@ -1151,6 +1152,7 @@ Example:
          "heatmap": false,
          "colWidths": [165, 200, 50]
        }
+     }
    }
 
 .. _pivot-compare-default-view:
@@ -1170,7 +1172,7 @@ Below is an example configuration for the output symbol ``schedule`` of the *tra
 
    {
      "_pivotcomp_schedule": {
-       "test" {
+       "test": {
          "rows": ["i", "j"],
          "cols": {
            "_scenName": null
@@ -1183,7 +1185,7 @@ Below is an example configuration for the output symbol ``schedule`` of the *tra
      }
    }
 
-To make this the default view, store the view configuration either as a scenario-specific *local* view or as a *global* view in the ``conf_transport/views.json`` file. Then, simply add the following
+To make this the default view, store the view configuration either as a scenario-specific *local* view or as a *global* view in the ``conf_transport/views.json`` file. Then add the following
 configuration to your ``conf_transport/transport.json`` configuration file:
 
 .. code-block:: json
@@ -1206,7 +1208,7 @@ If you want more control over the layout of the widgets in the `Hypercube module
 objects, where each object must contain the ``"name"`` (string) of the group as well as the ``"members"`` (array of strings). The members must be names of symbols for which you have defined scalar
 input widgets that are `supported by the Hypercube module <./hc-module.html#widget-expansion-table>`__.
 
-Below you find an sample configuration for the *transport* example:
+Below is a sample configuration for the *transport* example:
 
 .. code-block:: json
 
@@ -1292,7 +1294,7 @@ This configuration leads to the following Hypercube submission dialog:
 
 MIRO Pivot: Truncation Thresholds
 ---------------------------------
-To keep the browser responsive, `MIRO Pivot <./charts.html#pivot-chart>`__ truncates the data it plots or displays once it grows beyond a threshold, showing a warning instead of silently dropping data. These thresholds are global (they apply to every MIRO Pivot instance in the app - output renderer, input widget, and pivot compare mode alike) and can only be set via JSON, not in Configuration Mode:
+To keep the browser responsive, `MIRO Pivot <./charts.html#pivot-chart>`__ truncates the data it plots or displays once it grows beyond a threshold, showing a warning instead of silently dropping data. These thresholds are global (they apply to every MIRO Pivot instance in the app: output renderers, input widgets, and pivot compare mode alike) and can only be set via JSON, not in Configuration Mode:
 
 .. code-block:: json
 
@@ -1306,7 +1308,7 @@ To keep the browser responsive, `MIRO Pivot <./charts.html#pivot-chart>`__ trunc
      }
    }
 
-You can set any subset of these; unset ones keep their default:
+You can set any subset of these; unset thresholds keep their defaults:
 
 - ``maxCategories`` (default: ``500``) - the maximum number of categories (data points along the axis) a line, scatter, area, bar, radar or similar chart can plot.
 - ``maxTimeseriesPoints`` (default: ``20000``) - the same limit, but for the timeseries chart type, which is built to handle much larger series.

@@ -6,7 +6,7 @@ Advanced Configuration
 Custom Renderers
 ----------------
 
-GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated custom graphics.
+GAMS MIRO allows you to use your own custom renderers for your datasets. In this section, we show you how to create sophisticated custom graphics.
 
 |Result of custom renderer - Map with markers|
 
@@ -16,8 +16,8 @@ How to use a custom renderer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the
-concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: https://shiny.rstudio.com/. In particular, we are using `Shiny
-Modules <https://shiny.rstudio.com/articles/modules.html>`__ to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer
+concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: https://shiny.posit.co/. In particular, we are using `Shiny
+Modules <https://shiny.posit.co/r/articles/improve/modules/>`__ to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer
 is as follows:
 
 .. code:: r
@@ -31,10 +31,10 @@ is as follows:
    }
 
 
-Note that you need to replace <symbolName> with the name of the GAMS symbol you want to use this renderer for. Let's go through this code step by step. As mentioned, for each custom renderer we
-need to specify two functions: one that generates the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "Output" and the name of
+Note that you need to replace <symbolName> with the name of the GAMS symbol you want to use this renderer for. Let's go through this code step by step. For each custom renderer, we
+need to specify two functions: one that generates the placeholder and one that fills this placeholder with data. The name of the placeholder function must be suffixed with "Output" and the name of
 the function that specifies the actual rendering must be prefixed with the keyword "render". Let's get back to our *transport* example. We would like to see the flow of goods visualized on a map.
-The GAMS symbol that contains the flow data is called optSched. Thus, our initial template looks like this:
+The GAMS symbol that contains the flow data is called ``optSched``. Thus, our initial template looks like this:
 
 .. code:: r
 
@@ -57,14 +57,14 @@ The GAMS symbol that contains the flow data is called optSched. Thus, our initia
 
 Both functions take a number of parameters. Let's start with the placeholder function: Each custom renderer has its own ID. In order to avoid `name
 collisions <https://en.wikipedia.org/wiki/Name_collision>`__ with other custom renderers or functions of GAMS MIRO, we need to prefix our input and output elements with this ID. How should we
-prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: `NS() <https://shiny.rstudio.com/reference/shiny/0.13.1/NS.html>`__. This function takes the ID of our custom renderer as its input and returns a
+prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: `NS() <https://shiny.posit.co/r/reference/shiny/latest/ns.html>`__. This function takes the ID of our custom renderer as its input and returns a
 function (functions that return functions are often called *closures* in R) that does the prefixing for us. Thus, whenever we want to specify a new input or output element, we simply hand the ID we
-would like to use for this element over to this prefixing function (which in our case is bound to the ``ns`` variable). We can also specify a height for our renderer as well as the path
-where the renderer files are located. We can also pass additional options to our renderer functions.
+would like to use for this element over to this prefixing function (which in our case is bound to the ``ns`` variable). We can also specify a height for our renderer, the path
+where the renderer files are located, and additional options to pass to our renderer functions.
 
 Let's get back to our example. As we would like to visualize our optimized schedule on an interactive map, we choose the popular `Leaflet <https://leafletjs.com>`__ library. Fortunately, there is
-already an R/Shiny interface for this library: `Leaflet for R <https://rstudio.github.io/leaflet/>`__. This R package comes with the two functions: ``leafletOutput()`` that generates the placeholder
-and ``renderLeaflet()`` that renders a Leaflet map object created by the ``leaflet()`` function which takes our dataframe as its first argument. So let's put the pieces together and extend our code:
+already an R/Shiny interface for this library: `Leaflet for R <https://rstudio.github.io/leaflet/>`__. This R package comes with the two functions: ``leafletOutput()``, which generates the placeholder,
+and ``renderLeaflet()``, which renders a Leaflet map object created by the ``leaflet()`` function which takes our dataframe as its first argument. So let's put the pieces together and extend our code:
 
 .. code:: r
 
@@ -79,8 +79,8 @@ and ``renderLeaflet()`` that renders a Leaflet map object created by the ``leafl
 Note that we used the aforementioned ``ns()`` function to prefix the ID ("map") that we chose for our Leaflet element. Just like any other placeholder element, the function ``leafletOutput()``
 generates an element that can be accessed via the list-like ``output`` object.
 
-| Inside our rendering function we assign this object the Leaflet map that is created by the ``renderLeaflet()`` function. In case you find the whole concept of having an output function, a rendering
-  function, an output object etc. still very confusing, you should take a look at the `official tutorial series <https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/>`__ for the Shiny
+| Inside our rendering function, we assign this object the Leaflet map that is created by the ``renderLeaflet()`` function. In case you find the whole concept of having an output function, a rendering
+  function, an output object etc. still confusing, take a look at the `official tutorial series <https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/>`__ for the Shiny
   framework.
 | To summarize: elements that generate data can be accessed by the ``input`` object; elements that transform data to some form of visualization via the ``output`` object and any
   user-specific information via the ``session`` object.
@@ -97,7 +97,7 @@ generates an element that can be accessed via the list-like ``output`` object.
 
 
 The data that you want to visualize is supplied to your rendering function by the ``data`` argument - an R `tibble <https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html>`__,
-a data structure that is very similar to a Data Frame. In case you specified `additional datasets <./charts.html#custom-graphics>`__ to be communicated with your custom renderer, ``data``
+a data structure that is very similar to a data frame. In case you specified `additional datasets <./charts.html#custom-graphics>`__ to be communicated with your custom renderer, ``data``
 will be a named list of *tibbles* where the names are the GAMS symbol names. In addition, the values of all input and output scalars can be accessed via the argument ``outputScalarsFull`` (a tibble with
 the columns *scalar*, *description*, *value*). The function argument ``path`` is a string (a one-dimensional character vector) that specifies the absolute path to your renderer\_<modelname>
 directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument
@@ -117,15 +117,15 @@ directory. This is useful if you want to include external files in your custom r
 .. admonition:: Tip:
    :class: tip
 
-   The list ``options`` always has a nested list with the key ``_metdata_``, which gives you access to the metadata of the symbol to render, such as the symbol type (set, parameter, ...)
+   The list ``options`` always has a nested list with the key ``_metadata_``, which gives you access to the metadata of the symbol to render, such as the symbol type (set, parameter, ...)
    and header information (header name, alias, type). For example, the symbol type can be accessed as follows: ``options[["_metadata_"]][["symtype"]]``.
 
 
 Now that we are familiar with the template that every custom renderer builds upon, we are still missing one fundamental concept so that we can use our custom renderer: binding the renderer to
-dataset(s) we wish to visualize.
+the dataset(s) we wish to visualize.
 
-This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <modelname>.json file; more precisely the dataRendering section. Let's assume that
-in our transportation example the GAMS parameter that specifies the optimal schedule is defined as optSched(lngp, latp, lngm, latm, plant, market) where (lngP,latP) and (lngm, latm) are the
+This binding of a GAMS parameter to a renderer function is specified, just like any other renderer binding, in the ``dataRendering`` section of the <modelname>.json file. Let's assume that
+in our transportation example the GAMS parameter that specifies the optimal schedule is defined as optSched(lngp, latp, lngm, latm, plant, market) where (lngp, latp) and (lngm, latm) are the
 coordinates of the plants and markets respectively. Our transport.json file should then look like this:
 
 .. code:: text
@@ -142,10 +142,10 @@ coordinates of the plants and markets respectively. Our transport.json file shou
       }
    }
 
-As you can see we bound the GAMS parameter optSched to our new custom renderer mirorenderer_optsched. Furthermore, we specified a parameter: title that can be accessed by our custom renderer via
+As you can see, we bound the GAMS parameter ``optSched`` to our new custom renderer ``mirorenderer_optsched``. Furthermore, we specified a parameter ``title`` that can be accessed by our custom renderer via
 the options list.
 
-If we decided to run our MIRO app now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
+If we ran our MIRO app now, we would still see nothing but a blank area. Let's fill our renderer with some life:
 
 .. code:: r
 
@@ -166,7 +166,7 @@ If we decided to run our MIRO app now, we still would not be able to see anythin
 
 We have added a new placeholder for the title. Note the use of the ``tagList()`` function. Since every R function has a single return value which is either the last evaluated expression of the
 function or the argument to the first ``return()`` function that is encountered in the function body, we need to return a list object. A ``tagList()`` is simply a list with an additional
-attribute to identify that the elements are html tags.
+attribute to identify that the elements are HTML tags.
 
 Within our rendering function, we set the title, add the default `OpenStreetMap <https://www.openstreetmap.org>`__ tiles as well as some markers for our plants.
 
@@ -175,14 +175,14 @@ Within our rendering function, we set the title, add the default `OpenStreetMap 
 
 
 
-   The syntax ``~lngp`` that you see here is simply a shorthand for ``data$lngp`` - the pipe operator ``a(x) %>% b(y)`` a shorthand for ``tmp <- a(x); b(tmp, y)``
+   The syntax ``~lngp`` that you see here is simply a shorthand for ``data$lngp`` and the pipe operator ``a(x) %>% b(y)`` is a shorthand for ``tmp <- a(x); b(tmp, y)``
 
 
 If you run your app now, you will be able to see a map with markers at the coordinates of the plants as you specified them in your GAMS sets: ``lngp`` and ``latp``. When you hover
-over the markers, you will be able to see the names of the plants as defined by the set: ``plants``. You can see a screenshot of the result below: |image1|
-If you read until this point, you might have noticed that there is a parameter in the renderer function that we did not talk about yet: ``rendererEnv``. This parameter is a static R environment
+over the markers, you will be able to see the names of the plants as defined by the set ``plant``. You can see a screenshot of the result below: |image1|
+If you have read this far, you might have noticed that there is a parameter in the renderer function that we did not talk about yet: ``rendererEnv``. This parameter is a static R environment
 that is persistent across different calls to the renderer function. Each time the data of your widget is updated (e.g. due to the user loading a new scenario from the database), your renderer
-function is called. One case where this can become problematic is when you make use of `observers <https://shiny.rstudio.com/reference/shiny/0.14/observe.html>`__ in your renderer functions. Every
+function is called. One case where this can become problematic is when you make use of `observers <https://shiny.posit.co/r/reference/shiny/latest/observe.html>`__ in your renderer functions. Every
 time your renderer function is called, all observers are re-registered, which leads to duplicated observers. To avoid this problem, you must ensure that observers are cleaned up when they are no
 longer needed. You do this by assigning them to the ``rendererEnv`` environment. An example where this is extensively used is the model ``tsp``, which can be found in the MIRO model
 library.
@@ -196,7 +196,7 @@ Additional datasets
 ~~~~~~~~~~~~~~~~~~~
 
 A custom renderer can use the data of other GAMS symbols (a renderer for an output symbol can use the data from both input and output symbols, while a renderer for an input symbol can only access
-other input symbols). For example - let's stay with the above example of a map - the geographical information can come from other symbols than the transport data. For a custom renderer to access
+other input symbols). For example, in the map example above, the geographical information could come from symbols other than the transport data. For a custom renderer to access
 this data, the corresponding symbols must be specified in the <modelname>.json file under ``"additionalData"``:
 
 .. code:: text
@@ -214,8 +214,7 @@ this data, the corresponding symbols must be specified in the <modelname>.json f
       }
    }
 
-The ``data`` object can be used to access the data within your custom renderer. It will be a named list of tibbles. For example, to access ``symbol_a``, use ``data[[symbol_a]]`` to access the
-specific tibble.
+The ``data`` object can be used to access the data within your custom renderer. It will be a named list of tibbles. For example, to access ``symbol_a``, use ``data[["symbol_a"]]``.
 
 .. note::
 
@@ -231,8 +230,8 @@ specific tibble.
 Additional R packages
 ~~~~~~~~~~~~~~~~~~~~~
 
-In a custom renderer you can include any R packages that are not part of MIRO. This allows you to use all data visualization and data processing capabilities of R. In order for such packages to be
-installed when starting a MIRO application, they must be specified in the <modelname>.json file at the configuration of the corresponding symbol under ``"packages"``:
+In a custom renderer, you can include any R packages that are not part of MIRO. This allows you to use all data visualization and data processing capabilities of R. In order for such packages to be
+installed when starting a MIRO application, they must be listed under ``"packages"`` in the configuration of the corresponding symbol in the <modelname>.json file:
 
 .. code:: text
 
@@ -250,7 +249,7 @@ installed when starting a MIRO application, they must be specified in the <model
       }
    }
 
-Note that these additional packages are installed but not loaded! This means that when you call the function, you must explicitly specify the package name using the *Double Colon Operator*:
+Note that these additional packages are installed but not loaded! This means that when you call the function, you must explicitly specify the package name using the *double colon operator*:
 pkg::name(...). See also the `info box <#cr-package-note>`__ in the previous section.
 
 .. admonition:: Tip
@@ -270,7 +269,7 @@ In cases where your renderers are interactive, you might want to allow users to 
 designed for. A MIRO view can be any (nested) list that is JSON serializable. Views are bound to a particular GAMS symbol and each view has a unique id. One example of a renderer where the MIRO
 views API is used is the `pivot table <./charts.html#pivot-chart>`__ renderer.
 
-You might have already seen that there is another argument in the renderer function that we have not yet talked about: the ``views`` argument. This is a reference to an instance of the views
+You might have noticed that there is another argument in the renderer function that we have not yet talked about: the ``views`` argument. This is a reference to an instance of the views
 R6 class. You can get, add and remove views as well as register callbacks via this object. The following section explains how to use the API.
 
 Get view data
@@ -563,7 +562,7 @@ Add Attachment
 .. code:: r
 
 
-   attachmenets$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPerm = NULL)
+   attachments$add(session, filePaths, fileNames = NULL, overwrite = FALSE, execPerm = NULL)
 
 
 Arguments
@@ -580,17 +579,17 @@ execPerm  Vector with execute permissions (must be NULL or logical vector with t
 Description
 """""""""""
 
-Adds/registers new attchment(s). These can be files from the local file system, files created in the renderer itself, files accessed from a REST API call or any others. Attachments can be saved
+Adds/registers new attachment(s). These can be files from the local file system, files created in the renderer itself, files accessed from a REST API call or any others. Attachments can be saved
 under a new name. If an attachment with the same name already exists, it can be overwritten. In addition, it can be specified whether the attachment may be `read by the underlying GAMS
 model <./start.html#file-attachments>`__. In case the current renderer is read-only (not a sandbox scenario), an error of class error_readonly is thrown. You can test whether the renderer is
-read-only with the method ``attachments$isReadonly(session)``. Attachments must not exceed the maximum size of ``50 MB``. If an attachment is added that exceeds this size, an error of the
-error_max_size class is raised. In addition, a maximum of ``20`` attachments can be added per scenario. If this limit is exceeded, an error of class error_max_no is thrown. If a scenario
-with a name that already exists is added, an error of the error_duplicate_files class is raised.
+read-only with the method ``attachments$isReadonly(session)``. By default, attachments must not exceed ``50 MB``. If an attachment exceeds this size, an error of class
+error_max_size is raised. In addition, by default a maximum of ``20`` attachments can be added per scenario. If this limit is exceeded, an error of class error_max_no is thrown. If an attachment
+with a name that already exists is added and ``overwrite`` is ``FALSE``, an error of class error_duplicate_files is raised.
 
 Example
 """""""
 
-In the example below, an attachment is added using the shiny `fileInput <https://shiny.rstudio.com/reference/shiny/latest/fileInput.html>`__ widget that triggers an observer when the user uploads a
+In the example below, an attachment is added using the Shiny `fileInput <https://shiny.posit.co/r/reference/shiny/latest/fileinput.html>`__ widget that triggers an observer when the user uploads a
 local file.
 
 .. code:: r
@@ -627,13 +626,13 @@ overwrite Whether to overwrite existing files.
 Description
 """""""""""
 
-Stores file(s) at given location(s). If the user should be able to download attachments directly in the custom renderer, this is possible with the ``save`` method. Also, it can be used to
-access the data of an attachment in the custom renderer and process it further. For this purpose the attachment can be saved to disk and read from there.
+Stores file(s) at given location(s). Use the ``save`` method to let users download attachments directly in the custom renderer. It can also be used to
+access the data of an attachment in the custom renderer and process it further. For this purpose, the attachment can be saved to disk and read from there.
 
 Example
 """""""
 
-In the example below, a `download handler <https://shiny.rstudio.com/reference/shiny/latest/downloadHandler.html>`__ is used to write an attachment *file.txt* to disk. If the *file.txt* is not
+In the example below, a `download handler <https://shiny.posit.co/r/reference/shiny/latest/downloadhandler.html>`__ is used to write an attachment *file.txt* to disk. If the *file.txt* is not
 found in the attachments, an *error.txt* file is downloaded instead.
 
 .. code:: r
@@ -724,7 +723,7 @@ Example
    attachments$getIds()
    #> [1] "file1.txt" "file2.gdx" "file3.xls"
 
-   attachments$remove("file1.txt", removeLocal = FALSE)
+   attachments$remove(session, "file1.txt", removeLocal = FALSE)
 
    attachments$getIds()
    #> [1] "file2.gdx" "file3.xls"
@@ -735,7 +734,7 @@ Example
 Metadata
 ~~~~~~~~
 
-In addition to views and attachments, `custom data importers/exporters <configuration_json_only.html#custom-import-export>`__ have access to the other scenario metadata such as name, owner and
+In addition to views and attachments, `custom data importers/exporters <configuration_json_only.html#custom-import-export>`__ have access to other scenario metadata such as name, owner and
 tags.
 
 Interacting with the ``metadata`` object works like a list (implemented as `R6 active bindings <https://r6.r-lib.org/articles/Introduction.html#active-bindings>`__). To get an attribute like
@@ -755,7 +754,7 @@ Get/Set scenario name
 Description
 """""""""""
 
-Retrieves/sets the name of the sandbox scenario. Throws condition with class ``error_bad_name`` when trying to assign a bad name (contains only whitespace or is more than 64 characters long).
+Retrieves/sets the name of the sandbox scenario. Throws a condition of class ``error_bad_name`` when trying to assign a bad name (contains only whitespace or is more than 64 characters long).
 
 Get/Set scenario tag(s)
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -770,7 +769,7 @@ Get/Set scenario tag(s)
 Description
 """""""""""
 
-Retrieves/sets the tags of the sandbox scenario. Throws condition with class ``error_bad_tags`` when trying to assign bad tags (tags that contain only whitespace, or the cumulative number of
+Retrieves/sets the tags of the sandbox scenario. Throws a condition of class ``error_bad_tags`` when trying to assign bad tags (tags that contain only whitespace, or the cumulative number of
 characters of all tags is more than 1000).
 
 Get/Set scenario modification time
@@ -786,7 +785,7 @@ Get/Set scenario modification time
 Description
 """""""""""
 
-Retrieves/sets the last modified time. Throws condition with class ``error_bad_time`` when trying to assign an object that is not sub-class of ``POSIXct``
+Retrieves/sets the last modified time. Throws a condition of class ``error_bad_time`` when trying to assign an object that is not a subclass of ``POSIXct``.
 
 Get scenario owner (read only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -800,21 +799,7 @@ Get scenario owner (read only)
 Description
 """""""""""
 
-Retrieves the name of the scenario owner. Throws condition with class ``error_locked`` when trying to assign new value to it.
-
-.. _migrate-custom-renderers:
-
-Migrate renderers from MIRO 1.x
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The custom renderers you created with MIRO 1.x will also work with MIRO 2.0. You will only encounter problems if you try to use these renderers in the Configuration Mode. To make your old renderers
-compatible with the Configuration Mode of MIRO 2.0, you must follow the rules below:
-
-- A renderer is now bound to a specific symbol.
-- Renderers can be shared by different symbols, but they always belong to one of them.
-- This means that the name of the output and renderer functions should be: mirorenderer\_<symbolName>Output and renderMirorenderer\_<symbolName> respectively.
-- Renderer files must be named mirorenderer\_<symbolname>.R.
-- Only one output/render function may be declared per file.
+Retrieves the name of the scenario owner. Throws a condition of class ``error_locked`` when trying to assign a new value to it.
 
 .. _widgets-ranges:
 
@@ -832,10 +817,10 @@ Widgets with ranges
 We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those
 widgets include a slider with two handles (also referred to as a slider range) and a date range selector:
 
-The lower value (or starting date of the date range) is postfixed with ``_lo`` and the upper value (or end date of the date range) is postfixed with ``_up``. This means that if
+The lower value (or start date of the date range) is suffixed with ``_lo`` and the upper value (or end date of the date range) is suffixed with ``_up``. This means that if
 you specified a slider range for your double dash parameter ``--RANGE``, you can access the lower value of the range with ``%RANGE_LO%`` and the upper value with ``%RANGE_UP%`` while
-``%RANGE%`` will not be set at all. Let's look at the following example: We would like to specify a time window that we want to fetch stock data for. Thus, we define a new double dash
-parameter ``--TW`` that we want to be visualized in the form of a date range selector. We add the following JSON snippet to our <modelname>.json configuration file:
+``%RANGE%`` will not be set at all. Let's look at the following example: We would like to specify a time window for which to fetch stock data. Thus, we define a new double dash
+parameter ``--TW`` that we want to display as a date range selector. We add the following JSON snippet to our <modelname>.json configuration file:
 
 .. code:: text
 
@@ -856,17 +841,17 @@ parameter ``--TW`` that we want to be visualized in the form of a date range sel
        [...]
 
 
-In our model, we can access the lower and upper value of this slider via the compile time variables ``%TW_LO%`` and ``%TW_UP%``.
+In our model, we can access the lower and upper values of this date range via the compile time variables ``%TW_LO%`` and ``%TW_UP%``.
 
 .. _widgets-dependencies:
 
 Dependencies among widgets
 --------------------------
 
-MIRO allows you to set the limits of your sliders as well as the choices of dropdown widgets by data from other symbols.
+MIRO allows you to set the limits of your sliders as well as the choices of dropdown widgets based on data from other symbols.
 
-An example is the *pickstock* model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can
-use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change
+An example is the *pickstock* model. Here, the number of stocks you can select for your portfolio cannot be larger than the number of stocks in your dataset. Similarly, the number of days you can
+use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes, namely the maximum value that can be selected, should change
 according to the price data the user uploads. Thus, we also have forward dependencies here.
 
 .. admonition:: Note
@@ -874,7 +859,7 @@ according to the price data the user uploads. Thus, we also have forward depende
 
 
 
-   For more sophisticated dependencies (e.g. conditional filtering of tables based on values of drop-down menus, etc.) use `custom input
+   For more sophisticated dependencies (e.g. conditional filtering of tables based on values of dropdown menus, etc.) use `custom input
    widgets <./configuration_json_only.html#custom-input-widgets>`__.
 
 
@@ -883,7 +868,7 @@ according to the price data the user uploads. Thus, we also have forward depende
 Configuration via JSON files
 ----------------------------
 
-The configuration of MIRO is mainly done via one JSON file. After the first start of a MIRO app, the following files are located in <modeldirectory>/conf\_<modelname>:
+MIRO is mainly configured via one JSON file. After the first start of a MIRO app, the following files are located in <modeldirectory>/conf\_<modelname>:
 
 <modelname>_io.json
 ~~~~~~~~~~~~~~~~~~~~
@@ -891,7 +876,7 @@ The configuration of MIRO is mainly done via one JSON file. After the first star
 
    This `file <./faqs.html#file-io>`__ describes the `data contract <./model.html#data-contract>`__ between MIRO and GAMS and is generated automatically each time MIRO is run in `development
    mode <./model.html#development-mode>`__. All GAMS symbols that are marked in your GAMS model with the ``$onExternalInput`` / ``$offExternalInput`` and ``$onExternalOutput`` /
-   ``$offExternalOutput`` tags are listed here. You won't ever have to modify this file!
+   ``$offExternalOutput`` tags are listed here. You never have to modify this file!
 
 <modelname>.json
 ~~~~~~~~~~~~~~~~~
@@ -921,8 +906,8 @@ MIRO for a new model, the <modelname>.json file is almost empty:
 
 Each adjustment you want to make must be captured within the curly braces of this file.
 
-| To ensure that the configuration is correct in terms of syntax and content, all JSON files are validated against a schema in the background. Only if the validation is successful the application
-  starts. If a schema is violated, an error message is displayed.
+| To ensure that the configuration is correct in terms of syntax and content, all JSON files are validated against a schema in the background. The application only starts if
+  the validation is successful. If a schema is violated, an error message is displayed.
 | The schemas are located in <MIRORoot>/miro/conf. For the <modelname>_io.json this is the schema <MIRORoot>/miro/conf/io_config_schema.json and for the <modelname>.json the schema
   <MIRORoot>/miro/conf/config_schema.json is used. Since the latter file is used for the configuration, only the corresponding schema is of interest. You can have a look at it
   `here <./schema.html>`__.
@@ -940,9 +925,9 @@ Each adjustment you want to make must be captured within the curly braces of thi
 Example: tables
 ~~~~~~~~~~~~~~~
 
-Let's get back and extend our demo model *transport*. We will do this by adjusting the file transport.json in order to to adapt MIRO to our needs.
+Let's get back to our demo model *transport* and extend it. We adjust the file transport.json to adapt MIRO to our needs.
 
-GAMS MIRO comes with several options on how you can feed your `model <faqs.html#def-model>`__ with input data. By default, GAMS input parameters, sets and scalars are displayed in an editable
+GAMS MIRO offers several options for feeding your `model <faqs.html#def-model>`__ with input data. By default, GAMS input parameters, sets and scalars are displayed in an editable
 table:
 
 |editable table|
@@ -1011,7 +996,7 @@ Command line parameters
 
 We have already mentioned the possibility of `setting GAMS command line parameters via MIRO <./model.html#command-line>`__. Since `GAMS
 Options <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine>`__ and `Double Dash
-Parameters <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__ are specified via the command line in GAMS, they can not be tagged in the GAMS
+Parameters <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__ are specified via the command line in GAMS, they cannot be tagged in the GAMS
 code with ``$onExternalInput`` / ``$offExternalInput``. To be able to set them from MIRO, they can be specified in the <modelname>.json file. In order for MIRO to recognize whether your symbol is a
 double dash parameter or a GAMS option, you must prefix the symbol name with either ``_gmspar_`` for double dash parameters or ``_gmsopt_`` for GAMS options.
 
@@ -1020,12 +1005,12 @@ double dash parameter or a GAMS option, you must prefix the symbol name with eit
 
 
 
-   Both, GAMS options and double-dash parameters can be displayed as a slider, dropdown menu, checkbox, text input or numeric input. For double-dash parameters date(-range) selector and slider
-   range are also available.
+   Both GAMS options and double-dash parameters can be displayed as a slider, dropdown menu, checkbox, text input or numeric input. For double-dash parameters, date (range) selectors and slider
+   ranges are also available.
 
 
 Let's assume you want MIRO to call your GAMS model with the double dash parameter ``--numberPeriods``, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver
-to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <modelname>.json file could look as follows:
+to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use one of these three solvers. Thus, your <modelname>.json file could look as follows:
 
 .. code:: text
 
@@ -1064,14 +1049,14 @@ The resulting interface in MIRO now looks as follows:
 Language Files
 --------------
 
-GAMS MIRO comes with the ability to change the preferred language. Setting your preferred language results in MIRO embedding the corresponding language file where all the language specific
-components are specified via JSON syntax. MIRO currently ships with four of those language files: English, German, Chinese and Spanish. If you would like to add another language to this list, you are more
-than welcome to translate one of the existing language files. The language files are located at: <MIRORoot>/miro/conf/en.json and are validated against the `JSON
-Schema <https://json-schema.org/>`__ file: <MIRORoot>/miro/conf/language_schema.json. Note that there are sometimes placeholders in the language files. Let's take the error message:
+GAMS MIRO lets you change the preferred language. MIRO then embeds the corresponding language file, in which all language-specific
+components are specified in JSON. MIRO currently ships with four of those language files: English, German, Chinese and Spanish. If you would like to add another language to this list, you are more
+than welcome to translate one of the existing language files. The language files are located in <MIRORoot>/miro/conf (e.g. en.json) and are validated against the `JSON
+Schema <https://json-schema.org/>`__ file: <MIRORoot>/miro/conf/language_schema.json. Note that the language files sometimes contain placeholders. Let's take the error message:
 ``"The value '%s' for the slider: '%s' is not of numeric type."`` for example. ``%s`` will then be replaced with the value and name of the slider by MIRO. Thus, if you create a new language file, be sure to include these placeholders
 there!
 
-If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: miro@gams.com.
+If you would like to contribute your language file so that others can benefit from your work, send us an email: miro@gams.com.
 
 .. |Result of custom renderer - Map with markers| image:: ../assets/images/output-data_raw1.png
    :class: miro-image-max-height-350pt

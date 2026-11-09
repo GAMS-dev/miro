@@ -6,10 +6,10 @@ Introduction
 
 In the most basic setup - GAMS MIRO Desktop - both the MIRO application
 and GAMS itself are installed on the same computer and run exclusively
-on this machine. But MIRO is not limited to this setup: You can run your
+on this machine. But MIRO is not limited to this setup: you can run your
 MIRO applications locally, but solve the GAMS jobs in the cloud. We call
 this setup *GAMS MIRO Desktop - boosted by GAMS Engine*. `GAMS
-Engine <https://www.gams.com/engine/>`__ is a server software that
+Engine <https://www.gams.com/engine/>`__ is server software that
 allows you to run GAMS models on centralized compute resources. It uses
 state-of-the-art technology to handle the entire job management,
 scheduling and load balancing of your computationally intensive
@@ -18,7 +18,7 @@ optimization problems.
 GAMS Engine is also used for *GAMS MIRO Server*. This setup allows you
 to run both the GAMS execution engine as well as the MIRO application
 itself in the cloud. Your optimization applications can then be accessed
-from any device with a modern web browser like a PC, smartphone or
+from any device with a modern web browser, such as a PC, smartphone or
 tablet.
 
 .. image:: ../assets/images/remote-execution.png
@@ -32,7 +32,7 @@ tablet.
    Both *GAMS MIRO Desktop - boosted by GAMS Engine* and *GAMS MIRO Server*
    make use of `GAMS Engine <https://www.gams.com/sales/engine_facts/>`__,
    which must be purchased separately. Please contact
-   `sales@gams.com <mailto:miro@gams.com>`__ if you are interested in one
+   `sales@gams.com <mailto:sales@gams.com>`__ if you are interested in one
    of these setups.
 
 .. admonition:: Note:
@@ -87,7 +87,7 @@ tablet.
       Administration
       ^^^
 
-      App- and user management, access control
+      App and user management, access control
 
    .. grid-item-card::
       :text-align: center

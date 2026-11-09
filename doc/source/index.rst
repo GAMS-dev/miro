@@ -24,7 +24,7 @@ Welcome!
 
 .. container:: miro-welcome-text
 
-   GAMS MIRO is a deployment environment for `GAMS <https://www.gams.com/>`__ and `GAMSPy <https://gamspy.readthedocs.io/en/latest/index.html>`__ models that enable you to build interactive optimization applications with powerful visualization and scenario management capabilities.
+   GAMS MIRO is a deployment environment for `GAMS <https://www.gams.com/>`__ and `GAMSPy <https://gamspy.readthedocs.io/en/latest/index.html>`__ models that enables you to build interactive optimization applications with powerful visualization and scenario management capabilities.
 
    If you are new to GAMS MIRO, start with the `Quick Start Guide <getting_started.html>`__. For an overview of the product, features, and deployment options, visit the official `GAMS MIRO product page <https://www.gams.com/products/gams-miro/>`__.
 
@@ -76,7 +76,7 @@ Welcome!
       Walkthrough
       ^^^
 
-      A comprehensive guide from creating GAMSPy models to sophisticated applications.
+      A comprehensive guide from creating GAMSPy models to sophisticated applications
 
    .. grid-item-card::
       :link-type: doc
@@ -234,7 +234,7 @@ GAMS MIRO Gallery
 
       Explore interactive demo applications and discover what can be built with MIRO.
 
-      Test the MIRO applications directly in your browser, even mobile!
+      Test the MIRO applications directly in your browser, even on mobile devices!
 
       .. button-link:: https://miro.gams.com
          :color: primary
@@ -267,7 +267,7 @@ Learn more
 Watch the recording of our MIRO talk "Model Deployment in GAMS" (2021-09-06):
 
 .. image:: ../assets/images/youtube_img.png
-   :alt: Youtube video 'Model Deployment in GAMS'
+   :alt: YouTube video 'Model Deployment in GAMS'
    :target: https://www.youtube.com/watch?v=490KfWJBpl4
 
 *(The video will open on youtube.com)*
@@ -277,7 +277,7 @@ Watch the recording of our MIRO talk "Model Deployment in GAMS" (2021-09-06):
 Fact sheets
 -----------
 
-Lazy to read the documentation or just want a compact summary of the most important features of GAMS MIRO?
+Want a compact summary of the most important features of GAMS MIRO?
 
 Have a look at our fact sheets:
 

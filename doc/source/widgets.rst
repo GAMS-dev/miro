@@ -5,7 +5,7 @@ Introduction
 ------------
 
 *Input widgets* are all items that communicate input data with GAMS. While these are primarily tables for multidimensional GAMS symbols, various widgets can be used for scalar input data. Examples
-of such widgets include: sliders, dropdown menus, date selectors or checkboxes.
+of such widgets include sliders, dropdown menus, date selectors and checkboxes.
 
 .. image:: ../assets/images/configuration_mode/configure_widgets.png
  :alt: Configuration of input widgets and tables
@@ -15,25 +15,25 @@ The symbol type to be configured can be selected at the top. The options are:
 
 - **All symbols / widgets**
 
-  This option must be selected if we want to configure a GAMS symbol. Furthermore, already configured GAMS options and double dash parameters are listed here, so that the existing configuration
-  can be changed / removed.
+  Select this option to configure a GAMS symbol. Already configured GAMS options and double-dash parameters are also listed here, so that their configuration
+  can be changed or removed.
 
   .. admonition:: Note
 
      After configuring a widget for a scalar GAMS symbol, the symbol is automatically removed from the *Scalars* table and rendered as a widget instead.
 
-- **New GAMS option** / **New double dash parameter**
+- **New GAMS option** / **New double-dash parameter**
 
   As the name suggests, `GAMS options <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine>`__ and `double-dash
   parameters <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample>`__ can be configured here as an input widget.
-  Since those parameters are specified via the command line in GAMS, they can not be tagged in the GAMS code with ``$onExternalInput`` / ``$offExternalInput``. So that they can be set for a GAMS
-  run via MIRO, they must be explicitly specified in the configuration.
+  Since those parameters are specified via the command line in GAMS, they cannot be tagged in the GAMS code with ``$onExternalInput`` / ``$offExternalInput``. To set them for a GAMS
+  run via MIRO, you must specify them explicitly in the configuration.
 
-If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. The values the user selected are therefore available
+If a GAMS option or a double-dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. The values the user selected are therefore available
 to the GAMS model at `compile time <https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass>`__.
 
 | Example:
-| If we set the double dash parameter ``numberPeriods`` to 11 and for the GAMS option ``mip`` we select CPLEX from within MIRO, then the GAMS model is run with:
+| If we set the double-dash parameter ``numberPeriods`` to 11 and select CPLEX for the GAMS option ``mip`` from within MIRO, then the GAMS model is run with:
 
 .. code-block:: text
 
@@ -41,7 +41,7 @@ to the GAMS model at `compile time <https://www.gams.com/latest/docs/UG_GamsCall
 
 .. admonition:: Warning
 
-   The following GAMS options are reserved by GAMS MIRO and can not be configured: ``idir1, curdir, trace, traceopt``
+   The following GAMS options are reserved by GAMS MIRO and cannot be configured: ``idir1, curdir, trace, traceopt``
 
 
 .. _widget-table:
@@ -70,7 +70,7 @@ information, e.g. what kind of data should be entered here and in which format.
 
 **Default table:**
 
-The following options are available for the standard (default) table in MIRO, which works similar to a spreadsheet.
+The following options are available for the standard (default) table in MIRO, which works similarly to a spreadsheet.
 
 .. _table-option-readonly:
 
@@ -127,8 +127,8 @@ The following options are available for the standard (default) table in MIRO, wh
     :alt: Visualization of expanded table
     :class: miro-image-max-height-175pt
 
-   A table width quickly increases when the number of set elements of the header index gets large. A total of - for example - 30 stocks to be represented in a table would lead to 30 additional
-   columns. In this case, the *list view* might be more clear.
+   The table width quickly increases when the header index has many set elements. For example, 30 stocks would lead to 30 additional
+   columns. In this case, the *list view* might be clearer.
 
 .. _table-option-fixedColumnsLeft:
 
@@ -180,7 +180,7 @@ The following options are available for the standard (default) table in MIRO, wh
 
 .. dropdown:: Hide indexing column?
 
-   Option to hide indexing column in input tables.
+   Hides the indexing column of the input table.
 
 .. _table-option-heatmap:
 
@@ -198,7 +198,7 @@ The following options are available for the standard (default) table in MIRO, wh
 .. rubric:: JSON example
 
 
-Default input table with label, without index column, 'date' column is readonly.
+Default input table with a label and without index column; the 'date' column is read-only.
 
 .. code:: text
 
@@ -333,7 +333,7 @@ Sliders are useful in situations where the user has to select a numeric value fr
 Example:
 
 Let's configure a widget for our *transport* model. For the scalar value *freight* a slider is a good choice.
-From the list of available symbols we choose the desired scalar, select *slider* as widget tye and give it a label, which then appears above the slider.
+From the list of available symbols we choose the desired scalar, select *slider* as widget type and give it a label, which then appears above the slider.
 Next, we specify the upper and lower bounds of the slider, the default value as well as the step size.
 
 .. image:: ../assets/images/configuration_mode/slider1.png
@@ -398,7 +398,7 @@ The following options are available for a slider widget:
 .. dropdown:: Minimum / maximum / default value
 
    *Minimum / maximum value*: Both a minimum and a maximum value are required for a slider. These define the range from which the user can select values.
-   *Default value*: A default value is the initial value of the slider i.e. the slider value set when starting the application. This is optional. If the value does not fall between the minimum and
+   *Default value*: A default value is the initial value of the slider, i.e. the slider value set when starting the application. This is optional. If the value does not fall between the minimum and
    maximum values, a warning is issued. If this value is not specified, the minimum value is used as the default value. As soon as data is loaded which contains a value for the slider symbol, the
    slider is set to that value.
 
@@ -428,7 +428,7 @@ The following options are available for a slider widget:
     :alt: Configuration of a slider (4)
     :class: miro-image-max-height-200pt
 
-   The maximum value for the *maximum number of stocks* is 30, since the data set *Price* that is currently loaded contains 30 stocks. If the user deletes e.g. all values of the stock *AAPL* from
+   The maximum value for the *maximum number of stocks* is 30, since the dataset *Price* that is currently loaded contains 30 stocks. If the user deletes e.g. all values of the stock *AAPL* from
    the data, the maximum value of the slider changes to 29. The same is true for the second slider: the *number of training days*. Here the maximum value of 252 results from the number of available
    *dates* in *price*.
    In the Configuration Mode we can easily define such dynamic limits. For the first slider the configuration looks as follows:
@@ -446,7 +446,7 @@ The following options are available for a slider widget:
     :alt: Configuration of a slider (5)
     :class: miro-image-max-height-200pt
 
-   More on Dependencies among widgets can be found `here <./configuration_advanced.html#widgets-dependencies>`__.
+   More on dependencies among widgets can be found `here <./configuration_advanced.html#widgets-dependencies>`__.
 
 .. _slider-option-step:
 
@@ -513,7 +513,7 @@ The following options are available for a slider widget:
 .. dropdown:: Should element be expanded automatically when submitting a Hypercube job?
 
    As explained in detail in the `corresponding chapter <./hc-module.html#hcube-config>`__, widgets will be expanded when submitting a Hypercube job. With the option available here, the automatic
-   extension of a widget can be switched off. The picture below shows extended widgets.
+   expansion of a widget can be switched off. The picture below shows expanded widgets.
 
    .. image:: ../assets/images/batch_img/regular_batch.png
     :alt: Expand for Hypercube job
@@ -554,7 +554,7 @@ Range slider
 .. rubric:: Configuration
 
 
-A range slider returns two numeric values. For this reason, such a slider is not suitable for GAMS scales, but only for GAMS command line parameters, i.e. double-dash parameters.
+A range slider returns two numeric values. For this reason, such a slider is not suitable for GAMS scalars, but only for GAMS command line parameters, i.e. double-dash parameters.
 
 Example:
 
@@ -616,7 +616,7 @@ need to be specified.
 .. rubric:: JSON example
 
 
-Note: In order for MIRO to recognize whether the symbol is a double dash parameter or a GAMS option, they are prefixed with either ``_gmspar_`` for double dash parameters or ``_gmsopt_`` for
+Note: To let MIRO recognize whether a symbol is a double-dash parameter or a GAMS option, its name is prefixed with ``_gmspar_`` for double-dash parameters or ``_gmsopt_`` for
 GAMS options.
 
 .. code:: text
@@ -653,7 +653,7 @@ A checkbox returns 0 or 1 and is therefore suitable for use in binary decisions.
 
 Example:
 
-Configuration of a GAMS Scalar *binaryDecision* as a checkbox:
+Configuration of a GAMS scalar *binaryDecision* as a checkbox:
 
 .. code:: gams
 
@@ -710,7 +710,7 @@ The following options are available for a checkbox widget:
 .. dropdown:: Should element be expanded automatically when submitting a Hypercube job?
 
    As explained in detail in the `corresponding chapter <./hc-module.html#hcube-config>`__, widgets will be expanded when submitting a Hypercube job. When submitting a Hypercube job, a checkbox
-   becomes a multi dropdwon menu with the entries *yes* and *no*. With the option available here, the automatic expansion of a widget can be switched off.
+   becomes a multi-dropdown menu with the entries *yes* and *no*. With the option available here, the automatic expansion of a widget can be switched off.
 
 .. _widget-checkbox-json:
 
@@ -748,17 +748,17 @@ Dropdown menu
 
 Besides normal GAMS scalars, a dropdown menu can also be used for singleton sets. Unlike scalars, singleton sets can have a label and an element text instead of a numeric value. What is specified
 as *choices* when configuring the dropdown menu is communicated as the element *label* between MIRO and GAMS. The *alias* assigned to the dropdown choice defines the *element text* in the model.
-Read more about Singleton Sets in MIRO `here <./model.html#display-sinset>`__.
+Read more about singleton sets in MIRO `here <./model.html#display-sinset>`__.
 
 Example:
 
-Dropdown menu for a Singleton Set with model types as choices:
+Dropdown menu for a singleton set with model types as choices:
 
 .. image:: ../assets/images/configuration_mode/widget_dropdown_config.png
  :alt: Dropdown menu configuration
  :class: img-fluid
 
-The *model type* for which the dropdown menu is configured, is a GAMS Singleton Set (symbol name: *typeSelect*):
+The *model type* for which the dropdown menu is configured is a GAMS singleton set (symbol name: *typeSelect*):
 
 .. code:: gams
 
@@ -777,7 +777,7 @@ The *model type* for which the dropdown menu is configured, is a GAMS Singleton 
 
 
 The value of the singleton set which comes from MIRO is stored in the compile-time variable *type* by using the Dollar Control Option
-`eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__. This can then be used (in compile time) to run the desired model.
+`eval.Set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__. This can then be used at compile time to run the desired model.
 
 .. admonition:: Tip
 
@@ -793,7 +793,7 @@ The value of the singleton set which comes from MIRO is stored in the compile-ti
 .. rubric:: Available options
 
 
-The following options are available for a checkbox widget:
+The following options are available for a dropdown menu widget:
 
 .. _dropdown-option-name:
 
@@ -823,7 +823,7 @@ The following options are available for a checkbox widget:
 
 .. dropdown:: Static Choices / dynamic choices
 
-   As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. Static choices remain unchanged, regardless of the loaded data. In contrast to this the
+   As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. Static choices remain unchanged, regardless of the loaded data. In contrast, the
    selectable elements of a dropdown menu with dynamic choices are filled depending on the loaded data.
 
    .. _static-dropdown:
@@ -848,7 +848,7 @@ The following options are available for a checkbox widget:
    Example: Configuration of a dropdown menu with static choices:
 
    .. image:: ../assets/images/configuration_mode/widget_dropdown_static1.png
-    :alt: Static dropdown menu configration
+    :alt: Static dropdown menu configuration
     :class: miro-image-max-height-200pt
 
    The user then gets the following dropdown menu:
@@ -861,7 +861,7 @@ The following options are available for a checkbox widget:
 
    .. rubric:: Dynamic choices:
 
-   In the following example a dropdown menu with dynamic choices is configured in the model *Pickstock* for a *Singleton Set*:
+   In the following example a dropdown menu with dynamic choices is configured in the model *Pickstock* for a *singleton set*:
 
    .. code:: gams
 
@@ -891,14 +891,14 @@ The following options are available for a checkbox widget:
 
      .. admonition:: Tip
 
-        Instead of a single symbol, all input symbols whose domain the selected set is part of can be used to fill the drop-down menu with data. To do this, simply remove the selected symbol. An *All*
-        is shown then:
+        Instead of a single symbol, all input symbols whose domain the selected set is part of can be used to fill the dropdown menu with data. To do this, simply remove the selected symbol. *All*
+        is then shown:
 
         .. image:: ../assets/images/configuration_mode/widget_dropdown_dynamic_all.png
            :alt: All symbols
            :class: miro-image-max-height-125pt
 
-     Next, we specify the column of the symbol *Price* where the data for the drop-down menu should come from. Since we are interested in the individual stocks, we select the column *stock symbol*.
+     Next, we specify the column of the symbol *Price* where the data for the dropdown menu should come from. Since we are interested in the individual stocks, we select the column *stock symbol*.
 
      .. image:: ../assets/images/configuration_mode/widget_dropdown_dynamic2.png
         :alt: Symbol header selection
@@ -930,7 +930,7 @@ The following options are available for a checkbox widget:
    the choice of the dropdown menu will become the element text of the set, whereas the label will be set to the empty string. This allows for the communication of strings between MIRO and GAMS while
    preserving the UEL order.
 
-   Migrating a singleton set into a compile time variable can be done using the `$eval.set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__ method. Since the variable
+   Migrating a singleton set into a compile-time variable can be done using the `$eval.set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__ method. Since the variable
    should be filled by the element text, the attribute *TE* has to be used: ``$eval.Set VARNAME SETID.TE``. Note that aliases for the dropdown menu choices must be configured to use this option!
 
 .. _dropdown-option-expand:
@@ -983,7 +983,7 @@ Multidropdown menu
  A multi-dropdown menu can only be used for one-dimensional, dynamic sets.
 
 
-Example: Model *Pickstock*. We define a new dynamic set *subdate(date)*. In MIRO we want to fill the elements of *subset* via a multi-dropdown menu.
+Example: Model *Pickstock*. We define a new dynamic set *subdate(date)*. In MIRO we want to fill the elements of *subdate* via a multi-dropdown menu.
 
 .. code:: gams
 
@@ -1027,7 +1027,7 @@ In the MIRO application the result of this configuration looks like this:
 .. rubric:: Available options
 
 
-The available options of a multidropdown menu are identical to those of a `single dropdown menu <#widget-dropdown-options>`__. The only exception is that the option to `communicate the value as
+The available options of a multi-dropdown menu are identical to those of a `single dropdown menu <#widget-dropdown-options>`__. The only exception is that the option to `communicate the value as
 element text with GAMS <#dropdown-option-clearvalue>`__ cannot be set for a multi-dropdown menu.
 
 .. _widget-multidropdown-json:
@@ -1125,7 +1125,7 @@ The following options are available for a date selector widget:
 
 .. dropdown:: Choose how you want the date to be formatted
 
-   This option specifies the format of the date to display in the browser. The defaults is *yyyy-mm-dd*. This setting does not affect the actual format of the string the widget returns.
+   This option specifies the format of the date to display in the browser. The default is *yyyy-mm-dd*. This setting does not affect the actual format of the string the widget returns.
 
 .. _date-option-range:
 
@@ -1199,7 +1199,7 @@ The following options are available for a date selector widget:
 .. dropdown:: Should element be expanded automatically when submitting a Hypercube job?
 
    As explained in detail in the `corresponding chapter <./hc-module.html#hcube-config>`__, widgets will be expanded when submitting a Hypercube job. With the option available here, the automatic
-   extension of a widget can be switched off.
+   expansion of a widget can be switched off.
 
    .. image:: ../assets/images/batch_img/regular_batch.png
     :alt: Expand for submitting a Hypercube job
@@ -1264,7 +1264,7 @@ The available options of a date range selector are almost identical to those of 
 
 .. dropdown:: Default dates
 
-   Since the widget is used for date *ranges* the date range selector needs two default dates instead of one. The configuration of these does not differ from that of the `standard date
+   Since the widget is used for date *ranges*, the date range selector needs two default dates instead of one. The configuration of these does not differ from that of the `standard date
    selector <#date-option-minmaxdef>`__.
 
    .. image:: ../assets/images/configuration_mode/widget_daterange_default.png
@@ -1363,7 +1363,7 @@ The following options are available for a text input widget:
 
 .. dropdown:: Choose the default value
 
-   The default value is the initial value of the text input i.e. the text set when starting the application. This is optional.
+   The default value is the initial value of the text input, i.e. the text set when starting the application. This is optional.
 
 .. _textbox-option-placeholder:
 
@@ -1390,12 +1390,12 @@ The following options are available for a text input widget:
     :class: miro-image-max-height-60pt
 
    If this option is activated, the entire content of the text input widget is communicated as the element text of the singleton set to GAMS. The element label in turn is communicated as an empty
-   string. Migrating a singleton set into a compile time variable in GAMS can then be done using the `$eval.set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__ method.
+   string. Migrating a singleton set into a compile-time variable in GAMS can then be done using the `$eval.set <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARevalset>`__ method.
    Since the variable should be filled by the element text, the attribute *TE* has to be used: ``$eval.Set VARNAME SETID.TE``.
 
-   .. admonition:: Text input and Singleton Sets
+   .. admonition:: Text input and singleton sets
 
-    If a text input is used for a Singleton Set and you want to communicate both its label and its element text via GAMS MIRO, you must use a double pipe ('\|\|') as separator:
+    If a text input is used for a singleton set and you want to communicate both its label and its element text via GAMS MIRO, you must use a double pipe ('\|\|') as separator:
 
     .. image:: ../assets/images/configuration_mode/widget_textbox_clearvalue.png
       :alt: Element name
@@ -1478,7 +1478,7 @@ The following options are available for a numeric input widget:
 
 .. dropdown:: Default value
 
-   A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional.
+   A default value is the initial value of the numeric input, i.e. the value set when starting the application. This is optional.
 
 .. _numeric-option-minimum:
 
@@ -1499,7 +1499,7 @@ The following options are available for a numeric input widget:
 
 .. dropdown:: Number of decimal places
 
-   Defines the default number of decimal places to show on the formatted value, and keep for the precision
+   Defines the number of decimal places shown in the formatted value and kept for precision.
 
 .. _numeric-option-decimal-separator:
 

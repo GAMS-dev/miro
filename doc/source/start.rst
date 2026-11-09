@@ -21,11 +21,11 @@ Once you have a MIRO app available, the sections below show how to use it in pra
 Application Workflow
 --------------------
 
-There are several ways to use GAMS MIRO. However, a typical workflow could look like this:
+There are several ways to use GAMS MIRO. A typical workflow looks like this:
 
 #. Import input data
 #. Modify the data
-#. Solve GAMS model
+#. Solve the GAMS model
 #. Inspect the results (in the form of tables and/or charts)
 #. Save the sandbox scenario or discard the results
 
@@ -33,8 +33,8 @@ There are several ways to use GAMS MIRO. However, a typical workflow could look 
 
 .. admonition:: What is a scenario? What is a sandbox scenario? What data is used for a model run?
 
-   To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, you should have a look at the sections `data concept <#data-concept>`__ and `scenario
-   concept <#scenario-concept>`__!
+   To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, see the sections `data concept <#data-concept>`__ and `scenario
+   concept <#scenario-concept>`__.
 
 .. _import-data:
 
@@ -73,8 +73,8 @@ Database Scenarios
 ^^^^^^^^^^^^^^^^^^
 
 Scenarios that you have previously named and saved in the MIRO database will be displayed in *Database*. When you start a GAMS MIRO app for the first time, GAMS automatically extracts the data from
-your model and loads this data into the database. This happens every time you rebuild your MIRO app i.e. every time you launch it in the `development mode <./model.html#development-mode>`__ via
-GAMS Studio or the command line. A special scenario with the name *default* is created for this purpose and overridden every time you rebuild your app!
+your model and loads this data into the database. This happens every time you rebuild your MIRO app, i.e. every time you launch it in the `development mode <./model.html#development-mode>`__ via
+GAMS Studio or the command line. A special scenario with the name *default* is created for this purpose and overwritten every time you rebuild your app!
 
 .. admonition:: Tip
 
@@ -118,7 +118,7 @@ save it, click on *Save as* and give it a name.
       :alt: Valid Excel file
       :class: miro-image-max-height-175pt
 
-   For scalars there are 2 possibilities:
+   For scalars, there are two possibilities:
 
    - Either all scalar values are combined in one tab named ``_scalars`` or ``_scalars_out`` (separate sheets for input and output scalars). These tables must have 3 columns: *scalar*, *description* and *value*.
 
@@ -142,8 +142,8 @@ save it, click on *Save as* and give it a name.
 
    .. rubric:: Workbook with index sheet
 
-   If you want more flexibility, you must create an index sheet that describes your layout. If you are already familiar with `GDXXRW <https://www.gams.com/latest/docs/T_GDXXRW.html>`__, this will
-   already be familiar to you. You can skip most of this chapter, but be aware of the differences between GDXXRW and MIRO that we list `below <#gdxxrw-miro-diff>`__. We encourage everyone to read the
+   If you want more flexibility, you must create an index sheet that describes your layout. If you know `GDXXRW <https://www.gams.com/latest/docs/T_GDXXRW.html>`__, this will
+   be familiar to you. You can skip most of this chapter, but be aware of the differences between GDXXRW and MIRO that we list `below <#gdxxrw-miro-diff>`__. We encourage everyone to read the
    documentation of GDXXRW, especially the chapter about `the index option <https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_INDEX>`__, as it covers the topic in much
    greater detail than we will do here.
 
@@ -158,15 +158,15 @@ save it, click on *Save as* and give it a name.
    The first three columns of the index range have a fixed interpretation: dataType, symbol identifier and dataRange. Even though MIRO does not need and ignores the dataType information (except
    ``dSet``, see info box below), it is a good practice to specify it because it allows your worksheet to be read by both MIRO and GDXXRW.
 
-   The fourth and subsequent columns can be used for additional options. The column heading indicates the option name and the cell contents indicate the option value. Note that although GDXXRW allows
-   options also in a comma-separated option=value format, MIRO does not support this.
+   The fourth and subsequent columns can be used for additional options. The column heading indicates the option name and the cell contents indicate the option value. Note that although GDXXRW also allows
+   options in a comma-separated option=value format, MIRO does not support this.
 
    .. admonition:: Domain Sets (dSet)
 
       Just like GDXXRW, MIRO supports reading a set as *domain set* by specifying it as type ``dSet``. This option is supported only for one-dimensional sets. Duplicates and set text are
       ignored. The ``dSetText`` option is also supported by MIRO (`documentation <https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_OPTIONS_DSETTEXT>`__).
 
-      Note that in most cases, it is preferred to use the `Implicit Set Definition <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ feature of GAMS!
+      Note that in most cases, it is preferable to use the `Implicit Set Definition <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ feature of GAMS!
       This avoids domain violations caused by having to maintain two tables in MIRO.
 
    Let's look at an example:
@@ -188,9 +188,9 @@ save it, click on *Save as* and give it a name.
    to ignore the row *16* because it does not belong to the data for ``d``, but for the set ``j``, which is also read from the same range (*sheet1!L15:N16*). This brings us to
    the next option: ``values``. Each tuple in a set can have associated text. To read a set from a spreadsheet, the ``values`` option is used to indicate whether there is data, and if so,
    whether the data should be interpreted as associated text or as an indicator of whether or not the tuple should be included in the set. In our example here, we use the *YN* option, which specifies
-   that only tuples that have a data cell that is not empty and does not contain *0*, *N*, or *No* will be included. This means that in our example *j* only the tuple *New-York* is read. MIRO supports
+   that only tuples that have a data cell that is not empty and does not contain *0*, *N*, or *No* will be included. This means that in our example, only the tuple *New-York* is read for *j*. MIRO supports
    all options GDXXRW supports: *auto*, *noData*, *YN*, *sparse* and *dense*. See the `related section of the GDXXRW
-   documentation <https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT>`__ for more information on the other options. Below you find a list of all options
+   documentation <https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT>`__ for more information on the other options. Below is a list of all options
    supported by MIRO.
 
    .. rubric:: Supported options
@@ -203,7 +203,7 @@ save it, click on *Save as* and give it a name.
         - Description
         - Allowed values
       * - range
-        - Excel range: Open and closed ranges are supported. It must be of the form SheetName!TopLeft:BottomRight . If the sheet name is omitted, the first sheet in the workbook is used by default. If the BottomRight corner is omitted, the data is read until skipEmpty +1 empty rows/columns are found. If range is omitted, an open range with left upper corner A1 is assumed.
+        - Excel range: Open and closed ranges are supported. It must be of the form SheetName!TopLeft:BottomRight. If the sheet name is omitted, the first sheet in the workbook is used by default. If the BottomRight corner is omitted, the data is read until skipEmpty +1 empty rows/columns are found. If range is omitted, an open range with upper left corner A1 is assumed.
         -
       * - ``rDim``
         - Row dimension: the number of columns in the data range that will be used to define the labels for the rows. The first rDim columns of the data range will be used for the labels.
@@ -227,13 +227,13 @@ save it, click on *Save as* and give it a name.
         - Controls whether zeros are squeezed out/removed
         - y , 1 , n , 0
       * - ``dSetText``
-        - This controls the reading of explanatory text for set elements of domain sets. By default, no text is read for domain sets. If this option is activated this is changed. If an element appears more than once, the first one defines the explanatory text read.
+        - This controls the reading of explanatory text for set elements of domain sets. By default, no text is read for domain sets. If this option is activated, the text is read. If an element appears more than once, the first one defines the explanatory text read.
         - y , 1 , n , 0
 
    .. rubric:: Reading scalars
 
    In addition to reading each scalar individually as supported by GDXXRW, MIRO also supports reading in table form. To read an entire table of scalars, you must do so using the special
-   ``_scalars``/``_scalars_out`` symbols for input and output scalars, respectively. In this way MIRO reads scalars grouped in a table with 3 columns: ``Scalar``, ``Description``,
+   ``_scalars``/``_scalars_out`` symbols for input and output scalars, respectively. In this way, MIRO reads scalars grouped in a table with 3 columns: ``Scalar``, ``Description``,
    ``Value``. The ``Description`` column can also be omitted. Let's look at our example again:
 
    .. image:: ../assets/images/import-wb-scalars.png
@@ -259,12 +259,12 @@ save it, click on *Save as* and give it a name.
    - Global options are not supported by MIRO: all options are symbol-specific and must be part of the symbol declaration row
    - The only special values supported by MIRO are: +Inf and -Inf. Eps, YES, NO, NA, Undef, etc. are not properly recognized when used in MIRO
    - Acronyms are not supported
-   - The only options supported by MIRO are: rDim, cDim, dim, values, ignoreRows, ignoreColumns, skipEmpty, squeeze
+   - The only options supported by MIRO are: rDim, cDim, dim, values, ignoreRows, ignoreColumns, skipEmpty, squeeze, dSetText
    - Option=value columns are not supported and will be skipped. Please specify the option names as column headers and the values as cell contents.
    - *skipEmpty* must be specified for each symbol individually. The state of this option is not transferred to the next symbols as with GDXXRW.
    - Named ranges are not supported.
    - Ranges with *..* instead of *:* as separator between *TopLeft* and *BottomRight* corner are not supported.
-   - *skipEmpty* > 1 is not supported i.e. only values *0* and *1* can be used
+   - *skipEmpty* > 1 is not supported, i.e. only values *0* and *1* can be used
    - It is possible to read variables/equations with MIRO. They are treated like normal parameters, with an additional dimension that must contain at least one of the following elements:
      ``level``, ``marginal``, ``upper``, ``lower`` and ``scale``. These do not all have to be assigned, i.e. you can skip some.
    - When reading scalars, you can either declare them individually as in GDXXRW, or you can use the special symbol names ``_scalars``/``_scalars_out`` to read input/output scalars grouped in a
@@ -288,8 +288,8 @@ In addition to the options mentioned above, which can be accessed directly from 
 to be imported (MIROSCEN, GDX, CSV or Excel files) must be put in the folder ``data_<modelname>`` (located in the model directory). With the next start of MIRO, those scenarios are imported
 automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.
 
-In addition to scenario data, `views <#metadata-views>`__ can also be imported together with the scenario data. Simply place the JSON file with the view data here as well. The file has to be named
-``<scenarioName>_views.json``. For example if you want to provide data in the form of a GDX file and views for a scenario with the name ``my_scenario``, you have to place both ``my_scenario.gdx`` and
+`Views <#metadata-views>`__ can also be imported together with the scenario data. Simply place the JSON file with the view data here as well. The file has to be named
+``<scenarioName>_views.json``. For example, if you want to provide data in the form of a GDX file and views for a scenario with the name ``my_scenario``, you have to place both ``my_scenario.gdx`` and
 ``my_scenario_views.json`` into the ``data_<modelname>`` directory.
 
 .. _data-manipulation:
@@ -297,29 +297,29 @@ In addition to scenario data, `views <#metadata-views>`__ can also be imported t
 Data manipulation
 ~~~~~~~~~~~~~~~~~
 
-| The tables that were empty before are now populated. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have
+| The tables that were empty before are now populated. In the upper part of the main window, you can navigate between tabs to switch between the GAMS symbols that you have
   specified in your model.
 | We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our *transport* demo you have the option
   to edit the capacities, the demand, the distance matrix and several scalar values:
 
-|Input data screen| With the help of sliders and a dropdown menu we can now adjust the freight costs and the model type to be used. If we are satisfied with the settings we can start the GAMS run.
+|Input data screen| With the help of sliders and a dropdown menu we can now adjust the freight costs and the model type to be used. If we are satisfied with the settings, we can start the GAMS run.
 
 .. _data-cleaning:
 
 Data cleaning
 ~~~~~~~~~~~~~
 
-Your input data must not contain duplicate records. MIRO can help you automatically find and remove duplicate records in your input data sets using the *Scenario* → *Remove duplicates* menu in the
-header. MIRO first checks if any of your input records contain duplicate records, and gives you the option to keep only the first or only the last occurrence of the duplicate.
+Your input data must not contain duplicate records. MIRO can help you automatically find and remove duplicate records in your input datasets using the *Scenario* → *Remove duplicates* menu in the
+header. MIRO checks your input data for duplicate records and lets you keep either the first or the last occurrence of each duplicate.
 
 .. _solve-model:
 
 Solve the model
 ~~~~~~~~~~~~~~~
 
-| A click on the *Solve model* button starts the model run. In the background GAMS is called and the model ``transport.gms`` is started. The values set by us in MIRO now serve as input data for the
+| A click on the *Solve model* button starts the model run. In the background, GAMS is called and the model ``transport.gms`` is started. The values set by us in MIRO now serve as input data for the
   model.
-| During the calculations, MIRO automatically switches to the section *GAMS interaction*. There you can see the current GAMS ``log`` and ``lst`` files (`documentation <https://www.gams.com/latest/docs/UG_GAMSOutput.html>`__). If you specified a `custom log <./configuration_general.html#miro-log>`__ this is also shown here.
+| During the calculations, MIRO automatically switches to the section *GAMS interaction*. There you can see the current GAMS ``log`` and ``lst`` files (`documentation <https://www.gams.com/latest/docs/UG_GAMSOutput.html>`__). If you specified a `custom log <./configuration_general.html#miro-log>`__, it is also shown here.
 
 .. image:: ../assets/images/gams-inter.png
    :alt: GAMS interaction screen
@@ -356,8 +356,8 @@ tabular view button| button.
    :alt: Output data screen - scalars
    :class: miro-image-max-height-175pt
 
-Download temporary files:
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Download temporary files
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 If this `option <./configuration_general.html#general-temp-dir>`__ is enabled, all temporarily created files of the model run (like solution reports or the ``lst`` and ``log`` files) can be downloaded
 either separately or as a ZIP archive with a click on the |Download temporary files| button.
@@ -376,7 +376,7 @@ Save / export / delete a scenario
 .. _save-general:
 
 The set of all the input and output data is what we call a scenario. Data that is currently loaded in the MIRO interface (in memory) is what we call a *sandbox scenario* (more on this
-`here <#scenario-concept>`__). A sandbox scenario can be saved at any point. The menu where you can interact with your currently active scenario can be found in header bar of your MIRO app:
+`here <#scenario-concept>`__). A sandbox scenario can be saved at any point. The menu where you can interact with your currently active scenario can be found in the header bar of your MIRO app:
 
 .. image:: ../assets/images/output-export.png
    :alt: Scenario data - database interaction
@@ -394,9 +394,9 @@ The set of all the input and output data is what we call a scenario. Data that i
 
   .. admonition:: Tip
 
-     Unless otherwise configured, the ``log`` and ``lst`` file of the GAMS run will also be saved and can be accessed when re-loading the corresponding scenario.
+     Unless otherwise configured, the ``log`` and ``lst`` files of the GAMS run are also saved and can be accessed when re-loading the corresponding scenario.
 
-- **Save As:** Saves the currently active sandbox scenario under an new name. If the sandbox scenario has no name yet, only this option is available for saving.
+- **Save As:** Saves the currently active sandbox scenario under a new name. If the sandbox scenario has no name yet, only this option is available for saving.
 
   .. image:: ../assets/images/scenario_saveas.png
      :alt: Save sandbox scenario in database
@@ -404,7 +404,7 @@ The set of all the input and output data is what we call a scenario. Data that i
 
   Optionally, you can add tags to the scenario. Tags are stored together with the scenario data. If you want to find a scenario later on, you can search for a given tag. This may help you to better find a certain scenario or a set of scenarios that share certain attributes. Also, if your sandbox scenario contains `attachments <#file-attachments>`__ or you have defined `user access permissions <#access-permissions>`__, you can adopt these settings for the scenario to be saved.
 
-- **Export:** Download of the scenario data in the form of a MIROSCEN file, a GDX container, as an Excel spreadsheet or as CSV files.
+- **Export:** Download the scenario data as a MIROSCEN file, a GDX container, an Excel spreadsheet or CSV files.
 
 - **Delete:** Delete the scenario from the database.
 
@@ -413,10 +413,10 @@ The set of all the input and output data is what we call a scenario. Data that i
 Finding and loading scenarios
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To help you find and load exactly the scenarios you are interested in, MIRO has a powerful *Batch Load* module that graphically assists you create and execute complex database queries.
+To help you find and load exactly the scenarios you are interested in, MIRO has a powerful *Batch Load* module that graphically assists you in creating and executing complex database queries.
 
 Filters can be applied to scenario metadata such as the creation time, scenario name, or optional tags you have assigned to a scenario. You can also filter by any input and output scalars defined
-in your model as well as any Double-dash parameters and GAMS options. You can combine any of these filters with the logical operators AND and OR:
+in your model as well as any double-dash parameters and GAMS options. You can combine any of these filters with the logical operators AND and OR:
 
 .. admonition:: Tip
 
@@ -447,7 +447,7 @@ Once you have found the scenarios you were looking for, you can do one of the fo
   Load the selected scenario into the `sandbox <#scenario-concept>`__ (only visible if you have selected exactly one scenario).
 - **Compare:**
   `Interactive scenario comparison <#scenario-comparison>`__: Compare different scenarios directly in split, tab or pivot view. Best suited for a small number of scenarios to be compared (maximum
-  allowed number of scenarios: 10).
+  allowed number of scenarios: 50).
 
 .. admonition:: Tip
 
@@ -463,7 +463,7 @@ Scenario comparison
 ~~~~~~~~~~~~~~~~~~~
 
 The scenario comparison mode is useful if you want to compare the input and/or output data of different model runs. Scenarios from the database as well as the currently loaded sandbox scenario can
-be used for comparison. There are three different types of comparison available, split view, tab view and pivot view mode.
+be used for comparison. Three comparison modes are available by default: split view, tab view and pivot view.
 
 .. admonition:: Tip
 
@@ -485,7 +485,7 @@ changes to your sandbox scenario and want to update the data in the pivot view, 
    :alt: compare scenarios in pivot view
    :class: img-fluid
 
-`Views <./start.html#metadata-views>`__ can also be used in pivot view mode. They are attached to the baseline scenario. Thus, the baseline scenario determines what views will be available to you in the pivot view scenario comparison. Views can only be added or edited if your sandbox scenario is the baseline scenario. To save a new view, you only need to save your sandbox scenario once the new view has been added.
+`Views <./start.html#metadata-views>`__ can also be used in pivot view mode. They are attached to the baseline scenario. Thus, the baseline scenario determines which views are available to you in the pivot view scenario comparison. Views can only be added or edited if your sandbox scenario is the baseline scenario. To save a new view, you only need to save your sandbox scenario once the new view has been added.
 
 Views from the pivot view comparison mode can be managed (imported/exported/deleted) just like *normal* views via the *Views* dialog in the *Scenario* → *Edit Metadata* menu. You can learn more
 about views `here <./start.html#metadata-views>`__.
@@ -500,7 +500,7 @@ about views `here <./start.html#metadata-views>`__.
 Split view
 ^^^^^^^^^^
 
-If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.
+The split view is particularly suitable for comparing two scenarios: it shows their data side by side.
 
 .. image:: ../assets/images/compare_split.png
    :alt: Split view
@@ -511,7 +511,7 @@ You can choose between:
 - Load scenario:
   Load saved scenario data from the database.
 - Load sandbox:
-  Load the sandbox scenario which is opened in the Input / Output section.
+  Load the sandbox scenario that is currently open in the Input/Output section.
 
 .. admonition:: Tip
 
@@ -522,7 +522,7 @@ You can choose between:
 Tab view
 ^^^^^^^^
 
-Scenarios can also be loaded into tabs (as you know it from e.g. your internet browser). This allows to compare more than two scenarios including their graphics.
+Scenarios can also be loaded into tabs (as in a web browser). This allows you to compare more than two scenarios, including their graphics.
 
 .. image:: ../assets/images/compare_tab.png
    :alt: compare scenarios in tab view
@@ -562,9 +562,9 @@ To understand the concept of data exchange between the GAMS model and its MIRO a
    :alt: GAMS MIRO data flow
    :class: miro-image-max-height-150pt
 
-#. Data is loaded into the MIRO interface. These come either from the internal database, from external data sources such as Excel or GDX or are entered manually, but they do NOT come directly from
+#. Data is loaded into the MIRO interface. It comes either from the internal database or from external data sources such as Excel or GDX, or is entered manually, but it does NOT come directly from
    the GAMS model.
-#. When clicking on solve, the data visible in the MIRO input section is sent to the GAMS model. All data of affected symbols in the model will be overwritten. Symbols that are not visible in MIRO
+#. When you click *Solve model*, the data visible in the MIRO input section is sent to the GAMS model. All data of affected symbols in the model will be overwritten. Symbols that are not visible in MIRO
    are not touched.
 #. The model is now run with the updated data.
 #. Afterwards the results are sent to MIRO and displayed in the output section. From there, data can be saved in the internal database and/or exported as a file.
@@ -589,11 +589,11 @@ A little more detail:
      GAMS symbol is displayed as a table in MIRO - i.e. the symbol is pivoted by using the `table statement <./model.html#display-tables>`__ or by using the `MIRO-side pivoting
      option <./widgets.html#table-option-pivot>`__ - the cells of these missing values are empty.
    - **EPS:**
-     The use of the special value *EPS* is required when you want to store *zeros* in a GDX file. In MIRO, a *0* is displayed for the corresponding entries. If a GAMS model is solved out of MIRO,
+     The use of the special value *EPS* is required when you want to store *zeros* in a GDX file. In MIRO, a *0* is displayed for the corresponding entries. If a GAMS model is solved from MIRO,
      *zeros* are stored in the GDX file. In the model these can then be interpreted as *zeros* by using the GAMS option
      `$onEps <https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARonoffeps>`__. If this option is not set, *zeros* are omitted.
    - **NA:**
-     *NAs* in GAMS become *NAs* in MIRO and vice versa. But: *NAs* are only displayed in the default input tables used in MIRO and only if the table is not pivoted (see above). In output tables (or in
+     *NAs* in GAMS become *NAs* in MIRO and vice versa. However, *NAs* are only displayed in the default input tables used in MIRO and only if the table is not pivoted (see above). In output tables (or in
      input tables where the option to use `large amounts of data <./widgets.html#input-bigdata-table>`__ is enabled), *NAs* are displayed as blank cells.
 
 .. _scenario-concept:
@@ -605,15 +605,15 @@ In addition to the data concept, MIRO's scenario concept also needs to be unders
 
 .. _create-excel:
 
-.. admonition:: What is a scenario ?
+.. admonition:: What is a scenario?
 
    - We call the collection of input and output datasets that result from a particular model run and which are communicated with MIRO a *scenario*.
    - The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore located in this sandbox as a *sandbox scenario*.
    - Scenarios from the database can be loaded into the sandbox. The data of the sandbox scenario can be modified. Data modifications can come from local files or can be entered manually. A click
-     on *save* overwrites the original scenario in the database with the modified data. Alternatively, a new scenario can be created using *save as*. The original scenario in the database remains
-     unchanged then.
+     on *save* overwrites the original scenario in the database with the modified data. Alternatively, a new scenario can be created using *save as*. The original scenario in the database then remains
+     unchanged.
    - A sandbox scenario can also be initially created as an empty scenario independent of the database and then filled with data (GDX, Excel, CSV). A scenario created in this way initially does not
-     have a name. As long as a scenario is unnamed, i.e. it is not saved in the database with an individual name, the data is shown exclusively in the interface and gets lost if the MIRO
+     have a name. As long as a scenario is unnamed, i.e. it is not saved in the database with an individual name, the data is shown exclusively in the interface and is lost when the MIRO
      application is closed.
    - `Attachments <#file-attachments>`__ are part of a scenario. If attachments are added to a sandbox scenario, they are included when saving this scenario.
 
@@ -649,16 +649,16 @@ Attachments
 ~~~~~~~~~~~
 
 With the *attachments* option, you can attach files to the (sandbox) scenario you currently have open. These can be files of any format. MIRO distinguishes between attachments that can be seen and
-read by your GAMS model and files that can not be seen. For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a GDX
+read by your GAMS model and files that cannot. For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a GDX
 container or Excel files), attachments that your model can read are what you are looking for. In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS
-model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed. Thus,
+model, you should not allow the model to read this file. Note that all files that you allow your model to read are first downloaded into the working directory before GAMS is executed. Thus,
 it is advisable to select only those files to be readable that are actually relevant for the optimization run.
 
 .. image:: ../assets/images/scenario_attachments.png
    :alt: Scenario attachments
    :class: miro-image-max-height-250pt
 
-Besides this type of attachments, there are also *output attachments* which allow you to automatically attach files after a GAMS run has been successfully completed. This lets you store additional
+Besides this type of attachment, there are also *output attachments* which allow you to automatically attach files after a GAMS run has been successfully completed. This lets you store additional
 results alongside the ones displayed in the UI. You can also use such an attachment for the next GAMS run with this scenario. Read more about output attachments
 `here <./configuration_general.html#general-output-attach>`__.
 
@@ -671,7 +671,7 @@ results alongside the ones displayed in the UI. You can also use such an attachm
 Views
 ~~~~~
 
-Views are a special type of attachments that store configurations of renderers. An example is the `pivot table <./charts.html#pivot-chart>`__ renderer. Here a view is a snapshot of the current
+Views are a special type of attachment that store configurations of renderers. An example is the `pivot table <./charts.html#pivot-chart>`__ renderer. Here a view is a snapshot of the current
 configuration:
 
 .. image:: ../assets/images/pivot_full.png
@@ -687,16 +687,16 @@ referred to as ``global`` views. You can import and export view configurations i
    a scenario. If you want to store views for a scenario called "my-scenario", you would have a GDX file called ``my-scenario.gdx`` as well as a views file called ``my-scenario_views.json`` inside the
    ``data_<modelname>`` directory. So the file name of the views must start with the name of the scenario you want to attach them to and end with ``_views.json``.
 
-To get a more intuitive understanding of what a view is, the following videos give an example that leads through the most important aspects. With the `pivot table <./charts.html#pivot-chart>`__
+To get a more intuitive understanding of what a view is, the following videos walk through an example covering the most important aspects. With the `pivot table <./charts.html#pivot-chart>`__
 renderer, we can filter and aggregate input and output data by dragging and dropping domains. The video below shows how a few actions draw a stacked bar chart of the shipment quantities between
-canning plants and markets. By clicking the ``Add View`` button we can attach a ``local`` view to the current scenario. This allows us to return to a configuration later in our analysis.
+canning plants and markets. By clicking the ``Add view`` button we can attach a ``local`` view to the current scenario. This allows us to return to a configuration later in our analysis.
 
 .. image:: ../assets/images/pivot_views_add.gif
    :alt: Create and export view
    :class: miro-image-max-height-300pt
 
 We can import, download, and remove ``local`` views by navigating to the *Scenario* → *Edit metadata* → *Views* dialog. By clicking the *Export* button, the selected views are saved in the
-*Download* folder as a JSON file, which we can use to share with others or to include as global views in the app.
+*Download* folder as a JSON file, which we can share with others or include as global views in the app.
 
 Global views are bundled with a MIRO app and are scenario-independent. A local view can *shadow* a global view if it has the same name as the global view. This means that when you apply this view,
 the configuration of the local view is applied. When the local view is removed, the global view is applied again.
@@ -729,7 +729,7 @@ Since scenario sharing is much more powerful using MIRO Server, you can find mor
 
 .. admonition:: Note
 
-   In contrast to the database used by `GAMS MIRO Server <./server.html>`__, the database for MIRO Desktop is not designed for concurrent use. We therefore recommend to use one database per user
+   In contrast to the database used by `GAMS MIRO Server <./server.html>`__, the database for MIRO Desktop is not designed for concurrent use. We therefore recommend using one database per user
    for MIRO Desktop applications.
 
 .. _performance-aspects:
@@ -741,22 +741,22 @@ The size and/or complexity of a GAMS model does not affect the performance of a 
 (data contract) is communicated between the model and the application. The amount of data to be exchanged as well as the complexity of its visualization influence the performance of your
 application. Important factors are:
 
-- Number of symbols that are communicated with MIRO
+- **Number of symbols that are communicated with MIRO:**
   The more symbols you want to display in MIRO, the more tables and charts need to be set up. MIRO renders most of them lazily, that is, only when the user actually activates a particular tab.
   However, each of the symbols has a slight overhead and you should ask yourself whether displaying all of them is really necessary. For example, it is usually not a good idea to declare each
   domain set separately as external input. Instead, use the `Implicit Set Definition <https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition>`__ feature of
   GAMS! This not only saves rendering time in MIRO, but is often better for the user experience as it simplifies data entry. As a rule of thumb, try to limit the number of symbols in your data
   contract to 50.
-- Amount of data that is communicated with MIRO
+- **Amount of data that is communicated with MIRO:**
   Each dataset is displayed in MIRO in the form of a table and a graph. The larger the amount of data, the more computationally intensive this process becomes. In addition, the rendering of
   graphics can vary in complexity. While a simple pie chart is usually rendered fairly quickly, graphs that contain `animations <./charts.html#animation>`__ can take significantly more time. In the
   case of very large amounts of data that are only displayed in MIRO for visualization purposes, it may make sense from a performance point of view to communicate only parts of the data with MIRO
   or to visualize only sections of it, e.g. by aggregating data.
-- Table tool to use
+- **Table tool to use:**
   MIRO provides several table tools for input symbols, each of which has its advantages and disadvantages. The default input data tool provides a spreadsheet-like feel. However, all data is held in
-  the user's browsers, which becomes problematic when dealing with large amounts of data. If you have larger data sets (>10,000 records and >10 columns), MIRO offers the `Big Data
+  the user's browser, which becomes problematic when dealing with large amounts of data. If you have larger datasets (>10,000 records and >10 columns), MIRO offers the `Big Data
   Table <./widgets.html#input-bigdata-table>`__ as well as the `MIRO Pivot Table <./widgets.html#input-pivot-table>`__. With these two table types, most of the data is kept on the server side and
-  only fractions of the data are kept in the user's browser. This allows for much larger data sets (>3 million records).
+  only fractions of the data are kept in the user's browser. This allows for much larger datasets (>3 million records).
 - `Attachments <./start.html#file-attachments>`__ provide a convenient way to communicate large amounts of data from MIRO to the GAMS model without significantly impacting application performance.
   Since attachments are communicated as a file and therefore do not require data to be rendered, they require very few computational resources.
 

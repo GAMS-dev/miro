@@ -6,7 +6,7 @@ Tables
 Introduction
 ------------
 
-In this section you can customize the general configuration of input and output tables (global settings) as well as the individual settings of output tables. Tables for individual input symbols are configured in the `Input widgets <./widgets.html#widget-table>`__ category.
+In this section, you can customize the general configuration of input and output tables (global settings) as well as the individual settings of output tables. Tables for individual input symbols are configured in the `Input widgets <./widgets.html#widget-table>`__ category.
 
 .. _global-input-tables:
 
@@ -37,14 +37,14 @@ Sets all input tables to read-only. No manual edits can be made by the user. Dat
 Column stretching
 ~~~~~~~~~~~~~~~~~
 
-Sets the general stretch behavior of columns. Available options are *no stretch*, *stretch last column* and *stretch all columns*. Stretched columns mean that the table always fills the entire window width. With large tables, this can have a negative effect on the performance of the application. Columns that are not set to stretch have a default column with of 200px.
+Sets the general stretch behavior of columns. Available options are *no stretch*, *stretch last column* and *stretch all columns*. Stretched columns mean that the table always fills the entire window width. With large tables, this can have a negative effect on the performance of the application. Columns that are not set to stretch have a default column width of 200px.
 
 .. _column-widths:
 
 Column Widths
 ~~~~~~~~~~~~~
 
-Here, the default column with of a single non-streched column (default: 200px) can be adjusted. It is recommended not to choose column widths that are too small, otherwise the table contents may not be displayed correctly.
+Here, you can adjust the default width of non-stretched columns (default: 200px). Avoid column widths that are too small; otherwise, the table contents may not be displayed correctly.
 
 .. _context-menu:
 
@@ -68,7 +68,7 @@ Output Tables (global settings)
 Table style
 ~~~~~~~~~~~
 
-Output tables can be changed regarding their design. Different designs are available. Example:
+Several designs are available for output tables. Example:
 
 .. grid:: 1 1 2 2
    :gutter: 2
@@ -103,10 +103,10 @@ Table filters can be used to search each table column individually for entries. 
 Number of Items to Display
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Specifies the default value of how many rows should be displayed per table sheet. The value can be changed by the user from the MIRO application.
+Specifies how many rows are displayed per table page by default. Users can change this value in the MIRO application.
 
 .. image:: ../assets/images/configuration_mode/tables_entries.png
-   :alt: Numer of items to show
+   :alt: Number of items to show
    :class: miro-image-max-height-200pt
 
 .. _row-numbers:
@@ -114,7 +114,7 @@ Specifies the default value of how many rows should be displayed per table sheet
 Show Row Numbers
 ~~~~~~~~~~~~~~~~
 
-Determines whether line numbers should be displayed or not.
+Determines whether row numbers are displayed.
 
 .. _export-buttons:
 
@@ -126,7 +126,7 @@ The export buttons *copy*, *CSV*, *Excel*, *PDF* and *print* are available. Addi
 .. admonition:: Note:
    :class: warning
 
-   Note that only the currently visible data is exported! If a symbol contains multiple table pages, using a button only affects the currently visible table page! It is recommended to use the native export functionality of MIRO instead.
+   Only the currently visible data is exported! If a symbol contains multiple table pages, a button only affects the currently visible page. We recommend using the native export functionality of MIRO instead.
 
 .. image:: ../assets/images/configuration_mode/tables_buttons.png
    :alt: Export buttons
@@ -137,9 +137,9 @@ The export buttons *copy*, *CSV*, *Excel*, *PDF* and *print* are available. Addi
 Output Tables (individual symbols)
 ----------------------------------
 
-Global table settings for can be overwritten for each individual symbol. The available options are almost identical to those of the `global settings <#output-tables>`__. The only additional options are the number of decimal places to display and a setting to disable graphics for the symbol. Note that in contrast to the global settings, a symbol-specific configuration needs to be applied by clicking on the corresponding save-button!
+Global table settings can be overridden for each individual symbol. The available options are almost identical to those of the `global settings <#output-tables>`__. The only additional options are the number of decimal places to display and a setting to disable graphics for the symbol. Note that in contrast to the global settings, a symbol-specific configuration needs to be applied by clicking on the corresponding save button!
 
-Some options for an output symbol table are listed below. For all other options please consult the section for `global table settings <#output-tables>`__.
+Some options for an output symbol table are listed below. For all other options, please consult the section on `global table settings <#output-tables>`__.
 
 .. _output-table-option-decimals:
 
@@ -153,11 +153,11 @@ Adjusts the number of decimal places to display for table columns with numeric v
 Pivot a Column
 ~~~~~~~~~~~~~~
 
-Allows you to pivot a table column of a symbol, i.e. to have a new column from each of the elements in this column. Unlike the `table statement <./model.html#table-miro>`__ in the GAMS model itself (``Table symbolname;``), this option does not affect the `data contract <./model.html#data-contract>`__ between GAMS and MIRO. Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. The pivoting of the configured column then happens "live" in the MIRO application.
+Allows you to pivot a table column of a symbol, i.e. to create a new column for each element in this column. Unlike the `table statement <./model.html#table-miro>`__ in the GAMS model itself (``Table symbolname;``), this option does not affect the `data contract <./model.html#data-contract>`__ between GAMS and MIRO. Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. The pivoting of the configured column then happens "live" in the MIRO application.
 
 .. _output-table-option-no-graphic:
 
 Display no graphic
 ~~~~~~~~~~~~~~~~~~
 
-If no specific graphic is configured for an output symbol, a `pivot table <./charts.html#pivot-chart>`__ is always displayed alongside the table per default. With this option, you can prevent the display of any graphics, so that the symbol is only visualized as a table.
+If no specific graphic is configured for an output symbol, a `pivot table <./charts.html#pivot-chart>`__ is always displayed alongside the table by default. With this option, you can prevent the display of any graphics, so that the symbol is only visualized as a table.
