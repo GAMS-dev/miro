@@ -1516,7 +1516,7 @@ test_that("Bedrock surfaces truncation and guardrails, and restores a prior chat
 test_that("awsSigV4Headers matches the AWS reference signer", {
   # signature computed with botocore's SigV4Auth for the same request
   headers <- awsSigV4Headers(
-    list(accessKeyId = "AKIDEXAMPLE", secretAccessKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY", sessionToken = "SESSIONTOKEN"), # pragma: allowlist secret
+    list(accessKeyId = "AKIDEXAMPLE", secretAccessKey = "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY", sessionToken = "SESSIONTOKEN"), # betterleaks:allow
     "eu-central-1", "bedrock", "bedrock-runtime.eu-central-1.amazonaws.com",
     "/model/arn%3Aaws%3Abedrock%3Aeu-central-1%3A123%3Ainference-profile%2Feu.anthropic.claude-haiku-4-5-v1%3A0/converse",
     "{\"messages\":[{\"role\":\"user\",\"content\":[{\"text\":\"hé\"}]}]}",
@@ -1552,7 +1552,7 @@ test_that("Bedrock authenticates with the API key or signs with IRSA credentials
 
   irsaProvider <- MiroAiBedrockProvider$new("m", list(region = "us-east-1", authMode = "workloadidentity"))
   irsaProvider$.__enclos_env__$private$credentials <- list(getCredentials = function() {
-    list(accessKeyId = "AKID", secretAccessKey = "secret", sessionToken = "token") # pragma: allowlist secret
+    list(accessKeyId = "AKID", secretAccessKey = "secret", sessionToken = "token") # betterleaks:allow
   })
   irsaProvider$.__enclos_env__$private$executeHttpCall(list(a = 1))
   expect_match(sent[[2]]$headers[["Authorization"]], "^AWS4-HMAC-SHA256 Credential=AKID/[0-9]{8}/us-east-1/bedrock/aws4_request")
@@ -1574,14 +1574,14 @@ test_that("IRSA exchanges the projected token for cached temporary credentials",
     status_code = function(resp) resp$code,
     content = function(resp, ...) {
       list(AssumeRoleWithWebIdentityResponse = list(AssumeRoleWithWebIdentityResult = list(Credentials = list(
-        AccessKeyId = "ASIA", SecretAccessKey = "secret", SessionToken = "token", # pragma: allowlist secret
+        AccessKeyId = "ASIA", SecretAccessKey = "secret", SessionToken = "token", # betterleaks:allow
         Expiration = as.numeric(Sys.time()) + 3600
       ))))
     },
     .package = "httr"
   )
   credentials <- MiroAwsWebIdentityCredentials$new("eu-central-1", "arn:aws:iam::123:role/miro", tokenFile)
-  expect_equal(credentials$getCredentials(), list(accessKeyId = "ASIA", secretAccessKey = "secret", sessionToken = "token")) # pragma: allowlist secret
+  expect_equal(credentials$getCredentials(), list(accessKeyId = "ASIA", secretAccessKey = "secret", sessionToken = "token")) # betterleaks:allow
   credentials$getCredentials()
   expect_length(requests, 1L)
   expect_equal(requests[[1]]$url, "https://sts.eu-central-1.amazonaws.com/")

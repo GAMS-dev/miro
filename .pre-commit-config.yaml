@@ -21,11 +21,12 @@ repos:
           )$
       - id: trailing-whitespace
       - id: check-merge-conflict
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v1.10.0
     hooks:
-      - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+      - id: betterleaks
+        entry: betterleaks dir --config .betterleaks.toml --no-banner --redact --verbose
+        pass_filenames: true
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: 787fb9f
     hooks:

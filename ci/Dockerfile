@@ -54,7 +54,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn python3-pip python3-venv git
 RUN pip3 install --no-cache-dir --break-system-packages\
-    pre-commit pip-audit pandas gamspy
+    prek==0.5.6 pip-audit pandas gamspy
 
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync

@@ -227,9 +227,9 @@ class UITests(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, "form-signin"))
         )
         if RUN_K8S_TESTS:
-            logo_hash = "7420e77f2fbc70ac06e3f39fa3094860"  # pragma: allowlist secret
+            logo_hash = "7420e77f2fbc70ac06e3f39fa3094860"  # betterleaks:allow
         else:
-            logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # pragma: allowlist secret
+            logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # betterleaks:allow
         self.assertEqual(
             get_image_hash(self.driver, ".form-signin img.auth-logo"),
             logo_hash,
@@ -1052,7 +1052,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "c1f874ff6b82b6566e7ac3491ca766b1",  # pragma: allowlist secret
+            "c1f874ff6b82b6566e7ac3491ca766b1",  # betterleaks:allow
             "Default logo not displayed",
         )
         self.driver.find_element(By.CLASS_NAME, "input-group").click()
@@ -1072,7 +1072,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updating logo did not work properly",
         )
         WebDriverWait(self.driver, 30).until(
@@ -1088,7 +1088,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updating logo did not work properly",
         )
         self.driver.switch_to.default_content()
@@ -1111,7 +1111,7 @@ class UITests(unittest.TestCase):
                 },
                 transformer_fn=get_url_from_style,
             ),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updated logo not displayed correctly in gallery",
         )
         all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
@@ -1142,7 +1142,7 @@ class UITests(unittest.TestCase):
                 attribute="href",
                 xpath=True,
             ),
-            "05b572547194e2dd1700ded2fb5afa89",  # pragma: allowlist secret
+            "05b572547194e2dd1700ded2fb5afa89",  # betterleaks:allow
             "Favicon not correct",
         )
         # open admin panel
@@ -1290,7 +1290,7 @@ class UITests(unittest.TestCase):
                     for cookie in self.driver.get_cookies()
                 },
             ),
-            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
+            "19c0456e4ab146f8e47b5a409cc2541c",  # betterleaks:allow
             "Favicon not correct for app",
         )
         self.driver.get(f"{self.ui_url}/app_direct/test_app1")
@@ -1306,7 +1306,7 @@ class UITests(unittest.TestCase):
                     for cookie in self.driver.get_cookies()
                 },
             ),
-            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
+            "19c0456e4ab146f8e47b5a409cc2541c",  # betterleaks:allow
             "Favicon not correct for app_direct",
         )
         self.driver.get(self.ui_url)

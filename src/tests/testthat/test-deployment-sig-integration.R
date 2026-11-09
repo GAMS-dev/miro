@@ -179,7 +179,7 @@ pubkey <- as.list(key)$pubkey
 privKeyFile <- tempfile()
 privKeyPassFile <- tempfile()
 pubKeyFile2 <- tempfile()
-openssl::write_pem(key, privKeyFile, password = "supersecret")
+openssl::write_pem(key, privKeyFile, password = "supersecret") # betterleaks:allow
 openssl::write_pem(pubkey, pubKeyFile2)
 
 writeLines(c("asd", "def", "supersecret", "bla"), privKeyPassFile)

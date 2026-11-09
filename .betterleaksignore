@@ -1,0 +1,6 @@
+# SSH key used only by the server tests
+server/tests/data/signing_key:private-key:1
+# placeholder credentials in the documentation's example config
+doc/source/server_setup.rst:generic-password:209
+# vendored, minified redoc bundle
+doc/assets/plugins/redoc/redoc.standalone.js.map:generic-password:1

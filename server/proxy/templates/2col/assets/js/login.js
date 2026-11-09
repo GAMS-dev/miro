@@ -9,7 +9,7 @@
   toggle.addEventListener('click', function () {
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
-    const label = show ? 'Hide password' : 'Show password';
+    const label = show ? 'Hide password' : 'Show password'; // betterleaks:allow
     toggle.setAttribute('aria-pressed', String(show));
     toggle.setAttribute('aria-label', label);
     toggle.setAttribute('title', label);

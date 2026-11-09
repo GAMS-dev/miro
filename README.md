@@ -29,16 +29,16 @@ For information about how to build GAMS MIRO Desktop as well as the GAMS MIRO Do
 
 ## Contributing
 
-This repository uses [pre-commit](https://pre-commit.com) to automatically lint the code you want to commit. This prevents many common errors and ensures that the CI pipeline passes the linting stage.
-Please follow the installation instructions at: [https://pre-commit.com/#install](https://pre-commit.com/#install) to install `pre-commit`. To enable the hooks, run:
+This repository uses [prek](https://prek.j178.dev), a drop-in replacement for [pre-commit](https://pre-commit.com), to automatically lint the code you want to commit. This prevents many common errors and ensures that the CI pipeline passes the linting stage.
+Please follow the installation instructions at: [https://prek.j178.dev/installation/](https://prek.j178.dev/installation/) to install `prek` (e.g. `uv tool install prek`). To enable the hooks, run:
 ```
-   pre-commit install
+   prek install
 ```
 ### Coding styles
 We follow the [Tidyverse Style Guide](https://style.tidyverse.org) for R code and the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) for JavaScript.
 
 
-To style R code automatically as part of our `pre-commit` hook, we require R and the R packages `precommit` and `styler` to be installed. You have to install them manually (`install.packages(c('precommit','styler'))`).
+To style R code automatically as part of our `prek` hooks, we require R and the R packages `precommit` and `styler` to be installed. You have to install them manually (`install.packages(c('precommit','styler'))`).
 
 ## License
 

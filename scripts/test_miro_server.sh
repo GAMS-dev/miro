@@ -50,7 +50,7 @@ pushd server > /dev/null
 
     pushd miro_server > /dev/null
 
-        echo "GMS_MIRO_DATABASE_PWD=clAuY25Gy3W0L07KMFyN3lDepBjMMKuo0onEtMeU" > .env # pragma: allowlist secret
+        echo "GMS_MIRO_DATABASE_PWD=clAuY25Gy3W0L07KMFyN3lDepBjMMKuo0onEtMeU" > .env # betterleaks:allow
         echo "GMS_MIRO_ENGINE_HOST=${ENGINE_URL}" >> .env
         echo "GMS_MIRO_ENGINE_NS=${ENGINE_NS}" >> .env
         mkdir logs

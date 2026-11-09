@@ -75,12 +75,12 @@ class TestEngine:
         assert response.status_code == 400
 
         response = client.post(
-            "/login", json={"username": "invalid", "password": "invalid"}
+            "/login", json={"username": "invalid", "password": "invalid"}  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 401
         response = client.post(
-            "/login", json={"username": settings["ENGINE_USER"], "password": "invalid"}
+            "/login", json={"username": settings["ENGINE_USER"], "password": "invalid"}  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 401
@@ -92,7 +92,7 @@ class TestEngine:
         invite_user("mirotests_auth_1", 0)
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 403
@@ -106,7 +106,7 @@ class TestEngine:
         # user without permissions but member of group should get access only if models exist
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 403
@@ -114,7 +114,7 @@ class TestEngine:
         register_transport(client, ["mygroup"])
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 200
@@ -123,7 +123,7 @@ class TestEngine:
         invite_user("mirotests_auth_1", 1)
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 200
@@ -148,7 +148,7 @@ class TestEngine:
         assert response.status_code == 201
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         response_data = response.json()
         print(response_data)
