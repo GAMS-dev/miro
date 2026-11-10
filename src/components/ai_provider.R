@@ -424,9 +424,9 @@ MiroAiAnthropicProvider <- R6Class("MiroAiAnthropicProvider",
     # thinking is always on for current Claude models and counts towards max_tokens
     maxTokens = 32000L,
     # models with safety classifiers: declined requests are retried server-side on a fallback model
-    fallbackModels = c("claude-opus-5-5", "claude-fable-5-1"),
+    fallbackModels = c("claude-opus-5-5", "claude-fable-5-2"),
     # models that bind thinking blocks to the conversation prefix (preserved thinking)
-    blockBindingModels = c("claude-opus-5-5", "claude-fable-5-1", "claude-sonnet-5-5", "claude-haiku-5-5"),
+    blockBindingModels = c("claude-opus-5-5", "claude-fable-5-2", "claude-sonnet-5-5", "claude-haiku-5-5"),
     buildUrl = function() "https://api.anthropic.com/v1/messages",
     buildAuthHeaders = function() {
       headers <- list(`x-api-key` = private$apiKey, `anthropic-version` = "2023-06-01")
@@ -1186,7 +1186,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       Anthropic = c(
         "Claude Opus 5.5" = "anthropic/claude-opus-5-5",
         "Claude Sonnet 5.5" = "anthropic/claude-sonnet-5-5",
-        "Claude Fable 5.1" = "anthropic/claude-fable-5-1",
+        "Claude Fable 5.2" = "anthropic/claude-fable-5-2",
         "Claude Haiku 5.5" = "anthropic/claude-haiku-5-5"
       ),
       Google = c(
