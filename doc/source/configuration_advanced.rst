@@ -184,8 +184,7 @@ If you have read this far, you might have noticed that there is a parameter in t
 that is persistent across different calls to the renderer function. Each time the data of your widget is updated (e.g. due to the user loading a new scenario from the database), your renderer
 function is called. One case where this can become problematic is when you make use of `observers <https://shiny.posit.co/r/reference/shiny/latest/observe.html>`__ in your renderer functions. Every
 time your renderer function is called, all observers are re-registered, which leads to duplicated observers. To avoid this problem, you must ensure that observers are cleaned up when they are no
-longer needed. You do this by assigning them to the ``rendererEnv`` environment. An example where this is extensively used is the model ``tsp``, which can be found in the MIRO model
-library.
+longer needed. You do this by assigning them to the ``rendererEnv`` environment. Note that this does not apply to `custom input widgets <./configuration_json_only.html#custom-input-widgets>`__ (API version 2): their render function is called only once.
 
 You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you create a new renderer that you would like to share so that others can
 benefit from your work as well, please `contact us <mailto:miro@gams.com>`__!

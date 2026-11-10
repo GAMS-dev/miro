@@ -339,6 +339,12 @@ data is updated.
 The other important difference from custom renderers is that the ``data`` argument here is also a reactive expression (or a list of reactive expressions in case you specified additional
 datasets to be communicated with your widget), NOT a `tibble <https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html>`__.
 
+Another difference from custom renderers is that the render function of a custom input widget with ``"apiVersion": 2`` is called only once per session. When the data changes (e.g.
+because the user loads a scenario), MIRO does not call your function again. Instead, it updates the reactive expressions in ``data``. Therefore, only access ``data()`` inside
+``reactive()``, ``observe()``, a render function like ``renderRHandsontable()`` or ``isolate()``. If you access it directly in the body of your render function, the whole function
+is called again every time the data changes, and your observers are registered multiple times. As long as your render function is called only once, you do not need to assign
+your observers to ``rendererEnv``.
+
 Let's get back to the Sudoku example we mentioned earlier. We place a file ``mirowidget_initial_state.R`` in the custom renderer directory of our app: ``<modeldirectory>/renderer_sudoku``. The output
 and render functions for custom widgets should be named ``mirowidget_<symbolName>Output`` and ``renderMirowidget_<symbolName>`` respectively, where ``symbolName`` is the lowercase name of the GAMS symbol
 for which the widget is defined.
