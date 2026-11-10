@@ -53,7 +53,8 @@ getHotData <- function(app, id, timeout = 5000L) {
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
-  app$wait_for_js(paste0("$('#", id, " .htCore').is(':visible')"), timeout = timeout)
+  # wait for pending re-renders to avoid reading stale data
+  app$wait_for_js(sprintf("$('#%s:not(.recalculating) .htCore').is(':visible')", id), timeout = timeout)
   return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
 expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6, timeout = 5000L) {
