@@ -195,13 +195,6 @@ test('missing tenant or client ids never reach MSAL', async () => {
   expect(createClient.created).toEqual([]);
 });
 
-test('sign-in returns the result in the redirect query, not as a non-secure form post', async () => {
-  const createClient = fakeClientFactory();
-  const { auth } = await newAuth({ createClient });
-  await auth.signIn(signInEntry);
-  expect(createClient.created[0].state.interactiveRequest.responseMode).toBe('query');
-});
-
 test('a failed sign-in reports Entra\'s reason, without trace ids', async () => {
   const createClient = fakeClientFactory({
     acquireTokenInteractive: async () => {

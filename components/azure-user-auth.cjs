@@ -144,7 +144,6 @@ class AzureUserAuth {
         client.acquireTokenInteractive({
           scopes: AZURE_AI_SCOPES,
           prompt: 'select_account',
-          responseMode: 'query',
           openBrowser: (url) => this.#openExternal(url),
           successTemplate: signInPage('You are signed in. You can close this tab and return to GAMS MIRO.'),
           errorTemplate: signInPage('Sign-in failed. You can close this tab; the reason is shown in GAMS MIRO.'),
