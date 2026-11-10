@@ -24,10 +24,19 @@ app$set_inputs(inputTabset = paste0("inputTabset_", widgetSheetId))
 app$expect_values(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)))
 if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$set_inputs(inputTabset = "inputTabset_1")
-  expect_identical(
-    length(jsonlite::fromJSON(app$get_values()$output[["in_1"]])$x$data[[1]]),
-    7560L
-  )
+  # in_1 still holds the (empty) table rendered at startup, so wait for the imported data
+  getIn1Rows <- function() {
+    in1 <- app$get_value(output = "in_1")
+    if (is.null(in1)) {
+      return(NA_integer_)
+    }
+    length(jsonlite::fromJSON(in1)$x$data[[1]])
+  }
+  for (i in seq_len(40L)) {
+    if (identical(getIn1Rows(), 7560L)) break
+    Sys.sleep(0.5)
+  }
+  expect_identical(getIn1Rows(), 7560L)
   app$click(selector = "#btRemove1")
   Sys.sleep(0.5)
   app$click(selector = ".modal-footer .bt-gms-confirm")

@@ -57,6 +57,7 @@ app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = "../data/transport.gdx")
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(inputTabset = "inputTabset_3")
+app$wait_for_value(output = "in_3", ignore = list(NULL))
 colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$numericFormat$pattern, c(NA_character_, NA_character_, "0"))
 
@@ -80,6 +81,7 @@ app$set_inputs(tb_importData = "tb_importData_local")
 app$upload_file(localInput = "../data/transport.gdx")
 app$set_inputs(btImportLocal = "click")
 app$set_inputs(inputTabset = "inputTabset_3")
+app$wait_for_value(output = "in_3", ignore = list(NULL))
 colDef <- jsonlite::fromJSON(app$get_values()$output[["in_3"]])$x$columns
 expect_identical(colDef$numericFormat$pattern, c(NA_character_, NA_character_, "0"))
 expect_identical(colDef$numericFormat$culture, c(NA_character_, NA_character_, "ja-JP"))

@@ -414,7 +414,7 @@ test_that("MIRO pivot renderer views work", {
       ))
       session$setInputs(deleteView = htmlIdEnc("view1"))
       expect_error(views$get(session, "view1"))
-      expect_output(session$setInputs(savedViews = htmlIdEnc("view1")))
+      expect_message(session$setInputs(savedViews = htmlIdEnc("view1")))
     },
     args = list(
       data = tibble(

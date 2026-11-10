@@ -337,7 +337,7 @@ test_that("Download multiple attachments works", {
 })
 
 test_that("Saving already deleted attachment should result in warning in log", {
-  expect_output(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
+  expect_message(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
   expect_identical(opQueue$save$fileName, c("scalars.csv", "_scalars.csv"))
   expect_identical(opQueue$save$fileContent, blob::new_blob(list(
     raw(0),

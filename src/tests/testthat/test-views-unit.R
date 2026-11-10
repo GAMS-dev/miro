@@ -46,7 +46,7 @@ test_that("Loading/Unloading configuration works", {
     sidsToLoad = c(1, 5, 6, 7)
   ), NA)
   expect_error(views$loadConf(testViewData[1:4, ]), NA)
-  expect_output(views$loadConf(testViewData[1:4, ]))
+  expect_message(views$loadConf(testViewData[1:4, ]))
   expect_identical(views$getConf(), testViewData[1:4, -1])
 })
 
@@ -137,7 +137,7 @@ test_that("Adding configuration works", {
       data = c('{"filter":["bla","blubb"]}')
     )
   )
-  expect_output(views$addConf(list(
+  expect_message(views$addConf(list(
     in10 = list(
       new1 = list(a = "b"),
       view2 = list(b = "c")
@@ -309,7 +309,7 @@ test_that("Callback functions work", {
 })
 
 test_that("Getting views summary works", {
-  expect_output(views$getSummary(
+  expect_message(views$getSummary(
     list(
       in1 = list(alias = "input 1"),
       in2 = list(alias = "input 2")
