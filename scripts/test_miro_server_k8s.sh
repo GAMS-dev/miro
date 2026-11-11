@@ -138,11 +138,12 @@ EOF
             exit 1
           fi
 
+          OLD_AUTH_PODS=$(kubectl get pods -l app=test-gams-miro-server-auth -o name)
           kubectl patch deployment test-gams-miro-server-auth --type='strategic' -p \
                   "{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"auth\", \"image\": \"$CI_REGISTRY_IMAGE/miro-auth-test:unstable\", \"livenessProbe\": null, \"env\": [{\"name\": \"ENGINE_USER\", \"value\": \"$ENGINE_USER\"}, {\"name\": \"ENGINE_PASSWORD\", \"value\": \"$ENGINE_PASSWORD\"}]}]}}}}"
-          sleep 1
-          wait_for_pods_ready 60
-          sleep 2
+          kubectl rollout status deployment/test-gams-miro-server-auth --timeout=60s
+          # terminating pods still report phase Running
+          kubectl wait --for=delete $OLD_AUTH_PODS --timeout=90s
           kubectl get pods
           POD_NAME=$(kubectl get pods -l app=test-gams-miro-server-auth --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
           kubectl exec $POD_NAME -- env COVERAGE_FILE=/tmp/.coverage pytest tests/ -o cache_dir=/tmp/.pytest_cache \
