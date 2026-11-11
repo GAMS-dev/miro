@@ -1190,6 +1190,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Claude Haiku 5.5" = "anthropic/claude-haiku-5-5"
       ),
       Google = c(
+        "Gemini 4 Carbon"  = "google/gemini-4-carbon",
         "Gemini 4 Argon"   = "google/gemini-4-argon",
         "Gemini 3.1 Pro"   = "google/gemini-3.1-pro-preview",
         "Gemini 3.8 Flash" = "google/gemini-3.8-flash",
