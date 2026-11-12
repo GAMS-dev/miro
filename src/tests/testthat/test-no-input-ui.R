@@ -1,6 +1,6 @@
 test_that(
   " Model without input data works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     skip_if(
       identical(Sys.getenv("GAMS_SYS_DIR"), ""),
       "GAMS_SYS_DIR environment variable not set. Skipping tests."

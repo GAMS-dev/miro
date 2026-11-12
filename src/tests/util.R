@@ -13,13 +13,48 @@ getVisibleDtData <- function(app, id, timeout = 5000L) {
     .name_repair = "universal"
   ))
 }
+getDisplayedDtData <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, " table tbody tr').length > 0"), timeout = timeout)
+
+  dtData <- app$get_js(paste0(
+    "
+    JSON.stringify($('#", id, " table').dataTable().api().rows({ page: 'current' }).nodes().to$().map(function() {
+      return $(this).find('td').map(function() {
+        return $(this).text();
+      }).get();
+    }).get());
+    "
+  ))
+
+  if (is.null(dtData) || dtData == "[]") {
+    return(tibble::tibble())
+  }
+
+  return(tibble::as_tibble(jsonlite::fromJSON(dtData),
+    .name_repair = "universal"
+  ))
+}
+getVisibleDtHeader <- function(app, id, timeout = 5000L) {
+  app$wait_for_js(paste0("$('#", id, "').data('datatable')!=null"), timeout = timeout)
+  json <- app$get_js(paste0(
+    "(function(){",
+    "var dt=$('#", id, "').data('datatable');",
+    "var arr=dt.columns().header().to$().map(function(i, el){ return $(el).text().trim(); }).get();",
+    "return JSON.stringify(arr);",
+    "})()"
+  ))
+
+  out <- tryCatch(jsonlite::fromJSON(json), error = function(e) character())
+  as.character(out)
+}
 getHotData <- function(app, id, timeout = 5000L) {
   hotToR <- function(data) {
     return(suppressWarnings(as_tibble(
       data.table::rbindlist(data$data, use.names = FALSE)
     )))
   }
-  app$wait_for_js(paste0("$('#", id, " .htCore').is(':visible')"), timeout = timeout)
+  # wait for pending re-renders to avoid reading stale data
+  app$wait_for_js(sprintf("$('#%s:not(.recalculating) .htCore').is(':visible')", id), timeout = timeout)
   return(hotToR(jsonlite::fromJSON(app$get_values()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
 expect_chartjs <- function(app, id, data, labels, tolerance = 1e-6, timeout = 5000L) {
@@ -41,6 +76,108 @@ addSelectizeOption <- function(app, selector, value, alias = value) {
 }
 selectSelectizeOption <- function(app, selector, value) {
   return(app$run_js(paste0("$('", selector, "')[0].selectize.addItem('", value, "');")))
+}
+
+ensureChromote <- function(timeout = as.numeric(Sys.getenv("MIRO_CHROMOTE_TIMEOUT", "60"))) {
+  # makes sure the shared Chrome instance (used by all AppDrivers) works.
+  # chromote only replaces it when the process died, not when it hangs
+  # (seen on slow Windows runners), so we check it by opening a session
+  # and restart it if needed. If Chrome still does not work, we throw an
+  # error: otherwise, AppDriver would silently skip the test.
+  # Also sets the default timeout for DevTools commands without explicit
+  # timeout (e.g. DOM queries of app$click()); chromote's default of 10s
+  # is too short on slow runners.
+  checkTimeout <- 20
+  isWorking <- function(chromoteObj) {
+    chromoteObj$default_timeout <- checkTimeout
+    tryCatch(
+      {
+        session <- chromoteObj$new_session()
+        session$close()
+        TRUE
+      },
+      error = function(e) {
+        message("Chrome does not respond: ", conditionMessage(e))
+        FALSE
+      }
+    )
+  }
+  killChrome <- function(chromoteObj) {
+    browserProcess <- tryCatch(chromoteObj$get_browser()$get_process(), error = function(e) NULL)
+    try(chromoteObj$close(wait = FALSE), silent = TRUE)
+    if (!is.null(browserProcess) && browserProcess$is_alive()) {
+      try(browserProcess$kill(), silent = TRUE)
+    }
+  }
+  if (chromote::has_default_chromote_object()) {
+    chromoteObj <- chromote::default_chromote_object()
+    if (isWorking(chromoteObj)) {
+      chromoteObj$default_timeout <- timeout
+      return(invisible(TRUE))
+    }
+    message("Restarting Chrome...")
+    killChrome(chromoteObj)
+  }
+  chromoteObj <- tryCatch(chromote::Chromote$new(), error = function(e) {
+    stop("Could not start Chrome: ", conditionMessage(e), call. = FALSE)
+  })
+  chromote::set_default_chromote_object(chromoteObj)
+  if (!isWorking(chromoteObj)) {
+    killChrome(chromoteObj)
+    stop("Chrome was started but does not respond.", call. = FALSE)
+  }
+  chromoteObj$default_timeout <- timeout
+  invisible(TRUE)
+}
+
+retryUiTest <- function(times, code) {
+  # like testthat::try_again, but cleans up after a failed attempt so that
+  # the next attempt can succeed:
+  # - snapshots taken in the failed attempt are forgotten (otherwise
+  #   expect_values() fails with "Snapshot file names must be unique")
+  # - apps (R process + Chromium) started in the failed attempt are stopped
+  code <- rlang::enquo(code)
+  env <- rlang::quo_get_env(code)
+  snapshotter <- getOption("testthat.snapshotter")
+  if (!is.null(snapshotter) && !snapshotter$is_active()) {
+    snapshotter <- NULL
+  }
+  cleanupAttempt <- function(snapsSavedBefore) {
+    for (objName in ls(env, all.names = TRUE)) {
+      obj <- get0(objName, envir = env, inherits = FALSE)
+      if (inherits(obj, "AppDriver")) {
+        try(suppressWarnings(obj$stop()), silent = TRUE)
+      }
+    }
+    if (!is.null(snapshotter)) {
+      snapshotter$snap_file_saved <- snapshotter$snap_file_saved[seq_len(snapsSavedBefore)]
+    }
+  }
+  for (i in seq_len(times)) {
+    ensureChromote()
+    snapsSavedBefore <- if (is.null(snapshotter)) 0L else length(snapshotter$snap_file_saved)
+    succeeded <- tryCatch(
+      {
+        eval(rlang::quo_get_expr(code), env)
+        TRUE
+      },
+      expectation_failure = function(cnd) {
+        message(sprintf("Expectation failed; trying again (%d)...", i))
+        FALSE
+      },
+      error = function(cnd) {
+        message(sprintf("Expectation errored; trying again (%d): %s", i, conditionMessage(cnd)))
+        FALSE
+      }
+    )
+    if (succeeded) {
+      return(invisible(TRUE))
+    }
+    cleanupAttempt(snapsSavedBefore)
+  }
+  # last attempt: let failures through
+  ensureChromote()
+  eval(rlang::quo_get_expr(code), env)
 }
 
 expect_download <- function(app, id, filename) {
@@ -508,4 +645,14 @@ registerModel <- function(apiURL, namespace, inviterUser, inviterPass, modelName
     httr::authenticate(inviterUser, inviterPass)
   )
   stopifnot(identical(httr::status_code(resp), 201L))
+}
+confirmBatchCompareSettings <- function(app, includeSandbox = FALSE, baseline = NULL) {
+  app$wait_for_js("$('#btBatchCompareConfirm').is(':visible')", timeout = 5000L)
+  if (includeSandbox) {
+    app$set_inputs(cbBatchCompareSandbox = TRUE)
+  }
+  if (length(baseline)) {
+    app$set_inputs(selBatchCompareBaseline = baseline)
+  }
+  app$click(selector = "#btBatchCompareConfirm")
 }

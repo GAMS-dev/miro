@@ -14,9 +14,12 @@ customRendererEvalEnv$observe <- function(x, ...) {
       tryCatch(
         eval(x, env),
         error = function(e) {
-          showElReplaceTxt(
-            session, "#preview-error",
-            sprintf(lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e))
+          # kept in its own slot (rather than appended to $render) so that an observer
+          # that errors on every reactive change replaces its message instead of
+          # growing the console without bound, and so that it doesn't clobber the
+          # console output captured while the render function ran
+          rendererPreviewConsoleRV$observer <- sprintf(
+            lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e)
           )
         }
       )
@@ -343,10 +346,10 @@ removeGlobalViews <- function() {
 setViews()
 
 hideFilter <- function() {
-  hideEl(session, "#preview_output_plotly-data_filter")
-  hideEl(session, "#preview_output_dygraphs-data_filter")
-  hideEl(session, "#preview_output_leaflet-data_filter")
-  hideEl(session, "#preview_output_timevis-data_filter")
+  hideEl(session, "#preview_output_plotly-miroPlotly-data_filter")
+  hideEl(session, "#preview_output_dygraphs-miroDygraphs-data_filter")
+  hideEl(session, "#preview_output_leaflet-miroLeaflet-data_filter")
+  hideEl(session, "#preview_output_timevis-miroTimevis-data_filter")
 }
 hideFilter()
 # hideEl(session, any(startsWith("#preview_output_") && endsWith("-data_filter")))
@@ -638,7 +641,7 @@ output$rendererLabelWrapper <- renderUI({
     tagList(
       tags$div(
         id = "rendererLabel",
-        class = "readme-wrapper label-wrapper",
+        class = "label-wrapper miro-markdown",
         markdownKatex(rv$graphConfig$label)
       ),
       tags$script("setTimeout(function(){Miro.parseKatex(document.getElementById('rendererLabel'))},500)")
@@ -1116,9 +1119,6 @@ observeEvent(input$timedata_subgrouporder,
   },
   priority = -500
 )
-
-
-
 
 
 observeEvent(input$timevis_showZoom, {
@@ -2467,8 +2467,8 @@ observeEvent(input$customExternalSymbol, {
   tryCatch(
     {
       rendererFunctions <- getRendererFunctions(rendererToLoad)
-      updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output)
-      updateAceEditor(session, "customRenderFunction", value = rendererFunctions$renderer)
+      updateAceEditor(session, "customOutputFunction", value = paste(rendererFunctions$output, collapse = "\n"))
+      updateAceEditor(session, "customRenderFunction", value = paste(rendererFunctions$renderer, collapse = "\n"))
       session$sendCustomMessage("gms-shinySetInputValue", list(
         id = "btUpdateCustomRendererOutput",
         val = 1L,
@@ -2493,6 +2493,394 @@ observeEvent(input$customPackages,
   },
   ignoreNULL = FALSE
 )
+if (config$activateModules$aiAssistant) {
+  aiAssistantState <- list(
+    history = list(),
+    sessionId = NULL,
+    model = NULL,
+    shippedPackagesVector = suppressWarnings(read_csv("miro-pkg-lock.csv", col_names = FALSE, col_types = "cc"))[[1]],
+    inputTokens = 0,
+    outputTokens = 0,
+    chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessageCustomRenderer))
+  )
+  session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(aiAssistantState$chatHistory[[1]], lang$nav$aiBotDialog)), role = "model"))
+  renderAiChatBubbleWrapper <- function(msg, lang) {
+    isUser <- msg$role == "user"
+    if (!isUser) {
+      displayText <- msg$text
+      displayText <- gsub("<additional_packages>\\s*</additional_packages>", "", displayText, perl = TRUE)
+      displayText <- gsub("<additional_symbols>\\s*</additional_symbols>", "", displayText, perl = TRUE)
+      displayText <- gsub("<additional_packages>", "**Additional Packages:** `", displayText, fixed = TRUE)
+      displayText <- gsub("</additional_packages>", "`\n\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<additional_symbols>", "**Additional Symbols:** `", displayText, fixed = TRUE)
+      displayText <- gsub("</additional_symbols>", "`\n\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<ui_code>", "**UI Code:**\n```r\n", displayText, fixed = TRUE)
+      displayText <- gsub("</ui_code>", "\n```\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("<server_code>", "**Server Code:**\n```r\n", displayText, fixed = TRUE)
+      displayText <- gsub("</server_code>", "\n```\n", displayText, fixed = TRUE)
+
+      displayText <- gsub("**Additional Packages:** ``\n\n", "", displayText, fixed = TRUE)
+      displayText <- gsub("**Additional Symbols:** ``\n\n", "", displayText, fixed = TRUE)
+      msg$text <- displayText
+    }
+    return(renderAiChatBubble(msg, lang))
+  }
+  compileRendererSystemPrompt <- function(currentSymbol, currentAdditionalSymbols, allSymbolsMetadataJson, shippedPackagesVector, isInputSymbol = FALSE, currentUiCode = NULL, currentServerCode = NULL) {
+    pkgString <- paste(shippedPackagesVector, collapse = ", ")
+    addSymString <- paste(currentAdditionalSymbols, collapse = ", ")
+    currentCodeSection <- ""
+    if (!is.null(currentUiCode) && currentUiCode != "" && !is.null(currentServerCode) && currentServerCode != "") {
+      currentCodeSection <- sprintf(
+        "\n### BASELINE CODE (MODIFY, DON'T REWRITE):\n<current_ui_code>\n%s\n</current_ui_code>\n<current_server_code>\n%s\n</current_server_code>\n",
+        currentUiCode, currentServerCode
+      )
+    }
+    # additional symbols are not supported at all for input-symbol renderers (there's no
+    # UI to even select them in that case - see the customAdditionalData selectizeInput,
+    # only rendered for output symbols)
+    contextSymbolsLine <- if (isInputSymbol) "" else sprintf("- Additional Symbols Selected: [%s]\n", addSymString)
+    dataHandlingRule <- if (isInputSymbol) {
+      "1. DATA HANDLING: `data` is ALWAYS a static tibble—NEVER call `data()`. Additional symbols are NOT supported for input-symbol renderers; ignore `<additional_symbols>` entirely."
+    } else {
+      "1. DATA HANDLING:
+   - `data` is ALWAYS a static object—NEVER call `data()`.
+   - If additional symbols are ACTIVE:
+     * `data` is a named list of tibbles (`data[['<symbol>']]`).
+     * Column names match JSON `headers` keys exactly.
+   - If additional symbols are INACTIVE:
+     * `data` is a static tibble."
+    }
+    addSymRule <- if (isInputSymbol) {
+      "3. ADD. SYMBOLS: not supported for this symbol - leave `<additional_symbols>` empty."
+    } else {
+      "3. ADD. SYMBOLS: List required extra symbols from schema in `<additional_symbols>`."
+    }
+    robustnessRule <- if (isInputSymbol) {
+      "7. ROBUSTNESS: handle empty data early - check `data` for zero rows and `return(NULL)`."
+    } else {
+      "7. ROBUSTNESS: handle empty data early - check the primary tibble (`data`, or `data[[1]]` when additional symbols are active) for zero rows and `return(NULL)`."
+    }
+
+    sysPrompt <- sprintf(
+      "You are Mira, the AI assistant of GAMS MIRO, acting as a GAMS MIRO Shiny developer writing custom renderer modules (UI & Server) to visualize optimization data.
+
+### CONTEXT
+- Target Symbol: '%s'
+%s- Database Schema:
+%s
+%s
+### RULES
+%s
+2. PACKAGES: Prefer shipped: [%s]. Always namespace calls (e.g. `plotly::plot_ly()`). List any new package in `<additional_packages>`.
+%s
+4. NAMESPACING (CRITICAL):
+   - UI: define `ns <- shiny::NS(id)`; wrap every element ID in `ns()` (e.g. `plotlyOutput(ns('myChart'))`).
+   - SERVER: do NOT define `ns` unless needed for Rule 8. NEVER use `ns()` on `input`/`output`—session handles it. Use `output[['myChart']] <- ...` (WRONG: `output[[ns('myChart')]] <- ...`).
+5. STYLING: No page-level containers (`fluidPage`), custom CSS, or inline styles. Use `tagList()`/`div()`; inherit global app theme.
+6. SIGNATURES (exact):
+   - UI: `mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL)`
+   - Server: `renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...)`
+%s
+8. OBSERVERS & CLEANUP: Every `observe()`/`observeEvent()` MUST be assigned to `rendererEnv`, keyed via `ns()`, to prevent leaks on re-render. Example: `rendererEnv[[ns('saveView')]] <- observe({ ... })`. No floating observers.
+9. OUTPUTS (CRITICAL): Render to an ID declared in the UI, e.g. `output[['myChart']] <- plotly::renderPlotly({ ... })`. The server function's return value is ignored, so never return a plot or widget.
+
+### OUTPUT FORMAT
+1-2 sentence overview, then code in the XML tags below—no markdown codeblock ticks. Leave packages/symbols tags empty if unneeded.
+
+<additional_packages>ggplot2, stringr</additional_packages>
+<additional_symbols>demand_forecast</additional_symbols>
+
+<ui_code>
+mirorenderer_%sOutput <- function(id, height = NULL, options = NULL, path = NULL) {
+  ns <- shiny::NS(id)
+  plotly::plotlyOutput(ns('myChart'), height = height)
+}
+</ui_code>
+
+<server_code>
+renderMirorenderer_%s <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...) {
+  # Assign observers to rendererEnv via ns()
+  output[['myChart']] <- plotly::renderPlotly({ ... })
+}
+</server_code>",
+      currentSymbol, contextSymbolsLine, allSymbolsMetadataJson, currentCodeSection,
+      dataHandlingRule, pkgString, addSymRule, currentSymbol, currentSymbol, robustnessRule, currentSymbol, currentSymbol
+    )
+    return(sysPrompt)
+  }
+  mAiTask <- NULL
+  # set whenever we cancel the running mirai ourselves, so that the observer below can
+  # tell a deliberate abort apart from a genuine failure
+  aiTaskCancelled <- FALSE
+  cancelAiTask <- function() {
+    aiTaskCancelled <<- TRUE
+    stop_mirai(mAiTask)
+  }
+  aiTask <- ExtendedTask$new(
+    function(userInput, sysPrompt, assistantConfig, model, history) {
+      mAiTask <<- mirai(
+        {
+          library(R6)
+          library(httr)
+          library(jsonlite)
+          source("global.R")
+          source("components/ai_provider.R")
+
+          assistant <- MiroAiAssistant$new(apiKeys = assistantConfig$apiKeys)
+          provider <- assistant$getProvider(aiModelProvider(model), aiModelId(model))
+          if (length(history$sessionId)) {
+            provider$sessionId <- history$sessionId
+          }
+          if (length(history$history)) {
+            provider$history <- history$history
+          }
+          if (length(history$chatHistory)) {
+            provider$chatHistory <- history$chatHistory
+          }
+          result <- provider$sendMessage(
+            userInput = userInput,
+            systemInstructions = sysPrompt
+          )
+          return(list(
+            text = result$text,
+            inputTokens = result$inputTokens,
+            outputTokens = result$outputTokens,
+            newSessionId = provider$sessionId,
+            newHistory = provider$history
+          ))
+        },
+        userInput = userInput,
+        sysPrompt = sysPrompt,
+        assistantConfig = assistantConfig,
+        model = model,
+        history = history
+      )
+    }
+  )
+
+  observeEvent(input$miroAiUserText, {
+    userText <- input$miroAiUserText
+    req(userText)
+    flog.debug("AI Chat message sent.")
+    if (unresolved(mAiTask)) {
+      flog.error("User sent new chat message while old response was not complete. Should never happen!")
+      return()
+    }
+    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "user", text = userText)
+    session$sendCustomMessage("gms-addAiChatBubble", list(html = as.character(renderAiChatBubble(list(role = "user", text = userText), lang$nav$aiBotDialog)), role = "user"))
+
+    multiDimSymbolsTmp <- c(inputSymMultiDimChoices, outputSymMultiDimChoices)
+    allSymbolsMetadata <- c(ioConfig$modelOut, ioConfig$modelIn)
+    allSymbolsMetadata <- allSymbolsMetadata[names(allSymbolsMetadata) %in% multiDimSymbolsTmp]
+    allSymbolsMetadata <- lapply(names(allSymbolsMetadata), function(symName) {
+      obj <- allSymbolsMetadata[[symName]]
+      return(list(name = symName, alias = obj$alias, direction = if (symName %in% inputSymMultiDimChoices) "input" else "output", headers = obj$headers))
+    })
+    allSymbolsMetadataJson <- toJSON(allSymbolsMetadata, dataframe = "rows", auto_unbox = TRUE)
+    activeAiSymbolName <- activeSymbolName
+    customUICode <- paste0(
+      customOutputFunctionName(),
+      " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
+      input$customOutputFunction,
+      "\n}"
+    )
+    customRendererCode <- paste0(
+      customRendererFunctionName(),
+      " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, attachments = NULL, outputScalarsFull = NULL, ...){\n",
+      input$customRenderFunction,
+      "\n}"
+    )
+    sysPrompt <- compileRendererSystemPrompt(
+      activeSymbolName, rv$graphConfig$additionalData, allSymbolsMetadataJson, aiAssistantState$shippedPackagesVector,
+      activeSymbol$isInput, customUICode, customRendererCode
+    )
+    modelInput <- userText
+    if (length(aiAssistantState$activeSymbolName) &&
+      !identical(aiAssistantState$activeSymbolName, activeAiSymbolName)) {
+      # the chat session/history keeps going across a symbol switch (on purpose, so the
+      # user can keep chatting), but the model itself has no other signal that the
+      # ground truth changed underneath it - without this, it can go on reasoning about
+      # the previous symbol's code/data as if it still applied
+      modelInput <- sprintf(
+        "[Context switch: you are now working on the '%s' symbol's custom renderer. Treat this as the current subject for everything below; don't conflate it with earlier turns in this conversation, which were about a different symbol.]\n\n%s",
+        activeAiSymbolName,
+        userText
+      )
+    }
+    aiAssistantState$activeSymbolName <<- activeAiSymbolName
+    chatHistory <- NULL
+    if (!identical(aiAssistantState$model, input$miroAiModel)) {
+      if (!is.null(aiAssistantState$model) && !identical(aiModelProvider(aiAssistantState$model), aiModelProvider(input$miroAiModel))) {
+        # switch from one provider to another -> need to pass state as chat history
+        chatHistory <- aiAssistantState$chatHistory[lapply(aiAssistantState$chatHistory, length) > 1L][-1]
+        aiAssistantState$history <<- list()
+        aiAssistantState$sessionId <<- NULL
+      }
+      aiAssistantState$model <<- input$miroAiModel
+    }
+
+    aiTaskCancelled <<- FALSE
+    aiTask$invoke(
+      userInput = modelInput,
+      sysPrompt = sysPrompt,
+      assistantConfig = config$aiAssistant,
+      model = aiAssistantState$model,
+      history = list(sessionId = aiAssistantState$sessionId, history = aiAssistantState$history, chatHistory = chatHistory)
+    )
+  })
+  observe({
+    aiOutput <- ""
+    result <- NULL
+    if (tryCatch(
+      {
+        result <- aiTask$result()
+        aiOutput <- result$text
+        FALSE
+      },
+      shiny.silent.error = function(err) {
+        return(TRUE)
+      },
+      error = function(err) {
+        if (aiTaskCancelled) {
+          # the request was aborted on purpose (stop button, chat cleared); the UI was
+          # already updated by the handler that cancelled it
+          return(TRUE)
+        }
+        flog.error("Problems generating AI response. Error message: %s", conditionMessage(err))
+        aiOutput <<- sprintf("### Error\nFailed to calculate response: %s", err$message)
+        return(FALSE)
+      }
+    )) {
+      return()
+    }
+    flog.debug("AI Chat response received.")
+    aiAssistantState$chatHistory[[length(aiAssistantState$chatHistory) + 1]] <<- list(role = "model", text = aiOutput)
+    session$sendCustomMessage(
+      "gms-addAiChatBubble",
+      list(html = as.character(renderAiChatBubbleWrapper(
+        list(role = "model", text = aiOutput),
+        lang$nav$aiBotDialog
+      )), role = "model")
+    )
+    if (!is.null(result)) {
+      aiAssistantState$history <<- result$newHistory
+      aiAssistantState$sessionId <<- result$newSessionId
+      aiAssistantState$inputTokens <<- aiAssistantState$inputTokens + result$inputTokens
+      aiAssistantState$outputTokens <<- aiAssistantState$outputTokens + result$outputTokens
+      setTextContent(session, "#miroAiInputTokens", sprintf(lang$nav$aiBotDialog$inputTokensLabel, format(aiAssistantState$inputTokens, big.mark = ",")))
+      setTextContent(session, "#miroAiOutputTokens", sprintf(lang$nav$aiBotDialog$outputTokensLabel, format(aiAssistantState$outputTokens, big.mark = ",")))
+    }
+  })
+  observeEvent(input$btMiroAiStop, {
+    flog.debug("AI Assistant stop button clicked.")
+    cancelAiTask()
+    session$sendCustomMessage(
+      "gms-resetAiChatRequest",
+      list(dividerHtml = as.character(renderAiChatDivider(lang$nav$aiBotDialog$requestAbortedMessage)))
+    )
+  })
+  observeEvent(input$btMiroAiClearChat, {
+    flog.debug("Clear AI chat button clicked.")
+    cancelAiTask()
+    aiAssistantState$chatHistory <<- aiAssistantState$chatHistory[1]
+    setContent(session, "#miroAiChatLog", as.character(tagList(
+      lapply(aiAssistantState$chatHistory, renderAiChatBubble, lang$nav$aiBotDialog),
+      genSpinner("miroAiChatSpinner", hidden = TRUE, absolute = FALSE, externalStyle = "z-index: 1")
+    )), sanitizeHTML = TRUE)
+    aiAssistantState$history <<- list()
+    aiAssistantState$sessionId <<- NULL
+    aiAssistantState$inputTokens <<- 0L
+    aiAssistantState$outputTokens <<- 0L
+    # the chat itself was just reset above, so there's nothing left to warn the model
+    # about
+    aiAssistantState$activeSymbolName <<- NULL
+    session$sendCustomMessage(
+      "gms-resetAiChatRequest",
+      list()
+    )
+  })
+  observeEvent(input$btMiroAiApplyCode, {
+    flog.debug("Button to apply AI code clicked.")
+    history <- aiAssistantState$chatHistory
+    if (length(history) == 0) {
+      return()
+    }
+    lastMsg <- history[[length(history)]]
+    if (lastMsg$role != "model") {
+      showNotification(lang$nav$aiBotDialog$nfApplyErrNoResponse, type = "warning")
+      return()
+    }
+    aiText <- lastMsg$text
+    extract_tag <- function(text, tag) {
+      match <- regmatches(text, regexec(sprintf("(?s)<%s>(.*?)</%s>", tag, tag), text, perl = TRUE))[[1]]
+      if (length(match) > 1) trimws(match[2]) else ""
+    }
+    parse_csv <- function(val) {
+      if (val == "") {
+        return(character(0))
+      }
+      cleaned <- trimws(unlist(strsplit(val, ",")))
+      return(cleaned[cleaned != ""])
+    }
+    reqPackages <- parse_csv(extract_tag(aiText, "additional_packages"))
+    reqPackages <- reqPackages[!reqPackages %in% aiAssistantState$shippedPackagesVector]
+    reqSymbols <- if (activeSymbol$isInput) {
+      character(0)
+    } else {
+      reqSymbolsTmp <- parse_csv(extract_tag(aiText, "additional_symbols"))
+      reqSymbolsTmp[reqSymbolsTmp %in% c(inputSymMultiDimChoices, outputSymMultiDimChoices[-(activeSymbol$id - length(modelIn))])]
+    }
+
+    uiCode <- tryCatch(
+      {
+        uiCodeTmp <- parseFunctionBody(extract_tag(aiText, "ui_code"), paste0("mirorenderer_", activeSymbolName, "Output"))
+        if (length(uiCodeTmp) && startsWith(trimws(uiCodeTmp[1]), "ns")) {
+          uiCodeTmp <- uiCodeTmp[-1]
+        }
+        uiCodeTmp
+      },
+      error = function(err) {
+        flog.info("No output function found in AI response. Error message: %s", conditionMessage(err))
+        return(NULL)
+      }
+    )
+
+    serverCode <- tryCatch(
+      {
+        parseFunctionBody(extract_tag(aiText, "server_code"), paste0("renderMirorenderer_", activeSymbolName))
+      },
+      error = function(err) {
+        flog.info("No server function found in AI response. Error message: %s", conditionMessage(err))
+        return(NULL)
+      }
+    )
+
+    codeApplied <- FALSE
+    if (!is.null(uiCode)) {
+      updateAceEditor(session, "customOutputFunction", value = paste(uiCode, collapse = "\n"))
+      codeApplied <- TRUE
+    }
+    if (!is.null(serverCode)) {
+      updateAceEditor(session, "customRenderFunction", value = paste(serverCode, collapse = "\n"))
+      codeApplied <- TRUE
+    }
+    if (!codeApplied) {
+      return(showNotification(lang$nav$aiBotDialog$nfApplyErrNoCode, type = "error"))
+    }
+    updateSelectInput(session, "customPackages", choices = reqPackages, selected = reqPackages)
+    rv$graphConfig$additionalData <<- reqSymbols
+    updateSelectInput(session, "customAdditionalData", selected = reqSymbols)
+    session$sendCustomMessage("gms-shinySetInputValue", list(
+      id = "btUpdateCustomRendererOutput",
+      val = 1L,
+      timeout = 500L
+    ))
+    showNotification(lang$nav$aiBotDialog$nfApplySuccess, type = "message")
+  })
+}
 observeEvent(input$dashboardAdditionalData,
   {
     if (activeSymbol$id > length(modelIn)) {
@@ -2530,14 +2918,14 @@ observeEvent(input$cutomOptions, {
 })
 
 observeEvent(input$filter_dim, {
-  if (input$chart_tool %in% plotlyChartTools) {
-    chartToolTmp <- "plotly"
-  } else {
-    chartToolTmp <- input$chart_tool
-  }
+  filterId <- getPreviewFilterId(input$chart_tool)
+
   if (isFALSE(input$filter_dim)) {
     rv$graphConfig$graph$filter <<- NULL
-    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+
+    if (length(filterId)) {
+      hideEl(session, filterId)
+    }
   } else {
     rv$graphConfig$graph$filter <<- list(
       col = input$filter_col,
@@ -2545,7 +2933,10 @@ observeEvent(input$filter_dim, {
       multiple = input$filter_multiple,
       date = FALSE
     )
-    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+
+    if (length(filterId)) {
+      showEl(session, filterId)
+    }
   }
 })
 observeEvent(input$filter_col, {
@@ -2561,9 +2952,14 @@ observeEvent(input$filter_label, {
   } else {
     rv$graphConfig$graph$filter$label <<- NULL
   }
-  updateSelectInput(session, paste0("#preview_output_", input$chart_tool, "-data_filter"),
-    label = newLabel
-  )
+  filterId <- getPreviewFilterId(input$chart_tool)
+
+  if (length(filterId)) {
+    updateSelectInput(session,
+      sub("^#", "", filterId),
+      label = newLabel
+    )
+  }
 })
 observeEvent(input$filter_multiple, {
   req(isTRUE(input$filter_dim))
@@ -2752,6 +3148,11 @@ observeEvent(input$gams_symbols, {
     hideEl(session, "#deleteGraph")
   }
 })
+if (config$activateModules$aiAssistant) {
+  observeEvent(input$miroSidebar, {
+    session$sendCustomMessage("gms-closeAiDrawer", 1)
+  })
+}
 observeEvent(
   {
     input$chart_tool
@@ -2796,6 +3197,7 @@ observeEvent(
     }
     removeClassEl(session, ".category-btn", "category-btn-active")
     hideEl(session, ".category-btn")
+    session$sendCustomMessage("gms-closeAiDrawer", 1)
     ydataTmp <- currentGraphConfig[["ydata"]]
     axisOptionsGlobal <<- list(y = 1, y2 = 0)
     if (identical(chartTool, "pie")) {
@@ -3195,6 +3597,7 @@ observeEvent(
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
       invalidCustomRender <<- FALSE
+      clearRendererPreviewConsole()
       insertUI(
         selector = "#tool_options",
         tagList(
@@ -3897,7 +4300,8 @@ getDygraphsOptions <- reactive({
   indices <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   if (!length(scalarIndices)) {
-    showElReplaceTxt(session, "#preview-error", lang$adminMode$graphs$dygraphsOptions$previewError)
+    clearRendererPreviewConsole()
+    rendererPreviewConsoleRV$render <- lang$adminMode$graphs$dygraphsOptions$previewError
     return()
   }
   isolate({
@@ -4754,6 +5158,32 @@ output$customRenderBoilerplate <- renderText({
     " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){"
   )
 })
+rendererPreviewConsoleRV <- reactiveValues(output = "", render = "", observer = "")
+clearRendererPreviewConsole <- function() {
+  rendererPreviewConsoleRV$output <- ""
+  rendererPreviewConsoleRV$render <- ""
+  rendererPreviewConsoleRV$observer <- ""
+  return(invisible(NULL))
+}
+observe({
+  # empty slots are skipped so a missing part doesn't show up as a blank line
+  consoleText <- appendPreviewConsoleMsg(
+    c(rendererPreviewConsoleRV$output, rendererPreviewConsoleRV$render),
+    rendererPreviewConsoleRV$observer
+  )
+  if (nchar(trimws(consoleText))) {
+    setTextContent(session, "#renderer-preview-console", trimws(consoleText, which = "left"))
+    showEl(session, "#renderer-preview-console")
+  } else {
+    hideEl(session, "#renderer-preview-console")
+  }
+})
+observeEvent(input$btUpdateCustomRendererOutput,
+  {
+    clearRendererPreviewConsole()
+  },
+  priority = 1000
+)
 output[["preview_custom_renderer"]] <- renderUI({
   req(input$btUpdateCustomRendererOutput)
   outputFunction <- isolate(paste0(
@@ -4762,11 +5192,41 @@ output[["preview_custom_renderer"]] <- renderUI({
     isolate(input$customOutputFunction),
     "}"
   ))
-  eval(parse(text = outputFunction, encoding = "UTF-8"),
-    envir = customRendererEvalEnv
-  )("preview_output_custom", height = 400,
-    options = rv$graphConfig$options,
-    path = customRendererDir)
+  tryCatch(
+    {
+      captured <- runCapturingConsole(function() {
+        uiResult <- eval(parse(text = outputFunction, encoding = "UTF-8"),
+          envir = customRendererEvalEnv
+        )("preview_output_custom", height = 400,
+          options = rv$graphConfig$options,
+          path = customRendererDir)
+        # guards against e.g. an empty function body, where the last expression
+        # (`ns <- NS(id)`) makes the function return the `ns` closure itself
+        # instead of Shiny UI content - Shiny's own error for that ("cannot
+        # coerce type 'closure' to vector of type 'character'") is cryptic
+        if (is.function(uiResult)) {
+          stop(lang$adminMode$graphs$validate$customOutputInvalid, call. = FALSE)
+        }
+        uiResult
+      })
+      rendererPreviewConsoleRV$output <- paste(captured$console, collapse = "\n")
+      if (!is.null(captured$error)) {
+        stop(captured$error)
+      }
+      captured$result
+    },
+    error = function(e) {
+      if (isSilentError(e)) {
+        # req()/validate() in the user's Output function: hand it back to Shiny so the
+        # output stays empty resp. shows the validation message, rather than reporting
+        # it (with an empty message, in the req() case) as an error
+        stop(e)
+      }
+      errMsg <- sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
+      rendererPreviewConsoleRV$output <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$output, errMsg))
+      NULL
+    }
+  )
 })
 
 
@@ -4806,9 +5266,13 @@ observe(
           } else {
             callModule(renderData, "preview_output_plotly",
               type = "graph",
-              data = data, configData = configScalars,
-              graphOptions = rv$graphConfig$graph,
-              roundPrecision = roundPrecision, modelDir = modelDir
+              data = data,
+              graphConfig = list(
+                graph = rv$graphConfig$graph,
+                options = list("_metadata_" = metadata)
+              ),
+              configData = configScalars,
+              roundPrecision = roundPrecision
             )
             showEl(session, "#preview-content-plotly")
             hideEl(session, "#pieValues")
@@ -4822,9 +5286,13 @@ observe(
         } else if (isolate(rv$graphConfig$graph$tool) == "dygraphs") {
           callModule(renderData, "preview_output_dygraphs",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-dygraphs")
           hideEl(session, "#preview-content-plotly")
@@ -4887,14 +5355,16 @@ observe(
           isolate(callModule(renderData, "preview_output_miropivot",
             type = "miropivot",
             data = data, rendererEnv = customRendererEnv,
-            customOptions = c(
-              list(
-                "_metadata_" = metadata,
-                resetOnInit = TRUE
-              ),
-              miropivotOptions
+            graphConfig = list(
+              options = c(
+                list(
+                  "_metadata_" = metadata,
+                  resetOnInit = TRUE
+                ),
+                miropivotOptions
+              )
             ),
-            roundPrecision = 2, modelDir = modelDir, views = views
+            roundPrecision = 2, views = views
           ))
           showEl(session, "#preview-content-miropivot")
           hideEl(session, "#preview-content-dygraphs")
@@ -4907,9 +5377,13 @@ observe(
         } else if (isolate(rv$graphConfig$graph$tool) == "timevis") {
           callModule(renderData, "preview_output_timevis",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-timevis")
           hideEl(session, "#preview-content-plotly")
@@ -4926,8 +5400,9 @@ observe(
           callModule(renderData, "preview_output_valuebox",
             type = "valuebox",
             data = dataVisible, configData = configScalars,
-            customOptions = customOptionstmp,
-            modelDir = modelDir
+            graphConfig = list(
+              options = customOptionstmp
+            )
           )
           showEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-miropivot")
@@ -4977,26 +5452,36 @@ observe(
             return()
           }
           local({
-            customRendererFunction <- eval(parse(text = isolate(paste0(
-              customRendererFunctionName(),
-              " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
-              input$customRenderFunction,
-              "\n}"
-            )), encoding = "UTF-8"), envir = customRendererEvalEnv)
-            callModule(customRendererFunction, "preview_output_custom",
-              data,
-              options = rv$graphConfig$options,
-              path = customRendererDir, rendererEnv = customRendererEnv,
-              views = views, attachments = attachments,
-              outputScalarsFull = configScalars
-            )
+            captured <- runCapturingConsole(function() {
+              customRendererFunction <- eval(parse(text = isolate(paste0(
+                customRendererFunctionName(),
+                " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
+                input$customRenderFunction,
+                "\n}"
+              )), encoding = "UTF-8"), envir = customRendererEvalEnv)
+              callModule(customRendererFunction, "preview_output_custom",
+                data,
+                options = rv$graphConfig$options,
+                path = customRendererDir, rendererEnv = customRendererEnv,
+                views = views, attachments = attachments,
+                outputScalarsFull = configScalars
+              )
+            })
+            rendererPreviewConsoleRV$render <- paste(captured$console, collapse = "\n")
+            if (!is.null(captured$error)) {
+              stop(captured$error)
+            }
           })
         } else {
           callModule(renderData, "preview_output_leaflet",
             type = "graph",
-            data = data, configData = configScalars,
-            graphOptions = rv$graphConfig$graph,
-            roundPrecision = roundPrecision, modelDir = modelDir
+            data = data,
+            graphConfig = list(
+              graph = rv$graphConfig$graph,
+              options = list("_metadata_" = metadata)
+            ),
+            configData = configScalars,
+            roundPrecision = roundPrecision
           )
           showEl(session, "#preview-content-leaflet")
           hideEl(session, "#preview-content-plotly")
@@ -5007,7 +5492,9 @@ observe(
           hideEl(session, "#preview-content-valuebox")
           hideEl(session, "#preview-content-custom")
         }
-        hideEl(session, "#preview-error")
+        if (!identical(isolate(rv$graphConfig$graph$tool), "custom")) {
+          clearRendererPreviewConsole()
+        }
       },
       error = function(e) {
         hideEl(session, "#preview-content-dygraphs")
@@ -5017,10 +5504,13 @@ observe(
         hideEl(session, "#preview-content-miropivot")
         hideEl(session, "#preview-content-timevis")
         hideEl(session, "#preview-content-valuebox")
-        showElReplaceTxt(
-          session, "#preview-error",
-          sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
-        )
+        errMsg <- sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e))
+        if (identical(isolate(rv$graphConfig$graph$tool), "custom")) {
+          rendererPreviewConsoleRV$render <- isolate(appendPreviewConsoleMsg(rendererPreviewConsoleRV$render, errMsg))
+        } else {
+          clearRendererPreviewConsole()
+          rendererPreviewConsoleRV$render <- errMsg
+        }
       }
     )
   },
@@ -5055,6 +5545,14 @@ observeEvent(rv$saveGraphConfirm, {
   # remove all symbols with same name to avoid case sensitivity issues
   configJSON$dataRendering[activeSymbol$name == tolower(names(configJSON$dataRendering))] <<- NULL
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
+  if (!length(configJSON$dataRendering[[activeSymbol$name]]$additionalData)) {
+    # remove empty array as it breaks validation
+    configJSON$dataRendering[[activeSymbol$name]]$additionalData <<- NULL
+  }
+  if (!length(configJSON$dataRendering[[activeSymbol$name]]$packages)) {
+    # remove empty array as it breaks validation
+    configJSON$dataRendering[[activeSymbol$name]]$packages <<- NULL
+  }
   configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
   if (is.null(rv$graphConfig$graph$tool)) {
     flog.error("Problems fetching configuration.")

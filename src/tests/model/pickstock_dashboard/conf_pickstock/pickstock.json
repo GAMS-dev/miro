@@ -256,11 +256,13 @@
             "error_train",
             "error_ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            "testlonglabel"
           ],
           "color": [
             "#848991",
             "#ffb327",
+            "#29B675",
             "#29B675",
             "#29B675",
             "#29B675"
@@ -270,6 +272,7 @@
             "plug-circle-bolt",
             "truck",
             "truck",
+            "truck",
             "truck"
           ],
           "title": [
@@ -277,17 +280,20 @@
             "error train",
             "error ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            "testlooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong label"
           ],
           "prefix": [
             "",
             "$",
             "+",
             "+",
+            "+",
             "+"
           ],
           "postfix": [
             "",
+            "$",
             "$",
             "$",
             "$",
@@ -298,6 +304,7 @@
             true,
             false,
             false,
+            false,
             false
           ],
           "noColor": [
@@ -305,6 +312,7 @@
             false,
             false,
             true,
+            false,
             false
           ],
           "valueScalar": [
@@ -312,10 +320,12 @@
             "error_test",
             "error_ratio",
             "testnegative",
-            "testpositive"
+            "testpositive",
+            null
           ],
           "decimals": [
-            2,
+            -1,
+            null,
             2,
             2,
             2,
@@ -329,6 +339,12 @@
             },
             {
               "abserror": "Absolute Error"
+            },
+            {
+              "dowVSindexStack": "Stacked bar chart; group stacks by Hdr dimension"
+            },
+            {
+              "invalidFilter": "Invalid view"
             }
           ],
           "error_train": [
@@ -340,11 +356,20 @@
             },
             {
               "dowVSindex0": "Stock Weight"
+            },
+            {
+              "testaliasfilter": "Test filter with alias dimensions"
             }
           ],
           "error_ratio": [
             {
               "pricemerge": "All index prices including DJ"
+            },
+            {
+              "pricemerge2": "new userFilter configuration"
+            },
+            {
+              "pricemerge3": "new userFilter configuration"
             }
           ]
         },
@@ -453,6 +478,99 @@
             "data": "dowvsindex",
             "decimals": 2
           },
+          "invalidFilter": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "timeseries",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": true,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "count"
+            },
+            "rows": "date",
+            "cols": {
+              "Hdr": "asd"
+            },
+            "chartOptions": {
+              "title": "Dow Jones vs Index Fund",
+              "xTitle": "Date",
+              "yTitle": "Value",
+              "customLabels": {
+                "dj": "Dow Jones",
+                "index fund": "Index Fund"
+              },
+              "customLineDashPatterns": {
+                "Dow Jones": [
+                  10,
+                  5
+                ],
+                "Index Fund": [
+                  1,
+                  1
+                ]
+              }
+            },
+            "data": "dowvsindex",
+            "decimals": 2
+          },
+          "dowVSindexStack": {
+              "aggregationFunction": "sum",
+              "pivotRenderer": "stackedbar",
+              "domainFilter": {
+                  "default": null
+              },
+              "hideEmptyCols": false,
+              "fixedColumns": true,
+              "tableSummarySettings": {
+                  "rowEnabled": false,
+                  "rowSummaryFunction": "sum",
+                  "colEnabled": false,
+                  "colSummaryFunction": "sum"
+              },
+              "filter": {
+                  "date": [
+                      "2016-01-04",
+                      "2016-01-05"
+                  ]
+              },
+              "cols": {
+                  "Hdr": null
+              },
+              "chartOptions": {
+                  "groupDimension": "Hdr",
+                  "yLogScale": false,
+                  "showXGrid": true,
+                  "showYGrid": true,
+                  "singleStack": false
+              },
+              "data": "dowvsindex"
+          },
+          "testaliasfilter": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": {
+                "default": null
+            },
+            "hideEmptyCols": false,
+            "fixedColumns": true,
+            "tableSummarySettings": {
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum",
+                "colEnabled": false,
+                "colSummaryFunction": "sum"
+            },
+            "cols": {
+              "symbol": null,
+              "s": null
+            },
+            "userFilter": [
+              "s",
+              "symbol"
+            ],
+            "data": "testaliasfilter"
+          },
           "abserror": {
             "aggregationFunction": "sum",
             "pivotRenderer": "table",
@@ -464,12 +582,16 @@
               "record": "2016-01-05",
               "metrics": ["value", "percentage difference"]
             },
+            "userFilter": ["date", "Hdr"],
             "tableSummarySettings": {
               "enabled": false,
               "rowSummaryFunction": "sum",
               "colSummaryFunction": "sum"
             },
-            "rows": "date",
+            "rows": null,
+            "filter": {
+              "date": ["2016-01-04", "2016-01-05", "2016-01-06", "2016-01-08"]
+            },
             "cols": {
               "Hdr": null
             },
@@ -478,10 +600,12 @@
               "xTitle": "Date",
               "yTitle": "Error",
               "customSeriesOrder": [
-                 "absolute error train",
-                 "absolute error test"
+                 "training error",
+                 "testing error"
               ],
               "customLabels": {
+                "absolute error train": "training error",
+                "absolute error test": "testing error",
                 "2016-01-05": "reference"
               },
               "customLabelsOrder": [
@@ -490,11 +614,11 @@
               ]
             },
             "data": "abserror",
-            "decimals": 2
+            "decimals": 3
           },
           "pricemerge": {
             "aggregationFunction": "sum",
-            "pivotRenderer": "timeseries",
+            "pivotRenderer": "bar",
             "domainFilter": {
               "default": null
             },
@@ -519,6 +643,79 @@
             "singleDropdown": "uni",
             "data": "pricemerge",
             "decimals": 2
+          },
+          "pricemerge2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": "date",
+            "cols": {
+              "uni": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              {
+                "dimension": "uni",
+                "multiple": false,
+                "label": "testlabel",
+                "placeholder": "All items",
+                "selected": {
+                  "mode": "explicit",
+                  "values": "DD"
+                }
+              },
+              {
+                "dimension": "date",
+                "multiple": true,
+                "label": "testlabel2",
+                "placeholder": "All items",
+                "selected": {
+                  "mode": "position",
+                  "values": ["first", 2, 3, "last"]
+                }
+              }
+            ],
+            "data": "pricemerge",
+            "decimals": -1
+          },
+          "pricemerge3": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": ["date","uni"],
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              {
+                "dimension": "date",
+                "multiple": true,
+                "label": "testlabel2",
+                "placeholder": "All items"
+              }
+            ],
+            "data": "pricemerge",
+            "decimals": 2
           }
         }
       },
@@ -526,6 +723,7 @@
         "dowvsindex",
         "abserror",
         "pricemerge",
+        "testaliasfilter",
         "_scalarsve_out"
       ]
     }
@@ -552,7 +750,8 @@
       "options": {
         "dataViews": {
           "error_ratio": {
-            "pricemerge": "All index prices including DJ"
+            "pricemerge": "All index prices including DJ",
+            "pricemerge2": "test overwriteHeaderAliases"
           },
           "error_test": {
             "dowVSindex": "dow VS index",
@@ -609,6 +808,33 @@
             "rows": "date",
             "cols": {
               "uni": null,
+              "_scenName": null
+            },
+            "chartOptions": {
+              "title": "Price (stocks and DJ)",
+              "xTitle": "Date",
+              "yTitle": "Price"
+            },
+            "userFilter": [
+              "uni",
+              "date"
+            ],
+            "data": "pricemerge",
+            "decimals": 2
+          },
+          "pricemerge2": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": {
+              "default": null
+            },
+            "tableSummarySettings": {
+              "enabled": false,
+              "rowSummaryFunction": "sum",
+              "colSummaryFunction": "sum"
+            },
+            "rows": ["date","uni"],
+            "cols": {
               "_scenName": null
             },
             "chartOptions": {
@@ -879,6 +1105,15 @@
       ]
     }
   ],
+  "overwriteHeaderAliases": {
+      "pricemerge": {
+          "newHeaders": [
+              "test Header",
+              "12345",
+              "asd"
+          ]
+      }
+  },
   "handsontable": {
     "stretchH": "all",
     "readonly": false,

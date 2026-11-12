@@ -65,7 +65,7 @@ expect_equivalent(dplyr::filter(getHotData(app, "in_1"), symbol == "AXP", date =
   symbol = c("AXP"), value = c(7)
 ))
 expect_identical(nrow(getHotData(app, "in_1")), 7561L)
-expect_true(app$get_js("$('#inputDataTitle').text()==='default (*)'&&$('#dirtyFlagIcon').is(':visible');", timeout = 2000L))
+expect_true(app$get_js("$('#inputDataTitle').text()==='default (*)'&&$('#dirtyFlagIcon').is(':visible');", timeout = 10000L))
 
 
 # metadata should not be updated when manually importing data

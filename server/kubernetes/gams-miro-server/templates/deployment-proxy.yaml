@@ -22,6 +22,10 @@ spec:
         app: {{ include "common.names.fullname" . }}-proxy
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        checksum/secret-db: {{ include (print $.Template.BasePath "/secret-db.yaml") . | sha256sum }}
+        checksum/secret-oidc: {{ include (print $.Template.BasePath "/secret-oidc.yaml") . | sha256sum }}
+        checksum/secret-engine: {{ include (print $.Template.BasePath "/secret-engine.yaml") . | sha256sum }}
+        checksum/secret-logs3: {{ include (print $.Template.BasePath "/secret-logs3.yaml") . | sha256sum }}
         {{- if .Values.proxy.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.proxy.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -66,7 +70,7 @@ spec:
           mountPath: /home/miroproxy/mnt
       containers:
       - name: proxy
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.proxy.image.registry "repository" .Values.proxy.image.repository "tag" (coalesce .Values.proxy.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.proxy.image.registry "repository" .Values.proxy.image.repository "tag" (coalesce .Values.proxy.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.proxy.resources | indent 10 }}
         ports:
@@ -94,18 +98,36 @@ spec:
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: db_password
+              name: {{ include "common.names.fullname" . }}-secdb
+              key: password
+        {{- if .Values.proxy.config.persistentSessionStore.host }}
+        - name: SPRING_DATA_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secredis
+              key: password
+        {{- end }}
+        {{- if eq .Values.proxy.config.authentication "none" }}
         - name: GMS_MIRO_ENGINE_ANONYMOUS_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: engine_anonymous_password
+              name: {{ include "common.names.fullname" . }}-seceng
+              key: anonymousPassword
+        {{- end }}
+        {{- if eq .Values.proxy.config.containerLogBackend.type "s3" }}
         - name: GMS_MIRO_CONTAINER_LOG_S3_ACCESS_SECRET
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: container_log_s3_access_secret
+              name: {{ include "common.names.fullname" . }}-secls3
+              key: secretAccessKey
+        {{- end }}
+        {{- if eq .Values.proxy.config.authentication "openid" }}
+        - name: GMS_MIRO_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "common.names.fullname" . }}-secoidc
+              key: clientSecret
+        {{- end }}
         volumeMounts:
         - name: shared-data
           mountPath: /home/miroproxy/mnt
@@ -119,20 +141,20 @@ spec:
           subPath: application.yml
         - name: tmp-volume
           mountPath: /tmp
-        {{- if .Values.proxy.config.logo.enabled }}
+        {{- if .Values.proxy.config.logo }}
         - name: customize-volume
           mountPath: /home/miroproxy/templates/2col/assets/imgk8s/logo.png
           subPath: logo.png
         {{- end }}
-        {{- if .Values.proxy.config.favicon.enabled }}
+        {{- if .Values.proxy.config.favicon }}
         - name: customize-volume
           mountPath: /home/miroproxy/templates/2col/assets/imgk8s/favicon.ico
           subPath: favicon.ico
         {{- end }}
-        {{- if .Values.proxy.config.customCSS.enabled }}
+        {{- if eq .Values.proxy.config.colorTheme "custom" }}
         - name: customize-volume
-          mountPath: /home/miroproxy/templates/2col/assets/css/styles.css
-          subPath: custom.css
+          mountPath: /home/miroproxy/templates/2col/assets/css/themes/colors_custom.css
+          subPath: colors_custom.css
         {{- end }}
         {{- if .Values.global.securityContext.enabled }}
         securityContext:
@@ -158,7 +180,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "common.names.fullname" . }}-efs-pvc
         {{- end }}
-        {{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+        {{- if or .Values.proxy.config.logo .Values.proxy.config.favicon (eq .Values.proxy.config.colorTheme "custom") }}
         - name: customize-volume
           secret:
             secretName: {{ include "common.names.fullname" . }}-logo-scm

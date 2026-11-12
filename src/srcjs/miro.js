@@ -1,7 +1,9 @@
-/* global $:false Shiny: false Selectize:false renderMathInElement:false */
+/* global $:false Shiny: false Selectize:false */
 
 import 'core-js/stable';
 import AutoNumeric from 'autonumeric';
+
+import BaselineCompareErrorManager from './baseline_compare_error_manager';
 
 import {
   sleep,
@@ -22,15 +24,25 @@ import {
 
 import ShortcutManager from './shortcut_manager';
 import MiroLogParser from './miro_log_parser';
+import registerHeightFitting from './fit_height';
 
 import {
   activateMiroPivotPresentation,
   deactivateMiroPivotPresentation,
   activateMiroPivotPresentationObservers,
 } from './miro_pivot';
+import { registerAiHandlers, hydrateAiMessagesIn } from './ai_assistant';
+
+export { parseKatex } from './util';
+export { default as modal } from './modal';
+export {
+  copyChatContent, toggleChatCollapse, resolveAiInputChange, resolveAiInputChangeGroup,
+  toggleAiActivityGroup, toggleAiDrawer, hideAiDrawer,
+} from './ai_assistant';
 
 const loadingScreen = new LoadingScreen();
 const miroLogParser = new MiroLogParser();
+const baselineCompareErrorManager = new BaselineCompareErrorManager();
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
@@ -40,6 +52,70 @@ export function changeTab(object, idActive, idRefer) {
     .find(`.tab-content div:nth-child(${idActive})`)
     .removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
+}
+
+export function evaluateBaselineCompData(refData, data, tableId, sessionId) {
+  baselineCompareErrorManager.evaluateData(refData, data, tableId, sessionId);
+}
+
+export function refreshCompBaseline(wrapperSelector) {
+  const wrapper = $(wrapperSelector)[0];
+  const baselineSelect = wrapper ? $(wrapper).find('select')[0]?.selectize : undefined;
+  if (!baselineSelect) {
+    return;
+  }
+  const {
+    sbInput, sbLabel, scenInput, scenChoices,
+  } = wrapper.dataset;
+  const choices = [];
+  if (sbInput && $(`#${sbInput}`).is(':checked')) {
+    choices.push({ value: 'sb', label: sbLabel });
+  }
+  if (scenInput) {
+    const scenSelect = $(`#${scenInput}`)[0]?.selectize;
+    if (scenSelect) {
+      scenSelect.items.forEach((value) => {
+        choices.push({ value, label: scenSelect.options[value]?.label ?? value });
+      });
+    }
+  } else if (scenChoices) {
+    choices.push(...JSON.parse(scenChoices));
+  }
+  const previousValue = baselineSelect.getValue();
+  const newValue = choices.some((choice) => choice.value === previousValue)
+    ? previousValue : choices[0]?.value;
+  baselineSelect.clear(true);
+  baselineSelect.clearOptions(true);
+  baselineSelect.addOption(choices);
+  baselineSelect.refreshOptions(false);
+  baselineSelect.setValue(newValue ?? '');
+  $(wrapper).toggle(choices.length > 1);
+}
+
+export function batchCompareSelectMode(el) {
+  const {
+    mode, sandbox, baseline, title,
+  } = el.dataset;
+  if (sandbox !== 'true') {
+    Shiny.setInputValue('btBatchCompare', mode, { priority: 'event' });
+    return;
+  }
+  const $modal = $('#batchLoadModal');
+  $modal.find('.batch-load-content:visible').addClass('batch-compare-step1').hide();
+  $('#batchCompareSettingsTitle').text(title);
+  $('#batchCompareBaselineOuter').toggle(baseline === 'true');
+  $('#btBatchCompareConfirm').attr('data-mode', mode);
+  $modal.find('.batch-load-compare-content').show();
+}
+
+export function batchCompareBack() {
+  const $modal = $('#batchLoadModal');
+  $modal.find('.batch-load-compare-content').hide();
+  $modal.find('.batch-compare-step1').removeClass('batch-compare-step1').show();
+}
+
+export function batchCompareConfirm(el) {
+  Shiny.setInputValue('btBatchCompareConfirm', el.dataset.mode, { priority: 'event' });
 }
 
 export function slideToggleEl(data) {
@@ -61,31 +137,50 @@ export function slideToggleEl(data) {
   $(data.id).slideToggle(duration);
 }
 
-export function confirmModalShow(
+export function confirmModalShow({
   title,
   desc,
   cancelTxt,
   confirmTxt = null,
-  confirmCall = null,
-) {
-  const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">\
-${cancelTxt}</button>`;
-  let btDataConfirm = '';
-
-  if (confirmCall !== null) {
-    btDataConfirm = `<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" \
-id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
-  }
-
+  confirmCallKey = null,
+  confirmCallVal = 1,
+  escapeDesc = true,
+}) {
   const cModal = $('#confirmModal');
-  cModal.find('.modal-title').html(title);
-  cModal.find('.modal-body').html(desc);
-  cModal.find('.modal-footer').html(btDataDismiss + btDataConfirm);
+  cModal.find('.modal-title').text(title);
+  if (escapeDesc === false) {
+    cModal.find('.modal-body').html(desc);
+  } else {
+    cModal.find('.modal-body').text(desc);
+  }
+  const $footer = cModal.find('.modal-footer');
+  $footer.empty();
+  const $cancelButton = $('<button></button>', {
+    type: 'button',
+    class: 'btn btn-default',
+    'data-dismiss': 'modal',
+    text: cancelTxt,
+  });
+  $footer.append($cancelButton);
+  if (confirmCallKey != null) {
+    const $confirmButton = $('<button></button>', {
+      type: 'button',
+      class: 'btn btn-default bt-highlight-1 bt-gms-confirm',
+      text: confirmTxt,
+      'data-dismiss': 'modal',
+    });
+    $confirmButton.on('click', () => {
+      Shiny.setInputValue(confirmCallKey, confirmCallVal, {
+        priority: 'event',
+      });
+    });
+    $footer.append($confirmButton);
+  }
   cModal.modal('show');
 }
 
 export function removeAttachment(elId) {
-  $(`#btRemoveAttachment_${elId}`).parent().parent().remove();
+  $(`#btRemoveAttachment_${elId}`).closest('.attachment-line').remove();
   Shiny.setInputValue(`btRemoveAttachment_${elId}`, 1, {
     priority: 'event',
   });
@@ -166,19 +261,10 @@ export function selectNoRow(tableId) {
   $(`#${tableId} tbody tr`).removeClass('selected');
 }
 
-export function resetDropdownFilter(that) {
-  const dropdown = $(that).parent().children('ul');
-  const filter = dropdown.children('input')[0];
-  if (filter.value === '') {
-    return;
-  }
-  filter.value = '';
-  $(dropdown).children('li').show();
-}
-
 export function filterMiroDropdown(that) {
   const filterTxt = that.value.toLowerCase();
   $(that)
+    .parent()
     .siblings('li')
     .each(function () {
       if (this.children[0].textContent.toLowerCase().indexOf(filterTxt) > -1) {
@@ -189,73 +275,64 @@ export function filterMiroDropdown(that) {
     });
 }
 
-export function modal(
-  msg,
-  okButton,
-  cancelButton,
-  value,
-  callback,
-  ...callbackArgs
-) {
-  Shiny.modal.show({
-    html: `<div id="shiny-modal" class="modal fade"
-    tabindex="-1" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body">
-         ${
-  value == null
-    ? `<div class="text-break"><strong>${msg}</strong></div>`
-    : `<div class="form-group shiny-input-container">
-            <label class="control-label" for="miroPromptInput">${msg}</label>
-            <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
-          </div>`
-}
-      </div>
-      <div class="modal-footer">
-        ${cancelButton == null ? '' : `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>`}
-        <button id="miroModalConfirmButton" type="button"
-        class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
-      </div>
-    </div>
-  </div>
-  <script>$('#shiny-modal').modal().focus();</script>
-</div>`,
-  });
-  $(document).off('click', '#miroModalConfirmButton');
-  if (value == null) {
-    $(document).on('click', '#miroModalConfirmButton', () => {
-      if (callback == null || callback(...callbackArgs) !== false) {
-        $('#shiny-modal').modal('hide');
-      }
-    });
-  } else {
-    $(document).on('click', '#miroModalConfirmButton', () => {
-      if (
-        callback(
-          document.getElementById('miroPromptInput').value,
-          ...callbackArgs,
-        ) !== false
-      ) {
-        $('#shiny-modal').modal('hide');
-      }
-    });
+export function resetDropdownFilter(that) {
+  const dropdown = $(that).parent().children('ul');
+  const filter = dropdown.find('input')[0];
+  if (filter.value !== '') {
+    filter.value = '';
+    filterMiroDropdown(filter);
   }
+  setTimeout(() => {
+    filter.focus();
+  });
 }
 
-export function parseKatex(element) {
-  renderMathInElement(element, {
-    throwOnError: false,
-    delimiters: [
-      {
-        left: '$$',
-        right: '$$',
-        display: true,
-      },
-      { left: '$', right: '$', display: false },
-    ],
+// DataTables with a footer show their horizontal scrollbar below the footer (see
+// modern.less); DataTables itself only syncs header and footer to the body
+$(document).on('init.dt', (e, settings) => {
+  const foot = settings.nScrollFoot;
+  const body = settings.nScrollBody;
+  if (!foot || !body) {
+    return;
+  }
+  foot.addEventListener('scroll', () => {
+    if (body.scrollLeft !== foot.scrollLeft) {
+      body.scrollLeft = foot.scrollLeft;
+    }
   });
-}
+});
+
+// ... and FixedColumns then must not leave room for that (hidden) scrollbar below the
+// fixed columns. Patched on the first table init, once its script has been loaded.
+let fixedColumnsPatched = false;
+$(document).on('preInit.dt', () => {
+  const fixedColumns = $.fn.dataTable?.FixedColumns?.prototype;
+  /* eslint-disable no-underscore-dangle -- FixedColumns' own (internal) method */
+  if (fixedColumnsPatched || !fixedColumns?._fnDTOverflow) {
+    return;
+  }
+  const dtOverflow = fixedColumns._fnDTOverflow;
+  fixedColumns._fnDTOverflow = function () {
+    const overflow = dtOverflow.call(this);
+    const body = this.s.dt.nTable.parentNode;
+    if (overflow.x && body.offsetHeight === body.clientHeight) {
+      overflow.x = false;
+    }
+    return overflow;
+  };
+  /* eslint-enable no-underscore-dangle */
+  fixedColumnsPatched = true;
+});
+
+// Handsontable scrolls the table on wheel events reaching its root (high-DPI screens and
+// non-Chrome browsers), including those from the dropdown list rendered inside it
+document.addEventListener('wheel', (e) => {
+  const listbox = e.target.closest?.('.autocompleteEditor');
+  if (listbox && !listbox.dataset.wheelContained) {
+    listbox.dataset.wheelContained = 'true';
+    listbox.addEventListener('wheel', (event) => event.stopPropagation());
+  }
+}, { capture: true, passive: true });
 
 const shortcutManager = new ShortcutManager(50);
 $(document).on('keyup', (event) => {
@@ -322,8 +399,8 @@ $(() => {
     if (
       dropdown.width()
       <= ddButton.width()
-        + ddButton.offset().left
-        - ddButton.parent().offset().left
+      + ddButton.offset().left
+      - ddButton.parent().offset().left
     ) {
       dropdown.addClass('dropdown-menu-right');
     } else {
@@ -366,11 +443,31 @@ $(() => {
       }());
     });
   }
+  $(document).on('change', '#selLoadScen, #cbLoadScenSandbox', () => {
+    refreshCompBaseline('#loadScenBaselineWrapper');
+  });
+  $(document).on('change', '#cbBatchCompareSandbox', () => {
+    refreshCompBaseline('#batchCompareBaselineWrapper');
+  });
   $(document).on('click', '.activate-pivot-controls', function () {
     activateMiroPivotPresentation(this.dataset.id);
   });
   $(document).on('click', '.deactivate-pivot-controls', function () {
     deactivateMiroPivotPresentation(this.dataset.id);
+  });
+  // bootstrap-accessibility handles plain shown/hidden events (e.g. the ones triggered for Shiny's
+  // visibility tracking) like shown/hidden.bs.dropdown and flags the enclosing dropdown toggles
+  $(document).on('shown hidden', (e) => {
+    if (e.namespace) {
+      return;
+    }
+    $(e.target).parents().each(function () {
+      if ($(this).children('[data-toggle="dropdown"]').length) {
+        $(this).find('[data-toggle="dropdown"]').each(function () {
+          this.setAttribute('aria-expanded', String($(this).parent().hasClass('open')));
+        });
+      }
+    });
   });
   Shiny.addCustomMessageHandler(
     'gms-activateMiroPivotPresentationObservers',
@@ -450,6 +547,7 @@ $(() => {
 
   $('#btImport').show();
   $('.btSolve').show();
+  $('#sidebarSeparator').show();
   $('#btInterrupt').hide();
   $('.btSplitView').hide();
   $('#btCompareScen').hide();
@@ -481,8 +579,8 @@ $(() => {
   });
   $('#scenTabset').append(
     '<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
-      + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event'});\">"
-      + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>',
+    + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event'});\">"
+    + '<i class="far fa-square-plus" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>',
   ); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
@@ -507,9 +605,11 @@ $(() => {
         return;
       }
       btn.prop('disabled', true);
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         btn.prop('disabled', false);
       }, 1500);
+
+      btn.data('disable-timeout', timeoutId);
     },
   ); // hide pivot filter boxes when clicked outside of box
   $(document).on('click', '.change-dd-button', function () {
@@ -517,8 +617,7 @@ $(() => {
     if (params.isClickable !== 'false') {
       $(params.btnSelector).attr(
         'onclick',
-        `Shiny.setInputValue('${params.actionId}','${
-          params.actionVal == null ? 1 : params.actionVal
+        `Shiny.setInputValue('${params.actionId}','${params.actionVal == null ? 1 : params.actionVal
         }',{priority: 'event'});`,
       );
     }
@@ -543,22 +642,18 @@ $(() => {
     this.href = data;
   });
   // miro dashboard value boxes click handler
-  $(document).on(
-    'click',
-    '.custom-info-box',
-    function () {
-      const parentDiv = $(this).parent();
-      let namespaceId = parentDiv[0].dataset.namespace;
-      if (namespaceId == null) {
-        // old dashboard renderers did not have namespace data attribute
-        namespaceId = parentDiv[0].id.split('-');
-        namespaceId = `${namespaceId[0]}-${namespaceId[1]}-`;
-      }
-      Shiny.setInputValue(`${namespaceId}showChart`, parentDiv.attr('id'), {
-        priority: 'event',
-      });
-    },
-  );
+  $(document).on('click', '.custom-info-box', function () {
+    const parentDiv = $(this).parent();
+    let namespaceId = parentDiv[0].dataset.namespace;
+    if (namespaceId == null) {
+      // old dashboard renderers did not have namespace data attribute
+      namespaceId = parentDiv[0].id.split('-');
+      namespaceId = `${namespaceId[0]}-${namespaceId[1]}-`;
+    }
+    Shiny.setInputValue(`${namespaceId}showChart`, parentDiv.attr('id'), {
+      priority: 'event',
+    });
+  });
 
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
@@ -577,7 +672,8 @@ $(() => {
   Shiny.addCustomMessageHandler('gms-showLoadingScreen', (delay) => {
     loadingScreen.show(delay);
   });
-  Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => {
     loadingScreen.hide();
   });
   Shiny.addCustomMessageHandler('gms-showEl', (data) => {
@@ -612,22 +708,29 @@ $(() => {
     } else {
       scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
     }
-    const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
-    scriptOutputContainerIframe.open();
-    scriptOutputContainerIframe.write(
+    scriptOutputContainer.attr(
+      'srcdoc',
       data.isError === true
         ? `<div style='margin:5px;color:#F39619;font-weight:bold;\
 font-size:15pt;text-align:center;'>${data.data}</div>`
         : data.data,
     );
-    scriptOutputContainerIframe.close();
     scriptOutputContainer.show();
   });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
-    $(data.id).text(data.txt).show();
+    const el = $(data.id);
+    if (el.length > 0) {
+      el.text(data.txt).show();
+      if (typeof data.title !== 'undefined') {
+        el.attr('title', data.title);
+      }
+    }
   });
   Shiny.addCustomMessageHandler('gms-setContent', (data) => {
     $(data.selector).html(data.content);
+    if (data.sanitizeHTML) {
+      $(data.selector).get().forEach(hydrateAiMessagesIn);
+    }
   });
   Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
     if (data.keepChildNodes === true) {
@@ -657,7 +760,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $(data.id).on('scroll', () => {
       if (
         $(data.id)[0].scrollHeight - $(data.id).scrollTop()
-          < $(data.id).outerHeight() + 200
+        < $(data.id).outerHeight() + 200
         && isLoading === false
       ) {
         isLoading = true;
@@ -700,7 +803,9 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     $(id).prop('disabled', false);
   });
   Shiny.addCustomMessageHandler('gms-disableEl', (id) => {
-    $(id).prop('disabled', true);
+    const btn = $(id);
+    clearTimeout(btn.data('disable-timeout'));
+    btn.prop('disabled', true);
   });
   Shiny.addCustomMessageHandler('gms-toggleEl', (id) => {
     if ($(id).is(':visible')) {
@@ -730,7 +835,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       let crPosition = Infinity;
       let nlPosition = -1;
       let contentToAppend = '';
-      for (;;) {
+      for (; ;) {
         if (crPosition - 1 < 0) {
           crPosition = -1;
           content += contentToAppend;
@@ -806,13 +911,19 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     const percentCompleted = Math.round(
       (parseInt(data.progress.noCompleted, 10)
         / parseInt(data.progress.noTotal, 10))
-        * 100,
+      * 100,
     );
+    let progressBarText;
+    if (data.progress.isPercentage === true) {
+      progressBarText = `${percentCompleted}%`;
+    } else {
+      progressBarText = `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`;
+    }
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
       .text(
-        `${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`,
+        progressBarText,
       );
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
@@ -839,30 +950,35 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
     const name = $.makeArray(el.name);
 
     for (let i = 0; i < id.length; i += 1) {
-      let checkBoxHTML = '';
+      const $line = $('<div class="attachment-line">').append(
+        '<i class="fa fa-file-lines attachment-icon" role="presentation"></i>',
+        $('<a href="#" class="attachment-name">')
+          .attr({ title: name[i], onclick: `Miro.downloadAttachment(${id[i]});return false;` })
+          .text(name[i]),
+      );
       if (el.allowExec) {
-        checkBoxHTML = `<div class="col-sm-6">
-        <div class="form-group shiny-input-container">
-          <div class="checkbox-simple">
-            <label>
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" \
-  onchange="Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),\
-  {priority:'event'});" checked="checked">
-                  <span></span>
-                </label>
-              </div>
-              <span class="label-span">${el.labelCb}</span>
-            </label>
-          </div>
-        </div>
-      </div>`;
+        const $checkbox = $('<input type="checkbox" checked="checked">').attr(
+          'onchange',
+          `Shiny.setInputValue('execPermAttachment_${id[i]}',$(this).is(':checked'),{priority:'event'});`,
+        );
+        $line.append(
+          $('<div class="attachment-exec">').attr('title', el.labelCb).append(
+            $('<div class="form-group shiny-input-container">').append(
+              $('<div class="checkbox-simple">').append(
+                $('<label>').append(
+                  $('<div class="checkbox">').append($('<label>').append($checkbox, '<span></span>')),
+                ),
+              ),
+            ),
+          ),
+        );
       }
-
-      $(
-        `<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`,
-      ).insertBefore('#endAttachList');
+      $line.append(
+        `<button class="btn btn-default bt-icon attachment-remove" id="btRemoveAttachment_${id[i]}" type="button" \
+title="Remove attachment" onclick="Miro.removeAttachment(${id[i]})">\
+<i class="fa fa-trash-can" role="presentation" aria-label="Remove attachment"></i></button>`,
+      );
+      $line.insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
@@ -966,7 +1082,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       currContent.each((i, el) => {
         if (
           newContent[i][2] !== true
-          && newContent[i][1] === $(el).data('hash')
+          && newContent[i][1] === el.dataset.hash
         ) {
           return true;
         }
@@ -977,7 +1093,8 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       Shiny.bindAll(dropdownContainer);
     });
   });
-  Shiny.addCustomMessageHandler('gms-parseLog', (e) => { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-parseLog', (e) => {
     if (miroLogParser.isInitialized !== true) {
       return;
     }
@@ -999,6 +1116,8 @@ font-size:15pt;text-align:center;'>${data.data}</div>`
       });
     }
   });
+  registerAiHandlers();
+  registerHeightFitting();
   const autoNumericBinding = new Shiny.InputBinding();
   $.extend(autoNumericBinding, {
     find(scope) {

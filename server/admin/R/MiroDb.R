@@ -10,6 +10,7 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       bigint = "integer"
     )
     flog.debug("Db: MiroDb initialized.")
+    private$dbName <- dbConnectionInfo$name
     private$setRolePrefix()
     return(invisible(self))
   },
@@ -52,6 +53,13 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
         ),
         mask = appDbCredentials$password
       )
+      private$runQuery(
+        paste0(
+          "GRANT CONNECT ON DATABASE ",
+          dbQuoteIdentifier(private$conn, private$dbName), " TO ",
+          dbQuoteIdentifier(private$conn, dbAppId), ";"
+        )
+      )
     }
     private$runQuery(paste0(
       "CREATE SCHEMA IF NOT EXISTS AUTHORIZATION ",
@@ -72,13 +80,10 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       dbQuoteIdentifier(private$conn, private$getDbAppId(appId)), " CASCADE;"
     ))
     return(invisible(self))
-  },
-  finalize = function() {
-    flog.debug("Db: Database connection ended as Db object was gced.")
-    dbDisconnect(private$conn)
   }
 ), private = list(
   conn = NULL,
+  dbName = NULL,
   rolePrefix = NULL,
   runQuery = function(query, mask = NULL, get = FALSE) {
     if (is.null(mask)) {
@@ -211,5 +216,9 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
       }
     )
     return(newRolePrefix)
+  },
+  finalize = function() {
+    dbDisconnect(private$conn)
+    flog.debug("Db: Database connection ended as Db object was gced.")
   }
 ))

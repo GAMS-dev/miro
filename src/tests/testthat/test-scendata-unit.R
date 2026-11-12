@@ -168,9 +168,10 @@ if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
   )
 }
 createTestDb()
+dbConnProvider <- DbConnectionProvider$new(dbConfig)
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
   ugroups = c("bla_blubb", "test123")
 )
@@ -261,11 +262,11 @@ if (!identical(procEnv$MIRO_DB_TYPE, "postgres")) {
     name = dbPath
   )
 }
-db$finalize()
+db$destroy()
 createTestDb()
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = slocktimeLimit, modelName = "pickstock",
   ugroups = c("bla_blubb", "test123"),
   forceNew = TRUE
@@ -334,4 +335,13 @@ test_that("Remapping scenario names works", {
   expect_identical(scenData$.__enclos_env__$private$getMetadata(c(1, 2, 6))[["_sname"]], c("scen_1", "..."))
 })
 
-db$finalize()
+test_that("Ordering scenarios of a ref ID works", {
+  scenData$addRefId("cmpTestOrder", c("3", "sb", "5"))
+  expect_identical(scenData$getRefScenMap("cmpTestOrder"), c("3", "sb_cmpTestOrder", "5"))
+  scenData$orderRef("cmpTestOrder", c("sb", "5", "3"))
+  expect_identical(scenData$getRefScenMap("cmpTestOrder"), c("sb_cmpTestOrder", "5", "3"))
+  scenData$orderRef("cmpTestOrder", "5")
+  expect_identical(scenData$getRefScenMap("cmpTestOrder")[1], "5")
+})
+
+db$destroy()

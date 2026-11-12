@@ -37,10 +37,7 @@
       "interrupt":"Stop"
     },
     "header":{
-      "remoteExec":{
-        "login": "Login",
-        "logout": "Logout"
-      },
+      "aiAssistant": "Mira",
       "scenario":{
         "title":"Scenario",
         "edit":"Edit metadata",
@@ -54,7 +51,9 @@
         "title": "Help",
         "doc": "Documentation",
         "forum": "GAMS Forum",
+        "whatsNew": "What's New",
         "commandPalette": "Command palette",
+        "settings": "Engine Settings",
         "about": "About"
       }
     },
@@ -127,7 +126,6 @@
       "noData":"No data was returned by your query",
       "invalidCsvFilter": "'%s' must not contain ','.",
       "chooseSelectedButton":"Choose selected scenarios",
-      "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "addBlock": "Add block",
@@ -238,6 +236,7 @@
       "viewsDuplicateError": "The following views were not imported as a view with the same name already exists for that symbol: '%s'.",
       "viewsInvalidError": "Some of the views you tried to import were not imported because they are defined for symbols that do not exist: '%s'.",
       "noViewData": "No views",
+      "noAttachments": "No attachments",
       "selectAllViews": "Select all",
       "selectNoViews": "Select none",
       "viewsNoneSelected": "No views selected. Select views by clicking on the row.",
@@ -246,7 +245,7 @@
       "viewsTableHeaderId": "Name",
       "viewsDownload": "Download views",
       "viewsRemove": "Remove views",
-      "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
+      "errMsg": "Problems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
     },
@@ -340,7 +339,9 @@
       "descNoScen":"No saved scenarios could be found.",
       "selLoadScen":"Select the scenario(s) that you want to load",
       "selTags": "Show only scenarios with tag(s):",
-      "baseScenLabel": "Base scenario:",
+      "includeSandbox": "Include sandbox scenario: %s",
+      "selBaseline": "Baseline scenario",
+      "baselineDesc": "All other scenarios are compared against this scenario.",
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
@@ -453,6 +454,34 @@
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
       }
     },
+    "dialogWhatsNew": {
+      "title": "What's New",
+      "newFeaturesHdr": "New features",
+      "minorImprovementsHdr": "Minor new features and improvements",
+      "cancelButton": "Close",
+      "releaseNotes": "Read the full release notes"
+    },
+    "dialogSettings": {
+      "title": "GAMS Engine settings",
+      "quotaInfoHeader": "Remaining Quota",
+      "quotaVolumeLabel": "Volume quota",
+      "unlimitedQuotaLabel": "unlimited",
+      "quotaDiskLabel": "Disk quota",
+      "selDefaultInstance": "Select default instance",
+      "instancePoolLabel": "Instance Pool",
+      "instanceLabel": "Instance",
+      "scalingUpLabel": "Scaling up…",
+      "scalingDownLabel": "Scaling down…",
+      "memoryLabel": "memory",
+      "cpuLabel": "cpu",
+      "multiplierLabel": "multiplier",
+      "poolOwnerLabel": "owner",
+      "activeWorkersLabel": "active",
+      "busyWorkersLabel": "busy",
+      "desiredWorkersLabel": "desired",
+      "btUpdateDefaultInstance": "Update default instance",
+      "closeButton": "Close"
+    },
     "importJobsDialog":{
       "title": "Currently active jobs",
       "noJobs": "No jobs are currently active",
@@ -514,6 +543,9 @@
     "dialogBatchLoad":{
       "title": "Select action",
       "selectMethod": "What would you like to do with the selected scenarios?",
+      "compareSettingsTitle": "Compare %d scenario(s) in mode: %s",
+      "compareButton": "Compare",
+      "backButton": "Back",
       "scenNameCols": "Select columns for naming scenarios",
       "scenNamePrefix": "Prefix for the scenario name",
       "selExportType": "Select a file type",
@@ -532,9 +564,88 @@
       "interactiveButtonTab":"Compare (Tab)",
       "interactiveButtonPivot":"Compare (Pivot)",
       "interactiveButtonSplit": "Compare (Split)",
+      "interactiveButtonAi": "Ask Mira",
       "downloadButton":"Download data",
       "removeButton": "Delete scenarios",
       "removeIncompleteError": "Not all of the selected scenarios could be removed. This could be because they are read-only or have already been removed by someone else in the meantime."
+    },
+    "aiBotDialog": {
+      "title": "Mira",
+      "welcomeMessage": "Hi there! I'm Mira, your AI assistant. I'm here to help you explore your optimization results, whether you are analyzing a single scenario or comparing multiple.",
+      "welcomeMessageCustomRenderer": "Hi there! I'm Mira, your AI assistant. I'm here to help you create your custom renderer code. Just let me know how you would like to visualize your data.",
+      "currentContextSandbox": "Sandbox scenario: %s",
+      "currentContextCompare": "Comparison of %d scenarios",
+      "backToSandbox": "Back to sandbox",
+      "requestAbortedMessage": "Request aborted.",
+      "sandboxSyncFailedMessage": "Mira could not access the current sandbox data, so your message was not sent. Please try again.",
+      "chatBubbleUserHeader": "User:",
+      "chatBubbleAssistantHeader": "Mira:",
+      "userTextPlaceholder": "Type your scenario question here...",
+      "userTextPlaceholderRenderer": "What should we build today?",
+      "inputTokensLabel": "Input Tokens: %s",
+      "inputTokensTitle": "Tokens used for prompt.",
+      "outputTokensLabel": "Output Tokens: %s",
+      "outputTokensTitle": "Tokens generated by the AI model.",
+      "disclaimer": "Mira can make mistakes. Please verify important information.",
+      "nfApplySuccess": "Code applied!",
+      "nfApplyErrNoCode": "Neither output nor renderer function found in latest AI response",
+      "nfApplyErrNoResponse": "The last message must be from the AI to apply code.",
+      "btClear": "Clear Chat",
+      "btClose": "Close",
+      "resizeHandle": "Drag to resize, double-click to reset",
+      "btCopy": "Copy Text",
+      "btDownloadChart": "Download as PNG",
+      "chartUnavailable": "This chart is no longer available.",
+      "btOpenChartInPivot": "Open in pivot view",
+      "openChartReplaceDesc": "The scenarios currently loaded in the pivot view will be replaced.",
+      "btOpenChartReplace": "Replace",
+      "chartNotInPivot": "This data cannot be shown in the pivot view.",
+      "btApplyCode": "Apply Code",
+      "changeProposalHeader": "Proposed input data change",
+      "changeProposalBefore": "before",
+      "changeProposalAfter": "after",
+      "changeProposalRow": "1 row",
+      "changeProposalRows": "%s rows",
+      "changeRowAdded": "new",
+      "changeRowRemoved": "removed",
+      "changeProposalTruncated": "Showing the first %s of %s affected rows.",
+      "changeOpMultiply": "multiply by %s",
+      "changeOpDivide": "divide by %s",
+      "changeOpAdd": "add %s",
+      "changeOpSubtract": "subtract %s",
+      "changeOpSet": "set to %s",
+      "changeOpUpsert": "write rows",
+      "changeOpDelete": "delete rows",
+      "changeStatusApplied": "Applied to the sandbox scenario.",
+      "changeStatusDiscarded": "Discarded.",
+      "changeStatusOutdated": "Outdated: the data of this symbol changed in the meantime. Ask the assistant to propose the change again.",
+      "changeStatusFailed": "Could not be applied: %s",
+      "changeErrNoRows": "No row of the current input data matches the proposed filters.",
+      "changeErrBadChoice": "'%s' is not one of the values this symbol currently accepts.",
+      "nfChangeApplied": "Input data of '%s' updated.",
+      "btApplyChange": "Apply",
+      "btDiscardChange": "Discard",
+      "changeRebased": "The data changed since this was proposed, so the preview was updated. Review it before applying.",
+      "changeGroupRebased": "The data changed since these were proposed, so the preview was updated. Review it before applying.",
+      "changeGroupHeader": "%d proposed changes",
+      "changeGroupIndependent": "These changes do not affect each other, so applying them together gives exactly what each card above shows.",
+      "changeGroupCombined": "Some of these changes affect the same values, so applied together, in this order, they give a different result than their cards above show individually:",
+      "changeGroupStatusApplied": "All changes applied to the sandbox scenario.",
+      "changeGroupStatusRetired": "Some of these changes were already handled one by one.",
+      "btApplyAllChanges": "Apply all %d",
+      "nfChangesApplied": "%d input data changes applied.",
+      "toolActivityStatusError": "Error",
+      "toolActivityStatusRows": "%s rows",
+      "toolActivitySymbol": "Symbol",
+      "toolActivityScenarios": "Scenarios",
+      "toolActivityAggregation": "Aggregation",
+      "toolActivityAnalysisMode": "Comparison",
+      "toolActivityGroupBy": "Grouped by",
+      "toolActivityFilter": "Rows",
+      "toolActivityOrderBy": "Sorted by",
+      "toolActivityLimit": "Limit",
+      "toolActivityRows": "Rows returned",
+      "toolActivityGroupCount": "%s database queries"
     },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
@@ -648,6 +759,8 @@
       "btLoadView": "Load view",
       "btShowSettings": "Settings",
       "btNewView": "Add view",
+      "btNewViewDisabledTooltip": "Views can only be added in the sandbox scenario.",
+      "btNewViewDisabledCompareTooltip": "Views can only be added when the sandbox scenario is the baseline scenario. To add a view to this comparison, load the scenarios again, select the sandbox scenario as baseline, add the view and save the sandbox scenario.",
       "btEnableEdit": "Enable editing",
       "btAddRow": "Add row",
       "btRemoveRows": "Remove rows",
@@ -690,6 +803,7 @@
         "yGrid": "Draw grid for y axis",
         "showDataMarkers": "Draw data points",
         "stepPlot": "Stepped Line Chart",
+        "hideLegend": "Hide legend",
         "minY": "Static minimum value on y axis (optional)",
         "maxY": "Static maximum value on y axis (optional)",
         "multiChartSeries": "Render series with different chart type",
@@ -732,6 +846,8 @@
         "tabChart": "Charts",
         "tabBaselineComp": "Baseline Comparison",
         "cbHideEmptyCols": "Hide empty columns",
+        "cbDecimals": "Number of decimals",
+        "cbDecimalsTooltip": "Enter -1 to disable rounding",
         "singleDropdown": "Dimension(s) to limit to a single-selection dropdown filter",
         "cbShowTableSummaryRow": "Show table summary (rows)",
         "cbShowTableSummaryCol": "Show table summary (columns)",
@@ -743,6 +859,7 @@
           "cbEnable": "Enable baseline comparison",
           "selDomain": "Domain",
           "selRecord": "Baseline record",
+          "baselineScen": "Baseline scenario",
           "selMetrics": "Comparison metrics (max 2)",
           "errorAggregated": "The baseline domain can't be aggregated. Baseline comparison has been turned off - showing raw values instead.",
           "metrics": {
@@ -810,6 +927,9 @@
         "prompt1": "Are you sure you want to remove the column(s):",
         "prompt2": "? This cannot be undone!"
       }
+    },
+    "dashboard":{
+      "noDataWarning":"No data"
     },
     "dashboardComparison":{
       "selectScen": "Select scenario"
@@ -1122,12 +1242,14 @@
         "tabSubmission": "Job Submission",
         "tabLogs": "Log Files",
         "tabComparison": "Scenario Comparison",
+        "tabAiAssistant": "AI Assistant",
         "tabData": "Scenario Data and Attachments",
         "tabSymbolLinks": "Hidden Symbols and Symbol Links",
         "headerGeneral": "Title and Logo",
         "headerPivotcompare": "Pivot comparison mode",
         "descriptionPivotcompare": "These settings serve as default values for the user, but they can be adjusted at any time during a session.",
         "headerRenderers": "Default Renderers",
+        "headerLanguage": "Custom Language",
         "headerAppearance": "Appearance",
         "headerSymbolDisplay": "Hide symbols",
         "headerTabGrouping": "Tab grouping",
@@ -1211,6 +1333,9 @@
       "hiddenOutputScalars":{
         "label": "Output scalars that should not be displayed in the scalars table but can be used in graphs etc."
       },
+      "hiddenCompareSymbols":{
+        "label": "Input/output symbols that should not be displayed as a tab in split, tab and pivot scenario comparison mode. These symbols are still displayed normally outside of scenario comparison."
+      },
       "mirologfile":{
         "label": "Include custom log file?",
         "tooltip": "Enter the name of the MIRO log file (minimum 3 characters). Otherwise, leave this field empty.",
@@ -1227,9 +1352,32 @@
         "btEdit": "Edit README",
         "dialogEdit": {
           "title": "Readme editor",
-          "reamdeHeader": "Markdown content",
+          "rawHeader": "Markdown content",
           "markdownHeader": "Readme preview",
           "msgErrSave": "Problems writing the README file. Check whether you have sufficient write permissions in your model directory.",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        }
+      },
+      "aiAssistant": {
+        "cbEnable": "Enable AI Assistant",
+        "btEditContext": "Edit Domain Context",
+        "btEditInstructions": "Edit General Instructions",
+        "tooltipContext": "Gives the assistant background knowledge about your model, e.g. its purpose, terminology and how it operates. - Open documentation.",
+        "tooltipInstructions": "Sets formatting, tone and behavioral rules for how the assistant responds. - Open documentation.",
+        "dialogEditContext": {
+          "title": "Edit AI Assistant Domain Context",
+          "helpText": "**What it does:** Gives the AI background knowledge about your optimization model so it can provide relevant, domain-aware insights and data analysis.\n\n**How to use it:** Describe the purpose of your app, the underlying business or scientific problem it solves, key terminology, and how the model operates.\n\n**Tip:** You can use the placeholder `[[README]]` anywhere in this field. MIRO will automatically replace it with the current content of your app's README file, saving you from duplicating your documentation.",
+          "rawHeader": "Markdown content",
+          "markdownHeader": "Preview",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        },
+        "dialogEditInstructions": {
+          "title": "Edit AI Assistant Instructions",
+          "helpText": "**What it does:** Defines specific rules, behavioral guidelines, and constraints for how the AI assistant should interact with users and format its output.\n\n**How to use it:** Provide clear directives for the AI's behavior. This includes formatting preferences (e.g., \"Always format monetary values in millions of dollars\" or \"Use tables for comparing scenario results\"), tone of voice, or specific steps it should take when analyzing data inconsistencies (e.g., \"Always flag negative values in the demand table as an error\").",
+          "rawHeader": "Markdown content",
+          "markdownHeader": "Preview",
           "btCancel": "Cancel",
           "btSave": "Save"
         }
@@ -1241,9 +1389,18 @@
         "label": "Number of decimal places used for rounding numerical values (global setting).",
         "tooltip": "Affects all output tables, Big Data input tables and the table in the Batch Load module. - Open documentation."
       },
+      "numericalTolerance":{
+        "label": "Number of decimal places used to treat values close to zero as zero (global setting).",
+        "tooltip": "Affects the baseline comparison in Dashboard and MIRO Pivot: a value is treated as exactly zero if it is smaller than 10 to the power of minus this number, avoiding division-by-zero or inflated percentage/normalized values. - Open documentation."
+      },
       "defaultRenderer":{
         "labelOutput": "Default renderer for output data",
         "choicesOutput": ["Pivot table", "Table"]
+      },
+      "customLanguage":{
+        "checkbox": "Use a custom language file",
+        "tooltip": "Allows you to override and personalize all or individual interface text and labels.",
+        "label": "Name of the language file"
       },
       "logo":{
         "header": "Logo preview:",
@@ -1292,6 +1449,10 @@
       },
       "downloadTempFiles":{
         "label": "Allow access to the temporary working directory"
+      },
+      "protectModelFiles":{
+        "title": "Attachments that can be read by the GAMS model are placed in the model's working directory. If enabled, such attachments must not have the same name as one of the model files.",
+        "label": "Prevent attachments that the model can read from overwriting model files"
       },
       "hcubeModule":{
         "label": "Activate Hypercube module",
@@ -1702,7 +1863,8 @@
         "val1": "Could not set range for x axis. Check for correct data format!",
         "custom1": "Could not parse additional options. Please make sure that you use valid JSON syntax!",
         "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
-        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
+        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information).",
+        "customOutputInvalid": "The output function should return Shiny UI content (e.g. wrap your return value in tagList(...)), not a bare function."
       },
       "errMsg":{
         "errTitle1": "No valid data",
@@ -1865,7 +2027,7 @@
           "title": "Layer control options",
           "baseGroups": "Selectable base groups",
           "overlayGroups": "Selectable overlay groups",
-          "position": "Display grid lines",
+          "position": "Position of the layer control",
           "positionChoices": ["Top right", "Bottom right", "Bottom left", "Top left"],
           "collapsed": "Collapse layer control panel"
         }
@@ -2174,7 +2336,6 @@
         "secondary": "Secondary color",
         "sidebar": "Sidebar color",
         "navbar": "Header color",
-        "body_bg": "Body background color",
         "alert": "Alert color",
         "mainBg": "Main background color",
         "console": "Console text color",
@@ -2182,16 +2343,16 @@
         "secondaryDark": "Secondary color",
         "sidebarDark": "Sidebar color",
         "navbarDark": "Header color",
-        "body_bg_dark": "Body background color",
         "alertDark": "Alert color",
         "mainBgDark": "Main background color",
         "consoleDark": "Console text color",
         "widgetBgDark": "Widgets background color",
         "primaryTooltip": "Main brand color. It is used most frequently across the application to highlight primary actions and guide user focus.",
-        "secondaryTooltip": "The secondary color is used to accent the interface, differentiate content, indicate less prominent actions, and serves as the color of the main buttons in the application.",
+        "secondaryTooltip": "Accent color for warnings, progress bars, validation messages and the hover state of outlined buttons. Filled main actions (e.g. solve, confirm) use the primary color.",
         "alertTooltip": "The alert color is applied to buttons that trigger actions like remove, clear, or delete, emphasizing caution and drawing attention to potentially irreversible changes.",
         "consoleTooltip": "Used for displaying output in log and listing files within the GAMS interaction section.",
-        "widgetBgDarkTooltip": "The widget color is used for interactive UI elements such as dropdowns, tables, sliders, and other controls."
+        "widgetBgDarkTooltip": "Background of dropdown menus and other controls such as checkboxes, date pickers and scrollbars. Text inputs and tables adapt to the main background automatically.",
+        "mainBgTooltip": "Background of the main content area, including sections, dialogs and tables."
       },
       "themeButtons": {
         "buttonsTitle": "Save theme colors",

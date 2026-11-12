@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 haproxy:2.6-alpine3.20
+FROM --platform=linux/amd64 haproxy:3.2-alpine3.24
 
 USER root
 EXPOSE 2375

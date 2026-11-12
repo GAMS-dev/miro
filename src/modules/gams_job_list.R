@@ -11,18 +11,12 @@ observe({
   flog.trace("Refreshing job list..")
   isolate({
     flog.debug("Job list tab clicked. Job list is being reloaded")
-    if (!worker$validateCredentials()) {
-      flog.debug("User is not logged in. Login dialog is opened.")
-      showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
-      hideEl(session, "#jImport_load")
-      return(NULL)
-    }
 
     jobList <- NULL
     redirect <- FALSE
     tryCatch(
       {
-        jobList <- worker$getJobList()
+        jobList <- worker$asyncJobManager$getJobList()
         if (jobList$newCompleted) {
           showNewCompletedJobsDialog()
         }
@@ -37,9 +31,7 @@ observe({
         }
 
         if (errMsg == 401L || errMsg == 403L) {
-          flog.debug("User is not logged in. Login dialog is opened.")
-          showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
-          redirect <<- TRUE
+          flog.debug("User is not logged in or does not have necessary permissions (%d)", errMsg)
           return(showHideEl(session, "#fetchJobsAccessDenied", 6000L))
         }
         flog.error(
@@ -74,11 +66,7 @@ if (isTRUE(config$activateModules$remoteExecution)) {
       flog.error("Invalid job ID: '%s'.", jID)
       return(showHideEl(session, "#fetchJobsError", 6000L))
     }
-    if (identical(worker$validateCredentials(), FALSE)) {
-      flog.debug("User is not logged in. Login dialog is opened.")
-      return(showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel"))
-    }
-    if (length(worker$getActiveDownloads()) > 10L) {
+    if (length(worker$asyncJobManager$getActiveDownloads()) > 10L) {
       flog.info(
         "Can not download job as maximum number of: %d parallel downloads is reached.",
         length(resDlIdx)
@@ -87,7 +75,7 @@ if (isTRUE(config$activateModules$remoteExecution)) {
     }
     hideEl(session, paste0("#btDownloadJob_", jID))
     showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
-    res <- tryCatch(worker$getJobResults(jID),
+    res <- tryCatch(worker$asyncJobManager$getJobResults(jID),
       error = function(e) {
         errMsg <- conditionMessage(e)
         if (errMsg == 401L || errMsg == 403L) {
@@ -104,7 +92,7 @@ if (isTRUE(config$activateModules$remoteExecution)) {
             jID
           )
           showHideEl(session, "#fetchJobsJobNotFound", 6000L)
-          tryCatch(worker$updateJobStatus(JOBSTATUSMAP[["corrupted(noProcess)"]], jID),
+          tryCatch(worker$asyncJobManager$updateJobStatus(JOBSTATUSMAP[["corrupted(noProcess)"]], jID),
             error = function(e) {
               flog.error(
                 "Problems updating job status of job ID: '%s'. Error message: '%s'.",
@@ -123,7 +111,7 @@ if (isTRUE(config$activateModules$remoteExecution)) {
       }
     )
     if (identical(res, 100L)) {
-      activeDownloads <- worker$getActiveDownloads()
+      activeDownloads <- worker$asyncJobManager$getActiveDownloads()
       session$sendCustomMessage(
         "gms-markJobDownloadComplete",
         list(
@@ -141,7 +129,7 @@ if (isTRUE(config$activateModules$remoteExecution)) {
     if (!length(asyncResObs)) {
       asyncResObs <<- observe({
         invalidateLater(2000L, session)
-        activeDownloads <- worker$getActiveDownloads()
+        activeDownloads <- worker$asyncJobManager$getActiveDownloads()
         flog.debug(
           "Download-results-observer triggered (active downloads: %s).",
           paste(activeDownloads, collapse = ", ")
@@ -153,10 +141,10 @@ if (isTRUE(config$activateModules$remoteExecution)) {
           return()
         }
         for (dlID in activeDownloads) {
-          dlProgress <- tryCatch(worker$getJobResults(dlID),
+          dlProgress <- tryCatch(worker$asyncJobManager$getJobResults(dlID),
             error = function(e) {
               errMsg <- conditionMessage(e)
-              worker$removeActiveDownload(dlID)
+              worker$asyncJobManager$removeActiveDownload(dlID)
               flog.error(
                 "Problems downloading job results. Error message: '%s'.",
                 errMsg
@@ -186,7 +174,8 @@ if (isTRUE(config$activateModules$remoteExecution)) {
               id = paste0("#jobImportDlProgress_", dlID),
               progress = list(
                 noCompleted = dlProgress,
-                noTotal = 100L
+                noTotal = 100L,
+                isPercentage = TRUE
               )
             )
           )
@@ -202,16 +191,9 @@ observeEvent(input$btShowHistory, {
   err <- FALSE
   tryCatch(
     {
-      jobList <- worker$getJobList(jobHist = TRUE)$jobList
+      jobList <- worker$asyncJobManager$getJobList(jobHist = TRUE)$jobList
     },
     error = function(e) {
-      errMsg <- conditionMessage(e)
-      if (errMsg == 401L || errMsg == 403L) {
-        flog.debug("User is not logged in. Login dialog is opened.")
-        showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
-        err <<- TRUE
-        return()
-      }
       flog.error(
         "Problems loading job list from database. Error message: '%s'.",
         conditionMessage(e)
@@ -227,22 +209,17 @@ observeEvent(input$btShowHistory, {
 })
 
 observeEvent(input$discardJob, {
-  err <- FALSE
   jID <- input$discardJob
   flog.trace("Discard job button clicked. Job ID: '%s'.", jID)
-  if (is.null(worker$getPid(jID))) {
+  if (is.null(worker$asyncJobManager$getPid(jID))) {
     flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if (identical(worker$validateCredentials(), FALSE)) {
-    flog.debug("User is not logged in. Login dialog is opened.")
-    return(showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel"))
-  }
   tryCatch(
     {
-      jobMeta <- worker$getInfoFromJobList(jID)
-      worker$updateJobStatus(JOBSTATUSMAP[["discarded"]],
+      jobMeta <- worker$asyncJobManager$getInfoFromJobList(jID)
+      worker$asyncJobManager$updateJobStatus(JOBSTATUSMAP[["discarded"]],
         jID,
         tags = input[[paste0("jTag_", jID)]]
       )
@@ -253,26 +230,16 @@ observeEvent(input$discardJob, {
       rv$jobListPanel <- rv$jobListPanel + 1L
     },
     error = function(e) {
-      errMsg <- conditionMessage(e)
-      if (errMsg == 401L || errMsg == 403L) {
-        flog.debug("User is not logged in. Login dialog is opened.")
-        showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
-        err <<- TRUE
-        return()
-      }
-      flog.error("Problems interrupting job: '%s'. Error message: '%s'.", jID, errMsg)
+      flog.error("Problems interrupting job: '%s'. Error message: '%s'.", jID, conditionMessage(e))
       showHideEl(session, "#fetchJobsError")
     }
   )
-  if (err) {
-    return()
-  }
 })
 getJobProgress <- function(jID) {
-  if (!identical(worker$getStatus(jID), JOBSTATUSMAP[["running"]])) {
+  if (!identical(worker$asyncJobManager$getStatus(jID), JOBSTATUSMAP[["running"]])) {
     return(NULL)
   }
-  jobProgress <- worker$getHcubeJobProgress(jID)
+  jobProgress <- worker$asyncJobManager$getHcubeJobProgress(jID)
 
   noJobsCompleted <- jobProgress[[1L]]
   noJobs <- jobProgress[[2L]]

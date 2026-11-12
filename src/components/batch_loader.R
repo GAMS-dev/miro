@@ -488,9 +488,6 @@ BatchLoader <- R6Class("BatchLoader",
     setScenIdNameMap = function(scenIdNameMap) {
       private$scenIdNameMap <- scenIdNameMap
       return(invisible(self))
-    },
-    finalize = function() {
-      NULL
     }
   ),
   private = list(
@@ -557,6 +554,9 @@ BatchLoader <- R6Class("BatchLoader",
         as.integer(limit + 1L), ";"
       ))
       return(query)
+    },
+    finalize = function() {
+      NULL
     }
   )
 )

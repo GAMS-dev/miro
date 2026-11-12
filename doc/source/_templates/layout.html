@@ -1,0 +1,12 @@
+{# Keep the GAMS website shell as server-side includes. The include directives
+intentionally remain literal in the generated HTML; Apache SSI expands them on
+the deployed site. #} {% extends "!layout.html" %} {% block extrahead %} {{
+super() }} {# Bootstrap in the website bundle requires a global jQuery
+instance. #}
+<script src="{{ pathto('_static/jquery.min.js', 1) }}"></script>
+<!--#include virtual="/wheader.html" -->
+{% endblock extrahead %} {% block content %}
+<!--#include virtual="/wbody.html" -->
+{{ super() }} {% endblock content %} {% block footer %} {{ super() }}
+<!--#include virtual="/footer.html" -->
+{% endblock footer %}

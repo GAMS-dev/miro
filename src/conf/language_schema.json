@@ -156,20 +156,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "remoteExec": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "login": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "logout": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 2
+            "aiAssistant": {
+              "type": "string",
+              "minLength": 1
             },
             "scenario": {
               "type": "object",
@@ -222,7 +211,15 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "whatsNew": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "commandPalette": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "settings": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -231,7 +228,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 5
+              "minProperties": 7
             }
           },
           "minProperties": 3
@@ -500,10 +497,6 @@
               "type": "string",
               "minLength": 1
             },
-            "chooseCurrentButton": {
-              "type": "string",
-              "minLength": 1
-            },
             "chooseAllButton": {
               "type": "string",
               "minLength": 1
@@ -599,7 +592,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 14
+          "minProperties": 13
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -936,6 +929,10 @@
               "type": "string",
               "minLength": 1
             },
+            "noAttachments": {
+              "type": "string",
+              "minLength": 1
+            },
             "selectAllViews": {
               "type": "string",
               "minLength": 1
@@ -977,7 +974,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 35
+          "minProperties": 36
         },
         "dialogRemoveDuplicates": {
           "type": "object",
@@ -1324,7 +1321,15 @@
               "type": "string",
               "minLength": 1
             },
-            "baseScenLabel": {
+            "includeSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selBaseline": {
+              "type": "string",
+              "minLength": 1
+            },
+            "baselineDesc": {
               "type": "string",
               "minLength": 1
             },
@@ -1381,7 +1386,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 21
+          "minProperties": 23
         },
         "dialogNewCol": {
           "type": "object",
@@ -1770,6 +1775,116 @@
           },
           "minProperties": 16
         },
+        "dialogWhatsNew": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newFeaturesHdr": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minorImprovementsHdr": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "releaseNotes": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 5
+        },
+        "dialogSettings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaInfoHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaVolumeLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unlimitedQuotaLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "quotaDiskLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDefaultInstance": {
+              "type": "string",
+              "minLength": 1
+            },
+            "instancePoolLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "instanceLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scalingUpLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scalingDownLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "memoryLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cpuLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "multiplierLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "poolOwnerLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "activeWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "busyWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desiredWorkersLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btUpdateDefaultInstance": {
+              "type": "string",
+              "minLength": 1
+            },
+            "closeButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 19
+        },
         "importJobsDialog": {
           "type": "object",
           "additionalProperties": false,
@@ -2007,6 +2122,18 @@
               "type": "string",
               "minLength": 1
             },
+            "compareSettingsTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "compareButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backButton": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenNameCols": {
               "type": "string",
               "minLength": 1
@@ -2079,6 +2206,10 @@
               "type": "string",
               "minLength": 1
             },
+            "interactiveButtonAi": {
+              "type": "string",
+              "minLength": 1
+            },
             "downloadButton": {
               "type": "string",
               "minLength": 1
@@ -2092,7 +2223,318 @@
               "minLength": 1
             }
           },
-          "minProperties": 23
+          "minProperties": 27
+        },
+        "aiBotDialog": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "welcomeMessage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "welcomeMessageCustomRenderer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currentContextSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
+            "currentContextCompare": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backToSandbox": {
+              "type": "string",
+              "minLength": 1
+            },
+            "requestAbortedMessage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sandboxSyncFailedMessage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chatBubbleUserHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chatBubbleAssistantHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputTokensLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputTokensTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outputTokensLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "outputTokensTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "disclaimer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplySuccess": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplyErrNoCode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfApplyErrNoResponse": {
+              "type": "string",
+              "minLength": 1
+            },
+            "userTextPlaceholder": {
+              "type": "string",
+              "minLength": 1
+            },
+            "userTextPlaceholderRenderer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btClear": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btClose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "resizeHandle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btCopy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btDownloadChart": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chartUnavailable": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btOpenChartInPivot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "openChartReplaceDesc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btOpenChartReplace": {
+              "type": "string",
+              "minLength": 1
+            },
+            "chartNotInPivot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyCode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalBefore": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalAfter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalRow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeRowAdded": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeRowRemoved": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeProposalTruncated": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpMultiply": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpDivide": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpAdd": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpSubtract": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpSet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpUpsert": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeOpDelete": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusDiscarded": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusOutdated": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeStatusFailed": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeErrNoRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeErrBadChoice": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfChangeApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyChange": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btDiscardChange": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeRebased": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupRebased": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupHeader": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupIndependent": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupCombined": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupStatusApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "changeGroupStatusRetired": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btApplyAllChanges": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nfChangesApplied": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityStatusError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityStatusRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivitySymbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityScenarios": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityAggregation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityAnalysisMode": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityGroupBy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityFilter": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityOrderBy": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityLimit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "toolActivityGroupCount": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 76
         },
         "hcubeMode": {
           "type": "object",
@@ -2456,7 +2898,7 @@
           }
         }
       },
-      "minProperties": 48
+      "minProperties": 51
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -2523,6 +2965,14 @@
               "minLength": 1
             },
             "btNewView": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btNewViewDisabledTooltip": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btNewViewDisabledCompareTooltip": {
               "type": "string",
               "minLength": 1
             },
@@ -2694,6 +3144,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "hideLegend": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "minY": {
                   "type": "string",
                   "minLength": 1
@@ -2835,7 +3289,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 53
+              "minProperties": 54
             },
             "settings": {
               "type": "object",
@@ -2858,6 +3312,14 @@
                   "minLength": 1
                 },
                 "cbHideEmptyCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbDecimals": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbDecimalsTooltip": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2902,6 +3364,10 @@
                     "type": "string",
                     "minLength": 1
                   },
+                  "baselineScen": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "selMetrics": {
                     "type": "string",
                     "minLength": 1
@@ -2935,7 +3401,7 @@
                   }
                 }
               },
-              "minProperties": 13
+              "minProperties": 15
             },
             "dialogAddRow": {
               "type": "object",
@@ -3078,7 +3544,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 41
+          "minProperties": 43
         },
         "datatable": {
           "type": "object",
@@ -3169,6 +3635,17 @@
           },
           "minProperties": 3
         },
+        "dashboard": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "noDataWarning": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
+        },
         "dashboardComparison": {
           "type": "object",
           "additionalProperties": false,
@@ -3181,7 +3658,7 @@
           "minProperties": 1
         }
       },
-      "minProperties": 5
+      "minProperties": 6
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",
@@ -4359,6 +4836,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "tabAiAssistant": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "tabData": {
                   "type": "string",
                   "minLength": 1
@@ -4380,6 +4861,10 @@
                   "minLength": 1
                 },
                 "headerRenderers": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "headerLanguage": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4440,7 +4925,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 25
+              "minProperties": 27
             },
             "modalDialog": {
               "type": "object",
@@ -4711,6 +5196,17 @@
               },
               "minProperties": 1
             },
+            "hiddenCompareSymbols": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "mirologfile": {
               "type": "object",
               "additionalProperties": false,
@@ -4774,7 +5270,7 @@
                       "type": "string",
                       "minLength": 1
                     },
-                    "reamdeHeader": {
+                    "rawHeader": {
                       "type": "string",
                       "minLength": 1
                     },
@@ -4800,6 +5296,95 @@
               },
               "minProperties": 8
             },
+            "aiAssistant": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cbEnable": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btEditContext": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btEditInstructions": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltipContext": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltipInstructions": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dialogEditContext": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "helpText": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "rawHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "markdownHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btCancel": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btSave": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 6
+                },
+                "dialogEditInstructions": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "helpText": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "rawHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "markdownHeader": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btCancel": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "btSave": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 6
+                }
+              },
+              "minProperties": 7
+            },
             "saveDuration": {
               "type": "object",
               "additionalProperties": false,
@@ -4812,6 +5397,21 @@
               "minProperties": 1
             },
             "decimal": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
+            "numericalTolerance": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
@@ -4846,6 +5446,25 @@
                 }
               },
               "minProperties": 2
+            },
+            "customLanguage": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "checkbox": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tooltip": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 3
             },
             "logo": {
               "type": "object",
@@ -5026,6 +5645,21 @@
               },
               "minProperties": 1
             },
+            "protectModelFiles": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
             "hcubeModule": {
               "type": "object",
               "additionalProperties": false,
@@ -5053,7 +5687,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 39
+          "minProperties": 44
         },
         "tables": {
           "type": "object",
@@ -6715,9 +7349,13 @@
                 "tableNeeded": {
                   "type": "string",
                   "minLength": 1
+                },
+                "customOutputInvalid": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 4
+              "minProperties": 5
             },
             "errMsg": {
               "type": "object",
@@ -8771,10 +9409,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "body_bg": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "alert": {
                   "type": "string",
                   "minLength": 1
@@ -8800,10 +9434,6 @@
                   "minLength": 1
                 },
                 "navbarDark": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "body_bg_dark": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -8842,9 +9472,13 @@
                 "widgetBgDarkTooltip": {
                   "type": "string",
                   "minLength": 1
+                },
+                "mainBgTooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 26
+              "minProperties": 25
             },
             "themeButtons": {
               "type": "object",

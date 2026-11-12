@@ -22,27 +22,25 @@
 -->
 <!doctype html>
 <html
-  xmlns:th="//www.thymeleaf.org"
-  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  lang="en"
 >
-  <head lang="en">
+  <head>
     <title th:text="${title}"></title>
 
     <!-- Meta -->
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
 
-    <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
-    <!-- Theme CSS -->
     <link rel="shortcut icon" th:href="@{${resourcePrefix} + '/favicon'}" />
     <link
       rel="stylesheet"
       media="screen"
-      th:href="@{/assets/css/bootstrap.min.css}"
+      th:href="@{${resourcePrefix} + ${bootstrapCss}}"
     />
     <link
       id="theme-style"
@@ -57,83 +55,91 @@
   </head>
 
   <body>
-    <div class="site-wrapper">
-      <!-- ******Header****** -->
-      <header class="sub-header text-center">
-        <div class="container">
-          <div class="branding">
-            <h1 class="logo">
-              <img
-                class="img-fluid"
-                th:src="@{${resourcePrefix} + ${logoPath}}"
-                alt="Logo"
-              />
-            </h1>
-          </div>
-          <!--//branding-->
-          <div class="tagline"></div>
-          <!--//tagline-->
+    <div class="text-center d-flex h-100 auth-page">
+      <form
+        class="form-signin m-auto"
+        th:action="@{/login}"
+        method="POST"
+        novalidate
+      >
+        <img
+          class="auth-logo p-4 mb-4 rounded w-100"
+          th:src="@{${resourcePrefix} + ${logoPath}}"
+          alt="Logo"
+        />
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <div class="alert alert-danger" th:if="${error}">
+          <strong>Could not sign in!</strong><br />
+          <span th:text="${error}"></span>
         </div>
-        <!--//container-->
-      </header>
-      <!--//header-->
-
-      <section class="cards-section text-center">
-        <div class="container">
-          <div th:if="${@authenticationBackend.name != 'social'}">
-            <form class="form-signin" th:action="@{/login}" method="POST">
-              <h2 class="form-signin-heading">Please sign in</h2>
-              <div class="alert alert-danger" th:if="${error}">
-                <strong>Could not sign in!</strong><br /><span
-                  th:text="${error}"
-                ></span>
-              </div>
-              <label for="username" class="sr-only">Username</label>
-              <input
-                name="username"
-                id="username"
-                class="form-control"
-                placeholder="User name"
-                required="required"
-                autofocus="autofocus"
-              />
-              <label for="password" class="sr-only">Password</label>
-              <input
-                name="password"
-                type="password"
-                id="password"
-                class="form-control"
-                placeholder="Password"
-                required="required"
-              />
-              <button class="btn btn-lg btn-primary btn-block" type="submit">
-                Sign in
-              </button>
-            </form>
-          </div>
-
-          <div th:if="${@authenticationBackend.name == 'social'}">
-            <br />
-            <h2 class="form-signin form-signin-heading">Please sign in:</h2>
-            <form
-              th:each="provider : ${@socialProviders}"
-              class="form-signin"
-              method="POST"
-              th:action="@{/signin/__${provider}__}"
+        <div class="mb-3">
+          <label for="username" class="visually-hidden">Username</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            class="form-control"
+            placeholder="Username"
+            autocomplete="username"
+            required
+            autofocus
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="visually-hidden">Password</label>
+          <div class="input-group">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="form-control"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="input-group-text password-toggle"
+              id="passwordToggle"
+              aria-controls="password"
+              aria-label="Show password"
+              aria-pressed="false"
+              title="Show password"
             >
-              <button
-                th:class="@{btn btn-block btn-social btn-__${provider}__}"
-                type="submit"
+              <svg
+                class="icon-eye"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
               >
-                <span th:class="@{fa fa-__${provider}__}"></span> Sign in with
-                <span th:text="${provider.label()}"></span>
-              </button>
-            </form>
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg
+                class="icon-eye-off"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                />
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                <path
+                  d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                />
+                <path d="m2 2 20 20" />
+              </svg>
+            </button>
           </div>
         </div>
-        <!--//container-->
-      </section>
-      <!--//cards-section-->
+        <div class="d-grid gap-2">
+          <button class="btn btn-lg btn-primary" type="submit">Login</button>
+        </div>
+      </form>
     </div>
+    <script th:src="@{${resourcePrefix} + '/assets/js/login.js'}"></script>
   </body>
 </html>

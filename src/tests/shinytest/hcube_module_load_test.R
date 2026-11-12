@@ -108,7 +108,8 @@ app$set_inputs(batchLoadResults_rows_selected = 1, allow_no_input_binding_ = TRU
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$set_inputs(btBatchLoadSb = "click")
-Sys.sleep(1L)
+# sandbox has data, so overwriting must be confirmed
+expect_error(app$wait_for_js("$('#btBatchLoadSbOverwrite').is(':visible')", timeout = 5000L), NA)
 app$set_inputs(btBatchLoadSbOverwrite = "click")
 Sys.sleep(2L)
 
@@ -130,7 +131,8 @@ app$set_inputs(batchLoadResults_rows_selected = 1, allow_no_input_binding_ = TRU
 app$set_inputs(batchLoadSelected = "click")
 Sys.sleep(2L)
 app$set_inputs(btBatchLoadSb = "click")
-Sys.sleep(1L)
+# sandbox has data, so overwriting must be confirmed
+expect_error(app$wait_for_js("$('#btBatchLoadSbOverwrite').is(':visible')", timeout = 5000L), NA)
 app$set_inputs(btBatchLoadSbOverwrite = "click")
 Sys.sleep(2L)
 expect_identical(app$get_values()$input[["slider_3"]], 4L)
@@ -138,7 +140,7 @@ expect_identical(app$get_values()$input[["slider_3"]], 4L)
 app$set_inputs(btSave = "click")
 Sys.sleep(2L)
 expect_true(app$get_js("$('.modal-body').text().trim().includes('scenario with the name you have chosen already exists');",
-  timeout = 50L
+  timeout = 10000L
 ))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)
@@ -153,7 +155,7 @@ Sys.sleep(2L)
 app$set_inputs(btSave = "click")
 Sys.sleep(2L)
 
-conn <- connectDb(modelName = "pickstock_configuration")
+conn <- connectDb(modelName = "pickstock_hcube")
 tryCatch(
   {
     # check that HC job data of second job was removed as all scenarios of that job were saved

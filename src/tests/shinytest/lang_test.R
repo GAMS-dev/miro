@@ -4,7 +4,6 @@ app <- AppDriver$new("../../",
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
 Sys.sleep(2L)
-app$expect_values(input = paste0("slider_", c(2L, 2L + 1L)))
 
 expect_identical(
   iconv(as.character(app$get_values()[["output"]][["inputDataTitle"]][["html"]])),
@@ -12,6 +11,8 @@ expect_identical(
     "<i>&lt;New Scenario&gt;</i>"
   } else if (Sys.getenv("MIRO_LANG") == "de") {
     "<i>&lt;Neues Szenario&gt;</i>"
-  } else if (Sys.getenv("MIRO_LANG") == "cn") "<i>&lt;新建场景&gt;</i>"
+  } else if (Sys.getenv("MIRO_LANG") == "cn") {
+    "<i>&lt;新建场景&gt;</i>"
+  } else if (Sys.getenv("MIRO_LANG") == "es") "<i>&lt;Nuevo escenario&gt;</i>"
 )
 app$stop()

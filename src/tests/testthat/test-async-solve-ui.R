@@ -1,6 +1,7 @@
 test_that(
   "Asynchronous solve works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  {
+    ensureChromote()
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping asynchronous solve tests as ENGINE_URL was not set."
@@ -122,5 +123,5 @@ test_that(
     unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_REMOTE_EXEC"))
-  })
+  }
 )

@@ -17,7 +17,7 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-
+Sys.sleep(2L)
 app$click(selector = 'a[data-value="scenarios"]')
 expect_error(app$click(selector = "#scenSplit1_open > div:nth-child(2) > button"), NA)
 Sys.sleep(2L)

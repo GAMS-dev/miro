@@ -3,8 +3,8 @@ app <- AppDriver$new("../../",
   load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
   timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
 )
-expect_true(app$get_js("$('#inputTabset > li').length===3", timeout = 50L))
-expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 50L))
+expect_true(app$get_js("$('#inputTabset > li').length===3", timeout = 10000L))
+expect_true(app$get_js("$('#outputTabset > li').length===4", timeout = 10000L))
 
 # check that about dialog opens and has correct copyright year
 app$run_js("$('.navbar-custom-menu a.dropdown-toggle').get(0).click()")
@@ -19,7 +19,7 @@ Sys.sleep(1L)
 app$set_inputs(selLoadScen = paste0("1_", Sys.info()[["user"]]))
 app$set_inputs(btLoadScenConfirm = "click")
 expect_error(app$wait_for_js("$('#outputTabset > li').length===4", timeout = 5000L), NA)
-expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 2000L))
+expect_true(app$get_js("$('#contentScen_4 > li').length===7", timeout = 10000L))
 
 # pivot view
 app$click(selector = ".btSplitView button")

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import aiofiles
@@ -7,16 +8,18 @@ from fastapi.exceptions import HTTPException
 from pydantic import ValidationError
 from starlette import status
 
-from app.config import logger, settings
+from app.config import settings
 from app.dependencies import Paginator
-from app.utils.miro_proc import run_miro_proc
+from app.utils.miro_proc import run_miro_proc_async
 from app.utils.models import (
     ExportFileType,
+    PaginatedResponse,
     ScenarioConfig,
     ScenarioPermissions,
     User,
-    PaginatedResponse,
 )
+
+logger = logging.getLogger(__name__)
 
 
 async def add_data(
@@ -80,7 +83,7 @@ async def add_data(
             proc_input["scenNameOverwrite"] = file_name
 
         try:
-            run_miro_proc(
+            await run_miro_proc_async(
                 user_info,
                 "manageScenarios.R",
                 proc_input=json.dumps(proc_input).encode(),
@@ -109,7 +112,7 @@ async def delete_data(
             "deleteScenOwner": scen_owner,
         }
     ).encode()
-    run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
+    await run_miro_proc_async(user_info, "manageScenarios.R", proc_input=proc_input)
 
 
 async def download_data(
@@ -130,7 +133,7 @@ async def download_data(
             "downloadScenOwner": scen_owner,
         }
     ).encode()
-    run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
+    await run_miro_proc_async(user_info, "manageScenarios.R", proc_input=proc_input)
 
 
 async def get_scen_list(
@@ -144,7 +147,9 @@ async def get_scen_list(
             "perPage": paginator.per_page,
         }
     ).encode()
-    stderr = run_miro_proc(user_info, "manageScenarios.R", proc_input=proc_input)
+    stderr = await run_miro_proc_async(
+        user_info, "manageScenarios.R", proc_input=proc_input
+    )
     json_start_pos = stderr.find("merr:::200:::")
     if json_start_pos == -1:
         logger.warning("Invalid stderr received from R process: %s", stderr[:3000])

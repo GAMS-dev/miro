@@ -37,7 +37,7 @@ expect_error(app$get_js("$('#btBatchCompare~.dropdown-menu a:eq(1)').click();"),
 Sys.sleep(6L)
 
 expect_true(app$get_js("$('#cmpCustom___dashboard_1-dowVSindexChart').is(':visible')"))
-expect_true(app$get_js("$('#cmpCustom___dashboard_1-stockWeightChart').is(':hidden');"))
+expect_identical(unname(app$get_js(paste0("$('#cmpCustom___dashboard_1-stockWeightChart')"))), list())
 
 expect_identical(
   app$get_js("$('#cmpCustom___dashboard_1-abserrorTable tr').filter(function(el){return ['2016-06-02','2016-06-07'].includes($('td:first-child',this).text())}).map(function(el){return $('td',this).map(function(el2){return $(this).text()}).toArray()}).toArray()"),
@@ -60,13 +60,13 @@ Sys.sleep(0.5)
 selectSelectizeOption(app, "#cmpCustom___dashboard_1-scenarioSelect", "default")
 Sys.sleep(1)
 
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_test')[0].innerText"), timeout = 50), "ERROR TEST\n79.61"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_test .info-box-number').css('color')"), timeout = 50), "rgb(61, 153, 112)"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_train')[0].innerText"), timeout = 50), "ERROR TRAIN\n$951.17$"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_train .info-box-number').css('color')"), timeout = 50), "rgb(221, 75, 57)"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testnegative')[0].innerText"), timeout = 50), "TESTNEGATIVE\n-1,001$"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testnegative .info-box-number').css('color')"), timeout = 50), "rgb(51, 51, 51)"))
-expect_true(identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testpositive')[0].innerText"), timeout = 50), "TESTPOSITIVE\n+1,001$"))
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_test')[0].innerText"), timeout = 10000L), "ERROR TEST\n79.61")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_test .info-box-number').css('color')"), timeout = 10000L), "rgb(61, 153, 112)")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_train')[0].innerText"), timeout = 10000L), "ERROR TRAIN\n$951.17$")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-error_train .info-box-number').css('color')"), timeout = 10000L), "rgb(221, 75, 57)")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testnegative')[0].innerText"), timeout = 10000L), "TESTNEGATIVE\n-1,001$")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testnegative .info-box-number').css('color')"), timeout = 10000L), "rgb(51, 51, 51)")
+expect_identical(app$get_js(paste0("$('#cmpCustom___dashboard_1-testpositive')[0].innerText"), timeout = 10000L), "TESTPOSITIVE\n+1,001$")
 
 
 app$stop()

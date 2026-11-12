@@ -41,8 +41,32 @@ getSheetnamesByTabsetId <- function(tabsetId) {
   }
   return(sheetNames[tabId])
 }
+getCompareTabValues <- function(sheetName, tabsetId = 0L) {
+  if (sheetName %in% config[["hiddenCompareSymbols"]]) {
+    return(NULL)
+  }
+  sheetId <- match(sheetName, names(modelOut))
+  tabGroups <- outputTabs
+  groupOffset <- 0L
+  if (is.na(sheetId)) {
+    sheetId <- if (identical(sheetName, scalarsFileName)) 0L else match(sheetName, names(modelIn))
+    tabGroups <- scenInputTabs
+    groupOffset <- length(outputTabs)
+  }
+  groupIdx <- match(TRUE, vapply(tabGroups, function(ids) sheetId %in% ids, logical(1L)))
+  if (is.na(groupIdx)) {
+    return(NULL)
+  }
+  groupValue <- paste0("contentScen_", tabsetId, "_", groupIdx + groupOffset)
+  if (!isGroupOfSheets[[groupIdx + groupOffset]]) {
+    return(groupValue)
+  }
+  return(c(groupValue, paste0(groupValue, "_", match(sheetId, tabGroups[[groupIdx]]))))
+}
 getPivotCompGraphConfig <- function(sheetName) {
-  if (sheetName %in% names(config$pivotCompSettings$symbolConfig)) {
+  if (length(pivotCompViewOverrides[[sheetName]])) {
+    graphOptionsTmp <- c(pivotCompViewOverrides[[sheetName]], list(resetOnInit = TRUE))
+  } else if (sheetName %in% names(config$pivotCompSettings$symbolConfig)) {
     graphOptionsTmp <- config$pivotCompSettings$symbolConfig[[sheetName]]
   } else {
     graphOptionsTmp <- NULL
@@ -132,6 +156,7 @@ getPivotCompGraphConfig <- function(sheetName) {
   graphConfig$options$customChartColors <- config$pivotCompSettings$customChartColors
   graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
   graphConfig$options$chartFontSize <- config$pivotCompSettings$chartFontSize
+  graphConfig$options$pivotTruncation <- config$pivotTruncation
   return(graphConfig)
 }
 loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = FALSE) {
@@ -199,7 +224,9 @@ loadDynamicTabContentCustom <- function(session, compareModuleConfig, initEnv = 
           path = customRendererDir,
           rendererEnv = rendererEnv[[refId]],
           views = views,
-          resetOninit = isFALSE(isInRefreshMode$get(refId))
+          resetOninit = isFALSE(isInRefreshMode$get(refId)),
+          roundPrecision = roundPrecision,
+          numericalTolerance = numericalTolerance
         )
         dynamicUILoaded$dynamicTabsets[[refId]][["content"]] <<- TRUE
         if (any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))) {
@@ -309,11 +336,8 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                 "_", tabId
               ),
               type = graphConfig$outType,
-              graphTool = graphConfig$graph$tool,
-              customOptions = graphConfig$options,
-              filterOptions = graphConfig$graph$filter,
+              graphConfig = graphConfig,
               height = graphConfig$height,
-              modelDir = modelDir,
               createdDynamically = FALSE
             ),
             immediate = TRUE
@@ -371,12 +395,15 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
               }
               return(paste0(scenMeta[["_uid"]][1], ": ", scenMeta[["_sname"]][1]))
             }, character(1L), USE.NAMES = FALSE)
+            graphConfig$options[["_baselineScenName"]] <- names(dataToRender)[1]
+            graphConfig$options[["_scenNames"]] <- names(dataToRender)
             dataToRender <- bind_rows(dataToRender, .id = "_scenName")
             callModule(renderData, paste0(tabsetIdChar, "_", tabId),
               type = "miroPivot",
               data = dataToRender,
-              customOptions = graphConfig$options,
+              graphConfig = graphConfig,
               roundPrecision = roundPrecision,
+              numericalTolerance = numericalTolerance,
               rendererEnv = rendererEnv[[refId]],
               views = views, attachments = attachments
             )
@@ -402,18 +429,20 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                 symNames = c(sheetName, graphConfig$additionalData),
                 drop = TRUE
               ),
+              graphConfig = graphConfig,
               configData = scenData$getScalars(refId),
-              dtOptions = graphConfig$datatable,
-              graphOptions = graphConfig$graph,
-              customOptions = graphConfig$options,
               roundPrecision = roundPrecision,
-              modelDir = modelDir,
+              numericalTolerance = numericalTolerance,
               rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments
             )
             callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
               type = "datatable",
               data = scenData$get(refId, symNames = sheetName, drop = TRUE),
-              graphOptions = graphConfig$datatable, customOptions = graphConfig$options,
+              graphConfig = list(
+                outType = "datatable",
+                datatable = graphConfig$datatable,
+                options = graphConfig$options
+              ),
               roundPrecision = roundPrecision
             )
             dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE

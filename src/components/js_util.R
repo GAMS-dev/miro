@@ -20,11 +20,15 @@ initializeMiroLogParser <- function(session, logTabId, containerId, tabSheetMap)
     inputScalars = inputScalarsTmp
   ))
 }
-showElReplaceTxt <- function(session, id, txt) {
-  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
+showElReplaceTxt <- function(session, id, txt, title = NULL) {
+  message <- list(id = id, txt = htmltools::htmlEscape(txt))
+  if (!is.null(title)) {
+    message$title <- htmltools::htmlEscape(title)
+  }
+  session$sendCustomMessage("gms-showElReplaceTxt", message)
 }
-setContent <- function(session, selector, htmlContent) {
-  session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent))
+setContent <- function(session, selector, htmlContent, sanitizeHTML = FALSE) {
+  session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent, sanitizeHTML = sanitizeHTML))
 }
 setTextContent <- function(session, selector, htmlContent, keepChildNodes = FALSE) {
   session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent, keepChildNodes = keepChildNodes))
@@ -142,5 +146,6 @@ switchTab <- function(session, id) {
   session$sendCustomMessage("gms-switchTab", id)
 }
 toJSString <- function(string) {
+  stopifnot(is.character(string), length(string) == 1L)
   return(toJSON(string, auto_unbox = TRUE))
 }

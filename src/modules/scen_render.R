@@ -23,17 +23,25 @@ renderScenInCompMode <- function(scenId, refreshData = FALSE) {
   }
   # update title and date
   metaTmp <- scenData$getById("meta", refId = tabIdToRef(scenId), drop = TRUE)
+  fullTitle <- paste0(
+    if (!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
+    metaTmp[["_sname"]][1]
+  )
+
   showElReplaceTxt(
     session, paste0("#cmpScenTitle_", scenId),
-    paste0(
-      if (!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
-      metaTmp[["_sname"]][1]
-    )
+    fullTitle,
+    title = fullTitle
   )
   showElReplaceTxt(
     session, paste0("#cmpScenDate_", scenId),
-    metaTmp[["_stime"]][1]
+    format(as.POSIXct(metaTmp[["_stime"]][1]), "%Y-%m-%d %H:%M:%S")
   )
+
+  if (scenId %in% c(2, 3)) {
+    showEl(session, paste0("#split", scenId, "HeaderActionButtonsWrapper"))
+  }
+
   loadDynamicTabContent(session, scenId,
     getSheetnamesByTabsetId(scenId),
     initEnv = TRUE

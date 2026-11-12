@@ -44,8 +44,6 @@ these components are included below). For information about third-party software
 - watchgod, https://github.com/samuelcolvin/watchfiles
 - HAProxy, https://hub.docker.com/_/haproxy
 - Bootbox, https://github.com/makeusabrew/bootbox
-- core-js, https://github.com/zloirock/core-js
-- regenerator-runtime, https://github.com/facebook/regenerator
 
 -----------------------------------------------------------------------------
             The “Apache License 2.0” applies to:
@@ -1044,8 +1042,6 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 -----------------------------------------------------------------------------
             The “MIT License (MIT)” applies to:
-       - regenerator-runtime, Copyright (C) 2014-present, Facebook, Inc.
-       - core-js, Copyright (c) 2014-2021 Denis Pushkarev
        - Bootbox, Copyright (C) 2011-2020 by Nick Payne nick@kurai.co.uk
        - pip, Copyright (c) 2008-2021 The pip developers
        - attrs, Copyright (c) 2015 Hynek Schlawack

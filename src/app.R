@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.12.0"
+MIROVersion <- "2.13.9999"
 APIVersion <- "1"
-MIRORDate <- "Jun 13 2025"
+MIRORDate <- "Jun 30 2026"
 
 MIROVersionString <<- paste0("GAMS MIRO v.", MIROVersion)
 
@@ -49,18 +49,20 @@ errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPat
 installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c(
-  "./global.R", "./components/util.R", "./components/pivot_util.R", "./components/gdxio.R",
+  "./global.R", "./components/util.R", "./components/render_util.R", "./components/gdxio.R",
   "./components/json.R", "./components/scenario_extensions.R", "./components/views.R",
   "./components/attachments.R", "./components/miroscenio.R",
   "./components/load_scen_data.R", "./components/localfileio.R",
   "./components/xlsio.R", "./components/csvio.R",
   "./components/input_data_instance.R", "./components/worker.R",
+  "./components/worker_adapter.R",
   "./components/custom_dataio.R", "./components/scen_export.R",
   "./components/miro_tabsetpanel.R", "./modules/render_data.R",
   "./modules/generate_data.R", "./components/script_output.R",
   "./components/js_util.R", "./components/scen_data.R",
   "./components/custom_comparison_data.R", "./components/batch_loader.R",
-  "./components/sandbox_input_data.R"
+  "./components/sandbox_input_data.R", "./components/engine_client.R",
+  "./components/ai_adapter.R", "./components/ai_provider.R", "./modules/ai_ui_components.R"
 )
 LAUNCHCONFIGMODE <- FALSE
 if (is.null(errMsg)) {
@@ -91,8 +93,6 @@ if (is.null(errMsg)) {
   })
   # set maximum upload size
   options(shiny.maxRequestSize = as.integer(Sys.getenv("MIRO_MAX_UPLOAD_SIZE", "5000")) * 1024^2)
-  # disable check for global size in futures
-  options(future.globals.maxSize = Inf)
   # get model path and name
   modelPath <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <<- modelPath[[4]]
@@ -135,8 +135,9 @@ if (is.null(errMsg)) {
     if (identical(length(ugroups), 0L)) {
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
-    if (!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") &&
-      any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))) {
+    if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) {
+      ugroups <<- defaultGroup
+    } else if (any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))) {
       errMsg <- paste(errMsg,
         "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- may contain only a-z A-Z 0-9 _",
         sep = "\n"
@@ -234,10 +235,19 @@ if (is.null(errMsg)) {
       )
     )
   }
-  lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
-    simplifyDataFrame = FALSE,
-    simplifyMatrix = FALSE
-  )
+  if (!identical(miroLanguage, "") &&
+    file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
+    lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
+      simplifyDataFrame = FALSE,
+      simplifyMatrix = FALSE
+    )
+  } else {
+    lang <<- fromJSON(file.path(".", "conf", "en.json"),
+      simplifyDataFrame = FALSE,
+      simplifyMatrix = FALSE
+    )
+    flog.warn("No language file '%s.json' found. Using default (en).", miroLanguage)
+  }
   if (debugMode) {
     source("./modules/init.R", local = TRUE)
   } else if (!file.exists(rSaveFilePath)) {
@@ -328,7 +338,6 @@ if (is.null(errMsg)) {
         modelInTemplate[[length(modelInTemplate)]] <- scalarsInTemplate
         scenDataTemplate <- c(scenDataTemplate, list(scalarsInTemplate))
       }
-      rm(dbSchema)
     }
     if (!exists("confFileVersion")) {
       # legacy app (<2.8.0), need to convert some configuration
@@ -367,12 +376,38 @@ if (is.null(errMsg)) {
         })
       ))
     }
+    if (!length(config$numericalTolerance)) {
+      # legacy app deployed before numericalTolerance was added
+      config$numericalTolerance <- 1e-6
+    }
     suppressWarnings(rm(lang))
     for (customRendererName in customRendererNames) {
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
 
+  if (!is.null(config$customLanguage) && !identical(config$customLanguage, "")) {
+    customLangFile <- file.path(
+      currentModelDir,
+      paste0("static_", modelName),
+      paste0(config$customLanguage, ".json")
+    )
+
+    if (file.exists(customLangFile)) {
+      flog.info("Found custom language file: '%s'. Merging translations.", paste0(config$customLanguage, ".json"))
+
+      customLangData <- fromJSON(customLangFile,
+        simplifyDataFrame = FALSE,
+        simplifyMatrix = FALSE
+      )
+      lang <<- utils::modifyList(lang, customLangData)
+    } else {
+      flog.warn(
+        "Custom language '%s' was configured, but the file was not found at: '%s'.",
+        config$customLanguage, customLangFile
+      )
+    }
+  }
   config$activateModules$readonlyMode <- !miroDeploy && identical(tolower(Sys.getenv("MIRO_MODE")), "readonly")
 
   if (isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")) {
@@ -383,6 +418,35 @@ if (is.null(errMsg)) {
     }
   } else {
     config$activateModules$remoteExecution <- FALSE
+  }
+  if (!miroBuildOnly && !identical(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"), "")) {
+    flog.info("AI Assistant config found")
+    if (!length(config$aiAssistant)) {
+      config$aiAssistant <- list()
+    }
+    if (!length(config$aiAssistant$domainContext) && length(config$readmeFile)) {
+      # Set default domain context
+      config$aiAssistant$domainContext <- sprintf("This is the app's README file:\n%s", config$readmeFile)
+    }
+    config$activateModules$aiAssistant <- tryCatch(
+      {
+        if (isFALSE(config$aiAssistant$enable)) {
+          FALSE
+        } else {
+          aiAssistantTmp <- MiroAiAssistant$new(Sys.getenv("MIRO_AI_ASSISTANT_CONFIG"))
+          config$aiAssistant$apiKeys <- aiAssistantTmp$apiKeys
+          config$aiAssistant$supportedModels <- aiAssistantTmp$supportedModels
+          TRUE
+        }
+      },
+      error = function(err) {
+        errMsg <<- "Invalid AI assistant configuration. Please contact support@gams.com if this problem persists."
+        flog.error("Invalid AI Assistant config. Error message: %s", conditionMessage(err))
+        return(FALSE)
+      }
+    )
+  } else {
+    config$activateModules$aiAssistant <- FALSE
   }
   if (identical(config$activateModules$hcube, TRUE) &&
     !config$activateModules$remoteExecution && !miroBuildOnly) {
@@ -560,16 +624,8 @@ if (is.null(errMsg)) {
       }
     }
   }
-  if (!identical(miroLanguage, "") && !identical(miroLanguage, config$language)) {
-    if (file.exists(file.path(".", "conf", paste0(miroLanguage, ".json")))) {
-      lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
-        simplifyDataFrame = FALSE,
-        simplifyMatrix = FALSE
-      )
-      config$language <- miroLanguage
-    }
-  }
 }
+protectedModelFiles <- character()
 if (is.null(errMsg)) {
   modelData <- NULL
   if (useTempDir &&
@@ -584,6 +640,19 @@ if (is.null(errMsg)) {
     )
   } else {
     GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'))
+  }
+  if (isTRUE(config$activateModules$protectModelFiles)) {
+    protectedModelFiles <- tryCatch(
+      {
+        modelFileEntries <- if (length(modelData)) zip::zip_list(modelData)[["filename"]] else modelFiles
+        modelFileEntries <- sub("[/\\\\].*$", "", modelFileEntries)
+        unique(c(modelGmsName, modelFileEntries[nchar(modelFileEntries) > 0L]))
+      },
+      error = function(e) {
+        flog.warn("Problems reading list of model files. Error message: '%s'.", conditionMessage(e))
+        modelGmsName
+      }
+    )
   }
 }
 
@@ -729,8 +798,8 @@ if (is.null(errMsg) && debugMode) {
 aboutDialogText <- paste0(
   "<div class=\"text-break\"><b>", MIROVersionString, "</b><br/><br/>",
   "Release Date: ", MIRORDate, "<br/>",
-  "Copyright (c) 2025 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-  "Copyright (c) 2025 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+  "Copyright (c) 2026 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+  "Copyright (c) 2026 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
   "This program is free software: you can redistribute it and/or modify ",
   "it under the terms of version 3 of the GNU General Public License as published by ",
   "the Free Software Foundation.<br/><br/>",
@@ -740,9 +809,9 @@ aboutDialogText <- paste0(
   "GNU General Public License for more details.<br/><br/>",
   "You should have received a copy of the GNU General Public License ",
   "along with this program. If not, see ",
-  "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>. ",
+  "<a href='https://www.gnu.org/licenses/' target='_blank'>https://www.gnu.org/licenses/</a>. ",
   "For more information about third-party software included in MIRO, see ",
-  "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.</div>"
+  "<a href='https://www.gams.com/miro/license.html' target='_blank'>here</a>.</div>"
 )
 if (miroBuildOnly) {
   if (!is.null(errMsg)) {
@@ -896,8 +965,8 @@ if (miroBuildOnly) {
 }
 
 if (is.null(errMsg)) {
-  if (config$activateModules$remoteExecution) {
-    requiredPackages <- c("future", "httr")
+  if (config$activateModules$remoteExecution || config$activateModules$aiAssistant) {
+    requiredPackages <- c("httr", "mirai")
   } else if (length(externalInputConfig) || length(datasetsRemoteExport)) {
     # FIXME: get rid of this when removing remoteImport/remoteExport feature
     requiredPackages <- "httr"
@@ -949,15 +1018,12 @@ if (is.null(errMsg)) {
   }
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
 
-  if (config$activateModules$remoteExecution && !LAUNCHCONFIGMODE) {
-    if (isWindows()) {
-      plan(multisession)
-    } else {
-      plan(multicore)
-    }
+  if ((config$activateModules$remoteExecution || config$activateModules$aiAssistant) && !LAUNCHCONFIGMODE) {
+    daemons(1)
   }
   # try to create the DB connection (PostgreSQL)
   db <- NULL
+  dbConnProvider <- NULL
   if (identical(tolower(dbConfig$type), "sqlite")) {
     requiredPackages <- c("DBI", "RSQLite")
   } else {
@@ -965,7 +1031,7 @@ if (is.null(errMsg)) {
   }
   errMsgTmp <- installAndRequirePackages(
     requiredPackages, installedPackages,
-    RLibPath, CRANMirror, miroWorkspace
+    RLibPath, CRANMirror, miroWorkspace, TRUE
   )
   if (length(errMsgTmp)) {
     errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
@@ -978,8 +1044,9 @@ if (is.null(errMsg)) {
   tryCatch(
     {
       dbSchema <<- DbSchema$new(dbSchemaModel)
+      dbConnProvider <- DbConnectionProvider$new(dbConfig)
       db <- Db$new(
-        uid = uid, dbConf = dbConfig,
+        uid = uid, connProvider = dbConnProvider,
         slocktimeLimit = slocktimeLimit, modelName = modelName,
         ugroups = ugroups
       )
@@ -1005,7 +1072,7 @@ if (is.null(errMsg)) {
     {
       gdxio <<- GdxIO$new(
         file.path(
-          .libPaths()[1], "gdxrrwMIRO",
+          find.package("gdxrrwMIRO"),
           if (identical(tolower(Sys.info()[["sysname"]]), "windows")) {
             file.path("bin", "x64")
           } else {
@@ -1072,6 +1139,7 @@ if (is.null(errMsg)) {
       username = Sys.getenv("MIRO_REMOTE_EXEC_USERNAME"),
       password = Sys.getenv("MIRO_REMOTE_EXEC_TOKEN"),
       namespace = Sys.getenv("MIRO_REMOTE_EXEC_NS"),
+      useBearer = TRUE,
       useRegistered = FALSE
     )
   }
@@ -1188,15 +1256,27 @@ if (!is.null(errMsg)) {
   }
   ui_initError <- fluidPage(
     tags$head(
-      if (!is.list(config) || !is.character(config$theme)) {
-        tags$link(type = "text/css", rel = "stylesheet", href = "default_light.css")
+      if (!is.null(config$themeColors) && length(config$themeColors)) {
+        cssLines <- sprintf(
+          "--%s:%s;",
+          gsub("_", "-", names(config$themeColors), fixed = TRUE),
+          unname(config$themeColors)
+        )
+        tags$style(
+          HTML(paste0(":root{", paste(cssLines, collapse = ""), "}"))
+        )
+      } else if (identical(miroColorTheme, "custom")) {
+        tags$style(
+          HTML(customColorCss)
+        )
       } else {
-        tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
-          paste0("static_", modelName, "/custom_theme.css")
-        } else {
-          paste0(miroColorTheme, "_", config$theme, ".css")
-        })
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("colors_", miroColorTheme, ".css"))
       },
+      tags$link(type = "text/css", rel = "stylesheet", href = if (identical(config$customColorTheme, TRUE)) {
+        paste0("static_", modelName, "/custom_theme.css")
+      } else {
+        paste0("default_", config$theme, ".css")
+      }),
       tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(
@@ -1251,7 +1331,7 @@ if (!is.null(errMsg)) {
 
   shinyApp(ui = ui_initError, server = server_initError)
 } else {
-  uidAdmin <<- if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
+  uidAdmin <<- if (identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) Sys.getenv("SHINYPROXY_NOAUTH_ADMIN_NAME", "admin") else uid
   if (isShinyProxy && miroStoreDataOnly) {
     if (identical(Sys.getenv("MIRO_API_GET_SCEN_LIST"), "true")) {
       source("./tools/api/util.R")
@@ -1484,7 +1564,8 @@ if (!is.null(errMsg)) {
                       } else {
                         paste0(c(names(modelOut), inputDsNames), ".csv")
                       },
-                      paste0(modelNameRaw, c(".log", ".lst"))
+                      paste0(modelNameRaw, c(".log", ".lst")),
+                      protectedModelFiles
                     )
                   ),
                   tmpDir,
@@ -1624,7 +1705,7 @@ if (!is.null(errMsg)) {
             } else {
               newScen$save(c(dataOut, dataIn))
             }
-            newScen$finalize()
+            newScen$destroy()
             if (removeDataFile && !file.remove(file.path(miroDataDir, miroDataFiles[i]))) {
               flog.info("Could not remove file: '%s'.", miroDataFiles[i])
             }
@@ -1755,7 +1836,47 @@ if (!is.null(errMsg)) {
       isInRefreshMode <- LazyFlagRegistry$new()
       isInSolveMode <- TRUE
       modelStatus <- NULL
-      modelStatusObs <- NULL
+
+      if (config$activateModules$aiAssistant) {
+        aiAssistantDialogState <- reactiveVal(list(
+          sidsToLoad = NULL, scenIdNameMap = NULL, isSandbox = FALSE,
+          chatContext = NULL, timestamp = Sys.time()
+        ))
+        aiAssistantState <- list(
+          history = list(),
+          sessionId = NULL,
+          model = NULL,
+          inputTokens = 0L,
+          outputTokens = 0L,
+          tempScen = NULL,
+          sandboxScenName = NULL,
+          snapshotRevision = NULL,
+          activeSids = NULL,
+          contextIsSandbox = FALSE,
+          # the last comparison, resumed by the Mira button
+          compareContext = NULL,
+          contextHasSandbox = FALSE,
+          # the context divider last shown in the chat
+          contextLabel = NULL,
+          # proposed input data changes: changeId -> index in chatHistory
+          changeIndex = list(),
+          # proposals from one answer that can be applied together:
+          # groupId -> index in chatHistory, and changeId -> groupId
+          changeGroupIndex = list(),
+          changeGroupOf = list(),
+          # what the user did with them, relayed to the model on the next message
+          changeNotes = character(0L),
+          # charts created by the assistant: chartId -> chart
+          charts = list(),
+          pendingChartId = NULL,
+          requestIsSandbox = FALSE,
+          requestSandboxSid = NULL,
+          requestScenIdNameMap = character(0L),
+          chatHistory = list(list(role = "model", text = lang$nav$aiBotDialog$welcomeMessage))
+        )
+      } else {
+        aiAssistantState <- list()
+      }
 
       dynamicUILoaded <- list(
         inputGraphs = vector("logical", length(modelIn)),
@@ -1823,7 +1944,8 @@ if (!is.null(errMsg)) {
             } else {
               paste0(c(names(modelOut), inputDsNames), ".csv")
             },
-            paste0(modelNameRaw, c(".log", ".lst"))
+            paste0(modelNameRaw, c(".log", ".lst")),
+            protectedModelFiles
           )
         ),
         workDir,
@@ -1871,7 +1993,17 @@ if (!is.null(errMsg)) {
             }
           )
         }
-        activeScen$finalize()
+        activeScen$destroy()
+        if (!is.null(aiAssistantState$tempScen)) {
+          tryCatch(
+            {
+              aiAssistantState$tempScen$delete()$destroy()
+            },
+            error = function(err) {
+              flog.warn("Problems removing temporary scenario. Error message: %s", conditionMessage(err))
+            }
+          )
+        }
         if (!interactive() && !isShinyProxy) {
           tryCatch(
             {
@@ -1899,51 +2031,45 @@ if (!is.null(errMsg)) {
       } else {
         remoteModelId <- modelName
       }
-
-      worker <- Worker$new(
-        metadata = list(
-          uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-          modelId = remoteModelId,
-          maxSizeToRead = 100000,
+      if (length(credConfig)) {
+        engineClient <- EngineClient$new(
+          url = credConfig$url,
+          username = credConfig$username,
+          password = credConfig$password,
+          namespace = credConfig$namespace,
+          useBearer = credConfig$useBearer,
+          appAccessGroups = csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", "")))
+        )
+        workerAdapter <- RemoteWorkerAdapter$new(list(
+          isGamsPy = isTRUE(config$isGamsPy), modelName = modelName, modelGmsName = modelGmsName, modelNameRaw = modelNameRaw, modelId = remoteModelId,
+          clArgs = GAMSClArgs, extraClArgs = config$extraClArgs, saveTraceFile = isTRUE(config$saveTraceFile),
+          logFileName = if (identical(config$activateModules$logFile, FALSE)) config$miroLogFile,
           modelDataFiles = c(
-            if (identical(config$fileExchange, "gdx")) {
-              c(MIROGdxInName, MIROGdxOutName)
-            } else {
-              paste0(c(names(modelOut), inputDsNames), ".csv")
-            },
+            c(MIROGdxInName, MIROGdxOutName),
             vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)
-          ),
-          MIROGdxInName = MIROGdxInName,
-          MIROGdxOutName = MIROGdxOutName,
-          clArgs = GAMSClArgs,
+          ), modelDataPath = modelData,
           textEntries = c(
             if (config$activateModules$logFile) paste0(modelNameRaw, ".log"),
             if (config$activateModules$lstFile) paste0(modelNameRaw, ".lst"),
             if (config$activateModules$miroLogFile) config$miroLogFile
-          ),
-          miroLogFile = config$miroLogFile,
-          extraClArgs = config$extraClArgs,
-          saveTraceFile = config$saveTraceFile,
-          modelGmsName = modelGmsName, modelNameRaw = modelNameRaw,
-          executablePath = if (identical(config$isGamsPy, TRUE)) {
+          ), useRegistered = credConfig$useRegistered
+        ), workDir, engineClient$getConfig())
+      } else {
+        workerAdapter <- LocalWorkerAdapter$new(list(
+          isGamsPy = isTRUE(config$isGamsPy), modelGmsName = modelGmsName, executablePath = if (identical(config$isGamsPy, TRUE)) {
             Sys.getenv("PYTHON_EXEC_PATH")
           } else {
             file.path(gamsSysDir, "gams")
-          },
-          csvDelim = config$csvDelim,
-          isGamsPy = config$isGamsPy,
-          serverOS = getOS(), modelData = modelData,
-          hiddenLogFile = !config$activateModules$logFile
-        ),
-        remote = config$activateModules$remoteExecution,
-        db = db
+          }, clArgs = GAMSClArgs,
+          extraClArgs = config$extraClArgs,
+          saveTraceFile = isTRUE(config$saveTraceFile),
+          modelName = modelName, modelGmsName = modelGmsName, logFileName = if (identical(config$activateModules$logFile, FALSE)) config$miroLogFile
+        ), workDir)
+      }
+
+      worker <- Worker$new(
+        workerAdapter, db, dbSchema$getDbSchema("_jobMeta")
       )
-      if (length(credConfig)) {
-        do.call(worker$setCredentials, credConfig)
-      }
-      if (isShinyProxy) {
-        worker$setAppAccessGroups(csv2Vector(tolower(Sys.getenv("SHINYPROXY_ACCESSGROUPS", ""))))
-      }
       rendererEnv <- new.env(parent = emptyenv())
 
       # scenario metadata of scenario saved in database
@@ -1956,16 +2082,19 @@ if (!is.null(errMsg)) {
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       pivotCompRefreshAll <- FALSE
+      pivotCompViewOverrides <- list()
+      pivotCompSheetToOpen <- NULL
+      loadScenSandboxOptionShown <- FALSE
+      loadScenBaselineShown <- FALSE
 
       # initially set rounding precision to default
       roundPrecision <- config$roundingDecimals
+      numericalTolerance <- config$numericalTolerance
 
       flog.info(
         "Session started (model: '%s', user: '%s', workdir: '%s').",
         modelName, uid, workDir
       )
-
-      worker$setWorkDir(workDir)
       scriptOutput <- NULL
 
       if (length(config$scripts$base) || length(config$scripts$hcube)) {
@@ -2002,8 +2131,10 @@ if (!is.null(errMsg)) {
         {
           if (length(config$defaultScenName) && nchar(trimws(config$defaultScenName))) {
             defSid <- db$getSid(config$defaultScenName)
-            if (identical(defSid, 0L) && !identical(uid, uidAdmin)) {
-              defSid <- db$getSid(config$defaultScenName, uid = uidAdmin)
+            # fall back to user who uploaded the app (owner of the scenarios shipped with the app)
+            uidUploader <- Sys.getenv("MIRO_APP_UPLOADER", uidAdmin)
+            if (identical(defSid, 0L) && !identical(uid, uidUploader)) {
+              defSid <- db$getSid(config$defaultScenName, uid = uidUploader)
             }
             if (!identical(defSid, 0L)) {
               sidsToLoad <- list(defSid)
@@ -2138,6 +2269,9 @@ if (!is.null(errMsg)) {
       if (isTRUE(config$activateModules$downloadTempFiles)) {
         source("./modules/download_tmp.R", local = TRUE)
       }
+      if (config$activateModules$aiAssistant) {
+        source("./modules/ai_analysis.R", local = TRUE)
+      }
 
       ####### Batch Load module
       source("./modules/batch_load.R", local = TRUE)
@@ -2161,6 +2295,12 @@ if (!is.null(errMsg)) {
       source("./modules/scen_render.R", local = TRUE)
       # load scenario
       source("./modules/db_scen_load.R", local = TRUE)
+      # dump sandbox scenario to database (also needed by the AI assistant,
+      # which is available in readonly mode)
+      if (!config$activateModules$readonlyMode ||
+        config$activateModules$aiAssistant) {
+        source("./modules/db_scen_dump.R", local = TRUE)
+      }
       # save scenario
       if (!config$activateModules$readonlyMode) {
         source("./modules/db_scen_save.R", local = TRUE)
@@ -2371,6 +2511,7 @@ if (!is.null(errMsg)) {
           initializeMiroLogParser(session, "log", "logStatusContainer", tabSheetMap$input)
         }
       }
+      source("./modules/help_menu.R", local = TRUE)
       hideEl(session, "#loading-screen")
     }
 
@@ -2387,6 +2528,11 @@ if (!is.null(errMsg)) {
     source("./UI/body.R", local = TRUE)
 
     ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
+    if (isTRUE(config$activateModules$aiAssistant)) {
+      ui <- tagAppendChild(ui, renderAiChatDrawer(lang$nav$aiBotDialog, config$aiAssistant$supportedModels,
+        chartPalette = if (length(config$pivotCompSettings$customChartColors)) config$pivotCompSettings$customChartColors else defaultChartColors
+      ))
+    }
 
     app <- shinyApp(ui = ui, server = server)
   }

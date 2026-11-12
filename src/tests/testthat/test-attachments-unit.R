@@ -44,9 +44,10 @@ if (identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")) {
     )
   )
 }
+dbConnProvider <- DbConnectionProvider$new(dbConfig)
 db <- Db$new(
   uid = "te_de\\%d",
-  dbConf = dbConfig,
+  connProvider = dbConnProvider,
   slocktimeLimit = slocktimeLimit, modelName = modelName,
   ugroups = c("bla_blubb", "test123")
 )
@@ -184,6 +185,10 @@ test_that("Adding attachments work", {
     session = NULL, file.path(testDir, "data", "bad-views3.json"),
     fileNames = "def.json", overwrite = FALSE, execPerm = NULL
   ), class = "error_not_found")
+  expect_error(attachments$add(
+    session = NULL, file.path(testDir, "data", "_scalars.csv"),
+    fileNames = toupper(paste0(modelName, ".lst")), overwrite = FALSE, execPerm = TRUE
+  ), class = "error_forbidden_filename")
   expect_error(attachments$add(
     session = NULL, file.path(testDir, "data", c("_scalars.csv", "bad-views2.json")),
     fileNames = c("_scalars.csv", "def.json"), overwrite = TRUE, execPerm = NULL
@@ -332,7 +337,7 @@ test_that("Download multiple attachments works", {
 })
 
 test_that("Saving already deleted attachment should result in warning in log", {
-  expect_output(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
+  expect_message(opQueue <- attachments$flushOpQueue(), regexp = "Problems reading file:.* No such file or directory")
   expect_identical(opQueue$save$fileName, c("scalars.csv", "_scalars.csv"))
   expect_identical(opQueue$save$fileContent, blob::new_blob(list(
     raw(0),
@@ -499,4 +504,4 @@ test_that("download method works with modified exec perm of remote files", {
   )
 })
 
-db$finalize()
+db$destroy()

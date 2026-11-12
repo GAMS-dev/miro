@@ -24,6 +24,7 @@ listOfOperators <- list(
 
 # scenario code mapping
 SCODEMAP <- c(
+  "sb_cache" = -3L,
   "hcube_inputs" = -2L,
   "hcube_jobconfig" = -1L,
   "scen" = 0L
@@ -60,6 +61,31 @@ DEFAULT_SCEN_PERM <- lapply(
 defInType <- "miroPivot"
 # default height of pivot table
 pivotDefaultHeight <- 800
+# default colors used in charts (pairs of light and dark shades)
+defaultChartColors <- c(
+  "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
+  "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
+  "#cab2d6", "#6a3d9a", "#ffff99", "#b15928",
+  "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7",
+  "#e2546b", "#66101F", "#E0ABD7", "#c45ab3",
+  "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70",
+  "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42",
+  "#50caf3", "#086788", "#eee49d", "#E0CA3C",
+  "#dbcac7", "#BA9790", "#f69e84", "#EB4511",
+  "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a",
+  "#8dadd0", "#38618c", "#fcebea", "#fad8d6",
+  "#a6b474", "#373d20", "#a248ce", "#210b2c",
+  "#f37ea9", "#d81159", "#68f7f7", "#08bdbd",
+  "#98feb1", "#35ff69", "#d27193", "#6d213c",
+  "#edfab1", "#dcf763", "#feb46f", "#e06c00",
+  "#f3ebaa", "#e9d758", "#c0c7c7", "#829191",
+  "#f3cac5", "#E8998D", "#c7dac9", "#91b696",
+  "#BE99A4", "#714955", "#7c7ccf", "#2a2a72",
+  "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c",
+  "#df7192", "#8b1e3f", "#95D86B", "#3E721D"
+)
+# record placeholder for the baseline scenario in baseline comparisons
+baselineScenPlaceholder <- "_baseline"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName <- "_scalars"
 scalarsOutName <- "_scalars_out"
@@ -117,8 +143,10 @@ exclTraceCols <- c(
 )
 
 attachAllowExec <- TRUE
-attachMaxFileSize <- 5e7
+attachMaxFileSize <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_SIZE_MB", "50")) * 1e6
 attachMaxNo <- as.integer(Sys.getenv("MIRO_ATTACHMENTS_MAX_NO", "20"))
+
+scriptOutputSandbox <- "allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads"
 
 JOBSTATUSMAP <- c(
   "queued" = -2L,

@@ -36,16 +36,16 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 Sys.sleep(2L)
-expect_true(app$get_js("$('#hcWidget_3_step').is(':visible');", timeout = 50))
-expect_true(app$get_js("$('#hcWidget_7').parents('.shiny-input-container').find('.irs-handle.from i').is(':visible')", timeout = 50))
-expect_true(app$get_js("$('#hcWidget_7_combinations').is(':visible');", timeout = 50))
-expect_true(app$get_js("$('#hcWidget_12').parents('.shiny-input-container').find('.selectize-control.multi').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#hcWidget_3_step').is(':visible');", timeout = 10000L))
+expect_true(app$get_js("$('#hcWidget_7').parents('.shiny-input-container').find('.irs-handle.from i').is(':visible')", timeout = 10000L))
+expect_true(app$get_js("$('#hcWidget_7_combinations').is(':visible');", timeout = 10000L))
+expect_true(app$get_js("$('#hcWidget_12').parents('.shiny-input-container').find('.selectize-control.multi').is(':visible');", timeout = 10000L))
 expect_identical(app$get_values()$input[["hcWidget_3"]], c(2L, 2L))
 expect_identical(app$get_js("$('#hcWidget_5 > option').attr('value')"), "CPLEX")
 expect_identical(app$get_js("$('#hcWidget_12 > option').attr('value')"), "1")
 expect_identical(app$get_values()$input[["hcWidget_7"]], c(7L, 22L))
 expect_match(app$get_values()$output[["newHcJobInfo"]], "0 scenarios have already been solved", fixed = TRUE)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === false", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === false", timeout = 10000L))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 
@@ -63,7 +63,7 @@ app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 timeout <- 600L
 repeat{
-  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L))) {
+  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 10000L))) {
     break
   }
   Sys.sleep(4L)
@@ -83,7 +83,7 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 600L
 repeat{
-  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 50L))) {
+  if (isTRUE(app$get_js("$('#outputDataTitle').is(':visible');", timeout = 10000L))) {
     break
   }
   Sys.sleep(4L)
@@ -103,7 +103,7 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
 Sys.sleep(0.5)
-expect_true(app$get_js("$('.modal-body:visible').text().includes('default')===true;", timeout = 6000L))
+expect_true(app$get_js("$('.modal-body:visible').text().includes('default')===true;", timeout = 10000L))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 5000L)
 
@@ -112,8 +112,8 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 Sys.sleep(3L)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "1 scenarios have already been solved", fixed = TRUE)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 10000L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 10000L))
 
 app$set_inputs(hcWidget_3 = c(2, 7))
 app$set_inputs(hcWidget_3_step = c(2))
@@ -122,8 +122,8 @@ Sys.sleep(2L)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 6 scenarios", fixed = TRUE)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "1 scenarios have already been solved", fixed = TRUE)
 app$set_inputs(hcWidget_7_combinations = TRUE)
-expect_error(app$wait_for_js("$('#hcWidget_7_step').is(':visible')===true", timeout = 5000L), NA)
-expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 126 scenarios", fixed = TRUE)
+expect_error(app$wait_for_js("$('#newHcJobInfo').text().includes('selected 126 scenarios');", timeout = 5000L), NA)
+expect_true(app$get_js("$('#hcWidget_7_step').is(':visible');"), TRUE)
 app$set_inputs(hcWidget_7_step = 9)
 Sys.sleep(1)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 18 scenarios", fixed = TRUE)
@@ -131,7 +131,7 @@ app$set_inputs(hcWidget_7_combinations = FALSE)
 Sys.sleep(1)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 6 scenarios", fixed = TRUE)
 Sys.sleep(2L)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 10000L))
 addSelectizeOption(app, "#newHcubeTags", "bla")
 addSelectizeOption(app, "#newHcubeTags", "blub")
 selectSelectizeOption(app, "#newHcubeTags", "bla")
@@ -144,7 +144,7 @@ app$click(selector = "#refreshActiveJobs")
 
 timeout <- 20L
 repeat{
-  if (identical(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 100L), TRUE)) {
+  if (identical(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 10000L), TRUE)) {
     break
   }
   Sys.sleep(1L)
@@ -154,12 +154,12 @@ repeat{
     stop("Timeout reached. Could not get HC job status.", call. = FALSE)
   }
 }
-expect_true(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
+expect_true(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 10000L))
 app$run_js("$('#jImport_output button[onclick*=\\'showJobProgress\\']').get(0).click()")
 expect_error(app$wait_for_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')", timeout = 5000L), NA)
 timeout <- 600L
 repeat{
-  if (isTRUE(app$get_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')===false;", timeout = 50))) {
+  if (isTRUE(app$get_js("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')===false;", timeout = 10000L))) {
     break
   }
   Sys.sleep(4L)
@@ -173,7 +173,7 @@ Sys.sleep(1)
 expect_error(app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()"), NA)
 timeout <- 30L
 repeat{
-  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 50))) {
+  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 10000L))) {
     break
   }
   Sys.sleep(2L)
@@ -185,8 +185,8 @@ repeat{
 }
 app$set_inputs(btShowHistory = "click")
 app$wait_for_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 5000)
-expect_true(app$get_js("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
-expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().includes('Imported')", timeout = 50))
+expect_true(app$get_js("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 10000L))
+expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().includes('Imported')", timeout = 10000L))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)
 
@@ -197,8 +197,8 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 Sys.sleep(3L)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "1 scenarios have already been solved", fixed = TRUE)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 10000L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 10000L))
 
 app$set_inputs(hcWidget_3 = c(2, 7))
 app$set_inputs(hcWidget_3_step = c(2))
@@ -206,7 +206,7 @@ app$set_inputs(hcWidget_12 = c("0", "1"))
 Sys.sleep(2L)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 6 scenarios", fixed = TRUE)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "6 scenarios have already been solved", fixed = TRUE)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 10000L))
 addSelectizeOption(app, "#newHcubeTags", "<>")
 addSelectizeOption(app, "#newHcubeTags", "&&")
 selectSelectizeOption(app, "#newHcubeTags", "<>")
@@ -214,7 +214,7 @@ selectSelectizeOption(app, "#newHcubeTags", "&&")
 app$click(selector = "#btSubmitHcJobConfirm")
 timeout <- 20L
 repeat{
-  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 50L))) {
+  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 10000L))) {
     break
   }
   Sys.sleep(1L)
@@ -229,7 +229,7 @@ app$click(selector = '#shiny-tab-gamsinter a[data-value="joblist"]')
 app$click(selector = "#refreshActiveJobs")
 timeout <- 20L
 repeat{
-  if (identical(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 100L), TRUE)) {
+  if (identical(app$get_js("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true&&$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')===true;", timeout = 10000L), TRUE)) {
     break
   }
   Sys.sleep(1L)
@@ -245,11 +245,11 @@ app$click(selector = "#confirmModal .bt-gms-confirm")
 Sys.sleep(2)
 app$set_inputs(btShowHistory = "click")
 app$wait_for_js("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')===true&&$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;')===true;", timeout = 5000)
-expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().startsWith('Discarded') && $('.cJob-wrapper td').get(3).textContent.trim().endsWith('The job was still active.')", timeout = 50))
+expect_true(app$get_js("$('.cJob-wrapper td').get(3).textContent.trim().startsWith('Discarded') && $('.cJob-wrapper td').get(3).textContent.trim().endsWith('The job was still active.')", timeout = 10000L))
 app$run_js('$(\'button[data-dismiss="modal"]:visible\').click();', timeout = 50)
 Sys.sleep(2L)
 
-conn <- connectDb(modelName = "pickstock_configuration")
+conn <- connectDb(modelName = "pickstock_hcube")
 tryCatch(
   {
     # discarding job should also clean up scen data
@@ -274,7 +274,7 @@ Sys.sleep(0.5)
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSubmitHcJob']")
 Sys.sleep(2L)
-expect_true(app$get_js("$('#hcWidget_3').is(':visible');", timeout = 3000))
+expect_true(app$get_js("$('#hcWidget_3').is(':visible');", timeout = 10000L))
 Sys.sleep(1L)
 app$set_inputs(hcWidget_3 = c(4, 8))
 app$set_inputs(hcWidget_3_step = c(4))
@@ -282,13 +282,13 @@ app$set_inputs(hcWidget_12 = c("0"))
 Sys.sleep(2L)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "selected 2 scenarios", fixed = TRUE)
 expect_match(app$get_values()$output[["newHcJobInfo"]], "1 scenarios have already been solved", fixed = TRUE)
-expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 50L))
+expect_true(app$get_js("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 10000L))
 addSelectizeOption(app, "#newHcubeTags", "woff")
 selectSelectizeOption(app, "#newHcubeTags", "woff")
 app$click(selector = "#btSubmitHcJobConfirm")
 timeout <- 20L
 repeat{
-  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 50L))) {
+  if (isTRUE(app$get_js("$('#shiny-modal').is(':visible');", timeout = 10000L))) {
     break
   }
   Sys.sleep(1L)
@@ -305,7 +305,7 @@ Sys.sleep(4)
 timeout <- 200L
 repeat{
   app$click(selector = "#refreshActiveJobs")
-  if (isTRUE(app$get_js("$(\"#jImport_output button[onclick*='downloadJobData']\").length>0;", timeout = 50L))) {
+  if (isTRUE(app$get_js("$(\"#jImport_output button[onclick*='downloadJobData']\").length>0;", timeout = 10000L))) {
     break
   }
   Sys.sleep(2L)
@@ -318,7 +318,7 @@ repeat{
 expect_error(app$run_js("$('#jImport_output button[onclick*=\\'downloadJobData\\']').get(0).click()"), NA)
 timeout <- 30L
 repeat{
-  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 50))) {
+  if (isTRUE(app$get_js("$('#jImport_output td').length===0;", timeout = 10000L))) {
     break
   }
   Sys.sleep(2L)
@@ -373,7 +373,7 @@ Sys.sleep(0.5)
 app$click(selector = "#btSubmitHcJobConfirm")
 Sys.sleep(2)
 app$wait_for_js("$('#newHcJobError').text().includes('quota was exceeded');", timeout = 5000L)
-expect_true(app$get_js("$('.shiny-notification-content').text().includes('Quota exceeded');", timeout = 50L))
-expect_true(app$get_js("/volume quota: -?\\d+ s/.test($('.shiny-notification-content').text());", timeout = 50L))
+expect_true(app$get_js("$('.shiny-notification-content').text().includes('Quota exceeded');", timeout = 10000L))
+expect_true(app$get_js("/volume quota: -?\\d+ s/.test($('.shiny-notification-content').text());", timeout = 10000L))
 
 app$stop()

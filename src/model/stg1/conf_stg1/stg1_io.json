@@ -1,0 +1,463 @@
+{
+	"modelTitle":	"STAGE Static CGE Model V1",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["closurechoice", "ersim", "pwmsim_agr", "pwmsim_nat", "pwmsim_fd", "pwmsim_ind", "pwmsim_ser", "pwesim_agr", "pwesim_nat", "pwesim_fd", "pwesim_ind", "pwesim_ser", "tmadj_sim", "tsadj_sim", "texadj_sim", "txadj_sim", "tfadj_sim", "tyhadj_sim", "tyeadj_sim"],
+			"symtext":	["Government financing choice", "Exchange rate multiplier", "World agricultural import price scalar", "World minerals import price scalar", "World food import price scalar", "World industrial import price scalar", "World services import price scalar", "World agricultural export price scalar", "World minerals export price scalar", "World food export price scalar", "World industrial export price scalar", "World services export price scalar", "Tariff rate Scaling Factor", "Sales tax rate scaling factor", "Excise tax rate scaling factor", "Indirect Tax Scaling Factor", "Factor Use Tax Scaling Factor", "Household Income Tax Scaling Factor", "Enterprise income tax Scaling Factor"],
+			"symtypes":	["parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"sam_za":	{
+			"alias":	"SAM for South Africa without totals",
+			"symtype":	"parameter",
+			"headers":	{
+				"sacnt":	{
+					"type":	"string",
+					"alias":	"SAM accounts without total"
+				},
+				"sacntp":	{
+					"type":	"string",
+					"alias":	"Aliased with sacnt"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"SAM for South Africa without totals"
+				}
+			}
+		},
+		"sam_za_expsh":	{
+			"alias":	"Expenditure shares South Africa SAM",
+			"symtype":	"parameter",
+			"headers":	{
+				"sacnt":	{
+					"type":	"string",
+					"alias":	"SAM accounts without total"
+				},
+				"sacntp":	{
+					"type":	"string",
+					"alias":	"Aliased with sacnt"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Expenditure shares South Africa SAM"
+				}
+			}
+		},
+		"sam_za_incsh":	{
+			"alias":	"Income shares South Africa SAM",
+			"symtype":	"parameter",
+			"headers":	{
+				"sacnt":	{
+					"type":	"string",
+					"alias":	"SAM accounts without total"
+				},
+				"sacntp":	{
+					"type":	"string",
+					"alias":	"Aliased with sacnt"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Income shares South Africa SAM"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"map_aagg_a":	{
+			"alias":	"Mapping from activies to aggregate activities",
+			"symtype":	"set",
+			"headers":	{
+				"aagg":	{
+					"type":	"string",
+					"alias":	"Aggregate activity groups"
+				},
+				"a":	{
+					"type":	"string",
+					"alias":	"Activities"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Mapping from activies to aggregate activities"
+				}
+			}
+		},
+		"map_cagg_c":	{
+			"alias":	"Mapping from commodities to aggregate commodities",
+			"symtype":	"set",
+			"headers":	{
+				"cagg":	{
+					"type":	"string",
+					"alias":	"Aggregate commodity groups"
+				},
+				"c":	{
+					"type":	"string",
+					"alias":	"Commodities"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Mapping from commodities to aggregate commodities"
+				}
+			}
+		},
+		"macrolevel":	{
+			"alias":	"Macro indicators (simulation value)",
+			"symtype":	"parameter",
+			"headers":	{
+				"mac":	{
+					"type":	"string",
+					"alias":	"Macro indicators "
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Macro indicators (simulation value)"
+				}
+			}
+		},
+		"pergdpcomp":	{
+			"alias":	"Composition of GDP (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"gdpcomp":	{
+					"type":	"string",
+					"alias":	"GDP composition indicators"
+				},
+				"rnvalue":	{
+					"type":	"string",
+					"alias":	"rnvalue"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Composition of GDP (pc)"
+				}
+			}
+		},
+		"perabsorpcomp":	{
+			"alias":	"Composition of Absorption (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"abscomp":	{
+					"type":	"string",
+					"alias":	"Absorption composition indicators"
+				},
+				"rnvalue":	{
+					"type":	"string",
+					"alias":	"rnvalue"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Composition of Absorption (pc)"
+				}
+			}
+		},
+		"qxlev":	{
+			"alias":	"Production by activity",
+			"symtype":	"parameter",
+			"headers":	{
+				"sector":	{
+					"type":	"string",
+					"alias":	"Sector labels"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Production by activity"
+				}
+			}
+		},
+		"qxpc":	{
+			"alias":	"Production by activity (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"agrp":	{
+					"type":	"string",
+					"alias":	"activity group"
+				},
+				"sector":	{
+					"type":	"string",
+					"alias":	"Sector labels"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Production by activity (pc)"
+				}
+			}
+		},
+		"qvash":	{
+			"alias":	"Sectoral share of value added",
+			"symtype":	"parameter",
+			"headers":	{
+				"agrp":	{
+					"type":	"string",
+					"alias":	"activity group"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Sectoral share of value added"
+				}
+			}
+		},
+		"tradepc":	{
+			"alias":	"Percentage change in exports and imports",
+			"symtype":	"parameter",
+			"headers":	{
+				"tgrp":	{
+					"type":	"string",
+					"alias":	"trade "
+				},
+				"cagg":	{
+					"type":	"string",
+					"alias":	"Aggregate commodity groups"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Percentage change in exports and imports"
+				}
+			}
+		},
+		"wffpc":	{
+			"alias":	"Percentage change in factor returns",
+			"symtype":	"parameter",
+			"headers":	{
+				"fgrp":	{
+					"type":	"string",
+					"alias":	"factor group"
+				},
+				"flabel":	{
+					"type":	"string",
+					"alias":	"Factor labels"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Percentage change in factor returns"
+				}
+			}
+		},
+		"wflabpc":	{
+			"alias":	"Percentage change in average wage",
+			"symtype":	"parameter",
+			"headers":	{
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Percentage change in average wage"
+				}
+			}
+		},
+		"fdlpc":	{
+			"alias":	"Percentage change in labour demand by activity group",
+			"symtype":	"parameter",
+			"headers":	{
+				"aagg":	{
+					"type":	"string",
+					"alias":	"Aggregate activity groups"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Percentage change in labour demand by activity group"
+				}
+			}
+		},
+		"yhlev":	{
+			"alias":	"Household income",
+			"symtype":	"parameter",
+			"headers":	{
+				"hgrp":	{
+					"type":	"string",
+					"alias":	"household group"
+				},
+				"hlabel":	{
+					"type":	"string",
+					"alias":	"Household labels"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Household income"
+				}
+			}
+		},
+		"yhpc":	{
+			"alias":	"Household income by group (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"hgrp":	{
+					"type":	"string",
+					"alias":	"household group"
+				},
+				"hlabel":	{
+					"type":	"string",
+					"alias":	"Household labels"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Household income by group (pc)"
+				}
+			}
+		},
+		"yhavpc":	{
+			"alias":	"Average household income (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Average household income (pc)"
+				}
+			}
+		},
+		"qcdpc":	{
+			"alias":	"Household consumption by group(pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"hgrp":	{
+					"type":	"string",
+					"alias":	"household group"
+				},
+				"cagg":	{
+					"type":	"string",
+					"alias":	"Aggregate commodity groups"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Household consumption by group(pc)"
+				}
+			}
+		},
+		"qcdtotpc":	{
+			"alias":	"Total household consumption by group pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"h":	{
+					"type":	"string",
+					"alias":	"Households"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Total household consumption by group pc)"
+				}
+			}
+		},
+		"qcdavpc":	{
+			"alias":	"Average household consumption (pc)",
+			"symtype":	"parameter",
+			"headers":	{
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Average household consumption (pc)"
+				}
+			}
+		},
+		"govlev":	{
+			"alias":	"Government indicators",
+			"symtype":	"parameter",
+			"headers":	{
+				"gov":	{
+					"type":	"string",
+					"alias":	"Government indicators"
+				},
+				"sim_miro":	{
+					"type":	"string",
+					"alias":	"Simulations"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Government indicators"
+				}
+			}
+		},
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["gdp", "absorption", "production", "exports", "imports", "govtsavings", "incometaxscaling", "land", "capital", "averagewage", "averagehouseholdconsumption", "averagehouseholdincome"],
+			"symtext":	["gdp", "absorption", "production", "exports", "imports", "govtsavings", "incometaxscaling", "land", "capital", "averagewage", "averagehouseholdconsumption", "averagehouseholdincome"],
+			"symtypes":	["parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	}
+}

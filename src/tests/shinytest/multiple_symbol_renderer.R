@@ -12,7 +12,7 @@ Sys.sleep(2L)
 app$set_inputs(miroSidebar = "outputData")
 Sys.sleep(2)
 # check that custom styles were applied
-expect_true(app$get_js("$('#tab_1_1-custom-path').css('color')==='rgb(255, 192, 203)';", timeout = 50L))
+expect_true(app$get_js("$('#tab_1_1-custom-path').css('color')==='rgb(255, 192, 203)';", timeout = 10000L))
 customRendererPath <- app$get_values()$output[["tab_1_1-custom-path"]]
 expect_true(file.exists(file.path(customRendererPath, "model_transport_customRenderer_trnsport_custom.R")))
 flowData <- jsonlite::fromJSON(app$get_values()$output[["tab_1_1-custom-trnsport"]])$x$calls$args[[4]][[1]]

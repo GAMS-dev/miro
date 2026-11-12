@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import os
 import requests
 import psycopg2
@@ -11,6 +12,27 @@ settings = {
     "VALID_AUTH_TUPLE": (os.environ["ENGINE_USER"], os.environ["ENGINE_PASSWORD"]),
     "SPECS_FILE_PATH": os.getenv("SPECS_YAML_PATH", "/home/miro/admin/data/specs.yaml"),
 }
+
+
+class MockResponse:
+    def __init__(self, text, status):
+        self._text = text
+        self.status = status
+
+    async def read(self):
+        return self._text.encode("utf-8")
+
+    async def text(self):
+        return self._text
+
+    async def json(self):
+        return json.loads(self._text)
+
+    async def __aexit__(self, exc_type, exc, tb):
+        pass
+
+    async def __aenter__(self):
+        return self
 
 
 def reset_app_config_file():

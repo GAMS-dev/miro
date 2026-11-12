@@ -179,7 +179,7 @@ if (length(config$scripts$hcube)) {
         ),
         tags$div(class = "space"),
         tags$iframe(
-          class = "script-output",
+          class = "script-output", sandbox = scriptOutputSandbox,
           style = "height:800px;height:80vh;"
         )
       ),

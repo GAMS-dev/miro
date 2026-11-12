@@ -1,4 +1,4 @@
-FROM docker:27
+FROM docker:29
 
 ARG KIND_VERSION=v0.25.0
 ARG HELM_VERSION=v3.16.3
@@ -9,6 +9,10 @@ RUN apk add --no-cache \
     curl \
     tar \
     bash \
+    aws-cli \
+    ca-certificates \
+    git \
+    gnupg \
     python3 \
     py3-pip \
     && pip install --no-cache-dir --break-system-packages \

@@ -79,7 +79,7 @@ Sys.sleep(1)
 expect_error(app$set_inputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
 app$set_inputs(`tab_0_3-miroPivot-updateSettings` = "click")
 Sys.sleep(1)
-app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
+app$click(selector = "#scen-pivot-view .box-title >.header-title-group > .header-action-buttons > button:nth-child(1)")
 Sys.sleep(0.5)
 expect_options(
   app$get_values()$input$selLoadScen,
@@ -122,13 +122,13 @@ expect_identical(
   ))
 )
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:first').text()==='Mean'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(2)').text()==='475'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#tab_0_3-miroPivot-pivotTable .dataTables_scrollFootInner th:nth(3)').text()==='1'",
-  timeout = 50
+  timeout = 10000L
 ))
 app$set_inputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
@@ -143,7 +143,7 @@ expect_chartjs(
     "default2.Seattle"
   )
 )
-app$click(selector = "#scen-pivot-view .box-title > button:nth-child(1)")
+app$click(selector = "#scen-pivot-view .box-title >.header-title-group > .header-action-buttons > button:nth-child(1)")
 Sys.sleep(0.5)
 expect_identical(app$get_text(selector = "#cmpScenTitle_2"), "default1")
 expect_identical(app$get_text(selector = "#cmpScenTitle_3"), "default4")
@@ -181,8 +181,9 @@ app$click(selector = "#btLoadScen")
 Sys.sleep(0.5)
 expect_options(
   getSelectizeOptions(app, "#selLoadScen"),
-  paste0(c("2_", "4_", "sb_"), currentUser)
+  paste0(c("2_", "4_"), currentUser)
 )
+expect_true(app$get_js("$('#cbLoadScenSandbox').is(':visible')"))
 app$click(selector = "button[data-dismiss='modal']")
 Sys.sleep(0.5)
 

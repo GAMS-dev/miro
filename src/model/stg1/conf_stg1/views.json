@@ -1,0 +1,893 @@
+{
+    "sam_za": {
+        "Complete SAM": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": null }
+        },
+        "Exports (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": { "sacntp": "ROW" }
+        },
+        "Exports (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": { "sacntp": "ROW" },
+            "chartOptions": { "title": "Exports", "xTitle": "Commodity accounts", "yTitle": "Billion South African rand" }
+        },
+        "Factor use (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["f_African_skilled", "f_African_unskilled", "f_Capital", "f_Coloured_Asian_skilled", "f_Coloured_Asian_unskilled", "f_Land", "f_White_skilled", "f_White_unskilled"] },
+            "cols": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            }
+        },
+        "Factor use (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["f_African_skilled", "f_African_unskilled", "f_Capital", "f_Coloured_Asian_skilled", "f_Coloured_Asian_unskilled", "f_Land", "f_White_skilled", "f_White_unskilled"] },
+            "cols": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            },
+            "chartOptions": { "title": "Factor use", "xTitle": "Factor accounts", "yTitle": "Billion South African rand" }
+        },
+        "Household demand (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            }
+        },
+        "Household demand (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "chartOptions": { "title": "Household demand", "xTitle": "Commodity accounts", "yTitle": "Billion South African rand" }
+        },
+        "Household income (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "cols": { "sacntp": null }
+        },
+        "Household income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Household income", "xTitle": "Household accounts", "yTitle": "Billion South African rand" }
+        },
+        "Imports (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ROW" },
+            "cols": {
+                "sacntp": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            }
+        },
+        "Imports (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ROW" },
+            "cols": {
+                "sacntp": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "chartOptions": { "title": "Imports", "xTitle": "Commodity accounts", "yTitle": "Billion South African rand" }
+        },
+        "Intermediate inputs (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            }
+        },
+        "Intermediate inputs (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            },
+            "chartOptions": { "title": "Intermediate inputs", "xTitle": "Commodity accounts", "yTitle": "Billion South African rand" }
+        },
+        "Savings (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["KAP"] },
+            "cols": { "sacntp": null }
+        },
+        "Savings (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["KAP"] },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Savings", "xTitle": "Sources of savings", "yTitle": "Billion South African rand" }
+        },
+        "Supply (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            }
+        },
+        "Supply (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            },
+            "cols": {
+                "sacntp": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "chartOptions": { "title": "Supply", "xTitle": "Activity accounts", "yTitle": "Billion South African rand" }
+        }
+    },
+    "sam_za_expsh": {
+        "Enterprise expenditure (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "ENT" }
+        },
+        "Government expenditure (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "GOVT" }
+        },
+        "Household expenditure (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": {
+                "sacntp": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            }
+        },
+        "Investment expenditure (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": ["KAP"] }
+        },
+        "Production costs structures (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            }
+        },
+        "Spending by the rest of the world (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "ROW" }
+        },
+        "Enterprise expenditure (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "ENT" },
+            "chartOptions": { "title": "Enterprise expenditure", "xTitle": "Expenditure item", "yTitle": "Share of total expenditure" }
+        },
+        "Government expenditure (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "GOVT" },
+            "chartOptions": { "title": "Government expenditure", "xTitle": "Expenditure item", "yTitle": "Share of total expenditure" }
+        },
+        "Household expenditure (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacntp": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "cols": { "sacnt": null },
+            "chartOptions": { "title": "Household expenditure", "xTitle": "Households", "yTitle": "Share of total expenditure by household" }
+        },
+        "Investment expenditure (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": ["KAP"] },
+            "chartOptions": { "title": "Investment expenditure", "xTitle": "Expenditure item", "yTitle": "Share of total expenditure" }
+        },
+        "Production costs structures (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacntp": [
+                    "a_Agriculture",
+                    "a_Construction",
+                    "a_Food",
+                    "a_Machinery",
+                    "a_Metal_mineral_products",
+                    "a_Minerals",
+                    "a_Other_manufacturing",
+                    "a_Petrol_chemicals",
+                    "a_Services",
+                    "a_Textiles",
+                    "a_Trade_transport_communications",
+                    "a_Utilities",
+                    "a_Vehicles"
+                ]
+            },
+            "cols": { "sacnt": null },
+            "chartOptions": { "title": "Production costs structures", "xTitle": "Activities", "yTitle": "Share of total expenditure by activity" }
+        },
+        "Spending by the rest of the world (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": false, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "rows": "sacnt",
+            "cols": { "sacntp": "ROW" },
+            "chartOptions": { "title": "Spending by the rest of the world", "xTitle": "Expenditure item", "yTitle": "Share of total expenditure" }
+        }
+    },
+    "sam_za_incsh": {
+        "Commodity demand (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": { "sacntp": null }
+        },
+        "Enterprise income (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ENT" },
+            "cols": { "sacntp": null }
+        },
+        "Factor income (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["f_African_skilled", "f_African_unskilled", "f_Capital", "f_Coloured_Asian_skilled", "f_Coloured_Asian_unskilled", "f_Land", "f_White_skilled", "f_White_unskilled"] },
+            "cols": { "sacntp": null }
+        },
+        "Government income (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "GOVT" },
+            "cols": { "sacntp": null }
+        },
+        "Household income (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "cols": { "sacntp": null }
+        },
+        "Savings (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["DSTOC", "KAP"] },
+            "cols": { "sacntp": null }
+        },
+        "Spending to the rest of the world (table)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "table",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ROW" },
+            "cols": { "sacntp": null }
+        },
+        "Commodity demand (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "c_Agriculture",
+                    "c_Construction",
+                    "c_Food",
+                    "c_Machinery",
+                    "c_Metal_mineral_products",
+                    "c_Minerals",
+                    "c_Other_manufacturing",
+                    "c_Petrol_chemicals",
+                    "c_Services",
+                    "c_Textiles",
+                    "c_Trade_transport_communications",
+                    "c_Utilities",
+                    "c_Vehicles"
+                ]
+            },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Commodity demand", "xTitle": "Sources of income", "yTitle": "Share of total income" }
+        },
+        "Enterprise income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ENT" },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Enterprise income", "xTitle": "Sources of income", "yTitle": "Share of total income" }
+        },
+        "Factor income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["f_African_skilled", "f_African_unskilled", "f_Capital", "f_Coloured_Asian_skilled", "f_Coloured_Asian_unskilled", "f_Land", "f_White_skilled", "f_White_unskilled"] },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Factor income", "xTitle": "Sources of income", "yTitle": "Share of total income" }
+        },
+        "Government income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "GOVT" },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Government income", "xTitle": "Sources of income", "yTitle": "Share of total income by source" }
+        },
+        "Household income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": {
+                "sacnt": [
+                    "h_African_female_high",
+                    "h_African_female_low",
+                    "h_African_female_med",
+                    "h_African_male_high",
+                    "h_African_male_low",
+                    "h_African_male_med",
+                    "h_Coloured_Asian_high",
+                    "h_Coloured_Asian_low",
+                    "h_White_high",
+                    "h_White_low"
+                ]
+            },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Household income", "xTitle": "Household accounts", "yTitle": "Share of total income by source" }
+        },
+        "Income (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "stackedbar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": ["DSTOC", "KAP"] },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Income", "xTitle": "Stock Changes (DSTOC) and Savings/Investment (KAP)", "yTitle": "Share of total income by source" }
+        },
+        "Income from the rest of the world (chart)": {
+            "aggregationFunction": "sum",
+            "pivotRenderer": "bar",
+            "domainFilter": { "default": null },
+            "tableSummarySettings": { "enabled": true, "rowSummaryFunction": "sum", "colSummaryFunction": "sum" },
+            "filter": { "sacnt": "ROW" },
+            "cols": { "sacntp": null },
+            "chartOptions": { "title": "Income from the rest of the world", "xTitle": "Sources of income", "yTitle": "Share of total income" }
+        }
+    },
+    "_pivotcomp_macrolevel": {
+        "Macroeconomic indicators (chart)": {
+            "aggregationFunction": "sum",
+            "baselineComparison": {
+                "domain": "sim_miro",
+                "record": "base",
+                "metrics": "percentage difference"
+            },
+            "chartOptions": {
+                "customLabelsOrder": [
+                    "GDP",
+                    "Absorption",
+                    "Production",
+                    "Exports",
+                    "Imports"
+                ],
+                "heatmapType": 2,
+                "hideLegend": false,
+                "showXGrid": false,
+                "showYGrid": true,
+                "title": "Macroeconomic indicators (real, percentage change)",
+                "yLogScale": false,
+                "yTitle": "Percentage change"
+            },
+            "cols": {
+                "_scenName": null
+            },
+            "data": "macrolevel",
+            "decimals": 2,
+            "domainFilter": {
+                "default": null
+            },
+            "filter": {
+                "sim_miro": "scenario"
+            },
+            "fixedColumns": true,
+            "hideEmptyCols": false,
+            "hideLegend": false,
+            "pivotRenderer": "bar",
+            "rows": "mac",
+            "tableSummarySettings": {
+                "colEnabled": false,
+                "colSummaryFunction": "sum",
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum"
+            },
+            "userFilter": "mac"
+        },
+        "Macroeconomic indicators (table)": {
+            "aggregationFunction": "sum",
+            "baselineComparison": {
+                "domain": "sim_miro",
+                "record": "base",
+                "metrics": "percentage difference"
+            },
+            "chartOptions": {
+                "customLabelsOrder": [
+                    "GDP",
+                    "Absorption",
+                    "Production",
+                    "Imports",
+                    "Exports"
+                ],
+                "heatmapType": 2,
+                "showXGrid": false,
+                "showYGrid": true,
+                "yLogScale": false,
+                "yTitle": "Percentage change"
+            },
+            "cols": {
+                "_scenName": null
+            },
+            "data": "macrolevel",
+            "decimals": 2,
+            "domainFilter": {
+                "default": null
+            },
+            "filter": {
+                "sim_miro": "scenario"
+            },
+            "fixedColumns": true,
+            "hideEmptyCols": false,
+            "hideLegend": false,
+            "pivotRenderer": "table",
+            "rows": [
+                "mac"
+            ],
+            "tableSummarySettings": {
+                "colEnabled": false,
+                "colSummaryFunction": "sum",
+                "rowEnabled": false,
+                "rowSummaryFunction": "sum"
+            },
+            "userFilter": "macro1"
+        }
+    }
+}

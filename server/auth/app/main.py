@@ -1,10 +1,40 @@
-from fastapi import FastAPI
+import contextlib
+import logging
+import time
 
-from app.config import logger, settings, settings_yml
-from app.routers import login, apps, scenarios, configuration, health
-from app.utils.utils import use_route_names_as_operation_ids
+from fastapi import FastAPI, Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 
-app = FastAPI()
+from app.config import settings, settings_yml
+from app.routers import apps, configuration, health, login, scenarios
+from app.utils.utils import SingletonAiohttp, use_route_names_as_operation_ids
+
+logger = logging.getLogger(__name__)
+
+
+async def log_requests(request: Request, call_next):
+    start_time = time.perf_counter()
+    response: Response = await call_next(request)
+    response_time = time.perf_counter() - start_time
+    logger.info(
+        "%s %s %d %.3fs",
+        request.method,
+        request.url.path,
+        response.status_code,
+        response_time,
+    )
+    return response
+
+
+@contextlib.asynccontextmanager
+async def lifespan(app):
+    SingletonAiohttp.get_aiohttp_client()
+    yield
+    await SingletonAiohttp.close_aiohttp_client()
+
+
+app = FastAPI(lifespan=lifespan)
+app.add_middleware(BaseHTTPMiddleware, dispatch=log_requests)
 
 public_api = FastAPI(
     title="MIRO Server API",
@@ -21,6 +51,7 @@ public_api = FastAPI(
     },
     redoc_url=None,
 )
+public_api.add_middleware(BaseHTTPMiddleware, dispatch=log_requests)
 
 app.include_router(login.router)
 app.include_router(health.router)

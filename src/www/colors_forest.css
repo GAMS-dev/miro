@@ -150,6 +150,7 @@
     --miro-primary-color-dark: #27ae60;
     --miro-secondary-color: #228b22;
     --miro-secondary-color-dark: #27ae60;
+    --miro-sidebar-active-color: #228b22;
     --miro-sidebar-color: #ffffff;
     --miro-sidebar-color-dark: #1d2121;
     --miro-sidebar-contrast-dark: #ffffff;
@@ -168,4 +169,5 @@
     --miro-notification-bg-dark: #004d24;
     --miro-logo: url('miro_logo_light.png');
     --miro-logo-dark: url('miro_logo_light_dark.png');
+    --miro-sidebar-color-gradient: none;
 }

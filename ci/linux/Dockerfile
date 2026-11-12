@@ -1,13 +1,11 @@
-FROM node:20-bookworm
+FROM node:24-trixie
 
 ARG R_BASE_VERSION=4.4.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
 ARG OPENSSL_VERSION=3.1.5
 ENV OPENSSL_VERSION=${OPENSSL_VERSION}
 
-ARG GAMS_MAJOR=46
-ARG GAMS_MINOR=5
-ARG GAMS_MAINT=0
+ARG GAMS_VERSION_FULL=50.4.1
 
 # R installation mostly taken from r base image (https://github.com/rocker-org/rocker) (GPL >= 2)
 
@@ -32,11 +30,11 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
         && locale-gen en_US.utf8 \
         && /usr/sbin/update-locale LANG=en_US.UTF-8
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 ## Use Debian unstable via pinning -- new style via APT::Default-Release
-RUN echo "deb http://cloud.r-project.org/bin/linux/debian bookworm-cran40/" >> /etc/apt/sources.list
+RUN echo "deb http://cloud.r-project.org/bin/linux/debian trixie-cran46/" >> /etc/apt/sources.list
 
 ## During the freeze, new (source) packages are in experimental and we place the binaries in our PPA
 #RUN echo "deb http://deb.debian.org/debian experimental main" > /etc/apt/sources.list.d/experimental.list \
@@ -64,11 +62,11 @@ RUN gpg --keyserver keyserver.ubuntu.com --recv-key '95C0FAF38DB3CCAD0C080A7BDC7
         && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
         && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
+RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_VERSION_FULL}/linux/linux_x64_64_sfx.exe && \
         chmod a+x linux_x64_64_sfx.exe && \
         ./linux_x64_64_sfx.exe && \
         rm linux_x64_64_sfx.exe && \
-        mv "gams${GAMS_MAJOR}.${GAMS_MINOR}_linux_x64_64_sfx" "/opt/gams"
+        mv "gams${GAMS_VERSION_FULL%.*}_linux_x64_64_sfx" "/opt/gams"
 
 ENV GAMS_SYS_DIR=/opt/gams
 
@@ -92,7 +90,8 @@ RUN apt-get update \
         git \
         gnupg \
         lsb-release \
-        python3-pip
+        python3-pip \
+        python3-venv
 
 RUN mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
@@ -112,3 +111,11 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
         && unzip awscliv2.zip \
         && ./aws/install \
         && rm -rf aws awscliv2
+
+# Documentation dependencies are installed once per builder image.
+# The image build job copies doc/requirements.txt into this build context.
+COPY requirements-docs.txt /opt/miro-docs/requirements.txt
+RUN python3 -m venv /opt/miro-docs \
+        && /opt/miro-docs/bin/python -m pip install --disable-pip-version-check --upgrade pip \
+        && /opt/miro-docs/bin/python -m pip install --disable-pip-version-check -r /opt/miro-docs/requirements.txt
+ENV SPHINX_PYTHON=/opt/miro-docs/bin/python

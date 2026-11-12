@@ -59,7 +59,9 @@ ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 
 RUN apt-get update && apt-get install -y \
-    r-base-dev=${R_BASE_VERSION}*
+    r-base-dev=${R_BASE_VERSION}* \
+    flex \
+    bison
 
 ARG OPENSSL_VERSION=3.0.3
 
@@ -67,7 +69,7 @@ ARG OPENSSL_VERSION=3.0.3
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
     tar -xvzf openssl-${OPENSSL_VERSION}.tar.gz && \
     cd openssl-${OPENSSL_VERSION} && \
-    ./config no-shared && \
+    ./config no-shared no-thread-pool no-quic && \
     make && \
     make install
 
@@ -94,8 +96,7 @@ RUN wget https://ftp.postgresql.org/pub/source/v${PQ_VERSION}/postgresql-${PQ_VE
     make && \
     make -C src/bin install && \
     make -C src/include install && \
-    make -C src/interfaces install && \
-    make -C doc install
+    make -C src/interfaces install
 
 ARG LD_LIBRARY_PATH=/usr/local/pgsql/lib
 
@@ -121,7 +122,7 @@ RUN Rscript ./home/miro/scripts/install_source.R
 FROM miro-base
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-    com.gamsmiro.version="2.12.0"\
+    com.gamsmiro.version="2.13.9999"\
     com.gamsmiro.license="GPL-3.0"\
     com.gamsmiro.description="GAMS MIRO Docker image"\
     maintainer="fproske@gams.com"

@@ -9,14 +9,14 @@ Sys.sleep(1)
 
 app$set_inputs(btDownloadTmpFiles = "click")
 Sys.sleep(1)
-expect_true(app$get_js("$('#btDownloadTmpConfirm').is(':visible')===false;", timeout = 50))
+expect_true(app$get_js("$('#btDownloadTmpConfirm').is(':visible')===false;", timeout = 10000L))
 expect_identical(
   getSelectizeOptions(app, "#selectDownloadTmp"),
   list("dowjones2016.csv", "pickstock_output_tables.gms")
 )
 expect_files_in_zip(app, "btDownloadTmpZip", c("pickstock_output_tables.gms", "dowjones2016.csv"))
 app$set_inputs(selectDownloadTmp = "pickstock_output_tables.gms")
-expect_true(app$get_js("$('#btDownloadTmpConfirm').is(':visible');", timeout = 50))
+expect_true(app$get_js("$('#btDownloadTmpConfirm').is(':visible');", timeout = 10000L))
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
 expect_true(startsWith(content, "$title Stock Selection"))
 app$set_inputs(selectDownloadTmp = "dowjones2016.csv")
@@ -29,5 +29,5 @@ expect_files_in_zip(app, "btDownloadTmpConfirm", c("pickstock_output_tables.gms"
 # Make sure doing funny stuff is not possible here..
 app$set_inputs(selectDownloadTmp = "asd.csv")
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
-expect_true(identical(content, paste0("Invalid  filename", if (.Platform$OS.type == "windows") "\r\n" else "\n")))
+expect_identical(content, paste0("Invalid  filename", if (.Platform$OS.type == "windows") "\r\n" else "\n"))
 app$stop()

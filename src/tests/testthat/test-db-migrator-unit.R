@@ -104,9 +104,10 @@ for (dbType in c("sqlite", "postgres")) {
       schema = "mirotests"
     )
   }
+  dbConnProvider <- DbConnectionProvider$new(dbConfig)
   populateDb(procEnv, "transport")
   db <- Db$new(
-    uid = "user", dbConf = dbConfig,
+    uid = "user", connProvider = dbConnProvider,
     slocktimeLimit = 20, modelName = modelName,
     ugroups = "users", forceNew = TRUE
   )
@@ -374,10 +375,11 @@ for (dbType in c("sqlite", "postgres")) {
       schema = "mirotests"
     )
   }
+  dbConnProvider <- DbConnectionProvider$new(dbConfig)
   populateDb(procEnv, "pickstock")
-  db$finalize()
+  db$destroy()
   db <- Db$new(
-    uid = "user", dbConf = dbConfig,
+    uid = "user", connProvider = dbConnProvider,
     slocktimeLimit = 20, modelName = modelName,
     ugroups = "users", forceNew = TRUE
   )
@@ -501,10 +503,11 @@ for (dbType in c("sqlite", "postgres")) {
       schema = "mirotests"
     )
   }
+  dbConnProvider <- DbConnectionProvider$new(dbConfig)
   populateDb(procEnv, "indus89", modelPath = modelPathTmp)
-  # db$finalize()
+  # db$destroy()
   db <- Db$new(
-    uid = "user", dbConf = dbConfig,
+    uid = "user", connProvider = dbConnProvider,
     slocktimeLimit = 20, modelName = modelName,
     ugroups = "users", forceNew = TRUE
   )
@@ -625,4 +628,4 @@ file.rename(
   file.path(modelPathTmp, "abc.gdx"),
   file.path(modelPathTmp, "data_indus89", "default.gdx")
 )
-db$finalize()
+db$destroy()

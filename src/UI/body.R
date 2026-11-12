@@ -1,24 +1,4 @@
 ## UI body
-genSplitCompButtons <- function(id) {
-  tags$div(
-    id = paste0("scenSplit", id, "_open"), class = "split-open",
-    tags$div(
-      title = lang$nav$scen$tooltips$load, class = "split-open-cell",
-      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load,
-        class = "scenSplit-button-load"
-      )
-    ),
-    tags$div(
-      title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
-      HTML(paste0(
-        '<button class="btn btn-default action-button scenSplit-button-load"
-type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1,
-        ', {priority: \'event\'})">',
-        lang$nav$scen$split$loadActive, "</button>"
-      ))
-    )
-  )
-}
 getJobsTableSkeleton <- function(id = NULL, content = NULL) {
   tags$div(
     style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
@@ -361,7 +341,7 @@ if (buildUI) {
                 class = "label-toggle-wrapper",
                 tags$div(
                   id = paste0("tableLabel_", i),
-                  class = "readme-wrapper label-wrapper label-collapsed",
+                  class = "label-wrapper miro-markdown label-collapsed",
                   markdownKatex(modelIn[[i]]$label)
                 ),
                 tags$div(
@@ -505,7 +485,7 @@ if (buildUI) {
       tagList(
         tags$div(class = "small-space"),
         tags$div(
-          class = "readme-wrapper",
+          class = "readme-wrapper miro-markdown",
           HTML(config$readmeFile)
         ),
         tags$div(class = "small-space")
@@ -551,9 +531,9 @@ if (buildUI) {
             tags$div(
               style = "margin: 10px;",
               tags$button(
-                class = "btn btn-default action-button btn-switch-sidebar",
+                class = "btn btn-default action-button",
                 type = "button",
-                "data-target" = "loadResults",
+                onclick = "Shiny.setInputValue('btLoadScen',1,{priority: 'event'})",
                 lang$nav$scen$btLoad
               )
             )
@@ -575,51 +555,62 @@ if (buildUI) {
           class = "box-mobile",
           title = list(
             tags$div(
-              id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
-              style = "display:none;", icon("triangle-exclamation")
-            ),
-            uiOutput("inputDataTitle", inline = TRUE),
-            tags$div(
-              style = "float: right;",
-              HTML(paste0(
-                '<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
-                                   onclick="Miro.confirmModalShow(\'',
-                lang$nav$dialogRemoveScen$title, "', '",
-                lang$nav$dialogRemoveScen$desc, "', '",
-                lang$nav$dialogRemoveScen$cancelButton, "', '",
-                lang$nav$dialogRemoveScen$okButton,
-                '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
-              ))
-            )
-          ), status = "primary", solidHeader = TRUE, width = 12L,
-          tags$div(
-            class = "scen-header",
-            tags$div(
-              class = "out-buttons-wrapper",
+              class = "header-title-group",
               tags$div(
-                title = lang$nav$scen$tooltips$btRefreshGraph, class = "scen-button-tt",
+                id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
+                style = "display:none;", icon("triangle-exclamation")
+              ),
+              uiOutput("inputDataTitle", inline = TRUE)
+            ),
+            tags$div(
+              class = "header-button-group",
+              tags$div(
+                class = "header-action-buttons",
                 tags$button(
-                  class = "btn btn-default action-button scen-button",
+                  class = "btn btn-default action-button bt-icon",
                   type = "button",
                   style = "display:none",
                   id = "btRefreshGraphIn",
+                  title = lang$nav$scen$tooltips$btRefreshGraph,
                   icon("rotate")
+                ),
+                tags$button(
+                  class = "btn btn-default action-button bt-icon",
+                  type = "button",
+                  id = "btGraphIn",
+                  title = lang$nav$scen$tooltips$btTableView,
+                  disabled = "",
+                  icon("chart-bar")
                 )
               ),
               tags$div(
-                title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                class = "header-close-button-wrapper",
                 tags$button(
-                  class = "btn btn-default action-button scen-button",
+                  class = "btn btn-default bt-icon btRemove",
+                  id = "btRemove1",
                   type = "button",
-                  disabled = "",
-                  id = "btGraphIn",
-                  icon("chart-bar")
+                  title = lang$nav$dialogRemoveScen$title,
+                  onclick = paste0("Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$dialogRemoveScen$title,
+                    desc = lang$nav$dialogRemoveScen$desc,
+                    cancelTxt = lang$nav$dialogRemoveScen$cancelButton,
+                    confirmTxt = lang$nav$dialogRemoveScen$okButton,
+                    confirmCallKey = "btRemoveConfirm",
+                    confirmCallVal = 1
+                  ), auto_unbox = TRUE), ")"),
+                  tags$i(
+                    class = "fa fa-xmark",
+                    role = "presentation",
+                    `aria-label` = lang$nav$dialogRemoveScen$title
+                  )
                 )
               )
             )
           ),
-          tags$div(class = "small-space"),
+          status = "primary", solidHeader = TRUE, width = 12L,
+          if (length(inputTabContent) > 1L) {
+            tags$div(class = "small-space")
+          },
           MIROtabBox(
             id = "inputTabset",
             maxTabsExpanded = if (is.null(config$layoutSettings$maxTabsExpandedInput)) 5L else config$layoutSettings$maxTabsExpandedInput,
@@ -635,7 +626,13 @@ if (buildUI) {
         class = "box-title-mobile",
         box(
           class = "box-mobile",
-          title = lang$nav$queryBuilder$title, status = "primary",
+          title = list(
+            tags$div(
+              class = "header-title-group",
+              lang$nav$queryBuilder$title
+            )
+          ),
+          status = "primary",
           solidHeader = TRUE, width = 12,
           tags$div(
             id = "loadContent",
@@ -674,12 +671,6 @@ if (buildUI) {
               ),
               tags$div(
                 class = "choose-scen-btn",
-                actionButton("batchLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton,
-                  class = "bt-highlight-1"
-                )
-              ),
-              tags$div(
-                class = "choose-scen-btn",
                 actionButton("batchLoadAll", lang$nav$queryBuilder$chooseAllButton,
                   class = "bt-highlight-1"
                 )
@@ -695,28 +686,9 @@ if (buildUI) {
       tags$div(
         id = "scen-tab-view",
         style = if (identical(config$defCompMode, "tab")) "" else "display:none;",
-        class = "scen-compare-tab-wrapper",
-        tags$div(
-          class = "close-all-tabs",
-          tags$a(
-            id = "btCmpTabCloseAll", style = "padding: 3px;",
-            style = "display:none",
-            href = "#",
-            onclick = paste0(
-              "Miro.confirmModalShow('",
-              lang$nav[["dialogCloseAllScen"]]$title, "', '",
-              lang$nav[["dialogCloseAllScen"]]$desc, "', '",
-              lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '",
-              lang$nav[["dialogCloseAllScen"]]$okButton,
-              "','Shiny.setInputValue(\\'btCmpTabCloseAll\\',1,{priority:\\'event\\'})')"
-            ),
-            lang$nav$scen$btCloseAll
-          )
-        ),
-        tags$div(
-          class = "tabs-ul-mobile-helper",
-          tabsetPanel(id = "scenTabset"),
-        ),
+        class = "scen-compare-tab-wrapper grid-layout",
+        tabsetPanel(id = "scenTabset"),
+        tags$div(id = "tabHeaderActionButtonsWrapper", class = "active-tab-actions"),
         tags$div(
           id = "cmpTabNoScenWrapper", lang$nav$scen$noScen, class = "no-scen",
           tags$div(
@@ -733,41 +705,91 @@ if (buildUI) {
       fluidRow(
         class = "box-title-mobile",
         tags$div(
-          id = "scen-split-view", style = if (identical(config$defCompMode, "split")) "" else "display:none;",
+          id = "scen-split-view",
+          style = if (identical(config$defCompMode, "split")) "" else "display:none;",
           class = "scen-compare-tab-wrapper",
-          box(
-            class = "box-mobile",
-            width = 6, solidHeader = TRUE, status = "primary", title =
-              tagList(
-                tags$span(id = "cmpScenTitle_2"),
+          {
+            renderSplitCompBox <- function(splitId) {
+              scenId <- as.character(splitId + 1L)
+              splitId <- as.character(splitId)
+              return(box(
+                class = "box-mobile",
+                width = 6, solidHeader = TRUE, status = "primary",
+                title = list(
+                  tags$div(
+                    class = "header-title-group",
+                    tags$span(id = paste0("cmpScenTitle_", scenId)),
+                    tags$span(id = paste0("cmpScenDate_", scenId), class = "header-timestamp")
+                  ),
+                  tags$div(
+                    class = "header-button-group",
+                    tags$div(
+                      id = paste0("split", scenId, "HeaderActionButtonsWrapper"),
+                      class = "header-action-buttons",
+                      style = "display:none",
+                      tags$div(
+                        id = paste0("refreshSandbox_", scenId),
+                        tags$button(
+                          title = lang$nav$scen$tooltips$btRefresh, class = "btn btn-default bt-icon",
+                          type = "button",
+                          onclick = paste0("Shiny.setInputValue('btRefreshComp',", scenId, ",{priority:'event'})"),
+                          tags$i(
+                            class = "fas fa-rotate",
+                            role = "presentation",
+                            `aria-label` = lang$nav$scen$tooltips$btRefresh
+                          )
+                        )
+                      ),
+                      tags$button(
+                        type = "button",
+                        class = "btn btn-default bt-icon",
+                        title = lang$nav$scen$tooltips$btExport,
+                        onclick = paste0("Shiny.setInputValue('btExportScen',", scenId, ",{priority:'event'})"),
+                        tags$i(
+                          class = "fas fa-download",
+                          role = "presentation", `aria-label` = lang$nav$scen$tooltips$btExport
+                        )
+                      ),
+                      tags$button(
+                        title = lang$nav$scen$tooltips$btTableView, class = "btn btn-default bt-icon",
+                        id = paste0("btScenTableView", scenId), type = "button",
+                        onclick = paste0("Shiny.setInputValue('btScenTableView',", scenId, ",{priority:'event'})"),
+                        tags$i(class = "fa fa-chart-bar", role = "presentation", `aria-label` = lang$nav$scen$tooltips$btTableView)
+                      )
+                    ),
+                    tags$div(
+                      class = "header-close-button-wrapper",
+                      actionButton(
+                        inputId = paste0("btScenSplit", splitId, "_close"), class = "bt-icon",
+                        icon = icon("xmark"), label = NULL, title = "Close"
+                      )
+                    )
+                  )
+                ),
+                tags$div(id = paste0("scenSplit", splitId, "_content"), style = "display:none;"),
                 tags$div(
-                  style = "float: right;",
-                  actionButton(
-                    inputId = "btScenSplit1_close",
-                    class = "bt-icon",
-                    icon = icon("xmark"),
-                    label = NULL
+                  id = paste0("scenSplit", splitId, "_open"),
+                  class = "split-open",
+                  tags$div(
+                    title = lang$nav$scen$tooltips$load, class = "split-open-cell",
+                    actionButton(paste0("btScenSplit", splitId, "_open"), lang$nav$scen$split$load,
+                      class = "scenSplit-button-load"
+                    )
+                  ),
+                  tags$div(
+                    title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
+                    tags$button(
+                      class = "btn btn-default action-button scenSplit-button-load",
+                      type = "button",
+                      onclick = paste0("Shiny.setInputValue('loadActiveScenSplitComp',", scenId, ",{priority:'event'})"),
+                      lang$nav$scen$split$loadActive
+                    )
                   )
                 )
-              ),
-            tags$div(id = "scenSplit1_content", style = "display:none;"),
-            genSplitCompButtons(1)
-          ),
-          box(
-            width = 6, solidHeader = TRUE, status = "primary",
-            title = tagList(
-              tags$span(id = "cmpScenTitle_3"),
-              tags$div(
-                style = "float: right;",
-                actionButton(
-                  inputId = "btScenSplit2_close",
-                  class = "bt-icon", icon = icon("xmark"), label = NULL
-                )
-              )
-            ),
-            tags$div(id = "scenSplit2_content", style = "display:none;"),
-            genSplitCompButtons(2)
-          )
+              ))
+            }
+            tagList(renderSplitCompBox(1L), renderSplitCompBox(2L))
+          }
         )
       ),
       customComparisonTabContent
@@ -913,7 +935,7 @@ if (buildUI) {
             class = "label-toggle-wrapper",
             tags$div(
               id = paste0("tableOutLabel_", i),
-              class = "readme-wrapper label-wrapper label-collapsed",
+              class = "label-wrapper miro-markdown label-collapsed",
               markdownKatex(configGraphsOut[[i]]$label)
             ),
             tags$div(
@@ -990,7 +1012,7 @@ if (buildUI) {
                 class = "script-spinner", style = "display:none;text-align:center;",
                 genSpinner(absolute = FALSE, externalStyle = "margin-top: 50px")
               ),
-              tags$iframe(class = "script-output")
+              tags$iframe(class = "script-output", sandbox = scriptOutputSandbox)
             ),
             tags$div(class = "small-space")
           )
@@ -1013,14 +1035,21 @@ if (buildUI) {
               value = "joblist",
               fluidRow(
                 box(
-                  title = tagList(
-                    lang$nav$hcubeImport$title,
+                  title = list(
                     tags$div(
-                      style = "float: right;",
-                      actionButton(
-                        inputId = "refreshActiveJobs",
-                        class = "bt-icon",
-                        icon = icon("rotate"), label = NULL
+                      class = "header-title-group",
+                      lang$nav$hcubeImport$title
+                    ),
+                    tags$div(
+                      class = "header-button-group",
+                      tags$div(
+                        class = "header-action-buttons",
+                        actionButton(
+                          inputId = "refreshActiveJobs",
+                          class = "bt-icon",
+                          icon = icon("rotate"), label = NULL,
+                          title = "Refresh"
+                        )
                       )
                     )
                   ),
@@ -1051,66 +1080,75 @@ if (buildUI) {
           class = "box-mobile",
           title = list(
             tags$div(
-              id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
-              style = "display:none;", icon("triangle-exclamation")
+              class = "header-title-group",
+              tags$div(
+                id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el",
+                style = "display:none;", icon("triangle-exclamation")
+              ),
+              uiOutput("outputDataTitle", inline = TRUE)
             ),
-            uiOutput("outputDataTitle", inline = TRUE),
             tags$div(
-              style = "float: right;",
-              HTML(paste0(
-                '<button type="button" class="btn btn-default bt-icon btRemove"
-                                   onclick="Miro.confirmModalShow(\'',
-                lang$nav$dialogRemoveScen$title, "', '",
-                lang$nav$dialogRemoveScen$desc, "', '",
-                lang$nav$dialogRemoveScen$cancelButton, "', '",
-                lang$nav$dialogRemoveScen$okButton,
-                '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-xmark" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'
-              ))
-            )
-          ), status = "primary", solidHeader = TRUE, width = 12,
-          tags$div(
-            class = "scen-header",
-            tags$div(
-              class = "out-buttons-wrapper",
-              if (isTRUE(config$hasSymbolLinks)) {
-                tags$div(
-                  title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
+              class = "header-button-group",
+              tags$div(
+                class = "header-action-buttons",
+                if (isTRUE(config$activateModules$downloadTempFiles)) {
+                  actionButton("btDownloadTmpFiles", icon("folder-open"),
+                    class = "bt-icon",
+                    title = lang$nav$scen$tooltips$btDownloadTmpFiles
+                  )
+                },
+                if (isTRUE(config$hasSymbolLinks)) {
                   tags$button(
-                    class = "btn btn-default scen-button", id = "btSymbolLink",
+                    class = "btn btn-default bt-icon",
+                    id = "btSymbolLink",
+                    title = lang$nav$scen$tooltips$btSymbolLink,
+                    type = "button",
+                    onclick = paste0(
+                      "Miro.confirmModalShow(", toJSON(list(
+                        title = lang$nav$dialogImport$title,
+                        desc = lang$nav$dialogImport$descOverwriteInput,
+                        cancelTxt = lang$nav$dialogImport$cancelButton,
+                        confirmTxt = lang$nav$dialogImport$okButton,
+                        confirmCallKey = "btSymbolLink",
+                        confirmCallVal = 1
+                      ), auto_unbox = TRUE), ")"
+                    ),
                     tags$i(
                       class = "fa fa-share", role = "presentation",
                       `aria-label` = "Load dataset as input data"
-                    ),
-                    onclick = paste0(
-                      "Miro.confirmModalShow('",
-                      lang$nav$dialogImport$title, "', '",
-                      lang$nav$dialogImport$descOverwriteInput, "', '",
-                      lang$nav$dialogImport$cancelButton, "', '",
-                      lang$nav$dialogImport$okButton,
-                      "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
-                      ",{priority:\\'event\\'})')"
                     )
                   )
-                )
-              },
-              if (isTRUE(config$activateModules$downloadTempFiles)) {
-                tags$div(
-                  title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
-                  actionButton("btDownloadTmpFiles", icon("folder-open"),
-                    class = "scen-button"
-                  )
-                )
-              },
-              tags$div(
-                title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                },
                 actionButton("outputTableView", icon("chart-bar"),
-                  class = "scen-button"
+                  class = "bt-icon",
+                  title = lang$nav$scen$tooltips$btTableView
+                )
+              ),
+              tags$div(
+                class = "header-close-button-wrapper",
+                tags$button(
+                  type = "button",
+                  class = "btn btn-default bt-icon btRemove",
+                  title = lang$nav$dialogRemoveScen$title,
+                  onclick = paste0("Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$dialogRemoveScen$title,
+                    desc = lang$nav$dialogRemoveScen$desc,
+                    cancelTxt = lang$nav$dialogRemoveScen$cancelButton,
+                    confirmTxt = lang$nav$dialogRemoveScen$okButton,
+                    confirmCallKey = "btRemoveConfirm",
+                    confirmCallVal = 1
+                  ), auto_unbox = TRUE), ")"),
+                  tags$i(
+                    class = "fa fa-xmark", role = "presentation",
+                    `aria-label` = lang$nav$dialogRemoveScen$title
+                  )
                 )
               )
             )
-          ),
-          tags$div(class = "small-space"),
+          ), status = "primary", solidHeader = TRUE, width = 12,
+          if (length(outputTabContent) > 1L) {
+            tags$div(class = "small-space")
+          },
           MIROtabBox(
             id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
             maxTabsExpanded = if (is.null(config$layoutSettings$maxTabsExpandedOutput)) 5L else config$layoutSettings$maxTabsExpandedOutput,
@@ -1128,25 +1166,15 @@ if (buildUI) {
   miroBody <- dashboardBody({
     tagList(
       tags$head(
-        if (isTRUE(config$readme$enableMath)) {
-          tagList(
-            tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
-            tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
-            tags$script(
-              type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = "Array.prototype.forEach.call(document.getElementsByClassName('readme-wrapper'), function(el) {Miro.parseKatex(el);});"
-            )
+        tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
+        tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
+        tags$script(
+          type = "application/javascript", `defer src` = "auto-render.min.js",
+          onload = paste0(
+            "Array.prototype.forEach.call(document.getElementsByClassName('",
+            if (isTRUE(config$readme$enableMath)) "miro-markdown" else "label-wrapper", "'), function(el) {Miro.parseKatex(el);});"
           )
-        } else {
-          tagList(
-            tags$link(type = "text/css", rel = "stylesheet", href = "katex.min.css"),
-            tags$script(type = "application/javascript", `defer src` = "katex.min.js"),
-            tags$script(
-              type = "application/javascript", `defer src` = "auto-render.min.js",
-              onload = "Array.prototype.forEach.call(document.getElementsByClassName('label-wrapper'), function(el) {Miro.parseKatex(el);});"
-            )
-          )
-        },
+        ),
         tags$meta(
           name = "color-scheme",
           content = if (identical(config$theme, "browser")) "dark light" else "normal"

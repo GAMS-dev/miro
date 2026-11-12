@@ -394,6 +394,10 @@ observeEvent(input$btSendQuery, {
 
 batchLoadResultsProxy <- dataTableProxy("batchLoadResults")
 observeEvent(input$batchLoadResults_cell_edit, {
+  if (isTRUE(config$activateModules$readonlyMode)) {
+    flog.error("Attempt to modify scenarios in readonly mode. This is likely an attempt to tamper with the app!")
+    return()
+  }
   newValInfo <- input$batchLoadResults_cell_edit
   scenInfo <- batchLoadData[newValInfo$row, c(1, 2)]
   if (tryCatch(
@@ -488,22 +492,12 @@ output$batchLoadResults <- renderDT(
       return()
     }
     data <- batchLoadData[, -1]
-    maxStrLen <- if (length(data) <= 7L) 100L else 20L
     dtObj <- datatable(
       data,
       filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
       editable = list(target = "cell", disable = list(columns = seq_along(data)[-c(2L, 4L)] - 1L)),
       options = list(
-        scrollX = TRUE, columnDefs = list(list(
-          targets = "_all",
-          render = JS(paste0(
-            "function(data, type, row, meta) {",
-            "return type === 'display' && data != null && data.length > ", maxStrLen, " ?",
-            "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, ",
-            maxStrLen, ") + '...</span>' : data;",
-            "}"
-          ))
-        )),
+        scrollX = TRUE,
         pagingType = JS("$(window).width() < 768 ? 'full' : 'simple_numbers'")
       )
     ) %>%
@@ -522,6 +516,15 @@ output$batchLoadResults <- renderDT(
   }
 )
 
+showBatchLoadDialogWithCompareOptions <- function() {
+  scenRows <- match(sidsToLoad, batchLoadData[[1]])
+  showBatchLoadDialog(length(sidsToLoad),
+    customScripts = config$scripts$hcube,
+    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1]),
+    sandboxName = paste(activeScen$getScenName(), lang$nav$scen$scenNameSandboxSuffix),
+    baselineChoices = setNames(as.character(sidsToLoad), batchLoadData[[3L]][scenRows])
+  )
+}
 observeEvent(input$batchLoadSelected, {
   flog.debug("Button to load selected scenarios (Batch load) clicked.")
   if (!length(input$batchLoadResults_rows_selected)) {
@@ -530,22 +533,7 @@ observeEvent(input$batchLoadSelected, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
-})
-observeEvent(input$batchLoadCurrent, {
-  flog.debug("Button to load current page of scenarios (Batch load) clicked.")
-  if (is.null(input$batchLoadResults_rows_current)) {
-    return()
-  }
-  hcubeRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
+  showBatchLoadDialogWithCompareOptions()
 })
 observeEvent(input$batchLoadAll, {
   flog.debug("Button to load all scenarios (Batch load) clicked.")
@@ -554,10 +542,7 @@ observeEvent(input$batchLoadAll, {
   }
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(batchLoadData[[1]])
-  showBatchLoadDialog(length(sidsToLoad),
-    customScripts = config$scripts$hcube,
-    colNamesForNaming = setNames(names(batchLoadData)[-1], names(batchLoadFilters)[-1])
-  )
+  showBatchLoadDialogWithCompareOptions()
 })
 downloadBatchData <- function(file, sids, type) {
   if (!length(sids)) {
@@ -690,6 +675,10 @@ output$btBatchDownloadCSV <- downloadHandler(
 )
 
 observeEvent(input$btBatchRemove, {
+  if (isTRUE(config$activateModules$readonlyMode)) {
+    flog.error("Attempt to modify scenarios in readonly mode. This is likely an attempt to tamper with the app!")
+    return()
+  }
   if (hcubeRemoveConfirmed) {
     errMsg <- NULL
     disableEl(session, "#btBatchRemove")

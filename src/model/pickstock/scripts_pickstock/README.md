@@ -8,10 +8,10 @@ source venv/bin/activate
 pip install jupyter pandas matplotlib
 ```
 
-You also need the GAMS Python API. You can install it via:
+You also need the GAMS Python API. Install it via the following command, replacing `<GAMS version>` with the version of your GAMS installation (e.g. `54.6.1`):
 
 ```
-python <path_to_gams_sys_dir>/apifiles/Python/api_39/setup.py build -b ${TMPDIR} install
+pip install "gamsapi[control]==<GAMS version>"
 ```
 
 Once you've done that you need to tell MIRO about your Python environment by adding it to the PATH (either system-wide or via [MIRO environment files](https://gams.com/miro/deployment.html#custom-environments)).

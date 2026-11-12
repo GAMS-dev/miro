@@ -14,14 +14,18 @@ class EngineError extends Error {
   }
 }
 
-const isTokenExpired = (token) => Date.now() >= (JSON.parse(atob(token.split('.')[1]))).exp * 1000;
+const isTokenExpired = (token) =>
+  Date.now() >= JSON.parse(atob(token.split('.')[1])).exp * 1000;
 
 const getEngineAuthProviders = async (url, signal) => {
   let requestOptions = { timeout: REQUEST_TIMEOUT };
   if (signal != null) {
     requestOptions = { signal };
   }
-  const authProviderReq = await axios.get(`${url}/auth/providers`, requestOptions);
+  const authProviderReq = await axios.get(
+    `${url}/auth/providers`,
+    requestOptions,
+  );
   if (!authProviderReq.data.find((idp) => idp.is_main_identity_provider)) {
     throw new Error('Not a valid Engine server');
   }
@@ -33,7 +37,10 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
   try {
     const userInfoReq = await axios.get(
       `${engineConfig.url}/users/?everyone=false`,
-      { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        timeout: REQUEST_TIMEOUT,
+      },
     );
     const userInfoRaw = userInfoReq.data[0];
     if (userInfoRaw.deleted === true) {
@@ -46,7 +53,9 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
     userInfo.is_admin = userInfoRaw.roles.includes('admin');
   } catch (err) {
     if (err?.response?.status === 401) {
-      __electronLog.info(`Problems getting user info. Invalid JWT: ${JSON.stringify(err)}`);
+      __electronLog.info(
+        `Problems getting user info. Invalid JWT: ${JSON.stringify(err)}`,
+      );
       throw new EngineError('Invalid JWT', 401, 'jwt');
     }
     throw new Error(`Problems getting user info. Error message: ${err}`);
@@ -58,11 +67,18 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
     }
     const userPermissionReq = await axios.get(
       `${engineConfig.url}/namespaces/${userInfo.namespace}/permissions?username=${encodeURIComponent(userInfo.username)}`,
-      { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        timeout: REQUEST_TIMEOUT,
+      },
     );
     if (!userInfo.is_admin) {
-      if (!(userPermissionReq.data.permission & 2 // eslint-disable-line no-bitwise
-        && userPermissionReq.data.permission & 1)) { // eslint-disable-line no-bitwise
+      if (
+        !(
+          userPermissionReq.data.permission & 2 && // eslint-disable-line no-bitwise
+          userPermissionReq.data.permission & 1 // eslint-disable-line no-bitwise
+        )
+      ) {
         throw new EngineError('No permission on namespace', 403, 'namespace');
       }
     }
@@ -73,7 +89,9 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
     if (err?.response?.status === 404) {
       throw new EngineError('Namespace not found', 404, 'namespace');
     }
-    throw new Error(`Problems getting namespace permission info. Error message: ${err}`);
+    throw new Error(
+      `Problems getting namespace permission info. Error message: ${err}`,
+    );
   }
   return {
     url: engineConfig.url,
@@ -86,30 +104,43 @@ const getEngineUserInfo = async (jwt, engineConfig, namespace) => {
 
 const getEngineJwt = async (username, password, loginMethod, engineConfig) => {
   if (loginMethod == null || loginMethod === '_main') {
-    const loginReq = await axios.post(`${engineConfig.url}/auth/login`, {
+    const loginReq = await axios.post(
+      `${engineConfig.url}/auth/login`,
+      {
+        username,
+        password,
+        expires_in: TOKEN_EXPIRATION_SECONDS,
+        scope: REQUIRED_SCOPES,
+      },
+      { timeout: REQUEST_TIMEOUT },
+    );
+    return loginReq.data.token;
+  }
+  if (!engineConfig.ldapProviders.includes(loginMethod)) {
+    throw new Error(`Invalid login method: ${loginMethod}`);
+  }
+  const loginReq = await axios.post(
+    `${engineConfig.url}/auth/ldap-providers/${loginMethod}/login`,
+    {
       username,
       password,
       expires_in: TOKEN_EXPIRATION_SECONDS,
       scope: REQUIRED_SCOPES,
-    }, { timeout: REQUEST_TIMEOUT });
-    return loginReq.data.token;
-  } if (!engineConfig.ldapProviders.includes(loginMethod)) {
-    throw new Error(`Invalid login method: ${loginMethod}`);
-  }
-  const loginReq = await axios.post(`${engineConfig.url}/auth/ldap-providers/${loginMethod}/login`, {
-    username,
-    password,
-    expires_in: TOKEN_EXPIRATION_SECONDS,
-    scope: REQUIRED_SCOPES,
-  }, { timeout: REQUEST_TIMEOUT });
+    },
+    { timeout: REQUEST_TIMEOUT },
+  );
   return loginReq.data.token;
 };
 
 const refreshEngineJwt = async (url, jwt) => {
-  const loginReq = await axios.post(`${url}/auth/`, {
-    expires_in: TOKEN_EXPIRATION_SECONDS,
-    scope: REQUIRED_SCOPES,
-  }, { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT });
+  const loginReq = await axios.post(
+    `${url}/auth/`,
+    {
+      expires_in: TOKEN_EXPIRATION_SECONDS,
+      scope: REQUIRED_SCOPES,
+    },
+    { headers: { Authorization: `Bearer ${jwt}` }, timeout: REQUEST_TIMEOUT },
+  );
   return loginReq.data.token;
 };
 

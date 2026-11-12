@@ -3,8 +3,10 @@
     --miro-server-body-bg: #e2e3e8;
     --miro-server-main-bg: #fff;
     --miro-server-login-header-bg: #494d55;
+    --miro-server-launch-text-color: #494d55;
     --miro-server-primary-color-dark: #f90;
     --miro-server-body-bg-dark: #292d32;
     --miro-server-main-bg-dark: #393e46;
     --miro-server-login-header-bg-dark: #494d55;
+    --miro-server-launch-text-color-dark: #fff;
 }

@@ -221,7 +221,8 @@ server <- function(input, output, session) {
           containerEnv = list(
             MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
             MIRO_MODE = "base",
-            MIRO_ENGINE_MODELNAME = appId
+            MIRO_ENGINE_MODELNAME = appId,
+            MIRO_APP_UPLOADER = APP_UPLOADER
           ),
           extraData = list(
             appVersion = miroAppValidator$getAppVersion(),
@@ -389,7 +390,7 @@ server <- function(input, output, session) {
     if (loginRequired(session, isLoggedIn)) {
       return()
     }
-    flog.info("Request to update MIRO app received.")
+    flog.info("Request to update app metadata received.")
     tryCatch(
       {
         appIndex <- suppressWarnings(as.integer(input$updateAppMeta$index))
@@ -442,6 +443,28 @@ server <- function(input, output, session) {
         session$sendCustomMessage("onError", list(requestType = "updateAppMeta", message = errMsg))
       }
     )
+  })
+  observeEvent(input$validateAiApiKey, {
+    if (loginRequired(session, isLoggedIn)) {
+      return()
+    }
+    request <- input$validateAiApiKey
+    if (!is.character(request$provider) || length(request$provider) != 1L ||
+      !is.character(request$key) || length(request$key) != 1L) {
+      flog.warn("Invalid AI API key validation request received.")
+      return()
+    }
+    if (identical(request$provider, "bedrock")) {
+      if (!is.character(request$region) || length(request$region) != 1L ||
+        !is.character(request$model) || length(request$model) != 1L) {
+        flog.warn("Invalid Amazon Bedrock validation request received.")
+        return()
+      }
+      result <- validateBedrockConfig(request$region, request$key, request$model)
+    } else {
+      result <- list(status = validateAiApiKey(request$provider, request$key))
+    }
+    session$sendCustomMessage("onAiApiKeyValidated", c(list(requestId = request$requestId), result))
   })
   observeEvent(input$updateAppOrder, {
     if (loginRequired(session, isLoggedIn)) {
@@ -576,6 +599,7 @@ server <- function(input, output, session) {
         appVersion <- miroAppValidator$getAppVersion()
         appAuthors <- miroAppValidator$getAppAuthors()
         appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+        appConfig$containerEnv[["MIRO_APP_UPLOADER"]] <- APP_UPLOADER
         if (IN_KUBERNETES) {
           appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
         } else {
@@ -599,11 +623,6 @@ server <- function(input, output, session) {
 
         extractAppData(filePath, paste0("~$", appId), modelId, miroProc)
 
-        engineClient$updateModel(appId,
-          userGroups = FALSE,
-          modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip"))
-        )
-
         addDataFiles(appId, dataDirTmp, progressSelector,
           "updateApp",
           appDir = appDirTmp,
@@ -613,6 +632,10 @@ server <- function(input, output, session) {
           appConfig = appConfig, customCallback = function() {
             tryCatch(
               {
+                engineClient$updateModel(appId,
+                  userGroups = FALSE,
+                  modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip"))
+                )
                 moveFilesFromTemp(appId)
                 modelConfig$update(modelConfig$getAppIndex(appId), list(
                   containerEnv = appConfig$containerEnv,
@@ -623,7 +646,8 @@ server <- function(input, output, session) {
                   "onSuccess",
                   list(
                     requestType = "updateApp", progressSelector = progressSelector,
-                    spinnerSelector = spinnerSelector
+                    spinnerSelector = spinnerSelector, configList = modelConfig$getConfigList(),
+                    groupList = modelConfig$getAccessGroupUnion()
                   )
                 )
               },

@@ -12,7 +12,24 @@ const minR = '4.0';
 const minPython = '3.8';
 const gamsDirNameRegex = /^(GAMS)?(\d+\.\d+)$/;
 
+const aiCustomProviderModelsSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', minLength: 1 },
+      label: { type: 'string' },
+    },
+    required: ['id'],
+    additionalProperties: false,
+  },
+};
+
 const schema = {
+  previousMIROVersion: {
+    type: 'string',
+    minLength: 2,
+  },
   configpath: {
     type: 'string',
     minLength: 2,
@@ -64,22 +81,79 @@ const schema = {
     },
     additionalProperties: false,
   },
+  aiAssistantConfig: {
+    type: 'object',
+    properties: {
+      apiKeys: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            key: {
+              type: 'string',
+              minLength: 1,
+            },
+            provider: {
+              type: 'string',
+              enum: ['openai', 'google', 'anthropic', 'azure', 'bedrock', 'custom'],
+            },
+            // http only for loopback: custom providers may be local servers
+            endpoint: {
+              type: 'string',
+              pattern: '^(https://[^/?#@\\s]+|http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:\\d+)?)(/[^?#@\\s]*)?$',
+            },
+            apiFormat: {
+              type: 'string',
+              enum: ['chatCompletions', 'anthropicMessages', 'responses'],
+            },
+            region: {
+              type: 'string',
+              pattern: '^[a-z]{2}(-gov)?-[a-z]+-[0-9]$',
+            },
+            authMode: {
+              type: 'string',
+              enum: ['apiKey', 'userSignIn'],
+            },
+            // a GUID, or a verified domain such as contoso.onmicrosoft.com
+            tenantId: {
+              type: 'string',
+              pattern: '^([0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}|[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+)$',
+            },
+            clientId: {
+              type: 'string',
+              pattern: '^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$',
+            },
+            models: aiCustomProviderModelsSchema,
+          },
+          additionalProperties: false,
+        }
+      }
+    },
+    additionalProperties: false,
+  },
   logLifeTime: {
     type: 'integer',
     minimum: -1,
   },
   language: {
     type: 'string',
-    enum: ['en', 'de', 'cn'],
+    enum: ['en', 'de', 'cn', 'es'],
   },
   colorTheme: {
     type: 'string',
-    enum: ['default', 'blackandwhite', 'forest', 'tawny', 'darkblue', 'redwine', 'custom'],
+    enum: [
+      'default',
+      'blackandwhite',
+      'forest',
+      'tawny',
+      'darkblue',
+      'redwine',
+      'custom',
+    ],
   },
   logLevel: {
     type: 'string',
-    enum: ['TRACE', 'DEBUG', 'INFO',
-      'WARN', 'ERROR', 'FATAL'],
+    enum: ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'],
   },
   miroEnv: {
     type: 'object',
@@ -102,6 +176,7 @@ const schema = {
         'launchExternal',
         'remoteExecution',
         'remoteConfig',
+        'aiAssistantConfig',
         'logLifeTime',
         'language',
         'colorTheme',
@@ -114,6 +189,11 @@ const schema = {
 
 class ConfigManager extends Store {
   constructor(appRootDir, miroWorkspaceDir) {
+    let isNewMiroInstallation = false;
+    if (!fs.existsSync(miroWorkspaceDir)) {
+      isNewMiroInstallation = true;
+      fs.mkdirSync(miroWorkspaceDir);
+    }
     let configPathTmp = miroWorkspaceDir;
     super({
       schema,
@@ -134,8 +214,22 @@ class ConfigManager extends Store {
           cwd: configPathTmp,
           name: 'settings',
         });
-        ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-          'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+        [
+          'gamspath',
+          'pythonpath',
+          'rpath',
+          'logpath',
+          'launchExternal',
+          'remoteExecution',
+          'remoteConfig',
+          'aiAssistantConfig',
+          'logLifeTime',
+          'language',
+          'colorTheme',
+          'logLevel',
+          'miroEnv',
+          'previousMIROVersion',
+        ].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
         this.important = superPathConfigData.get('important', []);
@@ -144,13 +238,28 @@ class ConfigManager extends Store {
       }
     }
 
+    this.isNewMiroInstallation = isNewMiroInstallation;
     this.appRootDir = appRootDir;
     this.configpath = configPathTmp;
     this.configpathDefault = miroWorkspaceDir;
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
-    ['gamspath', 'pythonpath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-      'remoteConfig', 'logLifeTime', 'language', 'colorTheme', 'logLevel', 'miroEnv'].forEach((el) => {
+    [
+      'gamspath',
+      'pythonpath',
+      'rpath',
+      'logpath',
+      'launchExternal',
+      'remoteExecution',
+      'remoteConfig',
+      'aiAssistantConfig',
+      'logLifeTime',
+      'language',
+      'colorTheme',
+      'logLevel',
+      'miroEnv',
+      'previousMIROVersion',
+    ].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
       }
@@ -172,13 +281,16 @@ class ConfigManager extends Store {
   set(data) {
     Object.entries(data).forEach(([key, value]) => {
       this[key] = value;
-      if (value == null || value === ''
-        || (key === 'launchExternal' && value === false)
-        || (key === 'remoteExecution' && value === false)
-        || (key === 'logLifeTime' && value === -1)
-        || (key === 'language' && value === 'en')
-        || (key === 'colorTheme' && value === 'default')
-        || (key === 'logLevel' && value === 'INFO')) {
+      if (
+        value == null ||
+        value === '' ||
+        (key === 'launchExternal' && value === false) ||
+        (key === 'remoteExecution' && value === false) ||
+        (key === 'logLifeTime' && value === -1) ||
+        (key === 'language' && value === 'en') ||
+        (key === 'colorTheme' && value === 'default') ||
+        (key === 'logLevel' && value === 'INFO')
+      ) {
         this[key] = '';
         super.delete(key);
       } else {
@@ -191,8 +303,7 @@ class ConfigManager extends Store {
   async get(key, fallback = true) {
     let valTmp;
 
-    if (key === 'rpath'
-      && ['darwin', 'win32'].includes(process.platform)) {
+    if (key === 'rpath' && ['darwin', 'win32'].includes(process.platform)) {
       valTmp = await this.getDefault('rpath');
       return valTmp;
     }
@@ -208,7 +319,7 @@ class ConfigManager extends Store {
 
     if (fallback) {
       // if options is not set, fetch defaults
-      if ((valTmp == null || valTmp === '')) {
+      if (valTmp == null || valTmp === '') {
         valTmp = await this.getDefault(key);
       }
     }
@@ -219,25 +330,35 @@ class ConfigManager extends Store {
   async getDefault(key) {
     if (key === 'rpath') {
       return this.findR();
-    } if (key === 'gamspath') {
+    }
+    if (key === 'gamspath') {
       return this.findGAMS();
-    } if (key === 'pythonpath') {
+    }
+    if (key === 'pythonpath') {
       return this.findPython();
-    } if (key === 'logpath') {
+    }
+    if (key === 'logpath') {
       return this.logpathDefault;
-    } if (key === 'configpath') {
+    }
+    if (key === 'configpath') {
       return this.configpathDefault;
-    } if (key === 'logLifeTime') {
+    }
+    if (key === 'logLifeTime') {
       return -1;
-    } if (key === 'language') {
+    }
+    if (key === 'language') {
       return 'en';
-    } if (key === 'colorTheme') {
+    }
+    if (key === 'colorTheme') {
       return 'default';
-    } if (key === 'logLevel') {
+    }
+    if (key === 'logLevel') {
       return 'INFO';
-    } if (key === 'launchExternal') {
+    }
+    if (key === 'launchExternal') {
       return false;
-    } if (key === 'remoteExecution') {
+    }
+    if (key === 'remoteExecution') {
       return false;
     }
     return null;
@@ -262,9 +383,11 @@ class ConfigManager extends Store {
   }
 
   async removeOldLogs() {
-    if (this.logLifeTime == null
-      || this.logLifeTime === ''
-      || this.logLifeTime < 0) {
+    if (
+      this.logLifeTime == null ||
+      this.logLifeTime === '' ||
+      this.logLifeTime < 0
+    ) {
       return true;
     }
     const now = new Date().getTime();
@@ -281,8 +404,10 @@ class ConfigManager extends Store {
         try {
           const fp = path.join(logPath, logFile);
           const { mtime } = await fs.promises.stat(fp);
-          if ((now - mtime.getTime())
-            / (1000 * 3600 * 24) > this.logLifeTime) {
+          if (
+            (now - mtime.getTime()) / (1000 * 3600 * 24) >
+            this.logLifeTime
+          ) {
             fs.promises.unlink(fp);
           }
         } catch (e) {
@@ -303,6 +428,13 @@ class ConfigManager extends Store {
     return this.configpathDefault;
   }
 
+  getAppDbPath(appDbPath) {
+    if (appDbPath === '' || appDbPath == null) {
+      return path.join(this.getConfigPath(), 'app_data')
+    }
+    return appDbPath
+  }
+
   getSync(key) {
     return super.get(key, '');
   }
@@ -314,11 +446,12 @@ class ConfigManager extends Store {
     if (process.platform === 'win32') {
       this.rpathDefault = path.join(this.appRootDir, 'r');
     } else if (process.platform === 'darwin' && app.isPackaged) {
-      this.rpathDefault = path.resolve(path.join(this.appRootDir, '..', 'Resources', 'r'));
+      this.rpathDefault = path.resolve(
+        path.join(this.appRootDir, '..', 'Resources', 'r'),
+      );
     }
     try {
-      if (!this.rpathDefault
-        || !fs.existsSync(this.rpathDefault)) {
+      if (!this.rpathDefault || !fs.existsSync(this.rpathDefault)) {
         if (process.platform === 'darwin') {
           const rPathRoot = path.join(
             '/',
@@ -327,9 +460,10 @@ class ConfigManager extends Store {
             'R.framework',
             'Versions',
           );
-          const rVersionsAvailable = fs.readdirSync(rPathRoot, { withFileTypes: true })
-            .filter((el) => (el.isDirectory()))
-            .map((el) => (el.name))
+          const rVersionsAvailable = fs
+            .readdirSync(rPathRoot, { withFileTypes: true })
+            .filter((el) => el.isDirectory())
+            .map((el) => el.name)
             .filter((el) => {
               try {
                 return ConfigManager.vComp(el, minR);
@@ -375,10 +509,9 @@ class ConfigManager extends Store {
       // Directory was selected, so scan it
       let contentRDir;
       try {
-        contentRDir = await fs.promises.readdir(
-          rpathTmp,
-          { withFileTypes: true },
-        );
+        contentRDir = await fs.promises.readdir(rpathTmp, {
+          withFileTypes: true,
+        });
       } catch (e) {
         log.error(e);
         return false;
@@ -391,8 +524,13 @@ class ConfigManager extends Store {
         }
       } else if (contentRDir.find((el) => el.name === 'Resources')) {
         rpathTmp = path.join(rpathTmp, 'Resources', 'bin');
-      } else if (!contentRDir.find((el) => el.isFile()
-        && (el.name === 'Rscript' || el.name === 'Rscript.exe'))) {
+      } else if (
+        !contentRDir.find(
+          (el) =>
+            el.isFile() &&
+            (el.name === 'Rscript' || el.name === 'Rscript.exe'),
+        )
+      ) {
         log.info('R path to validate is not a directory');
         return false;
       }
@@ -406,9 +544,11 @@ class ConfigManager extends Store {
         return false;
       }
     }
-    let { stdout } = await execa(rpathTmp, ['-e',
+    let { stdout } = await execa(rpathTmp, [
+      '-e',
       'print(R.home())\nprint(paste0(R.Version()$major, \
-".", R.Version()$minor))']);
+".", R.Version()$minor))',
+    ], { timeout: 5000 });
     if (!stdout) {
       log.info('Stdout of Rscript is empty');
       return false;
@@ -426,8 +566,7 @@ class ConfigManager extends Store {
     }
     rpathTmp = stdout[rpathIdx].match(rOutRegex);
     const rVersion = stdout[rpathIdx + 1].match(/^\[1\] "([^"]*)"$/);
-    if (rpathTmp && rVersion
-      && ConfigManager.vComp(rVersion[1], minR)) {
+    if (rpathTmp && rVersion && ConfigManager.vComp(rVersion[1], minR)) {
       return rpathTmp[1];
     }
     log.info(`Stdout of Rscript is invalid: ${stdout.join('\n')}`);
@@ -450,10 +589,10 @@ class ConfigManager extends Store {
       let isFramework;
       if (fs.existsSync('/Library/Frameworks/GAMS.framework/Versions')) {
         isFramework = true;
-        latestGamsInstalled = fs.readdirSync(
-          '/Library/Frameworks/GAMS.framework/Versions',
-          { withFileTypes: true },
-        )
+        latestGamsInstalled = fs
+          .readdirSync('/Library/Frameworks/GAMS.framework/Versions', {
+            withFileTypes: true,
+          })
           .filter((el) => el.isDirectory());
         if (latestGamsInstalled.length > 0) {
           latestGamsInstalled = latestGamsInstalled
@@ -462,10 +601,8 @@ class ConfigManager extends Store {
         }
       } else {
         isFramework = false;
-        latestGamsInstalled = fs.readdirSync(
-          '/Applications',
-          { withFileTypes: true },
-        )
+        latestGamsInstalled = fs
+          .readdirSync('/Applications', { withFileTypes: true })
           .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name));
         if (latestGamsInstalled.length > 0) {
           latestGamsInstalled = latestGamsInstalled
@@ -474,8 +611,10 @@ class ConfigManager extends Store {
         }
       }
 
-      if (latestGamsInstalled.length > 0
-        && ConfigManager.vComp(latestGamsInstalled, minGams)) {
+      if (
+        latestGamsInstalled.length > 0 &&
+        ConfigManager.vComp(latestGamsInstalled, minGams)
+      ) {
         if (isFramework) {
           this.gamspathDefault = path.join(
             '/Library/Frameworks/GAMS.framework/Versions',
@@ -497,10 +636,9 @@ ${latestGamsInstalled}`);
       }
     } else {
       try {
-        this.gamspathDefault = path.dirname(which.sync(
-          'gams',
-          { nothrow: true },
-        ));
+        this.gamspathDefault = path.dirname(
+          which.sync('gams', { nothrow: true }),
+        );
       } catch (e) {
         // continue regardless of error
       }
@@ -510,10 +648,8 @@ ${latestGamsInstalled}`);
       let GAMSRootPath = 'C:\\GAMS';
       let latestGamsInstalled = [];
       try {
-        latestGamsInstalled = fs.readdirSync(
-          GAMSRootPath,
-          { withFileTypes: true },
-        )
+        latestGamsInstalled = fs
+          .readdirSync(GAMSRootPath, { withFileTypes: true })
           .filter((el) => {
             if (!el.isDirectory()) {
               return false;
@@ -531,10 +667,8 @@ ${latestGamsInstalled}`);
       if (latestGamsInstalled.length === 0) {
         GAMSRootPath = 'C:\\GAMS\\win64';
         try {
-          latestGamsInstalled = fs.readdirSync(
-            GAMSRootPath,
-            { withFileTypes: true },
-          )
+          latestGamsInstalled = fs
+            .readdirSync(GAMSRootPath, { withFileTypes: true })
             .filter((el) => el.isDirectory() && gamsDirNameRegex.test(el.name))
             .map((el) => el.name);
         } catch (_) {
@@ -542,16 +676,14 @@ ${latestGamsInstalled}`);
         }
       }
       if (latestGamsInstalled.length > 0) {
-        latestGamsInstalled = latestGamsInstalled
-          .reduce(vCompReducer);
+        latestGamsInstalled = latestGamsInstalled.reduce(vCompReducer);
       }
 
-      if (latestGamsInstalled.length > 0
-        && ConfigManager.vComp(latestGamsInstalled, minGams)) {
-        this.gamspathDefault = path.join(
-          GAMSRootPath,
-          latestGamsInstalled,
-        );
+      if (
+        latestGamsInstalled.length > 0 &&
+        ConfigManager.vComp(latestGamsInstalled, minGams)
+      ) {
+        this.gamspathDefault = path.join(GAMSRootPath, latestGamsInstalled);
       } else if (latestGamsInstalled.length > 0) {
         log.info(`Latest installed GAMS version found: \
   ${latestGamsInstalled}`);
@@ -575,16 +707,18 @@ ${latestGamsInstalled}`);
     let contentGamsDir;
     let gamsExecDir;
     try {
-      contentGamsDir = await fs.promises.readdir(
-        gamsDir,
-        { withFileTypes: true },
-      );
+      contentGamsDir = await fs.promises.readdir(gamsDir, {
+        withFileTypes: true,
+      });
     } catch (e) {
       log.error(e);
       return false;
     }
-    if (contentGamsDir.find((el) => el.isFile()
-      && (el.name === 'gams' || el.name === 'gams.exe'))) {
+    if (
+      contentGamsDir.find(
+        (el) => el.isFile() && (el.name === 'gams' || el.name === 'gams.exe'),
+      )
+    ) {
       log.debug('GAMS executable found.');
       if (process.platform === 'win32') {
         gamsExecDir = path.join(gamsDir, 'gams.exe');
@@ -594,9 +728,12 @@ ${latestGamsInstalled}`);
     } else {
       // gams executable not in selected folder
       log.debug('GAMS executable not found in the selected folder.');
-      contentGamsDir = contentGamsDir
-        .filter((el) => el.isDirectory() || el.isSymbolicLink());
-      const gamsDirName = contentGamsDir.find((el) => gamsDirNameRegex.test(el.name));
+      contentGamsDir = contentGamsDir.filter(
+        (el) => el.isDirectory() || el.isSymbolicLink(),
+      );
+      const gamsDirName = contentGamsDir.find((el) =>
+        gamsDirNameRegex.test(el.name),
+      );
       if (gamsDirName) {
         if (process.platform === 'win32') {
           gamsExecDir = path.join(gamsDir, gamsDirName, 'sysdir', 'gams.exe');
@@ -610,11 +747,15 @@ ${latestGamsInstalled}`);
             'gams',
           );
         } else {
-          log.info('System is neither Windows nor MacOS. On Linux, must select sysdir directly.');
+          log.info(
+            'System is neither Windows nor MacOS. On Linux, must select sysdir directly.',
+          );
           return false;
         }
-      } else if (process.platform === 'win32'
-        && contentGamsDir.find((el) => el.name === 'sysdir')) {
+      } else if (
+        process.platform === 'win32' &&
+        contentGamsDir.find((el) => el.name === 'sysdir')
+      ) {
         gamsExecDir = path.join(gamsDir, 'sysdir', 'gams.exe');
       } else if (process.platform === 'darwin') {
         if (contentGamsDir.find((el) => el.name === 'GAMS Terminal.app')) {
@@ -626,15 +767,24 @@ ${latestGamsInstalled}`);
             'gams',
           );
         } else if (contentGamsDir.find((el) => el.name === 'GAMS.framework')) {
-          gamsExecDir = path.join(gamsDir, 'GAMS.framework', 'Resources', 'gams');
+          gamsExecDir = path.join(
+            gamsDir,
+            'GAMS.framework',
+            'Resources',
+            'gams',
+          );
         } else if (contentGamsDir.find((el) => el.name === 'Current')) {
           gamsExecDir = path.join(gamsDir, 'Current', 'Resources', 'gams');
         } else {
-          log.info('Directory selected does not contain a valid GAMS installation.');
+          log.info(
+            'Directory selected does not contain a valid GAMS installation.',
+          );
           return false;
         }
       } else {
-        log.info('System is neither Windows nor MacOS (or Terminal.app was not found). On Linux, must select sysdir directly.');
+        log.info(
+          'System is neither Windows nor MacOS (or Terminal.app was not found). On Linux, must select sysdir directly.',
+        );
         return false;
       }
     }
@@ -642,19 +792,21 @@ ${latestGamsInstalled}`);
     try {
       let { stdout } = await execa(
         gamsExecDir,
-        ['/??', 'lo=3',
-          `curdir=${tmpdir}`],
-        process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' } } : {},
+        ['/??', 'lo=3', `curdir=${tmpdir}`],
+        process.platform === 'linux' ? { env: { XDG_DATA_DIRS: '' }, timeout: 5000 } : { timeout: 5000 },
       );
       stdout = stdout.split('\n');
       if (stdout.length < 2) {
         log.info(`Invalid stdout from GAMS: ${stdout.slice(0, 5).join('\n')}`);
         return false;
       }
-      const selectedGamsVer = stdout[1]
-        .match(/^GAMS Release: (\d+\.\d+\.\d+)/);
-      if (selectedGamsVer
-        && ConfigManager.vComp(selectedGamsVer[1], minGams)) {
+      const selectedGamsVer = stdout[1].match(
+        /^GAMS Release: (\d+\.\d+\.\d+)/,
+      );
+      if (
+        selectedGamsVer &&
+        ConfigManager.vComp(selectedGamsVer[1], minGams)
+      ) {
         return path.dirname(gamsExecDir);
       }
       log.info(`Invalid stdout from GAMS: ${stdout.slice(0, 5).join('\n')}`);
@@ -694,6 +846,10 @@ ${latestGamsInstalled}`);
     try {
       let pythonpathTmp;
       if (path.basename(pythonpath).toLowerCase().startsWith('python')) {
+        if (process.platform === 'win32' && !pythonpath.toLowerCase().endsWith('.exe')) {
+          log.info('Python path to validate is not a real executable');
+          return false;
+        }
         pythonpathTmp = pythonpath;
       } else {
         if (!fs.lstatSync(pythonpath).isDirectory()) {
@@ -705,22 +861,43 @@ ${latestGamsInstalled}`);
         const dirsToExplore = [pythonpath, path.join(pythonpath, 'bin')];
         for (let i = 0; i < dirsToExplore.length; i += 1) {
           try {
-            contentPythonDir = await fs.promises.readdir( // eslint-disable-line no-await-in-loop
-              dirsToExplore[i],
-              { withFileTypes: true },
-            );
+            // eslint-disable-next-line no-await-in-loop
+            contentPythonDir = await fs.promises.readdir(dirsToExplore[i], {
+              withFileTypes: true,
+            });
             if (process.platform === 'win32') {
-              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name.toLowerCase() === 'python.exe');
+              const contentPythonDirTmp = contentPythonDir.filter(
+                (el) =>
+                  (el.isFile() || el.isSymbolicLink()) &&
+                  el.name.toLowerCase() === 'python.exe',
+              );
               if (contentPythonDirTmp.length > 0) {
-                pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp[0].name);
+                pythonpathTmp = path.join(
+                  dirsToExplore[i],
+                  contentPythonDirTmp[0].name,
+                );
               }
             } else {
-              const contentPythonDirTmp = contentPythonDir.filter((el) => (el.isFile() || el.isSymbolicLink()) && ['python', 'python3'].includes(el.name));
+              const contentPythonDirTmp = contentPythonDir.filter(
+                (el) =>
+                  (el.isFile() || el.isSymbolicLink()) &&
+                  ['python', 'python3'].includes(el.name),
+              );
               if (contentPythonDirTmp.length > 0) {
                 if (contentPythonDirTmp.length > 1) {
-                  pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp.filter((el) => (el.isFile() || el.isSymbolicLink()) && el.name === 'python3')[0].name);
+                  pythonpathTmp = path.join(
+                    dirsToExplore[i],
+                    contentPythonDirTmp.filter(
+                      (el) =>
+                        (el.isFile() || el.isSymbolicLink()) &&
+                        el.name === 'python3',
+                    )[0].name,
+                  );
                 } else {
-                  pythonpathTmp = path.join(dirsToExplore[i], contentPythonDirTmp[0].name);
+                  pythonpathTmp = path.join(
+                    dirsToExplore[i],
+                    contentPythonDirTmp[0].name,
+                  );
                 }
               }
             }
@@ -736,7 +913,7 @@ ${latestGamsInstalled}`);
           return false;
         }
       }
-      let { stdout } = await execa(pythonpathTmp, ['-V']);
+      let { stdout } = await execa(pythonpathTmp, ['-V'], { timeout: 5000 });
       if (!stdout) {
         log.info('Stdout of python is empty');
         return false;
@@ -774,8 +951,7 @@ ${latestGamsInstalled}`);
     const v2Major = parseInt(v2parts[0], 10);
     const v1Minor = parseInt(v1parts[1], 10);
     const v2Minor = parseInt(v2parts[1], 10);
-    if (v1Major > v2Major || (v1Major === v2Major
-      && v1Minor >= v2Minor)) {
+    if (v1Major > v2Major || (v1Major === v2Major && v1Minor >= v2Minor)) {
       return true;
     }
     return false;

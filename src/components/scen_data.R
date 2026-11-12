@@ -42,9 +42,14 @@ ScenData <- R6Class("ScenData", public = list(
     if (!is.null(metaData)) {
       private$cachedData[["sb"]][["meta"]] <- metaData
     }
+    private$sandboxRevision <- private$sandboxRevision + 1L
     return(invisible(self))
   },
+  getSandboxRevision = function() {
+    return(private$sandboxRevision)
+  },
   clearSandbox = function() {
+    private$sandboxRevision <- private$sandboxRevision + 1L
     private$cachedData[["sb"]] <- list(
       data = setNames(private$scenDataTemplate, private$dbSymbols),
       scalar = tibble(
@@ -64,6 +69,14 @@ ScenData <- R6Class("ScenData", public = list(
       scenIds[isSbScen] <- paste0("sb_", refId)
     }
     private$refScenMap[[refId]] <- unique(c(private$refScenMap[[refId]], as.character(scenIds)))
+    return(invisible(self))
+  },
+  orderRef = function(refId, scenIds) {
+    stopifnot(is.character(refId))
+    scenIds <- as.character(scenIds)
+    scenIds[scenIds == "sb"] <- paste0("sb_", refId)
+    refScenIds <- private$refScenMap[[refId]]
+    private$refScenMap[[refId]] <- refScenIds[order(match(refScenIds, scenIds))]
     return(invisible(self))
   },
   getSandboxOutputWithDataCount = function() {
@@ -119,6 +132,12 @@ ScenData <- R6Class("ScenData", public = list(
         # fetch timestamp
         if (!identical(refId, "sb") || !addToSandbox) {
           metaData <- private$getMetadata(scenId)
+          if (!identical(refId, "sb") && (!length(metaData) || !nrow(metaData))) {
+            stop_custom("error_not_found",
+              sprintf("Scenario with id: '%s' does not exist or user has no read access.", scenId),
+              call. = FALSE
+            )
+          }
           private$cachedData[[scenIdChar]] <- list(
             data = list(),
             meta = metaData,
@@ -354,6 +373,7 @@ ScenData <- R6Class("ScenData", public = list(
   dbSymbols = NULL,
   refScenMap = list(),
   scenIdNameMap = character(),
+  sandboxRevision = 0L,
   getMetadata = function(scenIds) {
     metaTmp <- private$db$importDataset("_scenMeta",
       subsetSids = scenIds

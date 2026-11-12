@@ -1,5 +1,24 @@
 # UI header
 header <- dashboardHeader(
+  if (identical(config$activateModules$aiAssistant, TRUE)) {
+    tags$li(
+      class = "dropdown miro-ai-nav-item",
+      tags$a(
+        href = "#",
+        id = "btAIOutput",
+        class = "miro-ai-nav-btn",
+        role = "button",
+        title = lang$nav$header$aiAssistant,
+        `aria-controls` = "miroAiChatDrawer",
+        `aria-expanded` = "false",
+        onclick = "Miro.toggleAiDrawer(); return false;",
+        renderMiraIcon(),
+        tags$span(class = "miro-ai-nav-label", lang$nav$header$aiAssistant)
+      )
+    )
+  } else {
+    tags$li(class = "dropdown")
+  },
   tags$li(
     class = "dropdown",
     tags$a(
@@ -59,6 +78,16 @@ header <- dashboardHeader(
         lang$nav$header$help$forum
       )),
       tags$li(tags$a(
+        href = "#",
+        id = "btOpenWhatsNewDialog",
+        class = "action-button",
+        tags$div(
+          class = "menu-icon-align",
+          tags$i(class = "fa fa-bullhorn")
+        ),
+        lang$nav$header$help$whatsNew
+      )),
+      tags$li(tags$a(
         href = "#", class = "action-button", id = "btShowCommandPalette",
         tags$div(
           class = "menu-icon-align",
@@ -66,14 +95,27 @@ header <- dashboardHeader(
         ),
         lang$nav$header$help$commandPalette
       )),
+      if (config$activateModules$remoteExecution) {
+        tags$li(tags$a(
+          href = "#", class = "action-button", id = "btShowSettingsDialog",
+          tags$div(
+            class = "menu-icon-align",
+            tags$i(class = "fa fa-cog")
+          ),
+          lang$nav$header$help$settings
+        ))
+      },
       tags$li(
         tags$a(
           href = "#",
           class = "action-button",
           onclick = paste0(
-            "Miro.confirmModalShow('About GAMS MIRO','",
-            aboutDialogText,
-            "', 'Cancel');"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = "About GAMS MIRO",
+              desc = aboutDialogText,
+              cancelTxt = "Cancel",
+              escapeDesc = FALSE
+            ), auto_unbox = TRUE), ")"
           ),
           tags$div(
             class = "menu-icon-align",

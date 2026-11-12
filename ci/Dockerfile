@@ -3,7 +3,7 @@ FROM miro-ui:latest AS miro-pkg-builder
 USER root
 
 ARG R_BASE_VERSION=4.2.1
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=24
 
 RUN apt-get update && apt-get install -y \
     sudo \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     r-base-dev=${R_BASE_VERSION}*
 
-RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler', 'oysteR'));"
+RUN R -e "install.packages(c('testthat', 'shinytest2', 'xml2', 'precommit', 'docopt', 'styler'));"
 
 COPY r/library_src /home/miro/r/library_src
 COPY ci/install_pkg.R /home/miro/r/install_pkg.R
@@ -31,12 +31,12 @@ ARG GAMS_MAJOR=33
 ARG GAMS_MINOR=1
 ARG GAMS_MAINT=0
 
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=24
 
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libxml2-dev wget curl gpg-agent time
+    libxml2-dev wget curl gpg-agent time libuv1-dev libcurl4-openssl-dev
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
     chmod a+x linux_x64_64_sfx.exe && \
@@ -54,7 +54,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn python3-pip python3-venv git
 RUN pip3 install --no-cache-dir --break-system-packages\
-    pre-commit pip-audit pandas gamspy
+    prek==0.5.6 pip-audit pandas gamspy
 
 # install openssh and rsync for deploying documentation
 RUN apt-get update && apt-get install -y openssh-client rsync

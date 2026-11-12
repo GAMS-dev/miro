@@ -14,6 +14,7 @@ pushd dist > /dev/null
     ## move artifacts to correct location
     mkdir -p $FOLDER_NAME/linux
     mv *.AppImage $FOLDER_NAME/linux/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.AppImage
+    mv *.deb $FOLDER_NAME/linux/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.deb
     mkdir -p $FOLDER_NAME/macosx
     mv *.dmg $FOLDER_NAME/macosx/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.dmg
     mkdir -p $FOLDER_NAME/macosxarm

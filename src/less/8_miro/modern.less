@@ -1,0 +1,2287 @@
+/* ==========================================================================
+   Modern look & feel
+   Refines typography, layout, surfaces, interaction states and motion on top
+   of the Bootstrap/AdminLTE base. All colors are still derived from the theme
+   variables, so every color theme and light/dark/browser mode keeps working.
+
+   Layout idea: the content area is one flush surface. Sections (MIRO's
+   "boxes") are separated by hairlines instead of floating as cards on a grey
+   background, so the data - not the chrome around it - gets the attention.
+   ========================================================================== */
+
+@modern-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+@modern-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+@modern-radius-sm: 6px;
+@modern-radius:    8px;
+@modern-radius-lg: 12px;
+@modern-ease:      150ms ease;
+@modern-ease-out:  cubic-bezier(0.2, 0.8, 0.2, 1);
+// horizontal padding of a section, shared by headers, tabs and content so they line up
+@modern-section-x: 20px;
+
+// surfaces
+@modern-surface:      @modal-bg;
+@modern-surface-dark: @modal-bg-dark;
+// translucent overlays work on top of any theme's surface
+@modern-subtle:       rgba(16, 24, 40, 0.035);
+@modern-subtle-dark:  rgba(255, 255, 255, 0.04);
+@modern-hover:        rgba(16, 24, 40, 0.05);
+@modern-hover-dark:   rgba(255, 255, 255, 0.07);
+@modern-border:       rgba(16, 24, 40, 0.1);
+@modern-border-dark:  rgba(255, 255, 255, 0.09);
+@modern-border-strong:      rgba(16, 24, 40, 0.18);
+@modern-border-strong-dark: rgba(255, 255, 255, 0.18);
+@modern-muted:        #667085;
+@modern-muted-dark:   #a3a9b3;
+
+@modern-shadow-xs:      0 1px 2px rgba(16, 24, 40, 0.06);
+@modern-shadow-xs-dark: 0 1px 2px rgba(0, 0, 0, 0.4);
+@modern-shadow-lg:      0 20px 40px -8px rgba(16, 24, 40, 0.22), 0 6px 12px -4px rgba(16, 24, 40, 0.10);
+@modern-shadow-lg-dark: 0 20px 40px -8px rgba(0, 0, 0, 0.6), 0 6px 12px -4px rgba(0, 0, 0, 0.4);
+
+// color of primary (filled) actions; swap for @secondary-color to use the accent instead
+@modern-cta:      @primary-color;
+@modern-cta-dark: @primary-color-dark;
+
+// translucent tint of a (CSS variable) theme color
+.modern-tint(@property; @color; @amount) {
+  @{property}: ~"color-mix(in srgb, @{color} @{amount}, transparent)";
+}
+// opaque mix of a theme color into a surface (for elements that must not be see-through)
+.modern-mix(@property; @color; @amount; @base) {
+  @{property}: ~"color-mix(in srgb, @{color} @{amount}, @{base})";
+}
+.modern-focus-ring(@color) {
+  outline: none;
+  box-shadow: ~"0 0 0 3px color-mix(in srgb, @{color} 25%, transparent)";
+}
+// filled button whose text switches between black and white depending on how light the
+// theme color is (relative color syntax), so it stays readable in every color theme
+.modern-filled(@color) {
+  background-color: @color;
+  border-color: @color;
+  color: #fff;
+  color: ~"oklch(from @{color} clamp(0, (0.62 - l) * 1000, 1) 0 0)";
+}
+.modern-filled-hover(@color) {
+  background-color: ~"color-mix(in srgb, @{color} 88%, #000)";
+  border-color: ~"color-mix(in srgb, @{color} 88%, #000)";
+  color: #fff;
+  color: ~"oklch(from @{color} clamp(0, (0.62 - l) * 1000, 1) 0 0)";
+}
+.modern-cta() {
+  .responsiveDark({
+    .modern-filled(@modern-cta);
+  },
+  {
+    .modern-filled(@modern-cta-dark);
+  });
+  box-shadow: @modern-shadow-xs;
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    .responsiveDark({
+      .modern-filled-hover(@modern-cta);
+    },
+    {
+      .modern-filled-hover(@modern-cta-dark);
+    });
+  }
+  &[disabled],
+  &.disabled {
+    opacity: 0.55;
+  }
+}
+// quiet, borderless icon button (section headers, toolbars)
+.modern-ghost-btn() {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: @modern-radius-sm;
+  .responsiveDark({
+    color: @modern-muted;
+  },
+  {
+    color: @modern-muted-dark;
+  });
+  &:hover,
+  &:focus-visible {
+    .responsiveDark({
+      background-color: @modern-hover !important;
+      color: @text-color;
+    },
+    {
+      background-color: @modern-hover-dark !important;
+      color: #fff;
+    });
+  }
+  &[disabled]:hover {
+    background-color: transparent !important;
+  }
+}
+.modern-label() {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  .responsiveDark({
+    color: @modern-muted;
+  },
+  {
+    color: @modern-muted-dark;
+  });
+}
+
+/* --- motion -------------------------------------------------------------- */
+@keyframes modern-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modern-pop-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes modern-pop-up {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes modern-slide-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- typography ---------------------------------------------------------- */
+body,
+.main-header .logo,
+.box .box-header .box-title,
+.popover,
+.tooltip,
+.shiny-notification,
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: @modern-font;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.miro-markdown h1 {
+  font-size: 30px;
+  letter-spacing: -0.02em;
+}
+.miro-markdown h2 {
+  font-size: 24px;
+}
+.miro-markdown h3 {
+  font-size: 20px;
+}
+.miro-markdown p,
+.miro-markdown li {
+  line-height: 1.6;
+}
+code, kbd, pre, samp,
+.pre-style-div,
+.miro-markdown code {
+  font-family: @modern-font-mono;
+}
+
+/* --- app shell ----------------------------------------------------------- */
+// header, sidebar and content share one surface and are separated by hairlines
+.skin-black .main-header {
+  box-shadow: none;
+  .responsiveDark({
+    border-bottom: 1px solid @modern-border;
+  },
+  {
+    border-bottom: 1px solid @modern-border-dark;
+  });
+  .navbar {
+    .navbar-nav > li > a,
+    .navbar-custom-menu .navbar-nav > li > a,
+    .navbar-right > li > a {
+      border-left: 0;
+      border-right: 0;
+      font-weight: 500;
+      transition: color @modern-ease;
+    }
+    .sidebar-toggle {
+      transition: color @modern-ease;
+    }
+  }
+  .navbar-brand {
+    border-right: 0;
+  }
+}
+body > .wrapper > .main-sidebar {
+  .responsiveDark({
+    border-right: 1px solid @modern-border;
+  },
+  {
+    border-right: 1px solid @modern-border-dark;
+  });
+}
+.skin-black .content-wrapper {
+  .responsiveDark({
+    background-color: @modern-surface;
+  },
+  {
+    background-color: @modern-surface-dark;
+  });
+}
+.content {
+  padding: 0;
+}
+// top-level rows/columns only carry sections: drop Bootstrap's gutters around them
+.content > .tab-content > .tab-pane > .row.box-title-mobile {
+  margin-left: 0;
+  margin-right: 0;
+  > [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* --- sections (MIRO boxes) ----------------------------------------------- */
+.content .box.box-solid.box-primary {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  > .box-header {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 12px 0 @modern-section-x;
+    border-radius: 0;
+    background: transparent;
+    .responsiveDark({
+      color: @text-color;
+      border-bottom: 1px solid @modern-border;
+    },
+    {
+      color: #fff;
+      border-bottom: 1px solid @modern-border-dark;
+    });
+    .box-title {
+      font-size: 15px;
+      font-weight: 600;
+      min-height: 32px;
+    }
+    .header-timestamp {
+      .responsiveDark({
+        color: @modern-muted;
+      },
+      {
+        color: @modern-muted-dark;
+      });
+      opacity: 1;
+    }
+    // header actions were white on the colored header; now they are quiet icon buttons
+    .btn {
+      .modern-ghost-btn();
+    }
+    a:not(.btn) {
+      color: inherit;
+    }
+  }
+  > .box-body {
+    padding: 4px @modern-section-x 20px;
+    border-radius: 0;
+  }
+}
+// stacked sections are divided by a hairline
+.content > .tab-content > .tab-pane > .row.box-title-mobile + .row.box-title-mobile .box.box-solid.box-primary {
+  .responsiveDark({
+    border-top: 1px solid @modern-border;
+  },
+  {
+    border-top: 1px solid @modern-border-dark;
+  });
+}
+.box-title .header-button-group .btn,
+.active-tab-actions .btn {
+  .modern-ghost-btn();
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+.box-title .header-close-button-wrapper,
+.active-tab-actions .header-close-button-wrapper {
+  .responsiveDark({
+    border-left-color: @modern-border;
+  },
+  {
+    border-left-color: @modern-border-dark;
+  });
+}
+// the full-width column inside a section body only adds a second gutter
+.box-body > .col-sm-12,
+.box-body > .col-mobile {
+  padding-left: 0;
+  padding-right: 0;
+}
+.nav-tabs-custom {
+  margin-bottom: 0;
+  > .tab-content {
+    padding: 12px 0 0;
+  }
+}
+
+/* --- compare mode -------------------------------------------------------- */
+// split view: two flush halves divided by a hairline
+#scen-split-view.scen-compare-tab-wrapper {
+  margin-left: 0;
+  margin-right: 0;
+  > .col-sm-6 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  > .col-sm-6 + .col-sm-6 .box.box-solid.box-primary {
+    .responsiveDark({
+      border-left: 1px solid @modern-border;
+    },
+    {
+      border-left: 1px solid @modern-border-dark;
+    });
+  }
+}
+.scenSplit-button-load {
+  border-style: dashed;
+  border-radius: @modern-radius-lg;
+  font-size: 17px;
+  font-weight: 500;
+  transition: background-color @modern-ease, border-color @modern-ease, color @modern-ease;
+  .responsiveDark({
+    border-color: @modern-border-strong;
+    color: @modern-muted;
+  },
+  {
+    border-color: @modern-border-strong-dark;
+    color: @modern-muted-dark;
+  });
+}
+.scenSplit-button-load:hover,
+.scenSplit-button-load:focus {
+  border-style: dashed;
+  .responsiveDark({
+    .modern-tint(background-color; @primary-color; 6%);
+    border-color: @primary-color;
+    color: @primary-color;
+  },
+  {
+    .modern-tint(background-color; @primary-color-dark; 15%);
+    border-color: @primary-color-dark;
+    color: #fff;
+  });
+}
+.split-open-cell {
+  padding: 6px;
+}
+
+/* --- sidebar ------------------------------------------------------------- */
+.skin-black .sidebar-menu {
+  padding-top: 8px;
+  > li > a {
+    margin: 1px 8px;
+    padding: 8px 10px;
+    border-left: 0;
+    border-radius: @modern-radius;
+    transition: background-color @modern-ease, color @modern-ease;
+  }
+  > li.active > a {
+    font-weight: 600;
+    .responsiveDark({
+      .modern-tint(background-color; @sidebar-active-color; 12%);
+      color: @sidebar-active-color;
+    },
+    {
+      .modern-tint(background-color; @primary-color-dark; 28%);
+      color: @sidebar-contrast-dark2;
+    });
+  }
+  .sidebar-separator {
+    margin: 10px 16px;
+    border-top-width: 1px;
+    .responsiveDark({
+      .modern-tint(border-color; @sidebar-contrast-light; 15%);
+    },
+    {
+      .modern-tint(border-color; @sidebar-contrast-dark; 15%);
+    });
+  }
+}
+.skin-black section.sidebar .sidebar-menu .btn-align-sidebar,
+.skin-black section.sidebar .btSplitView .dropdown-toggle.btn-cmp-mode-dropdown,
+.skin-black section.sidebar .dropdown-sidebar {
+  margin: 4px 8px;
+  width: ~"calc(100% - 16px)" !important;
+}
+.skin-black section.sidebar .sidebar-menu .btn-align-sidebar {
+  min-height: 36px;
+}
+// split "Solve model" button (remote execution): both halves share one sidebar row
+.skin-black section.sidebar .sidebar-menu .btn-group.btSolve {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 4px 8px;
+  width: ~"calc(100% - 16px)" !important;
+  > .btn-align-sidebar {
+    margin: 0 !important;
+  }
+  > #btSolve {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  > .dropdown-toggle {
+    flex: 0 0 auto;
+    width: auto !important;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-left: 1px solid ~"color-mix(in srgb, currentColor 35%, transparent)";
+  }
+  > .dropdown-sidebar {
+    flex: 0 0 100%;
+    margin: 2px 0 0;
+    width: 100% !important;
+  }
+}
+// "Solve model" is the main action of the app ...
+.skin-black section.sidebar .sidebar-menu .btn-align-sidebar.btn-solve {
+  .modern-cta();
+}
+// ... every other sidebar action (compare mode, sync tabs, stop) is a neutral outline button
+.skin-black section.sidebar .sidebar-menu .btn-align-sidebar.bt-highlight-2:not(.btn-solve),
+.skin-black section.sidebar .btSplitView .dropdown-toggle.btn-cmp-mode-dropdown {
+  background-color: transparent;
+  .responsiveDark({
+    .modern-tint(border-color; @sidebar-contrast-light; 25%);
+    color: @sidebar-contrast-light;
+  },
+  {
+    .modern-tint(border-color; @sidebar-contrast-dark; 25%);
+    color: @sidebar-contrast-dark;
+  });
+  &:hover,
+  &:focus {
+    .responsiveDark({
+      .modern-tint(background-color; @sidebar-contrast-light; 6%);
+      .modern-tint(border-color; @sidebar-contrast-light; 25%);
+      color: @sidebar-contrast-light;
+    },
+    {
+      .modern-tint(background-color; @sidebar-contrast-dark; 8%);
+      .modern-tint(border-color; @sidebar-contrast-dark; 25%);
+      color: @sidebar-contrast-dark;
+    });
+  }
+}
+.skin-black section.sidebar .btSplitView.open .dropdown-toggle.btn-cmp-mode-dropdown,
+.skin-black section.sidebar .btSplitView.open .dropdown-toggle.btn-cmp-mode-dropdown:hover {
+  .responsiveDark({
+    .modern-tint(background-color; @sidebar-active-color; 12%);
+    border-color: @sidebar-active-color;
+    color: @sidebar-active-color;
+  },
+  {
+    .modern-tint(background-color; @primary-color-dark; 30%);
+    border-color: @primary-color-dark;
+    color: @sidebar-contrast-dark2;
+  });
+}
+
+/* --- tabs ---------------------------------------------------------------- */
+// underline-style tabs, shared by Bootstrap .nav-tabs and AdminLTE .nav-tabs-custom
+.modern-tabs() {
+  .responsiveDark({
+    border-bottom: 1px solid @modern-border;
+  },
+  {
+    border-bottom: 1px solid @modern-border-dark;
+  });
+  > li {
+    border-top: 0;
+    margin-bottom: -1px;
+    margin-right: 2px;
+    > a,
+    > a:hover,
+    > a:focus,
+    > a:active {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background-color: transparent;
+    }
+    > a {
+      margin: 0;
+      padding: 10px 12px;
+      font-weight: 500;
+      transition: color @modern-ease, border-color @modern-ease;
+      .responsiveDark({
+        color: @modern-muted;
+      },
+      {
+        color: @modern-muted-dark;
+      });
+    }
+    > a:hover {
+      .responsiveDark({
+        color: @text-color;
+        border-bottom-color: @modern-border-strong;
+      },
+      {
+        color: #fff;
+        border-bottom-color: @modern-border-strong-dark;
+      });
+    }
+  }
+  > li.active > a,
+  > li.active > a:hover,
+  > li.active > a:focus,
+  > li.active:hover > a {
+    border: 0;
+    border-bottom: 2px solid;
+    background-color: transparent;
+    .responsiveDark({
+      color: @primary-color;
+      border-bottom-color: @primary-color;
+    },
+    {
+      color: #fff;
+      border-bottom-color: @if-d2f31bc0;
+    });
+  }
+  .log-tab-color {
+    color: inherit;
+  }
+}
+.nav-tabs {
+  .modern-tabs();
+}
+.nav-tabs-custom {
+  background: transparent;
+  box-shadow: none;
+  > .nav-tabs {
+    .modern-tabs();
+  }
+}
+.nav-pills > li > a {
+  border-radius: @modern-radius;
+  transition: background-color @modern-ease, color @modern-ease;
+}
+// switching tabs fades the new content in
+.tab-content > .tab-pane.active {
+  animation: modern-fade-in 180ms ease-out;
+}
+
+/* --- buttons ------------------------------------------------------------- */
+// hierarchy: primary = filled theme color, secondary = outlined, tertiary = ghost
+.btn {
+  border-radius: @modern-radius;
+  font-weight: 500;
+  transition: background-color @modern-ease, border-color @modern-ease,
+    color @modern-ease, box-shadow @modern-ease, transform 80ms ease;
+}
+.btn:active:not([disabled]):not(.disabled) {
+  transform: translateY(1px);
+}
+.btn-sm, .btn-group-sm > .btn,
+.btn-xs, .btn-group-xs > .btn {
+  border-radius: @modern-radius-sm;
+}
+.btn:focus-visible,
+.btn.focus {
+  .responsiveDark({
+    .modern-focus-ring(@primary-color);
+  },
+  {
+    .modern-focus-ring(@primary-color-dark);
+  });
+}
+.btn:active,
+.btn.active {
+  box-shadow: none;
+}
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+// the confirming action of a dialog (Ok, Load, Save, ...) and other primary actions
+.modal-footer .bt-highlight-1,
+.modal-body .bt-highlight-1,
+#btSendQuery,
+#batchLoadSelected {
+  .modern-cta();
+}
+.modal-footer .btn + .btn {
+  margin-left: 8px;
+}
+.close {
+  opacity: 0.5;
+  transition: opacity @modern-ease;
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* --- form controls ------------------------------------------------------- */
+.form-control,
+.selectize-input,
+.input-group .form-control,
+.bootstrap-datepicker,
+textarea {
+  border-radius: @modern-radius;
+  transition: border-color @modern-ease, box-shadow @modern-ease;
+}
+.input-group > .form-control:not(:first-child),
+.input-group > .input-group-btn:last-child > .btn,
+.input-group-addon:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.input-group > .form-control:not(:last-child),
+.input-group > .input-group-btn:first-child > .btn,
+.input-group-addon:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.input-group > .input-group-btn:first-child > .btn {
+  border-top-left-radius: @modern-radius;
+  border-bottom-left-radius: @modern-radius;
+}
+.input-group > .form-control:last-child,
+.input-group-addon:last-child {
+  border-top-right-radius: @modern-radius;
+  border-bottom-right-radius: @modern-radius;
+}
+.form-control {
+  box-shadow: none;
+}
+// dark mode: fields sit on the surface with a translucent fill instead of the solid grey widget color
+.responsiveDark({}, {
+  .form-control,
+  .selectize-control .selectize-input,
+  .selectize-control.single .selectize-input,
+  .selectize-control.single .selectize-input.input-active,
+  .btn-dropdown.btn-view-dropdown {
+    background: @modern-subtle-dark;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: @modern-border-strong-dark;
+    color: @text-color-dark;
+    box-shadow: none;
+  }
+  .selectize-control .selectize-input input,
+  .form-control::placeholder {
+    color: @modern-muted-dark;
+  }
+});
+.form-control:focus,
+.selectize-input.focus,
+textarea:focus {
+  .responsiveDark({
+    border-color: @primary-color;
+    .modern-focus-ring(@primary-color);
+  },
+  {
+    border-color: @primary-color-dark;
+    .modern-focus-ring(@primary-color-dark);
+  });
+}
+.hot-search-box,
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  border-radius: @modern-radius-sm;
+  padding: 4px 8px;
+  transition: border-color @modern-ease, box-shadow @modern-ease;
+  .responsiveDark({
+    border: 1px solid @modern-border-strong;
+  },
+  {
+    border: 1px solid @modern-border-strong-dark;
+  });
+  &:focus {
+    .responsiveDark({
+      border-color: @primary-color;
+      .modern-focus-ring(@primary-color);
+    },
+    {
+      border-color: @primary-color-dark;
+      .modern-focus-ring(@primary-color-dark);
+    });
+  }
+}
+.selectize-dropdown {
+  border-radius: @modern-radius;
+  margin-top: 4px;
+  overflow: hidden;
+  animation: modern-pop-in 120ms @modern-ease-out;
+  .responsiveDark({
+    box-shadow: @modern-shadow-lg;
+  },
+  {
+    box-shadow: @modern-shadow-lg-dark;
+  });
+}
+.selectize-control.single .selectize-input.dropdown-active {
+  border-radius: @modern-radius;
+}
+.selectize-control.multi .selectize-input > div {
+  border-radius: @modern-radius-sm;
+}
+// what's new: the dialog never grows beyond the screen, only its content scrolls
+.modal-dialog:has(.whats-new-dialog) {
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 60px);
+    @media (max-width: 767px) {
+      max-height: calc(100vh - 20px);
+    }
+  }
+  .modal-header,
+  .modal-footer {
+    flex-shrink: 0;
+  }
+  .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+.whats-new-dialog {
+  padding: 0;
+  .responsiveDark({
+    --wn-accent: @primary-color;
+    --wn-accent-text: var(--wn-accent);
+    --wn-surface: @modern-surface;
+    --wn-border: @modern-border;
+    --wn-muted: @modern-muted;
+  },
+  {
+    --wn-accent: @primary-color-dark;
+    --wn-accent-text: color-mix(in srgb, var(--wn-accent) 55%, #fff);
+    --wn-surface: @modern-surface-dark;
+    --wn-border: @modern-border-dark;
+    --wn-muted: @modern-muted-dark;
+  });
+  --wn-accent-soft: color-mix(in srgb, var(--wn-accent) 12%, transparent);
+  .code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--wn-accent-soft);
+    font-family: @modern-font-mono;
+    font-size: 0.9em;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-top: 12px;
+    border-radius: @modern-radius;
+    border: 1px solid var(--wn-border);
+  }
+  .whats-new-hero {
+    position: relative;
+    margin-bottom: 24px;
+    padding: 22px 22px 18px;
+    border: 1px solid var(--wn-border);
+    border-radius: @modern-radius-lg + 2px;
+    background:
+      radial-gradient(120% 70% at 100% 0%, var(--wn-accent-soft), transparent 60%),
+      var(--wn-surface);
+    overflow: hidden;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--wn-accent), color-mix(in srgb, var(--wn-accent) 45%, #fff) 55%, var(--wn-accent));
+    }
+  }
+  .whats-new-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px 4px 10px;
+    border-radius: 999px;
+    background: var(--wn-accent-soft);
+    color: var(--wn-accent-text);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .whats-new-hero-title {
+    margin: 12px 0 6px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .whats-new-accent {
+    color: var(--wn-accent-text);
+  }
+  .whats-new-lead {
+    max-width: 64ch;
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--wn-muted);
+  }
+  .whats-new-media {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 16px;
+    border: 1px solid var(--wn-border);
+    border-radius: @modern-radius-lg;
+    background: #000;
+    overflow: hidden;
+    video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  .whats-new-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    @media (max-width: 767px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  .whats-new-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--wn-border);
+    border-radius: @modern-radius-lg;
+    background: var(--wn-surface);
+  }
+  .whats-new-feature-icon {
+    display: flex;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    border-radius: @modern-radius;
+    background: var(--wn-accent-soft);
+    color: var(--wn-accent-text);
+    font-size: 14px;
+  }
+  .whats-new-feature-title {
+    margin-bottom: 2px;
+    font-weight: 700;
+  }
+  .whats-new-feature-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--wn-muted);
+  }
+  .whats-new-hero-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 20px;
+    margin-top: 16px;
+  }
+  .whats-new-note {
+    flex: 1 1 300px;
+    margin: 0;
+    font-size: 13px;
+    color: var(--wn-muted);
+  }
+  a.whats-new-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    .responsiveDark({
+      .modern-filled(@primary-color);
+    },
+    {
+      .modern-filled(@primary-color-dark);
+    });
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      .responsiveDark({
+        .modern-filled-hover(@primary-color);
+      },
+      {
+        .modern-filled-hover(@primary-color-dark);
+      });
+    }
+  }
+  .whats-new-section {
+    margin-bottom: 22px;
+  }
+  .whats-new-section-title {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wn-muted);
+  }
+  .whats-new-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: @modern-radius-lg;
+    li {
+      line-height: 1.55;
+    }
+  }
+  .whats-new-list-major {
+    display: grid;
+    gap: 8px;
+    li {
+      padding: 12px 14px 12px 16px;
+      border: 1px solid var(--wn-border);
+      border-left: 3px solid var(--wn-accent);
+      border-radius: @modern-radius-lg;
+      background: var(--wn-surface);
+    }
+  }
+  .whats-new-list-minor {
+    border: 1px solid var(--wn-border);
+    background: var(--wn-surface);
+    overflow: hidden;
+    li {
+      position: relative;
+      padding: 10px 14px 10px 32px;
+      font-size: 13.5px;
+      & + li {
+        border-top: 1px solid var(--wn-border);
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 15px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--wn-accent);
+      }
+    }
+  }
+  .whats-new-footer {
+    padding-top: 4px;
+    text-align: center;
+    font-weight: 600;
+  }
+}
+// edit metadata dialog: attachments as a list of files
+.attachment-upload .shiny-input-container {
+  margin-bottom: 16px;
+}
+// the files appearing in the list confirm the upload, so a thin progress line is enough
+#file_addAttachments_progress,
+#file_addViews_progress {
+  height: 3px;
+  margin: 6px 0 0;
+  .progress-bar {
+    font-size: 0;
+  }
+}
+.attachment-list,
+.views-list {
+  border-radius: @modern-radius;
+  overflow: hidden;
+  .responsiveDark({
+    border: 1px solid @modern-border;
+  },
+  {
+    border: 1px solid @modern-border-dark;
+  });
+}
+.attachment-list:not(:has(.attachment-line)) {
+  display: none;
+}
+// the checkbox column (and its heading) has a fixed width so both line up
+.attachment-list .attachment-exec {
+  flex: 0 0 150px;
+  width: 150px;
+}
+.attachment-list-header {
+  display: flex;
+  justify-content: flex-end;
+  // remove button (32px) + gap (12px) + right padding (8px) of a line
+  padding: 8px 52px 8px 16px;
+  font-size: 0.8em;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border-bottom: 1px solid @modern-border;
+    color: @modern-muted;
+  },
+  {
+    background-color: @modern-subtle-dark;
+    border-bottom: 1px solid @modern-border-dark;
+    color: @modern-muted-dark;
+  });
+}
+.attachment-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 8px 6px 16px;
+  transition: background-color @modern-ease;
+  .responsiveDark({
+    &:hover {
+      background-color: @modern-subtle;
+    }
+    & + & {
+      border-top: 1px solid @modern-border;
+    }
+  },
+  {
+    &:hover {
+      background-color: @modern-subtle-dark;
+    }
+    & + & {
+      border-top: 1px solid @modern-border-dark;
+    }
+  });
+  .attachment-icon {
+    flex-shrink: 0;
+    font-size: 1.15em;
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+  }
+  .attachment-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .attachment-exec {
+    display: flex;
+    justify-content: center;
+    .shiny-input-container {
+      width: auto;
+      margin: 0;
+    }
+    .checkbox-simple > label {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    .checkbox {
+      position: static;
+      margin: 0;
+      // the custom box is absolutely positioned: give its label a real size so
+      // that the flex layout can center it in the row
+      label {
+        position: relative;
+        display: block;
+        width: 16px;
+        height: 16px;
+        min-height: 0;
+        padding: 0;
+      }
+      span {
+        top: 0;
+        left: 0;
+      }
+    }
+    .label-span {
+      display: none;
+    }
+  }
+  .attachment-remove {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: @modern-radius-sm;
+    background: transparent;
+    transition: background-color @modern-ease, color @modern-ease;
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+    &:hover,
+    &:focus-visible {
+      color: #d92d20;
+      background-color: rgba(217, 45, 32, 0.1);
+    }
+  }
+}
+// views: a selectable table in the same card as the attachments
+// shown below the (then hidden) attachment list as long as it has no files
+.attachment-list:has(.attachment-line) + .attachment-list-empty {
+  display: none;
+}
+.attachment-list-empty,
+.views-list-empty {
+  padding: 20px;
+  border-radius: @modern-radius;
+  text-align: center;
+  .responsiveDark({
+    border: 1px dashed @modern-border-strong;
+    color: @modern-muted;
+  },
+  {
+    border: 1px dashed @modern-border-strong-dark;
+    color: @modern-muted-dark;
+  });
+}
+.views-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 8px 8px 16px;
+  font-size: 0.9em;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border-bottom: 1px solid @modern-border;
+  },
+  {
+    background-color: @modern-subtle-dark;
+    border-bottom: 1px solid @modern-border-dark;
+  });
+  .views-list-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .btn {
+    padding: 4px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .btn .fa,
+  .btn .fas,
+  .btn svg {
+    margin-right: 4px;
+  }
+}
+.views-list-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.views-list .miro-table {
+  width: 100%;
+  margin: 0;
+  th {
+    padding: 10px 16px;
+    font-size: 0.8em;
+    font-weight: 500;
+    .responsiveDark({
+      background-color: @modern-surface;
+      border-bottom: 1px solid @modern-border;
+      color: @modern-muted;
+    },
+    {
+      background-color: @modern-surface-dark;
+      border-bottom: 1px solid @modern-border-dark;
+      color: @modern-muted-dark;
+    });
+  }
+  td {
+    height: 44px;
+    padding: 6px 16px;
+  }
+  tbody tr {
+    cursor: pointer;
+    transition: background-color @modern-ease;
+    .responsiveDark({
+      background-color: transparent;
+      & + tr {
+        border-top: 1px solid @modern-border;
+      }
+      &:hover {
+        background-color: @modern-subtle;
+      }
+      &.selected {
+        .modern-mix(background-color; @primary-color; 12%; transparent);
+      }
+    },
+    {
+      background-color: transparent;
+      & + tr {
+        border-top: 1px solid @modern-border-dark;
+      }
+      &:hover {
+        background-color: @modern-subtle-dark;
+      }
+      &.selected {
+        .modern-mix(background-color; @primary-color-dark; 24%; transparent);
+      }
+    });
+  }
+}
+// scenario lists: the owner of a shared scenario as a pill in front of its name
+.scen-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 1.6;
+  vertical-align: 1px;
+  .responsiveDark({
+    background-color: @modern-hover;
+    color: @modern-muted;
+  },
+  {
+    background-color: @modern-hover-dark;
+    color: @modern-muted-dark;
+  });
+  .fa-user {
+    font-size: 0.85em;
+  }
+}
+.scen-time {
+  margin-left: 4px;
+  .responsiveDark({
+    color: @modern-muted;
+  },
+  {
+    color: @modern-muted-dark;
+  });
+}
+.control-label,
+.shiny-input-container > label {
+  font-weight: 500;
+}
+
+/* --- dropdown menus ------------------------------------------------------ */
+.dropdown-menu {
+  border-radius: @modern-radius;
+  padding: 6px;
+  .responsiveDark({
+    border: 1px solid @modern-border;
+    box-shadow: @modern-shadow-lg;
+  },
+  {
+    border: 1px solid @modern-border-dark;
+    box-shadow: @modern-shadow-lg-dark;
+  });
+  > li > a {
+    border-radius: @modern-radius-sm;
+    padding: 6px 12px;
+    transition: background-color @modern-ease, color @modern-ease;
+  }
+  > .divider {
+    margin: 6px -6px;
+  }
+}
+// the sticky search field of long dropdowns: pinned to the menu's edge rather than
+// inside its padding, so the list does not show through above it while scrolling
+.dropdown-menu > .search-field-wrapper {
+  top: -6px;
+  margin: -6px -6px 2px;
+  padding: 8px 8px 4px;
+  border-radius: @modern-radius @modern-radius 0 0;
+  background-color: inherit;
+}
+// an entry with inline action buttons (e.g. MIRO Pivot's saved views): the
+// whole row is highlighted rather than each of its links separately
+.dropdown-menu > li.dropdown-item-wrapper {
+  align-items: center;
+  border-radius: @modern-radius-sm;
+  transition: background-color @modern-ease;
+  > a,
+  > a:hover,
+  > a:focus {
+    background-color: transparent;
+  }
+  > .miro-pivot-view-button {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 6px 8px;
+    opacity: 0.7;
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
+  &:hover {
+    .responsiveDark({
+      background-color: @modern-hover;
+    },
+    {
+      background-color: @modern-hover-dark;
+    });
+  }
+  &.active,
+  &.active:hover {
+    .modern-cta();
+    > a,
+    > a:hover,
+    > a:focus {
+      color: inherit;
+      background-color: transparent;
+    }
+  }
+}
+.open > .dropdown-menu {
+  transform-origin: top;
+  animation: modern-pop-in 140ms @modern-ease-out;
+}
+.dropup.open > .dropdown-menu {
+  transform-origin: bottom;
+  animation-name: modern-pop-up;
+}
+.navbar-nav > li > .dropdown-menu {
+  margin-top: 4px;
+  border-radius: @modern-radius;
+}
+
+/* --- dialogs ------------------------------------------------------------- */
+.modal-backdrop.in {
+  opacity: 0.45;
+}
+.modal-backdrop {
+  backdrop-filter: blur(2px);
+}
+// open with a short rise-and-settle instead of Bootstrap's slide from the top
+.modal.fade .modal-dialog {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 220ms @modern-ease-out, opacity 180ms ease-out;
+}
+.modal.in .modal-dialog {
+  opacity: 1;
+  transform: none;
+}
+.modal-content {
+  border-radius: @modern-radius-lg;
+  border: 0;
+  .responsiveDark({
+    box-shadow: @modern-shadow-lg;
+  },
+  {
+    box-shadow: @modern-shadow-lg-dark;
+  });
+}
+.modal-header {
+  padding: 20px 24px 8px;
+  border-bottom: 0;
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+.modal-body {
+  padding: 12px 24px 20px;
+  // tabs inside dialogs span the dialog like they span a section
+  > .nav-tabs-custom > .nav-tabs,
+  > .tabbable > .nav-tabs {
+    margin: 0 -24px;
+    padding: 0 12px;
+  }
+}
+.modal-footer {
+  padding: 14px 24px;
+  border-radius: 0 0 @modern-radius-lg @modern-radius-lg;
+  .responsiveDark({
+    border-top: 1px solid @modern-border;
+    background-color: @modern-subtle;
+  },
+  {
+    border-top: 1px solid @modern-border-dark;
+    background-color: @modern-subtle-dark;
+  });
+}
+
+/* --- data tables (DT) ---------------------------------------------------- */
+.dataTables_wrapper {
+  table.dataTable {
+    border-collapse: collapse;
+    thead th,
+    thead td {
+      padding: 10px 12px;
+      font-weight: 600;
+      .responsiveDark({
+        border-bottom: 1px solid @modern-border-strong;
+      },
+      {
+        border-bottom: 1px solid @modern-border-strong-dark;
+      });
+    }
+    tbody td {
+      padding: 8px 12px;
+      .responsiveDark({
+        border-top: 1px solid @modern-border;
+      },
+      {
+        border-top: 1px solid @modern-border-dark;
+      });
+    }
+    &.no-footer {
+      .responsiveDark({
+        border-bottom: 1px solid @modern-border;
+      },
+      {
+        border-bottom: 1px solid @modern-border-dark;
+      });
+    }
+    // column filters (DT filter = "top" or "bottom")
+    thead td input,
+    thead td .form-control,
+    tfoot td input,
+    tfoot td .form-control {
+      height: 28px;
+      padding: 2px 20px 2px 8px;
+      font-size: 12px;
+      font-weight: 400;
+      border-radius: @modern-radius-sm;
+    }
+    thead td .form-control-feedback,
+    tfoot td .form-control-feedback {
+      width: 20px;
+      height: 28px;
+      line-height: 28px;
+      font-size: 11px;
+    }
+  }
+  &.no-footer .dataTables_scrollBody {
+    .responsiveDark({
+      border-bottom: 1px solid @modern-border;
+    },
+    {
+      border-bottom: 1px solid @modern-border-dark;
+    });
+  }
+  .dataTables_info {
+    font-size: 12.5px;
+    padding-top: 12px;
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+  }
+  .dataTables_paginate {
+    padding-top: 8px;
+    .paginate_button {
+      min-width: 32px;
+      margin-left: 4px;
+      padding: 4px 10px;
+      border: 1px solid transparent !important;
+      border-radius: @modern-radius-sm;
+      background: transparent !important;
+      transition: background-color @modern-ease, color @modern-ease;
+      &:hover:not(.disabled):not(.current) {
+        .responsiveDark({
+          background: @modern-hover !important;
+          color: @text-color !important;
+        },
+        {
+          background: @modern-hover-dark !important;
+          color: #fff !important;
+        });
+      }
+      &.current,
+      &.current:hover {
+        .responsiveDark({
+          .modern-tint(background-color; @primary-color; 12%) !important;
+          border-color: transparent !important;
+          color: @primary-color !important;
+        },
+        {
+          .modern-filled(@primary-color-dark) !important;
+          border-color: transparent !important;
+        });
+        font-weight: 600;
+      }
+      &.disabled,
+      &.disabled:hover {
+        cursor: default;
+        .responsiveDark({
+          color: @modern-muted !important;
+        },
+        {
+          color: @modern-muted-dark !important;
+        });
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// rows sit on the table's surface, opaque because fixed columns are cloned tables drawn
+// over the scrolling part; the "Table style" classes (config mode) are honored with
+// subtle, opaque tints that the clones share, so their rows stay in line
+.dataTables_wrapper {
+  table.dataTable tbody tr {
+    .responsiveDark({
+      background-color: @modern-surface;
+    },
+    {
+      background-color: @modern-surface-dark;
+    });
+  }
+  table.dataTable.stripe tbody tr.odd,
+  table.dataTable.display tbody tr.odd {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 3%; @modern-surface) !important;
+    },
+    {
+      .modern-mix(background-color; #fff; 4%; @modern-surface-dark) !important;
+    });
+  }
+  table.dataTable.hover tbody tr:hover,
+  table.dataTable.display tbody tr:hover {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 6%; @modern-surface) !important;
+    },
+    {
+      .modern-mix(background-color; #fff; 8%; @modern-surface-dark) !important;
+    });
+  }
+  table.dataTable.display tbody tr > .sorting_1,
+  table.dataTable.display tbody tr > .sorting_2,
+  table.dataTable.display tbody tr > .sorting_3,
+  table.dataTable.order-column tbody tr > .sorting_1,
+  table.dataTable.order-column tbody tr > .sorting_2,
+  table.dataTable.order-column tbody tr > .sorting_3 {
+    .responsiveDark({
+      .modern-tint(background-color; @primary-color; 5%);
+    },
+    {
+      .modern-tint(background-color; @primary-color-dark; 10%);
+    });
+  }
+  // sticky group cells of MIRO Pivot's row headers must be opaque, but follow the row
+  table.dataTable tbody tr > .tableScrollCell {
+    background: inherit !important;
+  }
+  // lines between rows only where asked for ("display" includes them)
+  table.dataTable:not(.row-border):not(.cell-border):not(.display) tbody td,
+  table.dataTable:not(.row-border):not(.cell-border):not(.display) tbody th {
+    border-top: 0;
+  }
+  table.dataTable.cell-border tbody td,
+  table.dataTable.cell-border tbody th,
+  table.dataTable.cell-border thead th,
+  table.dataTable.cell-border tfoot th {
+    .responsiveDark({
+      border-right: 1px solid @modern-border;
+    },
+    {
+      border-right: 1px solid @modern-border-dark;
+    });
+  }
+  table.dataTable.compact thead th,
+  table.dataTable.compact thead td,
+  table.dataTable.compact tbody td,
+  table.dataTable.compact tbody th,
+  table.dataTable.compact tfoot th,
+  table.dataTable.compact tfoot td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+  }
+  table.DTFC_Cloned tr,
+  .DTFC_LeftHeadWrapper table,
+  .DTFC_RightHeadWrapper table,
+  .DTFC_LeftFootWrapper table,
+  .DTFC_RightFootWrapper table,
+  .DTFC_Blocker {
+    .responsiveDark({
+      background-color: @modern-surface !important;
+    },
+    {
+      background-color: @modern-surface-dark !important;
+    });
+  }
+  // a hairline instead of a grey block marks where the fixed columns end. It is drawn
+  // on the head, body and foot wrappers: a cell border would widen the cloned table
+  // (giving it a scrollbar), the body clone is wider than shown to hide its own
+  // scrollbar, and the outer DTFC_*Wrapper is only 1px tall
+  .DTFC_LeftHeadWrapper,
+  .DTFC_LeftBodyWrapper,
+  .DTFC_LeftFootWrapper,
+  .DTFC_RightHeadWrapper,
+  .DTFC_RightBodyWrapper,
+  .DTFC_RightFootWrapper {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      z-index: 3;
+      pointer-events: none;
+      // opaque (unlike @modern-border-strong), so where segments overlap they do not darken
+      .responsiveDark({
+        .modern-mix(background-color; #101828; 18%; @modern-surface);
+      },
+      {
+        .modern-mix(background-color; #fff; 18%; @modern-surface-dark);
+      });
+    }
+  }
+  .DTFC_LeftHeadWrapper,
+  .DTFC_LeftBodyWrapper,
+  .DTFC_LeftFootWrapper {
+    &::after {
+      right: 0;
+    }
+  }
+  .DTFC_RightHeadWrapper,
+  .DTFC_RightBodyWrapper,
+  .DTFC_RightFootWrapper {
+    &::after {
+      left: 0;
+    }
+  }
+  // with a footer, the horizontal scrollbar is shown below the footer rather than between
+  // the rows and the footer, so rows (the fixed columns' included) scroll right up to it;
+  // see the scroll handler in miro.js. Firefox cannot hide one axis' scrollbar only.
+  @supports selector(::-webkit-scrollbar) {
+    .dataTables_scroll:has(> .dataTables_scrollFoot) {
+      > .dataTables_scrollBody::-webkit-scrollbar {
+        height: 0;
+      }
+      > .dataTables_scrollFoot {
+        overflow-x: auto !important;
+      }
+    }
+  }
+  // room for the sort indicator, so it never touches the column name
+  table.dataTable thead .sorting,
+  table.dataTable thead .sorting_asc,
+  table.dataTable thead .sorting_desc,
+  table.dataTable thead .sorting_asc_disabled,
+  table.dataTable thead .sorting_desc_disabled {
+    padding-right: 28px;
+    background-position: right 6px center;
+  }
+  table.dataTable tfoot th,
+  table.dataTable tfoot td {
+    padding: 10px 12px;
+    font-weight: 600;
+    .responsiveDark({
+      border-top: 1px solid @modern-border-strong;
+    },
+    {
+      border-top: 1px solid @modern-border-strong-dark;
+    });
+  }
+  .dt-buttons {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    .dt-button {
+      margin: 0;
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 20px;
+      border-radius: @modern-radius-sm;
+      background-image: none;
+      box-shadow: none;
+      transition: background-color @modern-ease, border-color @modern-ease;
+      .responsiveDark({
+        background-color: @modern-surface;
+        border: 1px solid @modern-border-strong;
+        color: @text-color;
+      },
+      {
+        background-color: transparent;
+        border: 1px solid @modern-border-strong-dark;
+        color: @text-color-dark;
+      });
+      &:hover:not(.disabled),
+      &:focus:not(.disabled) {
+        background-image: none;
+        .responsiveDark({
+          background-color: @modern-hover;
+          border-color: @modern-border-strong;
+        },
+        {
+          background-color: @modern-hover-dark;
+          border-color: @modern-border-strong-dark;
+        });
+      }
+    }
+  }
+  .dataTables_filter {
+    label {
+      font-weight: 400;
+      .responsiveDark({
+        color: @modern-muted;
+      },
+      {
+        color: @modern-muted-dark;
+      });
+    }
+    input {
+      margin-left: 8px;
+      font-weight: 400;
+      .responsiveDark({
+        color: @text-color;
+      },
+      {
+        color: @text-color-dark;
+      });
+    }
+  }
+}
+
+/* --- spreadsheet inputs (Handsontable) ----------------------------------- */
+// quieter grid lines, readable headers, theme-colored selection. Header cells must stay
+// opaque: frozen rows/columns are rendered as clones on top of the scrolled table.
+.handsontable {
+  font-family: @modern-font;
+  font-size: 13px;
+  td,
+  th {
+    height: 26px;
+    line-height: 25px;
+    padding: 0 8px;
+    .responsiveDark({
+      border-color: #e4e7ec !important;
+    },
+    {
+      border-color: ~"color-mix(in srgb, @{main-bg-dark} 80%, #fff)" !important;
+    });
+  }
+  tbody th {
+    font-weight: 500;
+  }
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    .responsiveDark({
+      background-color: #f5f6f8;
+      color: #475467;
+    },
+    {
+      .modern-mix(background-color; @main-bg-dark; 92%; #fff);
+      color: @modern-muted-dark;
+    });
+  }
+  // headers of the selected cell's row and column
+  tbody th.ht__highlight,
+  thead th.ht__highlight,
+  tbody th.ht__active_highlight,
+  thead th.ht__active_highlight {
+    .responsiveDark({
+      .modern-mix(background-color; @primary-color; 14%; #fff);
+      color: @primary-color;
+    },
+    {
+      .modern-mix(background-color; @primary-color-dark; 30%; @main-bg-dark);
+      color: #fff;
+    });
+  }
+  // row/column of the selected cell (rhandsontable)
+  td.currentRow {
+    .responsiveDark({
+      .modern-mix(background-color; @primary-color; 5%; #fff);
+    },
+    {
+      .modern-mix(background-color; @primary-color-dark; 12%; @darken-41c1769c);
+    });
+  }
+  td.currentCol {
+    .responsiveDark({
+      .modern-mix(background-color; @primary-color; 3%; #fff);
+    },
+    {
+      .modern-mix(background-color; @primary-color-dark; 7%; @darken-41c1769c);
+    });
+  }
+  td.htDimmed {
+    .responsiveDark({
+      color: @modern-muted;
+    },
+    {
+      color: @modern-muted-dark;
+    });
+  }
+  td.htDimmed:not(.currentRow):not(.currentCol):not(.listbox td) {
+    .responsiveDark({
+      .modern-mix(background-color; #101828; 7%; #fff);
+    },
+    {
+      .modern-mix(background-color; #000; 18%; @darken-41c1769c);
+    });
+  }
+  // the dropdown list of dropdown/autocomplete cells is sized for Handsontable's own row
+  // heights: keep them, or the last items get clipped
+  &.autocompleteEditor td {
+    height: 22px;
+    line-height: 21px;
+    padding: 0 8px;
+  }
+  // ... and must stand out from the grid it is drawn over
+  &.autocompleteEditor {
+    .responsiveDark({
+      filter: drop-shadow(0 4px 10px rgba(16, 24, 40, 0.16));
+    },
+    {
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+    });
+    .ht_master table.htCore {
+      border-radius: @modern-radius-sm;
+      overflow: hidden;
+      .responsiveDark({
+        .modern-mix(border-color; #101828; 28%; #fff);
+      },
+      {
+        .modern-mix(border-color; #fff; 28%; @main-bg-dark);
+      });
+    }
+    td {
+      border-color: transparent !important;
+    }
+    .wtHolder {
+      overscroll-behavior: contain;
+    }
+  }
+  .wtBorder.current,
+  .wtBorder.area {
+    .responsiveDark({
+      background-color: @primary-color !important;
+    },
+    {
+      background-color: @primary-color-dark !important;
+    });
+  }
+}
+.htContextMenu:not(.htGhostTable) {
+  .responsiveDark({
+    filter: drop-shadow(0 8px 16px rgba(16, 24, 40, 0.16));
+  },
+  {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+  });
+  table.htCore {
+    border-radius: @modern-radius;
+    overflow: hidden;
+    .responsiveDark({
+      border: 1px solid @modern-border;
+    },
+    {
+      border: 1px solid @modern-border-dark;
+    });
+  }
+  // the menu is laid out for Handsontable's own row heights (23px, 1px for separators):
+  // keep its geometry instead of the taller rows used for data tables, or items get clipped
+  table tbody tr td {
+    height: 22px;
+    line-height: 21px;
+    padding: 4px 12px 0;
+  }
+  table tbody tr td.htSeparator {
+    height: 0;
+    padding: 0;
+    line-height: 0;
+  }
+}
+
+/* --- MIRO pivot ---------------------------------------------------------- */
+.drop-index-header {
+  .modern-label();
+  margin-bottom: 6px;
+}
+// drop zones: dashed wells that light up while a field is dragged over them
+.drop-index-list {
+  min-height: 44px;
+  padding: 5px;
+  margin-bottom: 8px;
+  border-radius: @modern-radius;
+  box-shadow: none;
+  transition: background-color @modern-ease, border-color @modern-ease;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border: 1px dashed @modern-border-strong;
+  },
+  {
+    background-color: @modern-subtle-dark;
+    border: 1px dashed @modern-border-strong-dark;
+  });
+  &:hover {
+    .responsiveDark({
+      border-color: ~"color-mix(in srgb, @{primary-color} 45%, transparent)";
+    },
+    {
+      border-color: ~"color-mix(in srgb, @{primary-color-dark} 60%, transparent)";
+    });
+  }
+}
+.drop-index-list.vertical-index-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+  .drop-index-item {
+    margin: 0;
+  }
+}
+// fields: compact chips with a grip, instead of large pills
+.drop-index-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 32px;
+  margin: 0 0 5px;
+  padding: 5px 10px 5px 8px;
+  line-height: 20px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: @modern-radius-sm;
+  cursor: grab;
+  transition: border-color @modern-ease, background-color @modern-ease, box-shadow @modern-ease, color @modern-ease;
+  .responsiveDark({
+    background-color: @modern-surface;
+    border: 1px solid @modern-border-strong;
+    box-shadow: @modern-shadow-xs;
+  },
+  {
+    background-color: @modern-surface-dark;
+    border: 1px solid @modern-border-strong-dark;
+    box-shadow: @modern-shadow-xs-dark;
+  });
+  &:last-child {
+    margin-bottom: 0;
+  }
+  // six-dot grip
+  &::before {
+    content: "";
+    flex: 0 0 6px;
+    width: 6px;
+    height: 12px;
+    opacity: 0.45;
+    background-image: radial-gradient(currentColor 1px, transparent 1.3px);
+    background-size: 3px 4px;
+  }
+}
+.drop-index-item-selected,
+.drop-index-item:hover {
+  transition: border-color @modern-ease, background-color @modern-ease, box-shadow @modern-ease, color @modern-ease;
+  .responsiveDark({
+    background-color: @modern-surface;
+    border-color: @primary-color;
+    color: @primary-color;
+  },
+  {
+    background-color: @modern-surface-dark;
+    border-color: @primary-color-dark;
+    color: #fff;
+  });
+}
+.drop-index-item-selected {
+  .responsiveDark({
+    .modern-mix(background-color; @primary-color; 10%; @modern-surface);
+  },
+  {
+    .modern-mix(background-color; @primary-color-dark; 25%; @modern-surface-dark);
+  });
+}
+// SortableJS drag states: lifted chip follows the pointer, a faint copy marks the drop spot
+.drop-index-item.sortable-chosen {
+  cursor: grabbing;
+}
+.drop-index-item.sortable-drag,
+.drop-index-item.sortable-fallback {
+  transform: rotate(1.5deg);
+  .responsiveDark({
+    box-shadow: @modern-shadow-lg;
+  },
+  {
+    box-shadow: @modern-shadow-lg-dark;
+  });
+}
+.drop-index-item.sortable-ghost {
+  opacity: 0.4;
+  border-style: dashed;
+}
+// pivot table and chart span the height left below the pivot controls. DataTables applies
+// scrollY as a max-height and FixedColumns re-measures on window resize, so viewport units
+// are enough here (only Handsontable needs JavaScript, see fit_height.js). The offsets
+// cover header, section title, tabs and the pivot controls of the default layout.
+@media (min-width: 768px) {
+  [id$="-pivotTable"] .dataTables_scrollBody {
+    max-height: ~"max(250px, calc(100vh - 610px))" !important;
+  }
+  .pivot-chart-height > [id$="-pivotChart-container"] {
+    height: ~"max(250px, calc(100vh - 550px))";
+  }
+}
+.pivot-hdr-col {
+  .responsiveDark({
+    border-right: 1px solid @modern-border-strong;
+  },
+  {
+    border-right: 1px solid @modern-border-strong-dark;
+    border-bottom: 1px solid @modern-border-strong-dark !important;
+  });
+}
+// pivot toolbar (add view, settings, download, presentation mode): quiet icon buttons
+// instead of bordered boxes, so the drop zones stay the visual focus
+.pivot-btn-custom.btn,
+.pivot-btn-custom > .btn {
+  .modern-ghost-btn();
+  height: 32px;
+  .responsiveDark({
+    color: #475467;
+  },
+  {
+    color: @modern-muted-dark;
+  });
+}
+.pivot-btn-custom.open > .btn,
+.pivot-btn-custom > .btn[aria-expanded="true"] {
+  .responsiveDark({
+    .modern-tint(background-color; @primary-color; 12%) !important;
+    color: @primary-color;
+  },
+  {
+    .modern-tint(background-color; @primary-color-dark; 30%) !important;
+    color: #fff;
+  });
+}
+.data-section {
+  .responsiveDark({
+    border-top-color: @modern-border;
+  },
+  {
+    border-top-color: @modern-border-dark;
+  });
+  .data-section-block {
+    border-radius: @modern-radius;
+    .responsiveDark({
+      background-color: @modern-subtle;
+    },
+    {
+      background-color: @modern-subtle-dark;
+    });
+  }
+}
+
+/* --- GAMS interaction ---------------------------------------------------- */
+#modelStatus {
+  font-size: 14px;
+  padding-top: 8px;
+}
+#shiny-tab-gamsinter .box-body {
+  position: relative;
+}
+// log/listing download sits in the tab bar instead of floating below the log
+#shiny-tab-gamsinter .box-body > .pull-right {
+  position: absolute;
+  top: 8px;
+  right: @modern-section-x;
+  > .btn-group > .btn {
+    .modern-ghost-btn();
+    height: 32px;
+    padding: 0 10px;
+  }
+}
+#logStatusContainer,
+#listFileContainer,
+#miroLogContainer {
+  margin-top: 4px;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  border-radius: @modern-radius;
+  .responsiveDark({
+    background-color: @modern-subtle;
+    border: 1px solid @modern-border;
+  },
+  {
+    border: 1px solid @modern-border-dark;
+  });
+}
+
+/* --- load scenarios ------------------------------------------------------ */
+#loadContent {
+  .and-sign {
+    .modern-label();
+    padding: 12px 0 6px;
+  }
+  .and-wrapper {
+    padding: 8px;
+    border-radius: @modern-radius;
+    .responsiveDark({
+      background-color: @modern-subtle;
+      border: 1px solid @modern-border;
+    },
+    {
+      background-color: @modern-subtle-dark;
+      border: 1px solid @modern-border-dark;
+    });
+  }
+  .item-or-query {
+    margin-top: 12px;
+    margin-right: 8px;
+  }
+  // "Add condition..." needs more room than a 2-column cell in some languages
+  .and-row > div:first-child {
+    min-width: 260px;
+  }
+}
+#batchLoadResults {
+  margin-top: 20px;
+}
+#batchLoadButtons > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  .choose-scen-btn {
+    margin-top: 0;
+  }
+}
+// only one filled button per group: selecting the chosen rows is the primary action
+#batchLoadCurrent,
+#batchLoadAll {
+  .responsiveDark({
+    border-color: @modern-border-strong;
+    color: @text-color;
+  },
+  {
+    border-color: @modern-border-strong-dark;
+    color: @text-color-dark;
+  });
+  background-color: transparent;
+  &:hover {
+    .responsiveDark({
+      background-color: @modern-hover;
+    },
+    {
+      background-color: @modern-hover-dark;
+    });
+  }
+}
+
+/* --- markdown ------------------------------------------------------------ */
+.miro-markdown th,
+.miro-table th {
+  font-weight: 600;
+}
+.miro-markdown code {
+  border-radius: @modern-radius-sm;
+  padding: 2px 6px;
+}
+.miro-markdown pre,
+pre {
+  border-radius: @modern-radius;
+}
+.miro-markdown a {
+  text-underline-offset: 2px;
+}
+
+/* --- feedback: alerts, notifications, progress, tooltips ------------------ */
+.alert,
+.callout,
+.gmsalert,
+.config-message {
+  border-radius: @modern-radius;
+}
+.shiny-notification {
+  border-radius: @modern-radius;
+  animation: modern-slide-in 220ms @modern-ease-out;
+  .responsiveDark({
+    box-shadow: @modern-shadow-lg;
+  },
+  {
+    box-shadow: @modern-shadow-lg-dark;
+  });
+}
+.progress,
+.progress-bar,
+.shiny-file-input-progress,
+.shiny-file-input-progress .progress-bar {
+  border-radius: 999px;
+}
+.progress-bar {
+  transition: width 300ms @modern-ease-out;
+}
+.tooltip-inner,
+.popover {
+  border-radius: @modern-radius-sm;
+}
+.info-box,
+.small-box,
+.dashboard-css .custom-info-box {
+  border-radius: @modern-radius-lg;
+}
+.info-box .info-box-icon {
+  border-radius: @modern-radius-lg 0 0 @modern-radius-lg;
+}
+
+/* --- scrollbars ---------------------------------------------------------- */
+:not(.wtHolder)::-webkit-scrollbar-track {
+  box-shadow: none;
+  background: transparent;
+}
+:not(.wtHolder)::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* --- accessibility: respect reduced motion ------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  // loading indicators still need to move to signal progress
+  .lds-ellipsis div,
+  .gen-spinner {
+    animation-duration: revert !important;
+    animation-iteration-count: infinite !important;
+  }
+}

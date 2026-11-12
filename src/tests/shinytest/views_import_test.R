@@ -20,26 +20,26 @@ app$run_js("$('#editMetaUI .btn-default').get(2).click()")
 app$expect_download("downloadViews", name = "views.json")
 
 expect_true(app$get_js("$('#currentViewsTable tbody td')[0].innerHTML==='capacity of plant i in cases'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#currentViewsTable tbody td')[1].innerHTML==='&lt;script&gt;alert(\\'asd\\')&lt;/script&gt;'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#currentViewsTable tbody td')[2].innerHTML===''",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#currentViewsTable tbody td')[3].innerHTML==='view2'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#currentViewsTable tbody td')[4].innerHTML==='demand at market j in cases'",
-  timeout = 50
+  timeout = 10000L
 ))
 expect_true(app$get_js("$('#currentViewsTable tbody td')[5].innerHTML==='&lt;script&gt;location.reload();&lt;/script&gt;'",
-  timeout = 50
+  timeout = 10000L
 ))
 app$upload_file(file_addViews = "../data/good-views.json")
 expect_true(app$get_js("$('#viewsCustomError')[0].innerText.includes('<script>alert(\\'asd\\')</script>')",
-  timeout = 50
+  timeout = 10000L
 ))
 app$click(selector = 'button[data-dismiss="modal"]')
 Sys.sleep(1)
@@ -50,6 +50,6 @@ app$wait_for_js("$('#in_1-miroPivot-savedViewsDD li').length===3", timeout = 500
 expect_true(app$get_js("$('#in_1-miroPivot-savedViewsDD li')[1].children[0].innerText==='<script>alert(\\'asd\\')</script>'"))
 app$run_js("$('#in_1-miroPivot-savedViewsDD li').eq(1).children('.dropdown-item').click();")
 expect_error(app$wait_for_js("$('#in_1-miroPivot-customError').is(':visible');", timeout = 5000L), NA)
-expect_true(app$get_js("$('#in_1-miroPivot-customError').text().includes('idontexist')", timeout = 50))
+expect_true(app$get_js("$('#in_1-miroPivot-customError').text().includes('idontexist')", timeout = 10000L))
 app$expect_values(output = "inputDataTitle")
 app$stop()

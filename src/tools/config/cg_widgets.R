@@ -156,7 +156,6 @@ validateWidgetConfig <- function(widgetJSON) {
   }
 
 
-
   switch(widgetJSON$widgetType,
     slider = ,
     sliderrange = {
@@ -215,9 +214,7 @@ validateWidgetConfig <- function(widgetJSON) {
         return(lang$adminMode$widgets$validate$val55)
       }
     },
-    textinput = {
-
-    },
+    textinput = {},
     checkbox = {
       if (isTRUE(widgetJSON$value)) {
         rv$widgetConfig$value <<- 1L
@@ -597,8 +594,7 @@ observeEvent(
         )
         disableEl(session, "#saveWidget")
         disableEl(session, "#deleteWidget")
-        output$widget_preview <- renderUI({
-        })
+        output$widget_preview <- renderUI({})
       }
     }
 
@@ -2352,15 +2348,19 @@ refreshTableType <- function(refreshSameSymbol = FALSE) {
     )
     callModule(renderData, "preview_inputTable_pivot",
       type = "miropivot",
-      data = createTableData(currentWidgetSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
-      customOptions = c(
-        list(
-          "_metadata_" = metadata,
-          resetOnInit = TRUE
-        ),
-        pivotOptions
+      data = createTableData(currentWidgetSymbolName, createColNames = TRUE)$data,
+      rendererEnv = inputPivotRendererEnv,
+      graphConfig = list(
+        options = c(
+          list(
+            "_metadata_" = metadata,
+            resetOnInit = TRUE
+          ),
+          pivotOptions
+        )
       ),
-      roundPrecision = 2, modelDir = modelDir, views = views
+      roundPrecision = 2,
+      views = views
     )
   } else {
     rv$widgetConfig$tableType <- "default"

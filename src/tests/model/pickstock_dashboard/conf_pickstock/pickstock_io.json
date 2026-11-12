@@ -147,6 +147,24 @@
 				}
 			}
 		},
+		"testaliasfilter":	{
+			"alias":	"testaliasfilter",
+			"symtype":	"parameter",
+			"headers":	{
+				"s":	{
+					"type":	"string",
+					"alias":	"Aliased with symbol"
+				},
+				"symbol":	{
+					"type":	"string",
+					"alias":	"stock symbol"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"testaliasfilter"
+				}
+			}
+		},
 		"pricemerge":	{
 			"alias":	"Price (stocks & dow jones)",
 			"symtype":	"parameter",

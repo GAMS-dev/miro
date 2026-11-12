@@ -1,12 +1,15 @@
 # Copyright GAMS Development Corp. All Rights Reserved.
 # SPDX-License-Identifier: GPL-3.0-only
 
+rootPath: '/'
+
 global:
-  rootPath: '/'
   # Global Docker image registry
   imageRegistry: ''
   # imagePullSecrets:
   #   - registryKeySecretName
+  # Global tag of the images. If not specified, AppVersion is used.
+  imageTag: ''
   imagePullSecrets: []
   # nodeSelector: Node labels for pod assignment
   nodeSelector: {}
@@ -17,7 +20,7 @@ global:
   # tolerationsSts: tolerations for pod assignment of stateful sets (database)
   tolerationsSts: []
   networkPolicy:
-    enabled: true
+    enabled: false
     # The IP adress of the Kubernetes API Server.
     # kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}'
     apiServerIp: ''
@@ -27,9 +30,13 @@ global:
   commonLabels: {}
   # Annotations to add to all deployed resources
   commonAnnotations: {}
-image:
-  # Global tag of the images. If not specified, AppVersion is used.
-  tag: ''
+
+secrets:
+  dbPassword: ''
+  oidcClientSecret: ''
+  engineAnonymousPassword: ''
+  containerLogS3SecretAccessKey: ''
+  redisPassword: ''
 
 proxy:
   image:
@@ -47,6 +54,7 @@ proxy:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+    annotations: {}
   networkPolicy:
     allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy
@@ -63,6 +71,7 @@ proxy:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+    extraEgress: []
   podAnnotations: {}
   config:
     title: GAMS MIRO Server
@@ -74,29 +83,17 @@ proxy:
     forceSignedApps:
       enabled: false
       acceptedPublicKeysPEM: []
-    logo:
-      enabled: false # whether to use custom logo (visibile on login page, only PNG supported)
-      path: '' # local path to logo file; it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded logo
-      # If both path and base64 are specified, base64 is used.
-    favicon:
-      enabled: false # whether to use custom favicon
-      path: '' # local path to favicon file (.ico); it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded favicon
-      # If both path and base64 are specified, base64 is used.
-    customCSS:
-      enabled: false # whether to use custom CSS
-      path: '' # local path to CSS file; it is best practice to place it in a directory named "resources"
-      base64: '' # alternatively, base64-encoded CSS
-      # If both path and base64 are specified, base64 is used.
+    logo: '' # base64-encoded logo
+    favicon: '' # base64-encoded favicon
+    customTheme: '' # base64-encoded custom CSS theme. "colorTheme" must be set to "custom"
     containerLogBackend:
       type: none # Container log backed. Currently supported none (disabled) or s3
       s3:
+        # NOTE: secrets.containerLogS3SecretAccessKey must be provided!
         bucketName: '' # Name of the s3 bucket
         bucketDir: '/' # Path to directory where log files are to be stored
         region: '' # AWS region e.g. us-east-1
         accessKeyId: '' # AWS access key ID
-        secretAccessKey: '' # AWS secret access key
     disableReadonlyMode: false
     anonymousReadonlyMode: false
     containerWaitTimeSeconds: 300
@@ -107,21 +104,41 @@ proxy:
       secureCookies: true
     authentication: password # password, openid or none
     openid:
+      # NOTE: secrets.oidcClientSecret must be provided!
       authUrl: ''
       tokenUrl: ''
       jwksUrl: ''
       logoutUrl: ''
       clientId: ''
-      clientSecret: ''
+      scopes: '' # "openid,email" are always requested. Only add additional scopes (e.g. profile) here
       withPKCE: false
     engine:
       apiUrl: ''
       namespace: ''
-      anonymousUser: ''
-      anonymousPassword: ''
+      anonymousUser: '' # only relevant if authentication is none
+      anonymousAdminUser: '' # only relevant if authentication is none
+      # NOTE: secrets.engineAnonymousPassword must be provided if anonymousUser is set!
     metrics:
       enabled: false
+      # Specifies whether a serviceMonitor object should be created. Requires Prometheus Operator CRDs.
+      # Requires metrics to be enabled.
+      serviceMonitorEnabled: false
+      # configures a custom realm label to be exposed in the metrics
+      # (only relevant when serviceMonitorEnabled is true)
+      realm: default
       port: 9090
+    persistentSessionStore:
+      # secrets.redisPassword must be provided if persistentSessionStore is set.
+      host: ''
+      port: ''
+      user: ''
+      sslEnabled: true # if AWSelastiCache is used ssl should be enabled.
+      disableConfigureAction: true # if AWSelastiCache is used it should be true.
+      # Used as a prefix for all keys stored in Redis to allow multiple MIRO Server instances
+      # to share one instance.
+      # Maximum length is 63 characters, only alphanumeric characters and - allowed, but may not start or end with -.
+      # Defaults to the namespace where the Helm release is installed ({{ .Release.Namespace }}).
+      namespace: ''
 
 auth:
   image:
@@ -139,6 +156,7 @@ auth:
     type: ClusterIP # ClusterIP or NodePort
     # only relevant if type is NodePort. If not provided, a random port within the NodePort range is used.
     nodePort: ''
+    annotations: {}
   networkPolicy:
     allowEgressPublicNetworks: true
     # Add extra ingress rules to the NetworkPolicy
@@ -155,6 +173,7 @@ auth:
     #         matchLabels:
     #           app: prometheus
     extraIngress: []
+    extraEgress: []
   podAnnotations: {}
 
 miro:
@@ -175,6 +194,19 @@ miro:
     # (only relevent if global.networkPolicy.enabled is true)
     extraEgress: []
   podAnnotations: {}
+  # Additional JSON patches (RFC 6902) applied to the MIRO app pods after the chart's own,
+  # e.g. to set a service account or add environment variables. The chart already sets
+  # lists such as /spec/volumes: append to them (path ending in /-) instead of replacing them.
+  # podPatches:
+  #   - op: add
+  #     path: /spec/serviceAccountName
+  #     value: my-service-account
+  #   - op: add
+  #     path: /spec/containers/0/env/-
+  #     value:
+  #       name: MY_VARIABLE
+  #       value: my-value
+  podPatches: []
 
 admin:
   image:
@@ -189,14 +221,18 @@ admin:
       cpu: '2000m'
       memory: 1700Mi
   podAnnotations: {}
+  # Additional JSON patches for the admin panel pods (see miro.podPatches)
+  podPatches: []
 
 db:
   image:
     registry: docker.io
     repository: postgres
     tag: '17-alpine'
+  externalHost: '' # if not specified, a statefulset will be created
+  port: 5432
   user: 'GMSMASTER'
-  password: ''
+  # NOTE: secrets.dbPassword must be provided!
   name: 'gamsmiro'
   volumeSize: 5Gi
   resources:

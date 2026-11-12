@@ -2,7 +2,7 @@ import log from 'electron-log/main.js';
 import http from 'axios';
 import { execa } from 'execa';
 import path from 'node:path';
-import { getAppDbPath, isFalse } from './util.js';
+import { isFalse } from './util.js';
 import { randomPort, waitFor, isNull, kill } from './helpers.js';
 
 /*
@@ -38,12 +38,16 @@ class MiroProcessManager {
     isInBuildMode,
     miroResourcePath,
     appDataPath,
+    miroWorkspaceDir,
+    azureUserAuth = null,
   ) {
     this.configData = configData;
+    this.azureUserAuth = azureUserAuth;
     this.inDevelopmentMode = inDevelopmentMode;
     this.isInBuildMode = isInBuildMode;
     this.miroResourcePath = miroResourcePath;
     this.appDataPath = appDataPath;
+    this.miroWorkspaceDir = miroWorkspaceDir;
     this.miroProcesses = [];
     this.pidPortMap = {};
     this.processIdMap = {};
@@ -134,7 +138,8 @@ class MiroProcessManager {
     const gamspath = this.configData.get('gamspath');
     const pythonpath = this.configData.get('pythonpath');
     const logpath = this.configData.get('logpath');
-    const dbPath = getAppDbPath(appData.dbpath);
+    const dbPath = this.configData.getAppDbPath(appData.dbpath);
+    const aiAssistantConfigPromise = this.configData.get('aiAssistantConfig');
 
     const generalConfig = {
       launchExternal: this.configData.get('launchExternal'),
@@ -191,7 +196,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
     const procEnv = Object.assign(miroEnv, {
       WITHIN_ELECTRON: '1',
+      MIRO_ATTACHMENTS_MAX_SIZE_MB: '500',
       R_HOME_DIR: await rpath,
+      LANG: 'en_US.UTF-8',
+      LC_ALL: 'en_US.UTF-8',
+      LC_CTYPE: 'en_US.UTF-8',
       RE_SHINY_PORT: shinyPort,
       RE_SHINY_PATH: this.miroResourcePath,
       R_LIBS: libPathForwardSlashes,
@@ -222,12 +231,25 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_MODEL_PATH: this.inDevelopmentMode
         ? appData.modelPath
         : path.join(
-            this.appDataPath,
-            appData.id,
-            appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName,
-          ),
+          this.appDataPath,
+          appData.id,
+          appData.gmsName == null ? `${appData.id}.gms` : appData.gmsName,
+        ),
       MIRO_APP_ID: appData.id,
     });
+
+    const aiAssistantConfigRaw = await aiAssistantConfigPromise;
+    if (aiAssistantConfigRaw?.apiKeys?.length > 0) {
+      procEnv.MIRO_AI_ASSISTANT_CONFIG = JSON.stringify(aiAssistantConfigRaw);
+      // Azure with Microsoft sign-in: R reads the signed-in user's current
+      // access token from this file, which the launcher keeps fresh
+      if (this.azureUserAuth
+        && this.azureUserAuth.constructor.findUserSignInEntry(aiAssistantConfigRaw)) {
+        await this.azureUserAuth.refreshTokenFile(aiAssistantConfigRaw);
+        procEnv.MIRO_AZURE_ACCESS_TOKEN_FILE = this.azureUserAuth.tokenFile;
+      }
+    }
+
     if (process.platform === 'linux') {
       procEnv.R_BROWSER = 'xdg-open';
     }

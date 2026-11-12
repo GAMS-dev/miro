@@ -16,7 +16,11 @@ from .util import (
     reset_app_config_file,
 )
 
-client = TestClient(app)
+
+@pytest.fixture(scope="module")
+def client():
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture()
@@ -65,18 +69,18 @@ def cleanup():
 
 
 class TestEngine:
-    def test_login_invalid(self, cleanup):
+    def test_login_invalid(self, client, cleanup):
         response = client.post("/login/oidc", json={"id_token": "invalid"})
         print(response.json())
         assert response.status_code == 400
 
         response = client.post(
-            "/login", json={"username": "invalid", "password": "invalid"}
+            "/login", json={"username": "invalid", "password": "invalid"}  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 401
         response = client.post(
-            "/login", json={"username": settings["ENGINE_USER"], "password": "invalid"}
+            "/login", json={"username": settings["ENGINE_USER"], "password": "invalid"}  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 401
@@ -84,11 +88,11 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 422
 
-    def test_login_no_perm(self, cleanup):
+    def test_login_no_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 0)
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 403
@@ -102,7 +106,7 @@ class TestEngine:
         # user without permissions but member of group should get access only if models exist
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 403
@@ -110,16 +114,16 @@ class TestEngine:
         register_transport(client, ["mygroup"])
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 200
 
-    def test_login_with_perm(self, cleanup):
+    def test_login_with_perm(self, client, cleanup):
         invite_user("mirotests_auth_1", 1)
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         print(response.json())
         assert response.status_code == 200
@@ -133,7 +137,7 @@ class TestEngine:
         print(response.json())
         assert response.status_code == 200
 
-    def test_user_groups(self, cleanup):
+    def test_user_groups(self, client, cleanup):
         # groups with uppercase letters in labels should not be accepted by MIRO Server
         invite_user("mirotests_auth_1", 7, "mygroup", inviter=True)
         response = requests.post(
@@ -144,7 +148,7 @@ class TestEngine:
         assert response.status_code == 201
         response = client.post(
             "/login",
-            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},
+            json={"username": "mirotests_auth_1", "password": "mirotests_auth_11234"},  # betterleaks:allow
         )
         response_data = response.json()
         print(response_data)

@@ -1,6 +1,7 @@
 "%+%" <- function(x, y) {
   paste(x, y, sep = "")
 }
+`%||%` <- function(x, y) if (is.null(x)) y else x
 getCommandArg <- function(argName, exception = TRUE) {
   # local mode
   args <- commandArgs(trailingOnly = TRUE)
@@ -507,6 +508,13 @@ addHtmlLineBreaks <- function(string) {
 
   return(escapedString)
 }
+htmlUnescape <- function(string) {
+  entities <- c("&lt;" = "<", "&gt;" = ">", "&quot;" = "\"", "&#39;" = "'", "&#13;" = "\r", "&#10;" = "\n", "&amp;" = "&")
+  for (entity in names(entities)) {
+    string <- gsub(entity, entities[[entity]], string, fixed = TRUE)
+  }
+  return(string)
+}
 
 getOS <- function() {
   # returns string that identifies the operationg system
@@ -656,40 +664,6 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath) {
       paste(suppressWarnings(do.call(readLines, list(filePath))), collapse = "\n")
     }
   )
-}
-reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
-  checkFunc <- function() {
-    info <- file.info(filePath)
-    return(paste(filePath, info$mtime, info$size))
-  }
-  valueFunc <- function(skip) {
-    read_lines(filePath, skip = skip)
-  }
-  rv <- reactiveValues(cookie = isolate(checkFunc()))
-  cursorPos <- 0L
-
-  obs <- observe({
-    rv$cookie <- checkFunc()
-    invalidateLater(intervalMillis, session)
-  })
-
-  re <- reactive({
-    rv$cookie
-    fileContent <- valueFunc(cursorPos)
-
-    if (!length(fileContent)) {
-      return("")
-    }
-    if (identical(cursorPos, 0L)) {
-      cursorPos <<- length(fileContent)
-    } else {
-      cursorPos <<- cursorPos + length(fileContent)
-      fileContent <- c("", fileContent)
-    }
-    return(paste(fileContent, collapse = "\n"))
-  })
-
-  return(list("re" = re, "obs" = obs))
 }
 
 getNestedDep <- function(depStr) {
@@ -944,13 +918,8 @@ pidExists <- function(pid) {
   }
 }
 escapeGAMSCL <- function(input) {
-  if (isWindows()) {
-    ret <- shQuote(input, type = "cmd")
-  } else {
-    ret <- shQuote(input)
-    ret <- gsub("^'|'$", "\"", ret)
-  }
-  return(ret)
+  # GAMS has no escape sequence for double quotes inside a quoted value
+  return(paste0("\"", gsub("[\"\r\n]", "", input), "\""))
 }
 gmsFilePath <- function(path) {
   if (isWindows()) {
@@ -1266,7 +1235,7 @@ hotToR <- function(data, metaData, fixType = TRUE) {
       )
     }
     fixedCols <- length(metaData$headers) - 2L
-    names(dataTmp) <- unlist(data$params$colHeaders)
+    names(dataTmp) <- htmlUnescape(unlist(data$params$colHeaders))
     names(dataTmp)[1:fixedCols] <- unlist(data$params$rColHeaders)[1:fixedCols]
     return(dataTmp)
   }
@@ -1840,9 +1809,26 @@ formatScenList <- function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 
         USE.NAMES = FALSE
       ),
       scenList[["_sname"]], " (",
-      scenList[["_stime"]], ")"
+      format(as.POSIXct(scenList[["_stime"]]), "%Y-%m-%d %H:%M:%S"), ")"
     )
   ))
+}
+scenListSelectizeOptions <- function() {
+  render <- "function(d, e) {
+    var owner = d.value.substring(d.value.indexOf('_') + 1);
+    var label = d.label;
+    var html = '';
+    if (owner.length && label.indexOf(owner + ': ') === 0) {
+      html = '<span class=\"scen-owner\"><i class=\"fas fa-user\"></i>' + e(owner) + '</span>';
+      label = label.substring(owner.length + 2);
+    }
+    var time = label.match(/^(.*) \\(([^()]*)\\)$/);
+    if (time) {
+      return '<div>' + html + e(time[1]) + '<span class=\"scen-time\">(' + e(time[2]) + ')</span></div>';
+    }
+    return '<div>' + html + e(label) + '</div>';
+  }"
+  list(render = I(paste0("{option: ", render, ", item: ", render, "}")))
 }
 tabIdToRef <- function(tabId) {
   if (tabId == 0L) {
@@ -2077,11 +2063,14 @@ mergeDf <- function(a, b, isScalarsTable = FALSE) {
     select(-c(paste0(valueColName, c(".x", ".y")))))
 }
 calcRemainingQuota <- function(quotaList) {
+  if (!length(quotaList)) {
+    return(list(volume = Inf, disk = Inf))
+  }
   calcRemaining <- function(quotaObj, quotaKey, usedKey) {
     if (length(quotaObj[[quotaKey]])) {
       quota <- quotaObj[[quotaKey]]
     } else {
-      quota <- Inf
+      return(Inf)
     }
     return(as.numeric(quota - quotaObj[[usedKey]]))
   }

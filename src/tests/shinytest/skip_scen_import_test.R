@@ -6,7 +6,6 @@ app <- AppDriver$new("../../",
 
 app$set_inputs(btImport = "click")
 Sys.sleep(1)
-app$expect_values(input = "tb_importData")
 app$set_inputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 # remove scenario

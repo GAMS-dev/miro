@@ -2,10 +2,15 @@ import 'core-js/stable';
 import InputArrayFactory from './input_array';
 import { debounce, colorPickerBinding } from './util';
 import { parseKatex } from './miro';
+import { closeMiroAiDrawer } from './ai_assistant';
 
 export {
-  confirmModalShow, slideToggleEl, resetDropdownFilter, parseKatex,
+  confirmModalShow, slideToggleEl, resetDropdownFilter,
 } from './miro';
+export { parseKatex } from './util';
+export {
+  copyChatContent, openMiroAiDrawer, closeMiroAiDrawer, toggleChatCollapse,
+} from './ai_assistant';
 
 /* global $:false Shiny:false showdown:false */
 
@@ -261,15 +266,12 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
   leaflet_markers(defaults) {
-    let lng; let lat; let group;
-    let label; let rest; let iconIcon; let color;
+    let iconIcon; let color;
     let marker; let labelTextsize; let labelPermanent;
     let labelColor; let labelBgColor;
-    if (defaults != null) {
-      [, {
-        lng, lat, group, label, ...rest
-      }] = defaults;
-    }
+    const [, {
+      lng, lat, group, label, ...rest
+    }] = defaults ?? [null, {}];
     try { iconIcon = rest.iconOptions.icon; } catch (error) { iconIcon = null; }
     try { color = rest.iconOptions.iconColor; } catch (error) { color = ''; }
     try { marker = rest.iconOptions.markerColor; } catch (error) { marker = 'blue'; }
@@ -301,14 +303,9 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
   leaflet_flows(defaults) {
-    let lng0; let lat0; let lng1; let lat1; let flow; let color;
-    let minThickness; let maxThickness; let time; let
-      layerId;
-    if (defaults != null) {
-      [, {
-        lng0, lat0, lng1, lat1, flow, color, minThickness, maxThickness, time, layerId,
-      }] = defaults;
-    }
+    const [, {
+      lng0, lat0, lng1, lat1, flow, color, minThickness, maxThickness, time, layerId,
+    }] = defaults ?? [null, {}];
     const elements = {
       leaflet_flows: ['select', lang.addLeafletFlows.leafletFlows, indices, indexAliases, lat0 == null ? scalarIndices[0] : lat0],
       leafFlow_lng: ['select', lang.addLeafletFlows.lng, indices, indexAliases, lng0 == null ? scalarIndices[0] : lng0],
@@ -326,15 +323,10 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
   leaflet_minicharts(defaults) {
-    let lng; let lat; let chartdata; let type; let width; let height;
-    let variableSize; let opacity; let showLabels; let transitionTime;
-    let legend; let legendPosition; let time; let layerId;
-    if (defaults != null) {
-      [, {
-        lng, lat, chartdata, type, width, height, variableSize, opacity,
-        showLabels, transitionTime, legend, legendPosition, time, layerId,
-      }] = defaults;
-    }
+    const [, {
+      lng, lat, chartdata, type, width, height, variableSize, opacity,
+      showLabels, transitionTime, legend, legendPosition, time, layerId,
+    }] = defaults ?? [null, {}];
     const elements = {
       leaflet_minicharts: ['select', lang.addLeafletMinicharts.leafletMinicharts, indices, indexAliases, lat == null ? scalarIndices[0] : lat],
       leafChart_lng: ['select', lang.addLeafletMinicharts.lng, indices, indexAliases, lng == null ? scalarIndices[0] : lng],
@@ -356,13 +348,9 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
   chart_piedata(defaults) {
-    let values; let labels; let hole; let
-      name;
-    if (defaults != null) {
-      [, {
-        values, labels, hole, name,
-      }] = defaults;
-    }
+    const [, {
+      values, labels, hole, name,
+    }] = defaults ?? [null, {}];
     const elements = {
       chart_piedata: ['select', lang.addPieDataEl.chartValues, scalarIndices, scalarIndexAliases, values],
       chart_pielabel: ['select', lang.addPieDataEl.chartLabels, nonScalarIndices, nonScalarIndexAliases, labels],
@@ -372,13 +360,11 @@ const arrayTypes = {
     return ([elements, { elRequired: true }, 'piedata']);
   },
   chart_ydatabar(defaults) {
-    let key; let label; let showlegend; let yaxis; let rest; let makerLineWidth;
+    let makerLineWidth;
     let makerLineColor; let markerColor;
-    if (defaults != null) {
-      [key, {
-        label, showlegend, yaxis, ...rest
-      }] = defaults;
-    }
+    const [key, {
+      label, showlegend, yaxis, ...rest
+    }] = defaults ?? [null, {}];
     try { makerLineWidth = rest.marker.line.width; } catch (error) { makerLineWidth = 0; }
     try { makerLineColor = rest.marker.line.color; } catch (error) { makerLineColor = ''; }
     try { markerColor = rest.marker.color; } catch (error) { markerColor = ''; }
@@ -394,14 +380,11 @@ const arrayTypes = {
     return ([elements]);
   },
   chart_ydatascatter(defaults) {
-    let key; let label; let showlegend; let yaxis; let frame; let rest;
     let markerSize; let markerSymbol; let markerColor;
     let makerLineWidth; let makerLineColor;
-    if (defaults != null) {
-      [key, {
-        label, showlegend, yaxis, frame, ...rest
-      }] = defaults;
-    }
+    const [key, {
+      label, showlegend, yaxis, frame, ...rest
+    }] = defaults ?? [null, {}];
     try { markerSize = rest.marker.size; } catch (error) { markerSize = 6; }
     try { markerSymbol = rest.marker.symbol; } catch (error) { markerSymbol = '_'; }
     try { markerColor = rest.marker.color; } catch (error) { markerColor = ''; }
@@ -427,14 +410,11 @@ const arrayTypes = {
     return ([elements]);
   },
   chart_ydataline(defaults) {
-    let key; let label; let fill; let showlegend; let yaxis; let frame; let rest;
     let lineWidth; let lineShape; let lineDash;
     let lineColor;
-    if (defaults != null) {
-      [key, {
-        label, fill, showlegend, yaxis, frame, ...rest
-      }] = defaults;
-    }
+    const [key, {
+      label, fill, showlegend, yaxis, frame, ...rest
+    }] = defaults ?? [null, {}];
     try { lineWidth = rest.line.width; } catch (error) { lineWidth = 2; }
     try { lineShape = rest.line.shape; } catch (error) { lineShape = null; }
     try { lineDash = rest.line.dash; } catch (error) { lineDash = null; }
@@ -454,17 +434,14 @@ const arrayTypes = {
     return ([elements]);
   },
   chart_ydatabubble(defaults) {
-    let key; let label; let showlegend; let frame; let rest;
     let markerSize; let markerSymbol; let markerColor;
-    let staticColor = false;
     let markerSizemode; let markerMaxsize;
     let makerLineWidth; let makerLineColor;
-    if (defaults != null) {
-      [key, {
-        label, showlegend, frame, staticColor, ...rest
-      }] = defaults;
-      staticColor = staticColor === true;
-    }
+    const [key, {
+      label, showlegend, frame, ...rest
+    }] = defaults ?? [null, {}];
+    let [, { staticColor }] = defaults ?? [null, {}];
+    staticColor = staticColor === true;
     try { markerSize = rest.marker.size; } catch (error) { markerSize = '.index'; }
     try { markerMaxsize = rest.marker.maxsize; } catch (error) { markerMaxsize = 0; }
     try { markerSizemode = rest.marker.sizemode; } catch (error) { markerSizemode = null; }
@@ -493,12 +470,9 @@ const arrayTypes = {
     return ([elements]);
   },
   hist_xdata(defaults) {
-    let key; let labels; let color;
-    if (defaults != null) {
-      [key, {
-        labels, color,
-      }] = defaults;
-    }
+    const [key, {
+      labels, color,
+    }] = defaults ?? [null, {}];
     const elements = {
       hist_xdata: ['select', lang.addHistDataEl.histXdata, scalarIndices, scalarIndexAliases, key],
       hist_label: ['text', lang.addHistDataEl.label, labels == null ? 'label' : labels],
@@ -507,13 +481,9 @@ const arrayTypes = {
     return ([elements]);
   },
   timevis_series(defaults) {
-    let content; let start; let end; let type; let title;
-    let group; let subgroup; let groupTitle; let subgroupOrder;
-    if (defaults != null) {
-      [, {
-        content, start, end, type, title, group, subgroup, groupTitle, subgroupOrder,
-      }] = defaults;
-    }
+    const [, {
+      content, start, end, type, title, group, subgroup, groupTitle, subgroupOrder,
+    }] = defaults ?? [null, {}];
     const elements = {
       timevis_series: ['select', lang.addTimevisDataEl.timevisSeries, indices, indexAliases, content],
       timedata_start: ['select', lang.addTimevisDataEl.start, indices, indexAliases, start],
@@ -528,12 +498,9 @@ const arrayTypes = {
     return ([elements]);
   },
   timevis_custom(defaults) {
-    let time;
-    if (defaults != null) {
-      [, {
-        time,
-      }] = defaults;
-    }
+    const [, {
+      time,
+    }] = defaults ?? [null, {}];
     const elements = { timevis_custom: ['text', lang.addCustomTimeEl.timevisCustom, time == null ? '' : time, lang.addCustomTimeEl.placeholder] };
     return ([elements, { elRequired: false }]);
   },
@@ -550,9 +517,9 @@ export function mdToHTML(mdContent, destId, useKatex) {
   }
 }
 
-export function mdSave(mdContentId) {
+export function mdSave(mdContentId, eventId) {
   Shiny.setInputValue(
-    'btMdSave',
+    eventId,
     $(mdContentId).val(),
     { priority: 'event' },
   );
@@ -705,6 +672,10 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-setInputValue', (data) => {
     $(data.id).val(data.value).change();
+  });
+  // eslint-disable-next-line no-unused-vars
+  Shiny.addCustomMessageHandler('gms-closeAiDrawer', (data) => {
+    closeMiroAiDrawer();
   });
   $(document).on('input', '.miro-dynamic-input-id', debounce(function () {
     Shiny.setInputValue(

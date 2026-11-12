@@ -24,50 +24,105 @@
 <html
   xmlns:th="http://www.thymeleaf.org"
   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  lang="en"
 >
   <head></head>
+
   <body>
-    <div th:fragment="navbar" th:if="${showNavbar}" id="navbar">
-      <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-header">
-          <button
-            type="button"
-            class="navbar-toggle collapsed"
-            data-toggle="collapse"
-            data-target="#mainNavbar"
-            aria-expanded="false"
-          >
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" th:href="@{/}"> Home </a>
-        </div>
-        <div class="container-fluid collapse navbar-collapse" id="mainNavbar">
-          <ul class="nav navbar-nav" th:if="${isAdmin}">
-            <li>
-              <a
-                id="navAdminPanel"
-                th:href="@{/app/}+'admin'"
-                th:if="${isAdmin}"
-                >Admin Panel</a
-              >
-            </li>
-          </ul>
-          <div class="navbar-form navbar-right" style="margin-right: 0">
-            <a
-              role="button"
-              class="btn btn-navbar"
-              th:href="@{/logout}"
-              th:if="${isLoggedIn}"
-              >Sign Out</a
-            >
+    <div
+      th:fragment="navbar"
+      th:if="${showNavbar}"
+      id="navbar"
+      data-bs-theme="dark"
+    >
+      <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <!-- Brand -->
+        <a class="navbar-brand navbar-nav nav-home active" th:href="@{/}">
+          My Apps
+        </a>
+
+        <!-- Toggler -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#mainOffcanvas"
+          aria-controls="mainOffcanvas"
+          aria-label="Open menu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div
+          class="offcanvas offcanvas-end offcanvas-lg"
+          tabindex="-1"
+          id="mainOffcanvas"
+          aria-labelledby="mainOffcanvasLabel"
+        >
+          <div class="offcanvas-header d-lg-none">
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
           </div>
-          <div class="navbar-right" sec:authorize="isAuthenticated()">
-            <span class="navbar-text">
-              <span sec:authentication="name"></span>
-            </span>
+
+          <div class="offcanvas-body">
+            <!-- Left side -->
+            <ul class="navbar-nav me-auto d-lg-none">
+              <li class="nav-item">
+                <a class="nav-link nav-home active" th:href="@{/}">My Apps</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav me-auto" th:if="${isAdmin}">
+              <li class="nav-item">
+                <a
+                  id="navAdminPanel"
+                  class="nav-link"
+                  th:href="@{/app/}+'admin'"
+                  >Admin Panel</a
+                >
+              </li>
+            </ul>
+
+            <!-- Right side (user) -->
+            <ul
+              class="navbar-nav ms-auto navbar-user"
+              sec:authorize="isAuthenticated()"
+            >
+              <li class="nav-item dropdown">
+                <a
+                  href="#"
+                  class="nav-link dropdown-toggle"
+                  id="userDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="user-name" sec:authentication="name">User</span>
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end dropdown-menu-dark user-menu"
+                  aria-labelledby="userDropdown"
+                >
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://gams.com/miro/"
+                      target="_blank"
+                      >Help</a
+                    >
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/logout}">Sign Out</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>

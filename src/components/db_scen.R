@@ -510,39 +510,8 @@ Scenario <- R6Class("Scenario",
         "_scenScripts"
       )
     },
-    finalize = function() {
-      if (length(private$sid)) {
-        if (identical(private$getUidLock(), private$uid)) {
-          tryCatch(
-            {
-              private$unlock()
-              flog.debug("Scenario: '%s' unlocked.", private$sid)
-            },
-            error = function(e) {
-              flog.warn(
-                "Scenario: '%s' could not be unlocked. Error message: '%s'",
-                private$sid, conditionMessage(e)
-              )
-            }
-          )
-        }
-        if (private$newScen && !private$scenSaved) {
-          tryCatch(
-            {
-              flog.debug("Scenario was not saved. Thus, it will be removed.")
-              self$delete()
-            },
-            error = function(e) {
-              flog.warn(
-                "Scenario could not be removed. Error message: '%s'",
-                conditionMessage(e)
-              )
-            }
-          )
-        }
-        private$sid <- integer(0L)
-      }
-      return(invisible(self))
+    destroy = function() {
+      private$finalize()
     }
   ),
   active = list(
@@ -1117,6 +1086,40 @@ Scenario <- R6Class("Scenario",
     getDefaultPerm = function(permId) {
       stopifnot(permId %in% c("read", "write", "execute"))
       return(unique(c(private$uid, DEFAULT_SCEN_PERM[[permId]])))
+    },
+    finalize = function() {
+      if (length(private$sid)) {
+        if (identical(private$getUidLock(), private$uid)) {
+          tryCatch(
+            {
+              private$unlock()
+              flog.debug("Scenario: '%s' unlocked.", private$sid)
+            },
+            error = function(e) {
+              flog.warn(
+                "Scenario: '%s' could not be unlocked. Error message: '%s'",
+                private$sid, conditionMessage(e)
+              )
+            }
+          )
+        }
+        if (private$newScen && !private$scenSaved) {
+          tryCatch(
+            {
+              flog.debug("Scenario was not saved. Thus, it will be removed.")
+              self$delete()
+            },
+            error = function(e) {
+              flog.warn(
+                "Scenario could not be removed. Error message: '%s'",
+                conditionMessage(e)
+              )
+            }
+          )
+        }
+        private$sid <- integer(0L)
+      }
+      return(invisible(self))
     }
   )
 )

@@ -17,9 +17,9 @@ const KEYS_TO_IGNORE_DATAVIEW_CONFIG = [
   'customChartColors',
 ];
 const KEYS_TO_IGNORE_LEN1_ARRAYS = [
-  "definitions.miroPivotOptions.properties.baselineComparison.properties.metrics.oneOf.type",
-  "definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.properties.baselineComparison.properties.metrics.oneOf.type"
-]
+  'definitions.miroPivotOptions.properties.baselineComparison.properties.metrics.oneOf.type',
+  'definitions.dashboardOptions.properties.dataViewsConfig.additionalProperties.properties.baselineComparison.properties.metrics.oneOf.type',
+];
 
 function arraysEqual(a, b) {
   if (a === b) return true;
@@ -103,7 +103,7 @@ function fixLengthOneStringArrays(obj, keyPath = '') {
         );
       }
       if (primitiveItems != null) {
-        console.log(currentPath)
+        console.log(currentPath);
         if (Array.isArray(primitiveItems)) {
           obj[key] = ['array', ...primitiveItems];
         } else {

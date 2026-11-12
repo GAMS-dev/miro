@@ -1,6 +1,6 @@
 test_that(
   "Compare modes work",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
     testModelPath <- file.path(testDir, "model", "transport")
     Sys.setenv(MIRO_MODEL_PATH = file.path(
@@ -34,6 +34,10 @@ test_that(
       file.path(modelDataPath, "default4.gdx")
     )
     source(file.path(testDir, "shinytest", "load_pivot_compare_test.R"), local = TRUE)
+
+    context("UI tests - hidden symbols in scenario comparison mode")
+    source(file.path(testDir, "shinytest", "hidden_compare_symbols_test.R"), local = TRUE)
+
     unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
     file.move(

@@ -6,7 +6,7 @@ set -e
 rm -rf r
 mkdir -p r
 if [[ $(uname -p) == 'arm' ]]; then
-    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/big-sur-arm64/base/R-${R_BASE_VERSION}-arm64.pkg
+    curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/sonoma-arm64/base/R-${R_BASE_VERSION}-arm64.pkg
 else
     curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/big-sur-x86_64/base/R-${R_BASE_VERSION}-x86_64.pkg
 fi
@@ -20,6 +20,6 @@ pushd r > /dev/null
     mv R.framework/Versions/Current/Resources/* .
 
     # clean up directory a little
-    rm -rf bin/R.bak SVN-REVISION doc tests lib/*.dSYM bin/Rscript Rscript Info.plist R.framework library/foreign/files/._sids.dbf
+    rm -rf bin/R.bak SVN-REVISION doc tests lib/*.dSYM Info.plist R.framework library/foreign/files/._sids.dbf
 
 popd > /dev/null

@@ -1,6 +1,7 @@
 test_that(
   "HC module works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  {
+    ensureChromote()
     skip_if(
       identical(Sys.getenv("ENGINE_URL"), ""),
       "Skipping asynchronous solve tests as no ENGINE_URL was not set."
@@ -32,7 +33,7 @@ test_that(
       volumeQuota = 68L
     )
 
-    modelToTest <- "pickstock_configuration"
+    modelToTest <- "pickstock_hcube"
     testModelDir <- file.path(testDir, "model", modelToTest)
     modelDataPath <- file.path(testModelDir, paste0("data_", modelToTest))
     configJSONFileName <- file.path(
@@ -92,9 +93,7 @@ test_that(
     source(file.path(testDir, "shinytest", "hcube_module_solve_test.R"), local = TRUE)
 
 
-
     source(file.path(testDir, "shinytest", "hcube_module_load_test.R"), local = TRUE)
-
 
 
     source(file.path(testDir, "shinytest", "hcube_module_compare_test.R"), local = TRUE)
@@ -126,5 +125,5 @@ test_that(
     removeUser(apiURL, inviterUser, inviterPass, inviteeName)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))
-  })
+  }
 )

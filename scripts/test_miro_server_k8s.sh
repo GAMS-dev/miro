@@ -92,26 +92,24 @@ EOF
           pushd miro_server > /dev/null
             pushd gams-miro-server > /dev/null
                 helm dep up
-                mkdir custom
-              cp "${PWD}/../../tests/data/gams_logo.png" custom
             popd > /dev/null
+            logo_b64=$(base64 -i -w 0 "${PWD}/../tests/data/gams_logo.png")
             helm install test gams-miro-server/ \
                 --set 'global.imagePullSecrets[0]=gitlab' \
                 --set global.imageRegistry=$CI_REGISTRY_IMAGE \
                 --set global.networkPolicy.enabled="$ENABLE_NP" \
                 --set global.networkPolicy.apiServerIp="$API_SERVER_IP" \
-                --set image.tag=$IMAGE_TAG \
+                --set global.imageTag=$IMAGE_TAG \
                 --set proxy.service.type=NodePort \
                 --set proxy.service.nodePort=30080 \
                 --set auth.service.type=NodePort \
                 --set auth.service.nodePort=30081 \
-                --set db.password=mySuperStrongPassword \
+                --set secrets.dbPassword=mySuperStrongPassword \
                 --set persistence.local.path=/home/mnt \
                 --set proxy.config.engine.apiUrl=${ENGINE_URL} \
                 --set proxy.config.engine.namespace=${ENGINE_NS} \
                 --set proxy.config.forceSignedApps.enabled=true \
-                --set proxy.config.logo.enabled=true \
-                --set proxy.config.logo.path="custom/gams_logo.png" \
+                --set proxy.config.logo="$logo_b64" \
                 --set proxy.config.security.secureCookies=false \
                 --set-file 'proxy.config.forceSignedApps.acceptedPublicKeysPEM[0]'="${PWD}/../tests/data/signing_key_pub.pem"
           popd > /dev/null
@@ -140,11 +138,12 @@ EOF
             exit 1
           fi
 
+          OLD_AUTH_PODS=$(kubectl get pods -l app=test-gams-miro-server-auth -o name)
           kubectl patch deployment test-gams-miro-server-auth --type='strategic' -p \
                   "{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"auth\", \"image\": \"$CI_REGISTRY_IMAGE/miro-auth-test:unstable\", \"livenessProbe\": null, \"env\": [{\"name\": \"ENGINE_USER\", \"value\": \"$ENGINE_USER\"}, {\"name\": \"ENGINE_PASSWORD\", \"value\": \"$ENGINE_PASSWORD\"}]}]}}}}"
-          sleep 1
-          wait_for_pods_ready 60
-          sleep 2
+          kubectl rollout status deployment/test-gams-miro-server-auth --timeout=60s
+          # terminating pods still report phase Running
+          kubectl wait --for=delete $OLD_AUTH_PODS --timeout=90s
           kubectl get pods
           POD_NAME=$(kubectl get pods -l app=test-gams-miro-server-auth --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}')
           kubectl exec $POD_NAME -- env COVERAGE_FILE=/tmp/.coverage pytest tests/ -o cache_dir=/tmp/.pytest_cache \

@@ -19,14 +19,14 @@ spec:
     - host: {{ tpl .Values.ingress.hostname $ | quote }}
       http:
         paths:
-          - path: {{ .Values.global.rootPath }}
+          - path: {{ .Values.rootPath }}
             pathType: Prefix
             backend:
               service:
                 name: {{ include "common.names.fullname" . }}-proxy
                 port:
                   number: 8080
-          - path: {{ .Values.global.rootPath | trimSuffix "/" }}/api
+          - path: {{ .Values.rootPath | trimSuffix "/" }}/api
             pathType: Prefix
             backend:
               service:

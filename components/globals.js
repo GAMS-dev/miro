@@ -1,6 +1,6 @@
 const apiVersion = 1;
-const miroVersion = '2.12.0';
-const miroRelease = 'Jun 13 2025';
-const libVersion = '2.6';
+const miroVersion = '2.13.9999';
+const miroRelease = 'Jun 30 2026';
+const libVersion = '2.13';
 
 export { apiVersion, miroVersion, miroRelease, libVersion };

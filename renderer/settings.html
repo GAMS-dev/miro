@@ -39,7 +39,7 @@
         </div>
       </div>
     </header>
-    <div class="container">
+    <div class="container" style="max-width: 1000px">
       <div class="settings-body" style="margin: 20px 0">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item">
@@ -76,6 +76,18 @@
               aria-controls="engine"
               aria-selected="true"
               >GAMS Engine</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              id="ai-tab"
+              data-toggle="tab"
+              href="#aiAssistant"
+              role="tab"
+              aria-controls="aiAssistant"
+              aria-selected="true"
+              >Mira</a
             >
           </li>
           <li class="nav-item">
@@ -136,6 +148,7 @@
                   <option>English</option>
                   <option>Deutsch</option>
                   <option>中文</option>
+                  <option>Español</option>
                 </select>
                 <small
                   id="languageReset"
@@ -230,7 +243,9 @@
             aria-labelledby="paths-tab"
           >
             <div class="setting-wrapper">
-              <p id="pathMiroapp" class="settings-label">MIRO app path</p>
+              <p id="pathMiroapp" class="settings-label">
+                MIRO workspace path
+              </p>
               <div class="custom-file settings-item">
                 <div
                   id="btPathSelect_configpath"
@@ -240,7 +255,7 @@
                   id="pathMiroappSelect"
                   class="custom-file-label dbpath"
                   for="btPathSelect_configpath"
-                  >Select MIRO app path</label
+                  >Select MIRO workspace path</label
                 >
                 <small
                   id="resetPathMiroapp"
@@ -523,44 +538,463 @@
           </div>
           <div
             class="tab-pane fade"
+            id="aiAssistant"
+            role="tabpanel"
+            aria-labelledby="ai-tab"
+          >
+            <div class="setting-wrapper">
+              <label
+                id="enableAiAssistantLabel"
+                class="settings-label"
+                for="enableAiAssistant"
+                style="margin: 0"
+                >Enable Mira, the AI assistant?</label
+              >
+              <div class="settings-item settings-checkbox">
+                <label class="cb-label" for="enableAiAssistant"></label>
+                <div>
+                  <label class="checkbox-material">
+                    <div class="checkbox">
+                      <label>
+                        <input id="enableAiAssistant" type="checkbox" />
+                        <span></span>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+                <small
+                  id="enableAiAssistantReset"
+                  class="form-text btn-reset-nonpath settings-reset reset-db-path"
+                  style="display: none; margin-top: -10px; text-align: right"
+                  data-key="enableAiAssistant"
+                  >Reset to default</small
+                >
+              </div>
+            </div>
+            <div id="aiAssistantForm" style="display: none">
+              <div
+                class="setting-wrapper"
+                style="border-bottom: none; padding-bottom: 0"
+              >
+                <p class="small" id="aiAssistantInfo">
+                  Enter your API keys to enable various AI models for Mira, the
+                  GAMS MIRO AI assistant. Keys are securely verified
+                  automatically when you finish typing and click outside the
+                  field.
+                </p>
+              </div>
+              <div class="setting-wrapper">
+                <label
+                  id="aiProviderSelectLabel"
+                  class="settings-label"
+                  for="aiProviderSelect"
+                  style="margin: 0"
+                  >AI provider</label
+                >
+                <div class="settings-item">
+                  <select
+                    id="aiProviderSelect"
+                    class="miro-launcher-input form-control"
+                    style="width: 100%"
+                  >
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="google">Google Gemini</option>
+                    <option value="azure">Microsoft Foundry</option>
+                    <option value="bedrock">Amazon Bedrock</option>
+                    <option value="custom" class="ai-custom-option">
+                      Custom (OpenAI/Anthropic compatible)
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="openai"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyOpenAiLabel"
+                    for="keyOpenAi"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    OpenAI
+                  </label>
+                  <span
+                    id="statusOpenAi"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyOpenAi"
+                      class="miro-launcher-input form-control ai-key-input"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="sk-proj-..."
+                    />
+                    <small
+                      id="keyOpenAiHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://platform.openai.com/api-keys"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="google"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyGoogleLabel"
+                    for="keyGoogle"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Google Gemini
+                  </label>
+                  <span
+                    id="statusGoogle"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyGoogle"
+                      class="miro-launcher-input form-control ai-key-input"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="AIzaSy..."
+                    />
+                    <small
+                      id="keyGoogleHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://aistudio.google.com/app/apikey"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper ai-provider-panel"
+                data-ai-provider="anthropic"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyAnthropicLabel"
+                    for="keyAnthropic"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Anthropic
+                  </label>
+                  <span
+                    id="statusAnthropic"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="keyAnthropic"
+                      class="miro-launcher-input form-control ai-key-input"
+                      style="width: 100%"
+                      type="password"
+                      placeholder="sk-ant-..."
+                    />
+                    <small
+                      id="keyAnthropicHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://console.anthropic.com/settings/keys"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="azure"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyAzureLabel"
+                    for="azureEndpoint"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Microsoft Foundry
+                  </label>
+                  <span
+                    id="statusAzure"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="azureEndpoint"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="https://&lt;resource&gt;.services.ai.azure.com"
+                    />
+                    <select
+                      id="azureAuthMode"
+                      class="miro-launcher-input form-control ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                    >
+                      <option value="userSignIn" class="ai-azure-auth-user">
+                        Sign in with Microsoft (recommended)
+                      </option>
+                      <option value="apiKey" class="ai-azure-auth-key">
+                        API key
+                      </option>
+                    </select>
+                    <input
+                      id="keyAzure"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="API key"
+                    />
+                    <input
+                      id="azureTenantId"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input ai-azure-entra"
+                      style="width: 100%; margin-top: 5px; display: none"
+                      type="text"
+                      placeholder="Directory (tenant) ID"
+                    />
+                    <input
+                      id="azureClientId"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input ai-azure-entra"
+                      style="width: 100%; margin-top: 5px; display: none"
+                      type="text"
+                      placeholder="Application (client) ID"
+                    />
+                    <div
+                      id="azureSignInRow"
+                      class="ai-azure-user"
+                      style="width: 100%; margin-top: 5px; display: none"
+                    >
+                      <button
+                        id="azureSignInButton"
+                        type="button"
+                        class="btn btn-secondary btn-sm ai-azure-sign-in"
+                      >
+                        Sign in with Microsoft
+                      </button>
+                      <button
+                        id="azureSignOutButton"
+                        type="button"
+                        class="btn btn-link btn-sm ai-azure-sign-out"
+                        style="display: none"
+                      >
+                        Sign out
+                      </button>
+                      <small id="azureSignInStatus" class="form-text"></small>
+                    </div>
+                    <textarea
+                      id="azureDeployments"
+                      class="miro-launcher-input form-control ai-key-input ai-azure-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="gpt4o-prod"
+                    ></textarea>
+                    <small
+                      id="keyAzureHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-custom-provider-deployments-info"
+                        >One deployment per line, optionally as "Label =
+                        deployment-name".</span
+                      >
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="bedrock"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyBedrockLabel"
+                    for="bedrockRegion"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Amazon Bedrock
+                  </label>
+                  <span
+                    id="statusBedrock"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="bedrockRegion"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="us-east-1"
+                    />
+                    <input
+                      id="keyBedrock"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="ABSK..."
+                    />
+                    <textarea
+                      id="bedrockDeployments"
+                      class="miro-launcher-input form-control ai-key-input ai-bedrock-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="global.anthropic.claude-haiku-5-5"
+                    ></textarea>
+                    <small
+                      id="keyBedrockHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-bedrock-models-info"
+                        >One model ID or inference profile per line, optionally
+                        as "Label = model-id".</span
+                      >
+                      <span class="ai-no-key-info">Don't have a key?</span>
+                      <a
+                        class="ai-no-key-link"
+                        href="https://console.aws.amazon.com/bedrock/home#/api-keys"
+                        >Get one here</a
+                      >.
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="setting-wrapper setting-wrapper--stacked ai-provider-panel"
+                data-ai-provider="custom"
+              >
+                <div class="settings-label">
+                  <label
+                    id="keyCustomLabel"
+                    class="ai-custom-option"
+                    for="customEndpoint"
+                    style="display: block; margin-bottom: 4px"
+                  >
+                    Custom (OpenAI/Anthropic compatible)
+                  </label>
+                  <span
+                    id="statusCustom"
+                    class="badge badge-secondary ai-key-status"
+                    >Not Configured</span
+                  >
+                </div>
+                <div class="settings-item">
+                  <div class="input-group has-validation">
+                    <input
+                      id="customEndpoint"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%"
+                      type="text"
+                      placeholder="https://gateway.example.com/v1 (http only for localhost)"
+                    />
+                    <select
+                      id="customApiFormat"
+                      class="miro-launcher-input form-control ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                    >
+                      <option value="chatCompletions">
+                        OpenAI Chat Completions API
+                      </option>
+                      <option value="responses">OpenAI Responses API</option>
+                      <option value="anthropicMessages">
+                        Anthropic Messages API
+                      </option>
+                    </select>
+                    <input
+                      id="keyCustom"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                      type="password"
+                      placeholder="Bearer token (optional)"
+                    />
+                    <textarea
+                      id="customModels"
+                      class="miro-launcher-input form-control ai-key-input ai-custom-input"
+                      style="width: 100%; margin-top: 5px"
+                      rows="3"
+                      placeholder="llama-3.3-70b"
+                    ></textarea>
+                    <small
+                      id="keyCustomHelp"
+                      class="form-text"
+                      style="margin-top: 5px"
+                    >
+                      <span class="ai-custom-models-info"
+                        >One model per line, optionally as "Label =
+                        model-id".</span
+                      >
+                      <span class="d-block" style="margin-top: 3px">
+                        <i
+                          class="fas fa-exclamation-triangle text-warning"
+                        ></i>
+                        <span class="ai-custom-tool-warning"
+                          >Only models that support tool calling (function
+                          calling) work with Mira.</span
+                        >
+                      </span>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="tab-pane fade"
             id="env"
             role="tabpanel"
             aria-labelledby="env-tab"
           >
-            <div class="setting-wrapper env-button-wrapper btn-group">
-              <button
-                id="btEnvImport"
-                class="btn btn-sm btn-outline-secondary"
-                type="button"
-              >
-                Import
-              </button>
-              <button
-                id="btEnvExport"
-                class="btn btn-sm btn-outline-secondary"
-                type="button"
-              >
-                Export
-              </button>
+            <div class="env-intro">
+              <p id="envInfo" class="env-info">
+                Environment variables are set for every MIRO app you launch. A
+                <kbd>PATH</kbd> entry is prepended to the system PATH.
+              </p>
               <button
                 id="btEnvReset"
                 class="btn btn-sm btn-outline-danger"
                 type="button"
               >
-                Reset
+                Remove all
               </button>
             </div>
-            <div id="envTableWrapper" class="setting-wrapper">
-              <table class="table table-sm table-borderless">
-                <thead>
-                  <tr>
-                    <th id="miroEnvHdrVar" scope="col">Variable</th>
-                    <th id="miroEnvHdrVal" scope="col">Value</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyMiroEnv"></tbody>
-              </table>
-            </div>
+            <div id="envEditor"></div>
           </div>
           <div class="settings-footer">
             <a id="helpLink" class="help-footer" href="#">

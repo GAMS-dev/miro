@@ -24,15 +24,6 @@ InputWidget <- R6::R6Class(
     setData = function(data) {
       stop_custom("error_not_implemented", "setData method not implemented")
     },
-    finalize = function() {
-      if (is.list(private$changeObs)) {
-        lapply(private$changeObs, function(obs) {
-          obs$destroy()
-        })
-      } else {
-        private$changeObs$destroy()
-      }
-    },
     reset = function() {
       private$isInitialized <- FALSE
       self$setData(private$config$defaultValue)
@@ -54,6 +45,15 @@ InputWidget <- R6::R6Class(
     isInitialized = FALSE,
     observeChanges = function() {
       stop_custom("error_not_implemented", "observeChanges method not implemented")
+    },
+    finalize = function() {
+      if (is.list(private$changeObs)) {
+        lapply(private$changeObs, function(obs) {
+          obs$destroy()
+        })
+      } else {
+        private$changeObs$destroy()
+      }
     }
   )
 )
@@ -295,6 +295,8 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
           }
           colHeaders <- dataTmp$colHeaders
           dataTmp <- dataTmp$data
+          isPivotHeader <- seq_along(colHeaders) > length(private$staticColHeaders)
+          colHeaders[isPivotHeader] <- htmltools::htmlEscape(colHeaders[isPivotHeader], attribute = TRUE)
         } else {
           dataTmp <- isolate(private$data())
           colHeaders <- private$staticColHeaders
@@ -465,6 +467,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
                 if ( newHdr == null || newHdr === '') {
                 return false;
                 }
+                newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
                 let i = 1;
                 while ( currentHeaders.find(function (el) {
                 return el === newHdr;
@@ -509,6 +512,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
                 if ( newHdr == null || newHdr === '' ) {
                 return false;
                 }
+                newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
                 let i = 1;
                 while ( currentHeaders.find(function (el) {
                 return el === newHdr;
@@ -559,6 +563,7 @@ HandsonTableWidget <- R6::R6Class("HandsonTableWidget",
             if ( newHdr == null || newHdr === '' ) {
             return false;
             }
+            newHdr = newHdr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;').replace(/\\r/g, '&#13;').replace(/\\n/g, '&#10;');
             if ( newHdr === currentHeaders[ind] ) {
             return true;
             }
@@ -1506,9 +1511,7 @@ DropdownWidget <- R6::R6Class("DropdownWidget",
             private$ignoreUpdate <- 0L
             currentValue <- newChoices[[1L]]
           }
-          if (identical(config$activateModules$hcube, TRUE)) {
-            private$currentChoices <- newChoices
-          }
+          private$currentChoices <- newChoices
           updateSelectInput(private$session,
             private$config$htmlSelector,
             choices = newChoices,

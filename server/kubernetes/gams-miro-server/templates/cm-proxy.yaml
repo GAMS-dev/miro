@@ -3,6 +3,12 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- $labelsDict := include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | fromYaml }}
+{{- $labelsList := list }}
+{{- range $k, $v := $labelsDict }}
+  {{- $labelsList = append $labelsList (dict "key" $k "value" $v) }}
+{{- end }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,6 +21,11 @@ metadata:
 data:
   application.yml: |-
     proxy:
+      {{- if .Values.proxy.config.persistentSessionStore.host }}
+      stop-proxies-on-shutdown: false
+      store-mode: Redis
+      realm-id: {{ .Values.proxy.config.persistentSessionStore.namespace | default .Release.Namespace | quote }}
+      {{- end }}
       title: {{ .Values.proxy.config.title | quote }}
       theme: {{ .Values.proxy.config.colorTheme | quote }}
       template-path: ./templates/2col
@@ -30,6 +41,7 @@ data:
       same-site-cookie: {{ .Values.proxy.config.security.sameSiteCookie }}
       admin-groups: admins
       container-backend: kubernetes
+      usage-stats-micrometer-prefix: miroserver
       container-wait-time: {{ .Values.proxy.config.containerWaitTimeSeconds }}000
       default-proxy-max-lifetime: {{ .Values.proxy.config.proxyMaxLifetimeMinutes | default -1 }}
       max-upload-size: {{ .Values.proxy.config.maxUploadSizeMB }}
@@ -54,21 +66,26 @@ data:
         jwks-url: {{ .Values.proxy.config.openid.jwksUrl | quote }}
         logout-url: {{ .Values.proxy.config.openid.logoutUrl | quote }}
         client-id: {{ .Values.proxy.config.openid.clientId | quote }}
-        client-secret: {{ .Values.proxy.config.openid.clientSecret | quote }}
         with-pkce: {{ .Values.proxy.config.openid.withPKCE }}
+        scopes: {{ .Values.proxy.config.openid.scopes | quote }}
       database:
+        {{- if .Values.db.externalHost }}
+        host: {{ .Values.db.externalHost | quote }}
+        {{- else }}
         host: {{ include "common.names.fullname" . }}-db
-        port: 5432
+        {{- end }}
+        port: {{ .Values.db.port | default 5432 }}
         name: {{ .Values.db.name | quote }}
         username: {{ .Values.db.user | quote }}
       engine:
         host: {{ .Values.proxy.config.engine.apiUrl | quote }}
         ns: {{ .Values.proxy.config.engine.namespace | quote }}
         anonymous-user: {{ .Values.proxy.config.engine.anonymousUser | quote }}
+        anonymous-admin-user: {{ .Values.proxy.config.engine.anonymousAdminUser | quote }}
       docker:
         container-network: ""
-        miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
-        admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        miro-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.miro.image.registry "repository" .Values.miro.image.repository "tag" (coalesce .Values.miro.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
+        admin-image-name: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.admin.image.registry "repository" .Values.admin.image.repository "tag" (coalesce .Values.admin.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
       kubernetes:
         internal-networking: true
         {{- if .Values.global.imagePullSecrets }}
@@ -118,11 +135,12 @@ data:
             value:
               {{- include "common.tplvalues.render" (dict "value" .Values.miro.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
+          {{- if $labelsList }}
+          {{- include "gams-miro-server.v1.renderLabelsAsPatches" $labelsList | nindent 10 }}
+          {{- end }}
           - op: add
-            path: /metadata/labels
-            value:
-              {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-ui"
+            path: /metadata/labels/miro.gams.com~1app-name
+            value: "{{ include "common.names.fullname" . }}-ui"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -153,6 +171,9 @@ data:
                 drop: ["ALL"]
               privileged: false
               readOnlyRootFilesystem: false
+          {{- end }}
+          {{- with .Values.miro.podPatches }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $) | nindent 10 }}
           {{- end }}
         global-pod-patches-admin: |
           - op: add
@@ -195,11 +216,12 @@ data:
             value:
               {{- include "common.tplvalues.render" (dict "value" .Values.admin.podAnnotations "context" $) | nindent 14 }}
           {{- end }}
+          {{- if $labelsList }}
+          {{- include "gams-miro-server.v1.renderLabelsAsPatches" $labelsList | nindent 10 }}
+          {{- end }}
           - op: add
-            path: /metadata/labels
-            value:
-              {{- include "common.labels.standard" ( dict "customLabels" .Values.global.commonLabels "context" $ ) | nindent 14 }}
-              miro.gams.com/app-name: "{{ include "common.names.fullname" . }}-admin"
+            path: /metadata/labels/miro.gams.com~1app-name
+            value: "{{ include "common.names.fullname" . }}-admin"
           {{- if .Values.global.nodeSelector }}
           - op: add
             path: /spec/nodeSelector
@@ -231,9 +253,28 @@ data:
               privileged: false
               readOnlyRootFilesystem: false
           {{- end }}
+          {{- with .Values.admin.podPatches }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $) | nindent 10 }}
+          {{- end }}
 
     spring:
       application.name: {{ .Values.proxy.config.title | quote }}
+      {{- if .Values.proxy.config.persistentSessionStore.host }}
+      session:
+        store-type: redis
+      {{- if and .Values.proxy.config.persistentSessionStore.host .Values.proxy.config.persistentSessionStore.disableConfigureAction }}
+        redis:
+          configure-action: none
+      {{- end }}
+      data:
+        redis:
+          host: {{ .Values.proxy.config.persistentSessionStore.host }}
+          port: {{ required "A valid Redis port is required" .Values.proxy.config.persistentSessionStore.port }}
+          username: {{ required "A valid Redis username is required" .Values.proxy.config.persistentSessionStore.user }}
+          ssl:
+            enabled: {{ .Values.proxy.config.persistentSessionStore.sslEnabled }}
+          namespace: {{ .Values.proxy.config.persistentSessionStore.namespace | default .Release.Namespace | quote }}
+      {{- end }}
 
     server:
       frame-options: {{ .Values.proxy.config.security.xFrameOptionsHeader }}
@@ -241,7 +282,7 @@ data:
       forward-headers-strategy: native
       servlet:
         session.timeout: 21600
-        context-path: {{ .Values.global.rootPath | quote }}
+        context-path: {{ .Values.rootPath | quote }}
 
     {{- if .Values.proxy.config.metrics.enabled }}
     management:
@@ -250,7 +291,7 @@ data:
           export:
             enabled: true
     {{- end }}
-{{- if or .Values.proxy.config.logo.enabled .Values.proxy.config.favicon.enabled .Values.proxy.config.customCSS.enabled }}
+{{- if or .Values.proxy.config.logo .Values.proxy.config.favicon (eq .Values.proxy.config.colorTheme "custom") }}
 ---
 apiVersion: v1
 kind: Secret
@@ -263,13 +304,5 @@ metadata:
   {{- end }}
 type: Opaque
 data:
-  {{- if .Values.proxy.config.logo.enabled }}
-  logo.png: {{ .Values.proxy.config.logo.base64 | default ( .Files.Get .Values.proxy.config.logo.path | b64enc ) }}
-  {{- end }}
-  {{- if .Values.proxy.config.favicon.enabled }}
-  favicon.ico: {{ .Values.proxy.config.favicon.base64 | default ( .Files.Get .Values.proxy.config.favicon.path | b64enc ) }}
-  {{- end }}
-  {{- if .Values.proxy.config.customCSS.enabled }}
-  custom.css: {{ .Values.proxy.config.customCSS.base64 | default ( .Files.Get .Values.proxy.config.customCSS.path | b64enc ) }}
-  {{- end }}
+{{ include "gams-miro-server.v1.customFiles" . | indent 2 }}
 {{- end }}

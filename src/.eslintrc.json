@@ -4,7 +4,8 @@
     "browser": true
   },
   "rules": {
-    "func-names": ["error", "never"]
+    "func-names": ["error", "never"],
+    "no-param-reassign": ["error", { "props": false }]
   },
   "extends": ["airbnb-base"],
   "root": true,

@@ -193,7 +193,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btNewView
                   )
                 ),
-                title = lang$renderers$miroPivot$btNewView,
+                `data-tooltip` = lang$renderers$miroPivot$btNewView, `aria-label` = lang$renderers$miroPivot$btNewView,
                 class = "btn-custom pivot-btn-custom"
               ),
               actionButton(ns("showSettings"),
@@ -204,13 +204,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btShowSettings
                   )
                 ),
-                title = lang$renderers$miroPivot$btShowSettings,
+                `data-tooltip` = lang$renderers$miroPivot$btShowSettings, `aria-label` = lang$renderers$miroPivot$btShowSettings,
                 class = "btn-custom pivot-btn-custom"
               ),
               tags$div(
                 class = "btn-group pivot-btn-custom",
                 tags$button(
                   class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                  `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
                   type = "button",
                   `data-toggle` = "dropdown",
                   `aria-haspopup` = "true",
@@ -266,7 +267,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                     lang$renderers$miroPivot$btHidePivotControlsShort
                   )
                 ),
-                title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
+                `data-tooltip` = lang$renderers$miroPivot$btHidePivotControls, `aria-label` = lang$renderers$miroPivot$btHidePivotControls, role = "button", `data-id` = ns("")
               )
             ),
             tags$div(
@@ -299,13 +300,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                   lang$renderers$miroPivot$btShowSettings
                 )
               ),
-              title = lang$renderers$miroPivot$btShowSettings,
+              `data-tooltip` = lang$renderers$miroPivot$btShowSettings, `aria-label` = lang$renderers$miroPivot$btShowSettings,
               class = "btn-custom pivot-btn-custom"
             ),
             tags$div(
               class = "btn-group pivot-btn-custom",
               tags$button(
                 class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+                `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
                 type = "button",
                 `data-toggle` = "dropdown",
                 `aria-haspopup` = "true",
@@ -361,7 +363,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
                   lang$renderers$miroPivot$btHidePivotControlsShort
                 )
               ),
-              title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns("")
+              `data-tooltip` = lang$renderers$miroPivot$btHidePivotControls, `aria-label` = lang$renderers$miroPivot$btHidePivotControls, role = "button", `data-id` = ns("")
             )
           )
         }
@@ -373,6 +375,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
           class = "btn-group pivot-btn-custom",
           tags$button(
             class = "btn btn-default btn-custom dropdown-toggle pivot-dropdown-button",
+            `data-tooltip` = lang$renderers$miroPivot$btDownload, `aria-label` = lang$renderers$miroPivot$btDownload,
             type = "button",
             `data-toggle` = "dropdown",
             `aria-haspopup` = "true",
@@ -428,7 +431,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
               lang$renderers$miroPivot$btShowPivotControlsShort
             )
           ),
-          title = lang$renderers$miroPivot$btShowPivotControls, `data-id` = ns("")
+          `data-tooltip` = lang$renderers$miroPivot$btShowPivotControls, `aria-label` = lang$renderers$miroPivot$btShowPivotControls, role = "button", `data-id` = ns("")
         )
       ),
       tags$div(
@@ -702,7 +705,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL) {
   )
 }
 
-renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL, views = NULL) {
+renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecision = 2L, numericalTolerance = 1e-6, rendererEnv = NULL, views = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -721,6 +724,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       initRenderer <- TRUE
       isScalarTable <- FALSE
       resetFilters <- isTRUE(options$resetOnInit)
+
+      pivotTruncation <- modifyList(
+        list(
+          maxCategories = 500L,
+          maxTimeseriesPoints = 20000L,
+          maxPieSlices = 40L,
+          maxSeries = 40L,
+          maxTableColumns = 300L
+        ),
+        if (length(options$pivotTruncation)) options$pivotTruncation else list()
+      )
 
       SERIES_DEFAULT_COLOR <- "#666"
 
@@ -772,6 +786,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       singleDropdown <- reactiveVal(
         if (length(options$singleDropdown)) options$singleDropdown else NULL
       )
+      decimals <- reactiveVal(
+        if (length(options$decimals)) options$decimals else roundPrecision
+      )
       tableSummarySettings <- reactiveVal(list(
         rowEnabled = identical(options$tableSummarySettings$rowEnabled, TRUE),
         rowSummaryFunction = if (length(options$tableSummarySettings$rowSummaryFunction)) {
@@ -793,6 +810,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (sum(numericCols) > 1L) {
         setIndexAliases[length(setIndices)] <- "Header"
       }
+      baselineScenName <- options[["_baselineScenName"]]
+      getBaselineRecordChoices <- function(domain) {
+        recordChoices <- as.character(unique(data[[domain]]))
+        if (identical(domain, "_scenName") && length(baselineScenName)) {
+          recordChoices <- c(
+            setNames(baselineScenPlaceholder, lang$renderers$miroPivot$settings$baselineComparison$baselineScen),
+            recordChoices
+          )
+        }
+        return(recordChoices)
+      }
       baselineComparisonConfigDefault <- list(
         enabled = FALSE,
         domainChoices = setNames(setIndices, setIndexAliases),
@@ -810,7 +838,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         baselineComparisonConfigDefault$enabled <- TRUE
         baselineComparisonConfigDefault$metricsSelected <- options$baselineComparison$metrics[options$baselineComparison$metrics %in% baselineComparisonConfigDefault$metricsChoices]
         baselineComparisonConfigDefault$domainSelected <- options$baselineComparison$domain
-        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        baselineComparisonConfigDefault$recordChoices <- getBaselineRecordChoices(baselineComparisonConfigDefault$domainSelected)
         if (options$baselineComparison$record %in% baselineComparisonConfigDefault$recordChoices) {
           baselineComparisonConfigDefault$recordSelected <- options$baselineComparison$record
         } else {
@@ -819,7 +847,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       } else {
         baselineComparisonConfigDefault$metricsSelected <- baselineComparisonConfigDefault$metricsChoices[1]
         baselineComparisonConfigDefault$domainSelected <- baselineComparisonConfigDefault$domainChoices[1]
-        baselineComparisonConfigDefault$recordChoices <- as.character(unique(data[[baselineComparisonConfigDefault$domainSelected]]))
+        baselineComparisonConfigDefault$recordChoices <- getBaselineRecordChoices(baselineComparisonConfigDefault$domainSelected)
         baselineComparisonConfigDefault$recordSelected <- baselineComparisonConfigDefault$recordChoices[1]
       }
       baselineComparisonConfig <- reactiveVal(baselineComparisonConfigDefault)
@@ -901,28 +929,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if (length(options$customChartColors)) {
         customChartColors <- options$customChartColors
       } else {
-        customChartColors <- c(
-          "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
-          "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
-          "#cab2d6", "#6a3d9a", "#ffff99", "#b15928",
-          "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7",
-          "#e2546b", "#66101F", "#E0ABD7", "#c45ab3",
-          "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70",
-          "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42",
-          "#50caf3", "#086788", "#eee49d", "#E0CA3C",
-          "#dbcac7", "#BA9790", "#f69e84", "#EB4511",
-          "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a",
-          "#8dadd0", "#38618c", "#fcebea", "#fad8d6",
-          "#a6b474", "#373d20", "#a248ce", "#210b2c",
-          "#f37ea9", "#d81159", "#68f7f7", "#08bdbd",
-          "#98feb1", "#35ff69", "#d27193", "#6d213c",
-          "#edfab1", "#dcf763", "#feb46f", "#e06c00",
-          "#f3ebaa", "#e9d758", "#c0c7c7", "#829191",
-          "#f3cac5", "#E8998D", "#c7dac9", "#91b696",
-          "#BE99A4", "#714955", "#7c7ccf", "#2a2a72",
-          "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c",
-          "#df7192", "#8b1e3f", "#95D86B", "#3E721D"
-        )
+        customChartColors <- defaultChartColors
       }
 
       if (length(options$domainFilter$domains)) {
@@ -992,6 +999,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         } else {
           isolate(singleDropdown(NULL))
         }
+        if (length(viewOptions[["decimals"]]) &&
+          !is.na(viewOptions[["decimals"]])) {
+          isolate(decimals(viewOptions[["decimals"]]))
+        } else {
+          isolate(decimals(roundPrecision))
+        }
         newBaselineCompConfig <- isolate(baselineComparisonConfig())
         if (is.list(viewOptions[["baselineComparison"]]) &&
           identical(length(viewOptions[["baselineComparison"]][["domain"]]), 1L) &&
@@ -999,7 +1012,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           length(viewOptions[["baselineComparison"]][["metrics"]]) >= 1L &&
           length(viewOptions[["baselineComparison"]][["metrics"]]) <= 2L &&
           all(viewOptions[["baselineComparison"]][["metrics"]] %in% newBaselineCompConfig$metricsChoices)) {
-          recordChoicesTmp <- as.character(unique(data[[viewOptions[["baselineComparison"]][["domain"]]]]))
+          recordChoicesTmp <- getBaselineRecordChoices(viewOptions[["baselineComparison"]][["domain"]])
           if (identical(length(viewOptions[["baselineComparison"]][["record"]]), 1L) &&
             viewOptions[["baselineComparison"]][["record"]] %in% recordChoicesTmp) {
             newBaselineCompConfig$enabled <- TRUE
@@ -1076,7 +1089,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             viewOptions$name,
             keepChildNodes = TRUE
           )
+          removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
+          addClassEl(session, paste0("#", ns("savedViews_"), htmlIdEnc(currentView$name)), "active")
         } else {
+          removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           setTextContent(session, paste0("#", ns("toggleViewButton")),
             lang$renderers$miroPivot$btLoadView,
             keepChildNodes = TRUE
@@ -1151,8 +1167,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       )
 
       if (!isFALSE(options$enablePersistentViews)) {
-        updateViewList <- function() {
-          removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE)
+        updateViewList <- function(immediate = FALSE) {
+          removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE, immediate = immediate)
+          removeUI(paste0("#", ns("savedViewsDD"), " .search-field-wrapper"), multiple = TRUE, immediate = immediate)
 
           localViewIds <- views$getIds(session, "local")
 
@@ -1177,11 +1194,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           insertUI(paste0("#", ns("savedViewsDD")),
             c(
               list(
-                tags$input(
-                  type = "text",
-                  placeholder = lang$renderers$dropdownFilter$placeholder,
-                  class = "form-control miro-dropdown-filter dropdown-item-wrapper",
-                  onkeyup = "Miro.filterMiroDropdown(this)"
+                tags$div(
+                  class = "search-field-wrapper",
+                  tags$input(
+                    type = "text",
+                    placeholder = lang$renderers$dropdownFilter$placeholder,
+                    class = "form-control miro-dropdown-filter dropdown-item-wrapper",
+                    onkeyup = "Miro.filterMiroDropdown(this)"
+                  )
                 ),
                 createBootstrapDropdownChoices(
                   list(
@@ -1193,14 +1213,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               ),
               viewChoices
             ),
-            where = "beforeEnd"
+            where = "beforeEnd",
+            immediate = immediate
           )
         }
         readonlyViews <- views$isReadonly(session)
         updateViewList()
+        saveViewSel <- paste0("#", ns("saveView"))
         if (readonlyViews) {
-          disableEl(session, paste0("#", ns("saveView")))
+          disableEl(session, saveViewSel)
+          setAttributes(
+            session, saveViewSel, "data-tooltip",
+            # pivot/custom comparison with baseline selection
+            if (grepl("^(tab_0_|cmpCustom_)", ns(""))) {
+              lang$renderers$miroPivot$btNewViewDisabledCompareTooltip
+            } else {
+              lang$renderers$miroPivot$btNewViewDisabledTooltip
+            }
+          )
         } else {
+          enableEl(session, saveViewSel)
+          setAttributes(session, saveViewSel, "data-tooltip", lang$renderers$miroPivot$btNewView)
           views$registerUpdateCallback(session, updateViewList)
         }
 
@@ -1213,6 +1246,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               "horizontalstackedbar"
             )) {
             moreOptions <- NULL
+            hideLegendInput <- tags$div(
+              class = "col-sm-6",
+              checkboxInput_MIRO(ns("hideLegend"),
+                label = lang$renderers$miroPivot$newView$hideLegend,
+                value = identical(viewOptions$chartOptions$hideLegend, TRUE)
+              )
+            )
             if (pivotRenderer %in% c(
               "bar", "stackedbar", "line", "scatter", "area", "stackedarea",
               "timeseries", "horizontalbar", "horizontalstackedbar"
@@ -1293,7 +1333,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                           }
                         )
                       }
-                    )
+                    ),
+                    tags$div(class = "row", hideLegendInput)
                   ),
                   tabPanel(
                     lang$renderers$miroPivot$newView$tabScales,
@@ -1530,7 +1571,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                         value = viewOptions$chartOptions$title
                       )
                     )
-                  )
+                  ),
+                  tags$div(class = "row", hideLegendInput)
                 ))
               )
             }
@@ -1544,7 +1586,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 if (colorLabel %in% colorNames) {
                   colorVal <- viewOptions$chartOptions$customChartColors[[colorLabel]]
                 } else {
-                  patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = colorLabel, USE.NAMES = FALSE))
+                  patternMatches <- which(vapply(colorNames, dashboardMatchSeriesLabel, logical(1L), label = colorLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
                     chosenIdx <- patternMatches[1]
                     colorVal <- viewOptions$chartOptions$customChartColors[[chosenIdx]][1]
@@ -1576,7 +1618,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   if (dashLabel %in% lineDashNames) {
                     dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[dashLabel]])
                   } else {
-                    patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = dashLabel, USE.NAMES = FALSE))
+                    patternMatches <- which(vapply(lineDashNames, dashboardMatchSeriesLabel, logical(1L), label = dashLabel, USE.NAMES = FALSE))
                     if (length(patternMatches) > 0) {
                       chosenIdx <- patternMatches[1]
                       dashPatternIn <- unlist(viewOptions$chartOptions$customLineDashPatterns[[chosenIdx]])
@@ -1622,12 +1664,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 )
               })
 
-              tagList(
-                lapply(seq(1, length(columns), by = 2), function(i) {
-                  rowColumns <- columns[i:min(i + 1, length(columns))]
-                  tags$div(class = "row", rowColumns)
-                })
-              )
+              if (length(columns) == 0) {
+                tagList()
+              } else {
+                tagList(
+                  lapply(seq(1L, length(columns), by = 2L), function(i) {
+                    rowColumns <- columns[i:min(i + 1L, length(columns))]
+                    tags$div(class = "row", rowColumns)
+                  })
+                )
+              }
             }
             customBorderWidthUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId) {
               seriesLabel <- miroPivotState$currentSeriesLabels[labelId]
@@ -1649,7 +1695,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     borderWidth <- bwCandidate
                   }
                 } else {
-                  patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = seriesLabel, USE.NAMES = FALSE))
+                  patternMatches <- which(vapply(borderWidthNames, dashboardMatchSeriesLabel, logical(1L), label = seriesLabel, USE.NAMES = FALSE))
                   if (length(patternMatches) > 0) {
                     chosenIdx <- patternMatches[1]
                     bwCandidate <- viewOptions$chartOptions$customBorderWidths[[chosenIdx]]
@@ -1850,9 +1896,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showAddViewDialog(isolate(input$pivotRenderer))
         })
-        deleteView <- function(viewId) {
+        deleteView <- function(viewId, immediate = FALSE) {
           views$remove(session, viewId)
-          updateViewList()
+          updateViewList(immediate)
         }
         addNewView <- function(viewName, overwrite = FALSE) {
           isolate({
@@ -1866,6 +1912,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newViewConfig$fixedColumns <- fixedColumns()
             newViewConfig$chartFontSize <- chartFontSize()
             newViewConfig$singleDropdown <- singleDropdown()
+            newViewConfig$decimals <- decimals()
             newViewConfig$tableSummarySettings <- tableSummarySettings()
             if (baselineComparisonConfig()$enabled) {
               newViewConfig$baselineComparison <- list(
@@ -2025,6 +2072,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 list(
                   inputId = "singleStack",
                   optionId = "singleStack"
+                ),
+                list(
+                  inputId = "hideLegend",
+                  optionId = "hideLegend"
                 )
               )) {
                 if (length(input[[advancedOption$inputId]])) {
@@ -2073,15 +2124,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (miroPivotState$editView &&
               !identical(viewName, currentView$name)) {
               # view was renamed
-              deleteView(currentView$name)
+              deleteView(currentView$name, immediate = TRUE)
             } else {
-              updateViewList()
+              updateViewList(immediate = TRUE)
             }
             if (length(viewName)) {
               setTextContent(session, paste0("#", ns("toggleViewButton")),
                 viewName,
                 keepChildNodes = TRUE
               )
+              removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
+              addClassEl(session, paste0("#", ns("savedViews_"), htmlIdEnc(viewName)), "active")
             }
             if (refreshRequired) {
               currentView <<- newViewConfig
@@ -2214,6 +2267,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     class = "col-sm-12",
                     checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$settings$cbHideEmptyCols,
                       value = hideEmptyCols()
+                    )
+                  )
+                ),
+                tags$div(
+                  class = "row",
+                  tags$div(
+                    class = "col-sm-12",
+                    numericInput(ns("decimals"),
+                      widgetTooltip(
+                        lang$renderers$miroPivot$settings$cbDecimals,
+                        lang$renderers$miroPivot$settings$cbDecimalsTooltip
+                      ),
+                      value = decimals(),
+                      min = -1,
+                      max = 12,
+                      step = 1
                     )
                   )
                 ),
@@ -2411,6 +2480,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if (!identical(singleDropdown(), newSingleDropdown)) {
             singleDropdown(newSingleDropdown)
           }
+          if (length(input$decimals) && !is.na(input$decimals)) {
+            newDecimals <- input$decimals
+          } else {
+            newDecimals <- NULL
+          }
+          decimals(newDecimals)
           tableSummarySettings(newTableSummarySettings)
           hideEmptyCols(identical(input$hideEmptyCols, TRUE))
           fixedColumns(identical(input$fixedColumns, TRUE))
@@ -2428,7 +2503,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               stop("Attempt to tamper with the app detected!", call. = FALSE)
             }
             newBaselineCompConfig$domainSelected <- input$baselineCompDomain
-            newBaselineCompConfig$recordChoices <- as.character(unique(data[[newBaselineCompConfig$domainSelected]]))
+            newBaselineCompConfig$recordChoices <- getBaselineRecordChoices(newBaselineCompConfig$domainSelected)
             if (!input$baselineCompRecord %in% newBaselineCompConfig$recordChoices) {
               flog.error("Selected baseline record: %s not in domain records. Attempt to tamper with app!", input$baselineCompRecord)
               stop("Attempt to tamper with the app detected!", call. = FALSE)
@@ -2482,6 +2557,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           filterIndexList <- isolate(input$filterIndexList)
           aggregationIndexList <- isolate(input$aggregationIndexList)
           colIndexList <- isolate(input$colIndexList)
+        }
+        if (any(duplicated(c(filterIndexList, aggregationIndexList, colIndexList)))) {
+          return()
         }
         invalidFilters <- NULL
         getFilterDropdowns <- function(filterIndex, optionId = "filter") {
@@ -2611,7 +2689,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if (sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
           length(input$rowIndexList) != length(setIndices) ||
-          any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))) {
+          any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE)) ||
+          any(duplicated(unlist(newFilters, use.names = FALSE)))) {
           # UI not initialised
           return()
         }
@@ -2688,7 +2767,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
       rendererEnv[[ns("baselineCompRecordObs")]] <- observe({
         req(input$enableBaselineComparison, input$baselineCompDomain %in% setIndices)
-        baselineRecordChoices <- unique(data[[input$baselineCompDomain]])
+        baselineRecordChoices <- getBaselineRecordChoices(input$baselineCompDomain)
         baselineRecordSelected <- baselineRecordChoices[1]
         currBaselineCompConfig <- isolate(baselineComparisonConfig())
         if (currBaselineCompConfig$enabled &&
@@ -2886,13 +2965,24 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
+          zeroTolerance <- numericalTolerance
+          if (identical(baselineCompConfig$domain, "_scenName") &&
+            identical(baselineCompConfig$record, baselineScenPlaceholder)) {
+            baselineCompConfig$record <- baselineScenName
+          }
+          dataTmp <- completeBaselineCompData(
+            dataTmp, baselineCompConfig$domain, options[["_scenNames"]],
+            if (length(aggIndexList)) aggregationFunction,
+            if (length(baselineCompConfig$filterIndex)) union(baselineCompConfig$filterVal, baselineCompConfig$record)
+          )
           baselineCompConfig$data <- dataTmp %>%
             filter(.data[[baselineCompConfig$domain]] == baselineCompConfig$record) %>%
             select(any_of(setdiff(
               c(rowIndexList, colIndexList, valueColName),
               baselineCompConfig$domain
             ))) %>%
-            rename(.baseline = value)
+            rename(.baseline = value) %>%
+            mutate(.baseline = if_else(abs(.baseline) < zeroTolerance, 0, .baseline))
           if (length(baselineCompConfig$filterIndex)) {
             dataTmp <- dataTmp %>%
               filter(.data[[baselineCompConfig$filterIndex]] %in% baselineCompConfig$filterVal)
@@ -3077,21 +3167,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         noSeries <- length(dataTmp) - rowHeaderLen
         noError <- TRUE
         if (identical(pivotRenderer, "timeseries")) {
-          if (nrow(dataTmp) > 2e4) {
-            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "20 000"))
-            dataTmp <- slice(dataTmp, 1:20000L)
+          if (nrow(dataTmp) > pivotTruncation$maxTimeseriesPoints) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxTimeseriesPoints, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxTimeseriesPoints))
             noError <- FALSE
           }
           dataTmp <- dataTmp[stri_order(dataTmp[[1]], numeric = TRUE), ]
+        } else if (pivotRenderer %in% c("pie", "doughnut")) {
+          if (nrow(dataTmp) > pivotTruncation$maxPieSlices) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxPieSlices, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxPieSlices))
+            noError <- FALSE
+          }
         } else {
-          if (nrow(dataTmp) > 500L) {
-            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
-            dataTmp <- slice(dataTmp, 1:500L)
+          if (nrow(dataTmp) > pivotTruncation$maxCategories) {
+            showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, format(pivotTruncation$maxCategories, big.mark = " ", scientific = FALSE)))
+            dataTmp <- slice(dataTmp, seq_len(pivotTruncation$maxCategories))
             noError <- FALSE
           }
         }
-        if (noSeries > 40L) {
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "40"))
+        if (noSeries > pivotTruncation$maxSeries) {
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, format(pivotTruncation$maxSeries, big.mark = " ", scientific = FALSE)))
           noError <- FALSE
         }
         setCssEl(
@@ -3144,10 +3240,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if (!length(labels)) {
           labels <- "value"
         }
-        miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(
-          noSeries + rowHeaderLen,
-          40L + rowHeaderLen
-        ))]
+
+        if (pivotRenderer %in% c("pie", "doughnut")) {
+          miroPivotState$currentSeriesLabels <<- labels
+        } else {
+          miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(
+            noSeries + rowHeaderLen,
+            pivotTruncation$maxSeries + rowHeaderLen
+          ))]
+        }
+
         if (miroPivotState$triggerEditViewDialog) {
           miroPivotState$triggerEditViewDialog <<- FALSE
           showAddViewDialog(pivotRenderer, viewOptions = currentView)
@@ -3168,7 +3270,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
         defaultPairs <- colorPairs(customChartColors)
         allLabels <- miroPivotState$currentSeriesLabels
-        numSeries <- length(allLabels)
+
+        if (!pivotRenderer %in% c("pie", "doughnut")) {
+          numSeries <- length(allLabels)
+        } else {
+          numSeries <- nrow(dataTmp) + 1
+        }
 
         colorList <- vector("list", numSeries)
         numDefaultPairs <- length(defaultPairs)
@@ -3194,7 +3301,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               colorList[[i]] <- currentView$chartOptions$customChartColors[[label]]
               next
             }
-            patternMatches <- which(vapply(colorNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+            patternMatches <- which(vapply(colorNames, dashboardMatchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
             if (length(patternMatches) > 0) {
               chosenIdx <- patternMatches[1]
               colorList[[i]] <- currentView$chartOptions$customChartColors[[chosenIdx]]
@@ -3380,12 +3487,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           groupElements <- unique(data[[currentView$chartOptions$groupDimension]])
         }
 
-        for (i in seq_len(min(noSeries, 40L))) {
+        for (i in seq_len(min(noSeries, pivotTruncation$maxSeries))) {
           label <- names(dataTmp)[rowHeaderLen + i]
           scaleID <- NULL
           if (length(currentView$chartOptions$y2axis$series)) {
             series <- currentView$chartOptions$y2axis$series
-            if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
+            if (any(vapply(series, dashboardMatchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
               if (pivotRenderer %in% c("horizontalbar", "horizontalstackedbar")) {
                 scaleID <- "x2"
               } else {
@@ -3401,7 +3508,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if (label %in% lineDashNames) {
               lineDash <- currentView$chartOptions$customLineDashPatterns[[label]]
             } else {
-              patternMatches <- which(vapply(lineDashNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+              patternMatches <- which(vapply(lineDashNames, dashboardMatchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[1]
                 lineDash <- currentView$chartOptions$customLineDashPatterns[[chosenIdx]]
@@ -3422,7 +3529,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 borderWidth <- borderWidthCandidate
               }
             } else {
-              patternMatches <- which(vapply(borderWidthNames, matchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
+              patternMatches <- which(vapply(borderWidthNames, dashboardMatchSeriesLabel, logical(1L), label = label, USE.NAMES = FALSE))
               if (length(patternMatches) > 0) {
                 chosenIdx <- patternMatches[1]
                 borderWidthCandidate <- currentView$chartOptions$customBorderWidths[[chosenIdx]]
@@ -3436,7 +3543,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
           stack <- NULL
           if (length(groupElements) && pivotRenderer %in% c("stackedbar", "horizontalstackedbar")) {
-            patternMatches <- which(vapply(groupElements, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
+            patternMatches <- which(vapply(groupElements, dashboardMatchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))
             if (length(patternMatches) == 0) {
               stack <- NULL
             } else {
@@ -3446,10 +3553,26 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             stack <- if (pivotRenderer %in% c("stackedarea", "stackedbar", "horizontalstackedbar")) "stack1" else NULL
           }
 
+          rawDecimals <- suppressWarnings(as.integer(decimals()))
+          decimals <- if (length(rawDecimals) == 1 && !is.na(rawDecimals)) {
+            if (rawDecimals < 0) {
+              NULL
+            } else {
+              rawDecimals
+            }
+          } else {
+            roundPrecision
+          }
+          if (is.null(decimals)) {
+            seriesData <- dataTmp[[rowHeaderLen + i]]
+          } else {
+            seriesData <- round(dataTmp[[rowHeaderLen + i]], digits = decimals)
+          }
+
           multiChartSeries <- FALSE
           if (length(currentView$chartOptions$multiChartSeries)) {
             series <- currentView$chartOptions$multiChartSeries
-            if (any(vapply(series, matchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
+            if (any(vapply(series, dashboardMatchSeriesLabel, logical(1L), label = label, exact = TRUE, USE.NAMES = FALSE))) {
               multiChartSeries <- TRUE
             }
           }
@@ -3468,7 +3591,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
             args <- list(
               chartJsObj,
-              dataTmp[[rowHeaderLen + i]],
+              seriesData,
               label = label,
               type = multiChartRenderer,
               showLine = multiChartRenderer %in% c("line", "area", "stackedarea", "timeseries"),
@@ -3513,7 +3636,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 
             args <- list(
               chartJsObj,
-              dataTmp[[rowHeaderLen + i]],
+              seriesData,
               label = label,
               fill = pivotRenderer %in% c("area", "stackedarea"),
               fillOpacity = fillOpacity,
@@ -3535,6 +3658,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
 
         chartJsObj <- chartJsObj %>% cjsLegend()
+        if (identical(currentView$chartOptions$hideLegend, TRUE)) {
+          chartJsObj$x$options$plugins$legend$display <- FALSE
+        }
 
         if (length(chartFontSize())) {
           chartFontSize <- isolate(as.numeric(chartFontSize()))
@@ -3563,6 +3689,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               keepChildNodes = TRUE
             )
             currentView[["_didRender_"]] <<- 2L
+            removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           }
         } else {
           currentView[["_didRender_"]] <<- 1L
@@ -3629,9 +3756,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               paste0("rgb(255,", ., ",", ., ")")
             }
         }
-        if (length(dataTmp) > 300) {
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
-          dataTmp <- dataTmp[, 1:300]
+        if (length(dataTmp) > pivotTruncation$maxTableColumns) {
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, format(pivotTruncation$maxTableColumns, big.mark = " ", scientific = FALSE)))
+          dataTmp <- dataTmp[, seq_len(pivotTruncation$maxTableColumns)]
         } else {
           hideEl(session, paste0("#", ns("errMsg")))
         }
@@ -3682,6 +3809,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           addClassEl(session, paste0("#", ns("container .hide-fixed-anchor")), "dt-hide-fixed")
         }
 
+        rawDecimals <- suppressWarnings(as.integer(decimals()))
+        decimals <- if (length(rawDecimals) == 1 && !is.na(rawDecimals)) {
+          if (rawDecimals < 0) {
+            NULL
+          } else {
+            rawDecimals
+          }
+        } else {
+          roundPrecision
+        }
         if (length(attr(dataTmp, "baselineComp"))) {
           tableSessionId <- stringi::stri_rand_strings(1, 10)[[1]]
           baselineCompRenderFn <- list(list(
@@ -3691,17 +3828,24 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 if (type !== 'display') {
   return data;
 }
-const pm=DTWidget.formatRound(data,", roundPrecision, ",3,',','.','0');",
+const pm=", if (!is.null(decimals)) paste0("DTWidget.formatRound(data,", as.character(decimals), ",3,',','.','0');") else "data;",
               if (length(attr(dataTmp, "baselineComp")$metricSuffix) > 1L) {
+                secondaryMetric <- if (!is.null(decimals)) {
+                  paste0(
+                    "DTWidget.formatRound(",
+                    toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],",
+                    decimals,
+                    ",3,',','.','0')"
+                  )
+                } else {
+                  paste0(toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset]")
+                }
                 paste0(
                   "
-const offset=(meta.row+meta.settings._iDisplayStart)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
-const secondaryMetric=DTWidget.formatRound(", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".secondary"]]), "[offset],", roundPrecision, ",3,',','.','0');
+const offset=(meta.settings.json.DT_rows_current[meta.row]-1)+(meta.col-", noRowHeaders, ")*", nrow(dataTmp), ";
+const secondaryMetric=", secondaryMetric, ";
 const refData=", toJSON(attr(dataTmp, "baselineComp")$secondaryData[[".primary"]]), "[offset];
-if (Math.abs(refData - data) > 1e-4 && window.alertPushed !== '", tableSessionId, "') {
-  window.alertPushed = '", tableSessionId, "';
-  Miro.modal('Something went wrong. Please dont trust the data! Also, please contact GAMS about this issue (id: 981273) via support@gams.com', 'OK');
-}
+Miro.evaluateBaselineCompData(refData, data, ", toJSString(ns("pivotTable")), ",", toJSString(tableSessionId), ");
 return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTmp, "baselineComp")$metricSuffix[[1]], "')+'</span>'+(secondaryMetric===''?'':' ('+secondaryMetric+'",
                   attr(dataTmp, "baselineComp")$metricSuffix[[2]], "'+')');}"
                 )
@@ -3760,16 +3904,21 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
         }
         if (tableSummarySettings()$colEnabled) {
           colSummarySettings <- list(caption = lang$renderers$miroPivot$aggregationFunctions[[tableSummarySettings()$colSummaryFunction]])
-          if (identical(tableSummarySettings()$colSummaryFunction, "count")) {
-            colSummarySettings$data <- round(colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
+          summaryData <- if (identical(tableSummarySettings()$colSummaryFunction, "count")) {
+            colSums(!is.na(dataTmp[vapply(dataTmp, is.numeric,
               logical(1L),
               USE.NAMES = FALSE
-            )])), digits = roundPrecision)
+            )]))
           } else {
-            colSummarySettings$data <- round(as.numeric(slice(summarise(dataTmp, across(
+            as.numeric(slice(summarise(dataTmp, across(
               where(is.numeric),
               \(x) match.fun(tableSummarySettings()$colSummaryFunction)(x, na.rm = TRUE)
-            )), 1L)), digits = roundPrecision)
+            )), 1L))
+          }
+          if (!is.null(decimals)) {
+            colSummarySettings$data <- round(summaryData, digits = decimals)
+          } else {
+            colSummarySettings$data <- summaryData
           }
         }
 
@@ -3818,9 +3967,9 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
             columnDefs = columnDefsTmp
           ), rownames = FALSE
         )
-        if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "baselineComp"))) {
+        if (noRowHeaders < length(dataTmp) && !length(attr(dataTmp, "baselineComp")) && !is.null(decimals)) {
           ret <- formatRound(ret, seq(noRowHeaders + 1, length(dataTmp)),
-            digits = roundPrecision
+            digits = decimals
           )
         }
         if (length(currentView$chartOptions)) {
@@ -3835,6 +3984,7 @@ return '<span class=\"miro-pivot-primary-data\">'+pm+(pm===''?'':'", attr(dataTm
               keepChildNodes = TRUE
             )
             currentView[["_didRender_"]] <<- 2L
+            removeClassEl(session, paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), "active")
           }
         } else {
           currentView[["_didRender_"]] <<- 1L

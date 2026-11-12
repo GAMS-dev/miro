@@ -134,12 +134,12 @@ HcubeResults <- R6Class("HcubeResults",
               sqlData(private$conn, metadataTable),
               row.names = FALSE
             ), "RETURNING _sid")
-            firstScenId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+            scenIds <- sort(as.integer(DBI::dbGetQuery(private$conn, query)[[1]]))
           } else {
             private$db$writeMetadata(metadataTable)
             query <- SQL("SELECT LAST_INSERT_ROWID();")
             lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
-            firstScenId <- lasInsertedRowId - numberScen + 1L
+            scenIds <- lasInsertedRowId - rev(seq_len(numberScen)) + 1L
           }
           progressResolution <- numberScen * (length(ioConfig$modelOut) +
             private$includeTrc + length(private$outputAttachments))
@@ -159,7 +159,7 @@ HcubeResults <- R6Class("HcubeResults",
             )
             private$db$exportScenDataset(
               bind_cols(
-                `_sid` = rep.int(firstScenId + scenIdx - 1L, nrow(hcScalarsTmp)),
+                `_sid` = rep.int(scenIds[scenIdx], nrow(hcScalarsTmp)),
                 hcScalarsTmp
               ),
               "_scalars",
@@ -172,7 +172,7 @@ HcubeResults <- R6Class("HcubeResults",
                   "_scenTrc.trc"
                 ))[1, ]
                 private$db$exportScenDataset(
-                  bind_cols(`_sid` = firstScenId + scenIdx - 1L, scenData),
+                  bind_cols(`_sid` = scenIds[scenIdx], scenData),
                   "_scenTrc",
                   isHcJobConfig = FALSE
                 )
@@ -220,7 +220,7 @@ HcubeResults <- R6Class("HcubeResults",
                 private$db$exportScenDataset(
                   bind_cols(
                     `_sid` = rep.int(
-                      firstScenId + scenIdx - 1L,
+                      scenIds[scenIdx],
                       nrow(scenData)
                     ),
                     scenData
@@ -246,7 +246,7 @@ HcubeResults <- R6Class("HcubeResults",
                 if (fileSize <= attachMaxFileSize) {
                   private$db$exportScenDataset(
                     bind_cols(
-                      `_sid` = firstScenId + scenIdx - 1L,
+                      `_sid` = scenIds[scenIdx],
                       tibble(
                         fileName = outputAttachment,
                         fileExt = tools::file_ext(outputAttachment),
@@ -278,7 +278,7 @@ HcubeResults <- R6Class("HcubeResults",
           if (numberScen > 0L) {
             private$db$exportScenDataset(
               tibble(
-                `_sid` = seq(firstScenId, firstScenId + numberScen - 1L),
+                `_sid` = scenIds,
                 hash = private$scenHashes
               ),
               "_scenHash",
@@ -289,16 +289,10 @@ HcubeResults <- R6Class("HcubeResults",
         error = function(e) {
           flog.error("Problems storing Hypercube job in database. Error message: %s", conditionMessage(e))
           private$db$deleteRows("_scenMeta",
-            subsetSids = seq(
-              firstScenId,
-              firstScenId + numberScen - 1L
-            )
+            subsetSids = scenIds
           )
           private$db$deleteRows("_scenAttach",
-            subsetSids = seq(
-              firstScenId,
-              firstScenId + numberScen - 1L
-            )
+            subsetSids = scenIds
           )
           stop_custom("error_db", "Could not commit database transaction.", call. = FALSE)
         }

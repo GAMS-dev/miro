@@ -22,22 +22,19 @@
 -->
 <!doctype html>
 <html
-  xmlns:th="//www.thymeleaf.org"
-  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  lang="en"
 >
   <head lang="en">
     <title th:text="${title}"></title>
-
-    <!-- Meta -->
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
     <link rel="shortcut icon" th:href="@{${resourcePrefix} + '/favicon'}" />
 
-    <link rel="stylesheet" media="screen" th:href="@{/css/default.css}" />
     <link
       rel="stylesheet"
       media="screen"
@@ -56,39 +53,20 @@
   </head>
 
   <body>
-    <div class="site-wrapper">
-      <!-- ******Header****** -->
-      <header class="sub-header text-center">
-        <div class="container">
-          <div class="branding">
-            <h1 class="logo">
-              <img
-                class="img-fluid"
-                th:src="@{${resourcePrefix} + ${logoPath}}"
-                alt="Logo"
-              />
-            </h1>
-          </div>
-          <!--//branding-->
-          <div class="tagline"></div>
-          <!--//tagline-->
+    <div class="text-center d-flex h-100 auth-page">
+      <main class="form-signin m-auto">
+        <img
+          class="auth-logo p-4 mb-4 rounded w-100"
+          th:src="@{${resourcePrefix} + ${logoPath}}"
+          alt="Logo"
+        />
+        <h1 class="h3 mb-3 fw-normal">
+          You have been logged out successfully!
+        </h1>
+        <div class="d-grid gap-2">
+          <a class="btn btn-lg btn-primary" th:href="@{/}">Login again</a>
         </div>
-        <!--//container-->
-      </header>
-      <!--//header-->
-
-      <section class="cards-section text-center">
-        <div class="container">
-          <h2 class="form-signin-heading">
-            You have been logged out successfully!
-          </h2>
-          <a class="btn btn-lg btn-primary btn-block" th:href="@{/}">
-            Login again
-          </a>
-        </div>
-        <!--//container-->
-      </section>
-      <!--//cards-section-->
+      </main>
     </div>
   </body>
 </html>

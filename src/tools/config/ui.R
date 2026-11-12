@@ -88,9 +88,12 @@ header_admin <- dashboardHeader(
           hred = "#",
           class = "action-button",
           onclick = paste0(
-            "Miro.confirmModalShow('About GAMS MIRO','",
-            aboutDialogText,
-            "', 'Cancel');"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = "About GAMS MIRO",
+              desc = aboutDialogText,
+              cancelTxt = "Cancel",
+              escapeDesc = FALSE
+            ), auto_unbox = TRUE), ")"
           ),
           lang$nav$header$help$about
         )
@@ -166,6 +169,52 @@ visibility:visible;
 white-space:pre-wrap;
 font-family: Menlo,Monaco,Consolas,Courier New,monospace;
 font-size: 12px;
+}
+body {
+  transition: padding-right 0.3s ease-in-out;
+}
+body.drawer-open {
+  padding-right: 450px;
+}
+.miro-ai-assistant-drawer {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100vh;
+  transition: right 0.3s ease-in-out;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+.miro-ai-assistant-drawer.open {
+  right: 0;
+}
+.miro-ai-assistant-drawer-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.miro-ai-assistant-drawer-header .btn {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  box-shadow: none;
+}
+.miro-ai-close-drawer-btn {
+  font-size: 1.3em;
+}
+#btMiroAiClearChat {
+  font-size: 1.1em;
+  opacity: 0.7;
+}
+.miro-ai-assistant-drawer-body {
+  padding: 15px;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }')))
     ),
     HTML('<!-- Creates modal dialog for confirm messages -->
@@ -565,6 +614,16 @@ font-size: 12px;
                       )
                     )
                   ),
+                  if (config$activateModules$aiAssistant) {
+                    tags$button(
+                      id = "btOpenAiCopilot",
+                      renderMiraIcon(),
+                      lang$nav$header$aiAssistant,
+                      class = "bt-highlight-1 category-btn category-btn-custom full-width",
+                      style = "margin-bottom: 15px;",
+                      onclick = "Miro.openMiroAiDrawer()"
+                    )
+                  },
                   tags$div(
                     class = "save-delete-wrapper",
                     actionButton("deleteGraph", lang$adminMode$graphs$ui$deleteGraph, icon("trash-can"), class = "save-delete-delete-btn full-width"),
@@ -584,16 +643,24 @@ font-size: 12px;
                 style = "text-align: left;",
                 uiOutput("rendererLabelWrapper")
               ),
-              tags$div(id = "preview-error", class = "err-msg"),
+              tags$pre(
+                id = "renderer-preview-console", class = "miro-preview-console",
+                style = "display:none; text-align:left; white-space:pre-wrap; max-height:200px; overflow:auto;"
+              ),
               tags$div(
                 id = "preview-content-plotly", style = "overflow: auto;",
                 renderDataUI("preview_output_plotly",
                   type = "graph",
-                  graphTool = "plotly",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "plotly",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -603,11 +670,16 @@ font-size: 12px;
                 id = "preview-content-dygraphs", style = "display:none;",
                 renderDataUI("preview_output_dygraphs",
                   type = "graph",
-                  graphTool = "dygraphs",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "dygraphs",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -616,11 +688,16 @@ font-size: 12px;
                 id = "preview-content-leaflet", style = "display:none;",
                 renderDataUI("preview_output_leaflet",
                   type = "graph",
-                  graphTool = "leaflet",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "leaflet",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -633,18 +710,24 @@ font-size: 12px;
                 ),
                 renderDataUI("preview_output_miropivot",
                   type = "miropivot",
-                  height = 400, customOptions = list()
+                  height = 400,
+                  graphConfig = list(options = list())
                 )
               ),
               tags$div(
                 id = "preview-content-timevis", style = "display:none; overflow:auto;",
                 renderDataUI("preview_output_timevis",
                   type = "graph",
-                  graphTool = "timevis",
-                  filterOptions = list(
-                    label = NULL,
-                    multiple = TRUE,
-                    col = "a"
+                  graphConfig = list(
+                    graph = list(
+                      tool = "timevis",
+                      filter = list(
+                        label = NULL,
+                        multiple = TRUE,
+                        col = "a"
+                      )
+                    ),
+                    options = list()
                   ),
                   height = 400
                 )
@@ -667,11 +750,44 @@ font-size: 12px;
                   id = "preview-content-valuebox", style = "display:none;text-align:left",
                   renderDataUI("preview_output_valuebox",
                     type = "valuebox",
-                    height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count)
+                    height = 400,
+                    graphConfig = list(
+                      options = list(count = modelOut[[scalarsOutName]]$count)
+                    )
                   )
                 )
               }
             )
+          )
+        ),
+        tags$div(
+          id = "miroAiDrawer",
+          class = "miro-ai-assistant-drawer",
+          tags$div(
+            class = "miro-ai-assistant-drawer-header",
+            tags$div(
+              class = "miro-ai-drawer-heading",
+              tags$h4(class = "miro-ai-drawer-title", lang$nav$aiBotDialog$title),
+              renderAiTokenInfoContainer(lang$nav$aiBotDialog)
+            ),
+            tags$div(
+              style = "display: flex; gap: 4px; align-items: center;",
+              tags$button(
+                id = "btMiroAiClearChat",
+                class = "btn btn-default action-button",
+                icon("trash"),
+                title = lang$nav$aiBotDialog$btClear
+              ),
+              tags$button(
+                icon("times"),
+                class = "btn btn-default miro-ai-close-drawer-btn",
+                onclick = "Miro.closeMiroAiDrawer()"
+              )
+            )
+          ),
+          tags$div(
+            class = "miro-ai-assistant-drawer-body",
+            renderAiChatWindow(lang$nav$aiBotDialog, config$aiAssistant$supportedModels, chatHistory = NULL, renderApplyCodeBtn = TRUE, userInputPlaceholderKey = "userTextPlaceholderRenderer")
           )
         )
       ),
@@ -780,8 +896,10 @@ font-size: 12px;
                 renderDataUI("preview_inputTable_pivot",
                   type = "miropivot", height = 400,
                   showNoDataTxt = FALSE,
-                  customOptions = list(
-                    "_input_" = TRUE
+                  graphConfig = list(
+                    options = list(
+                      "_input_" = TRUE
+                    )
                   )
                 ),
                 rHandsontableOutput("hot_preview")
@@ -935,7 +1053,7 @@ font-size: 12px;
                           ), class = "info-header",
                           href = "https://gams.com/miro/configuration_general.html#app-readme",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1007,6 +1125,34 @@ font-size: 12px;
                           setNames(c("miroPivot", "datatable"), lang$adminMode$general$defaultRenderer$choicesOutput),
                           selected = configJSON$defaultRendererOutput
                         )
+                      ),
+                      tags$div(class = "space"),
+                      tags$div(class = "space"),
+                      tags$h2(lang$adminMode$general$ui$headerLanguage, class = "option-category"),
+                      checkboxInput_SIMPLE("custom_lang_check",
+                        labelTooltip(
+                          lang$adminMode$general$customLanguage$checkbox,
+                          paste0(
+                            lang$adminMode$general$customLanguage$tooltip, " - ",
+                            tolower(lang$adminMode$general$ui$tooltipDocs)
+                          ),
+                          "https://gams.com/miro/configuration_general.html#custom-language"
+                        ),
+                        value = if (length(configJSON$customLanguage) &&
+                          nchar(configJSON$customLanguage)) {
+                          TRUE
+                        } else {
+                          FALSE
+                        }
+                      ),
+                      conditionalPanel(
+                        condition = "input.custom_lang_check===true",
+                        tags$div(
+                          class = "option-wrapper", style = "margin-top:-10px;padding-left: 25px;",
+                          textInput("general_custom_lang_name", lang$adminMode$general$customLanguage$label,
+                            value = if (length(configJSON$customLanguage)) configJSON$customLanguage else ""
+                          )
+                        )
                       )
                     )),
                     tags$div(class = "space")
@@ -1075,6 +1221,13 @@ font-size: 12px;
                         config$activateModules$attachments
                       }
                     ),
+                    checkboxInput_SIMPLE("general_protectModelFiles",
+                      labelTooltip(
+                        lang$adminMode$general$protectModelFiles$label,
+                        lang$adminMode$general$protectModelFiles$title
+                      ),
+                      value = isTRUE(configJSON$activateModules$protectModelFiles)
+                    ),
                     tags$div(class = "space"),
                     tags$div(
                       style = "max-width: 500px;",
@@ -1085,7 +1238,7 @@ font-size: 12px;
                           class = "info-wrapper",
                           href = "https://gams.com/miro/configuration_general.html#general-output-attach",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1156,7 +1309,7 @@ font-size: 12px;
                             title = lang$adminMode$general$decimal$tooltip, class = "info-wrapper",
                             href = "https://www.gams.com/miro/configuration_general.html#decimal-places",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1167,6 +1320,22 @@ font-size: 12px;
                         } else {
                           config$roundingDecimals
                         }
+                      )
+                    ),
+                    tags$div(
+                      class = "option-wrapper",
+                      sliderInput("general_numericalTolerance",
+                        labelTooltip(
+                          label = lang$adminMode$general$numericalTolerance$label,
+                          tooltip = lang$adminMode$general$numericalTolerance$tooltip,
+                          href = "https://gams.com/miro/configuration_general.html#numerical-tolerance"
+                        ),
+                        min = 3, max = 15, step = 1,
+                        value = round(-log10(if (length(configJSON$numericalTolerance)) {
+                          configJSON$numericalTolerance
+                        } else {
+                          config$numericalTolerance
+                        }))
                       )
                     ),
                     tags$div(class = "space")
@@ -1208,7 +1377,7 @@ font-size: 12px;
                               class = "info-wrapper",
                               href = "https://gams.com/miro/configuration_general.html#command-line-args",
                               tags$span(
-                                class = "fas fa-circle-info", class = "info-icon",
+                                class = "fas fa-circle-info info-icon",
                                 role = "presentation",
                                 `aria-label` = "More information"
                               ), target = "_blank"
@@ -1288,7 +1457,7 @@ font-size: 12px;
                             class = "info-wrapper",
                             href = "https://gams.com/miro/configuration_general.html#general-duration",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1321,7 +1490,7 @@ font-size: 12px;
                           class = "info-wrapper",
                           href = "https://gams.com/miro/start.html#scenario-comparison",
                           tags$span(
-                            class = "fas fa-circle-info", class = "info-icon",
+                            class = "fas fa-circle-info info-icon",
                             role = "presentation",
                             `aria-label` = "More information"
                           ), target = "_blank"
@@ -1346,6 +1515,28 @@ font-size: 12px;
                     ),
                     tags$div(class = "space"),
                     tags$div(
+                      class = "option-wrapper info-position",
+                      selectInput("general_hiddenCompareSymbols",
+                        tags$div(
+                          lang$adminMode$general$hiddenCompareSymbols$label,
+                          tags$a("",
+                            title = lang$adminMode$general$ui$tooltipDocs,
+                            class = "info-wrapper",
+                            href = "https://gams.com/miro/configuration_general.html#hidden-compare-symbols",
+                            tags$span(
+                              class = "fas fa-circle-info info-icon",
+                              role = "presentation",
+                              `aria-label` = "More information"
+                            ), target = "_blank"
+                          )
+                        ),
+                        choices = vctrs::vec_unique(c(inputSymMultiDimChoices, setNames(scalarsFileName, paste(scalarsFileName, lang$nav$scalarAliases$scalars, sep = ": ")), outputSymMultiDimChoices)),
+                        selected = configJSON$hiddenCompareSymbols[configJSON$hiddenCompareSymbols %in% c(inputSymMultiDimChoices, scalarsFileName, outputSymMultiDimChoices)],
+                        multiple = TRUE
+                      )
+                    ),
+                    tags$div(class = "space"),
+                    tags$div(
                       class = "option-wrapper",
                       tags$h4(lang$adminMode$general$ui$headerPivotcompare, class = "option-category"),
                       tags$div(lang$adminMode$general$ui$descriptionPivotcompare),
@@ -1355,6 +1546,42 @@ font-size: 12px;
                       )
                     ),
                     tags$div(class = "space")
+                  )
+                )
+              ),
+              tabPanel(
+                lang$adminMode$general$ui$tabAiAssistant,
+                tags$div(
+                  class = "col-sm-12", style = "padding-top: 20px;",
+                  tags$div(
+                    class = "main-tab",
+                    checkboxInput_SIMPLE("general_enableAiAssistant",
+                      lang$adminMode$general$aiAssistant$cbEnable,
+                      value = !isFALSE(configJSON$aiAssistant$enable)
+                    ),
+                    conditionalPanel(
+                      condition = "input.general_enableAiAssistant===true",
+                      tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
+                        actionButton(
+                          inputId = "btEditAiContext",
+                          label = labelTooltip(
+                            label = lang$adminMode$general$aiAssistant$btEditContext,
+                            tooltip = lang$adminMode$general$aiAssistant$tooltipContext,
+                            href = "https://gams.com/miro/configuration_general.html#ai-assistant-domain-context"
+                          )
+                        )
+                      }),
+                      tags$div(class = "option-wrapper info-position option-wrapper-indented form-group", style = "padding-left:25px;", {
+                        actionButton(
+                          inputId = "btEditAiInstructions",
+                          label = labelTooltip(
+                            label = lang$adminMode$general$aiAssistant$btEditInstructions,
+                            tooltip = lang$adminMode$general$aiAssistant$tooltipInstructions,
+                            href = "https://gams.com/miro/configuration_general.html#ai-assistant-instructions"
+                          )
+                        )
+                      })
+                    )
                   )
                 )
               )
@@ -1380,7 +1607,7 @@ font-size: 12px;
                       tags$a(
                         title = lang$adminMode$general$ui$tooltipDocs, class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#naming",
                         tags$span(
-                          class = "fas fa-circle-info", class = "info-icon",
+                          class = "fas fa-circle-info info-icon",
                           role = "presentation",
                           `aria-label` = "More information"
                         ), target = "_blank"
@@ -1555,7 +1782,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1619,7 +1846,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-wrapper", style = "top:-10px;", href = "https://gams.com/miro/configuration_symbols.html#tab-grouping",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1657,7 +1884,7 @@ font-size: 12px;
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-symbols",
                                   tags$span(
-                                    class = "fas fa-circle-info", class = "info-icon",
+                                    class = "fas fa-circle-info info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ),
@@ -1682,7 +1909,7 @@ font-size: 12px;
                                   class = "info-wrapper",
                                   href = "https://gams.com/miro/configuration_symbols.html#hidden-scalars",
                                   tags$span(
-                                    class = "fas fa-circle-info", class = "info-icon",
+                                    class = "fas fa-circle-info info-icon",
                                     role = "presentation",
                                     `aria-label` = "More information"
                                   ), target = "_blank"
@@ -1702,7 +1929,7 @@ font-size: 12px;
                           tags$a(
                             class = "info-header", href = "https://gams.com/miro/configuration_symbols.html#symbol-links",
                             tags$span(
-                              class = "fas fa-circle-info", class = "info-icon",
+                              class = "fas fa-circle-info info-icon",
                               role = "presentation",
                               `aria-label` = "More information"
                             ), target = "_blank"
@@ -1774,7 +2001,6 @@ font-size: 12px;
                 id = "preview-output-dt", style = "display:none;",
                 renderDataUI("table_preview_dt",
                   type = "datatable",
-                  graphTool = "plotly",
                   height = 700
                 )
               ),
@@ -1899,9 +2125,12 @@ font-size: 12px;
                       tags$div(
                         class = "col-sm-6",
                         colorPickerInput(
-                          "body_bg_color",
-                          lang$adminMode$colors$themeColors$body_bg,
-                          value = baseColors$miro_body_bg_color,
+                          "main_bg",
+                          labelTooltip(
+                            lang$adminMode$colors$themeColors$mainBg,
+                            lang$adminMode$colors$themeColors$mainBgTooltip
+                          ),
+                          value = baseColors$miro_main_bg,
                           colorPreview = TRUE,
                           disableAlphaChannel = TRUE
                         )
@@ -1979,7 +2208,10 @@ font-size: 12px;
                       class = "col-sm-6",
                       colorPickerInput(
                         "main_bg_dark",
-                        lang$adminMode$colors$themeColors$mainBgDark,
+                        labelTooltip(
+                          lang$adminMode$colors$themeColors$mainBgDark,
+                          lang$adminMode$colors$themeColors$mainBgTooltip
+                        ),
                         value = baseColors$miro_main_bg_dark,
                         colorPreview = TRUE,
                         disableAlphaChannel = TRUE
@@ -2009,16 +2241,6 @@ font-size: 12px;
                           "navbar_color_dark",
                           lang$adminMode$colors$themeColors$navbarDark,
                           value = baseColors$miro_navbar_color_dark,
-                          colorPreview = TRUE,
-                          disableAlphaChannel = TRUE
-                        )
-                      ),
-                      tags$div(
-                        class = "col-sm-6",
-                        colorPickerInput(
-                          "body_bg_color_dark",
-                          lang$adminMode$colors$themeColors$body_bg_dark,
-                          value = baseColors$miro_body_bg_color_dark,
                           colorPreview = TRUE,
                           disableAlphaChannel = TRUE
                         )

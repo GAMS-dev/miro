@@ -188,9 +188,7 @@ Attachments <- R6Class("Attachments",
         fileNames <- path_sanitize(fileNames)
       }
 
-      if (length(private$config$forbiddenFNames) &&
-        any(tools::file_path_sans_ext(fileNames) %in%
-          private$config$forbiddenFNames)) {
+      if (any(execPerm & private$isForbiddenFName(fileNames))) {
         stop_custom("error_forbidden_filename",
           "Some of the filenames specified are not allowed to be used",
           call. = FALSE
@@ -539,7 +537,17 @@ Attachments <- R6Class("Attachments",
         colNames = c("fileName", "fileContent"), innerSepAND = FALSE,
         subsetSids = if (is.null(scenId)) private$sid else scenId
       )
-      if (length(data)) {
+      if (length(data) && allExecPerm) {
+        isForbidden <- private$isForbiddenFName(data[["fileName"]])
+        if (any(isForbidden)) {
+          flog.warn(
+            "Attachment(s): '%s' not downloaded as their names are not allowed to be used (Attachments.download).",
+            paste(data[["fileName"]][isForbidden], collapse = "', '")
+          )
+          data <- data[!isForbidden, ]
+        }
+      }
+      if (length(data) && nrow(data)) {
         if (allExecPerm || is.null(fileNames)) {
           remotePaths <- file.path(filePath, data[["fileName"]])
         } else {
@@ -583,6 +591,12 @@ Attachments <- R6Class("Attachments",
 
       if (length(execPerm) != length(fileNames)) {
         execPerm <- rep.int(execPerm, length(fileNames))
+      }
+      if (any(execPerm & private$isForbiddenFName(fileNames))) {
+        stop_custom("error_forbidden_filename",
+          "Some of the filenames specified are not allowed to be used",
+          call. = FALSE
+        )
       }
       flog.trace("Request to update exec permissions received (Attachments.setExecPerm).")
 
@@ -781,6 +795,9 @@ Attachments <- R6Class("Attachments",
     }
   ),
   private = list(
+    isForbiddenFName = function(fileNames) {
+      return(tolower(fileNames) %in% tolower(private$config$forbiddenFNames))
+    },
     sid = NULL,
     inDataSid = NULL,
     db = NULL,

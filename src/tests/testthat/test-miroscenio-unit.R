@@ -178,7 +178,7 @@ test_that("Reading miroscen files works", {
     attachmentsDummy, viewsDummy,
     tabsetId = NULL
   )
-  expect_output(
+  expect_message(
     f <- loadMiroScen(
       file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
       names(modelIn)
@@ -236,7 +236,7 @@ test_that("Loading MIRO scenario into specified directory works", {
     stop("Could not copy miroscen file")
   }
   on.exit(unlink(file.path(tmpd, c("test.miroscen", "bla")), recursive = TRUE))
-  expect_output(
+  expect_message(
     f <- loadMiroScen(file.path(tmpd, "test.miroscen"), scenDummy, attachmentsDummy, viewsDummy,
       c(names(modelIn), "_gmsopt_a"),
       exdir = file.path(tmpd, "bla")

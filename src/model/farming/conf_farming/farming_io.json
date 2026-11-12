@@ -1,5 +1,5 @@
 {
-	"modelTitle":	"Crop plant alloction problem with stochastic crop yield",
+	"modelTitle":	"Crop plant allocation problem with stochastic crop yield",
 	"inputSymbols":	{
 		"cd":	{
 			"alias":	"crop data",

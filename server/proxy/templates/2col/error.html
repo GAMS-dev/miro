@@ -20,51 +20,25 @@
     along with this program.  If not, see <http://www.apache.org/licenses/>
 
 -->
-
-<!--
-
-    ContainerProxy
-
-    Copyright (C) 2016-2018 Open Analytics
-
-    ===========================================================================
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the Apache License as published by
-    The Apache Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    Apache License for more details.
-
-    You should have received a copy of the Apache License
-    along with this program.  If not, see <https://www.apache.org/licenses/>
-
--->
 <!doctype html>
 <html
-  xmlns:th="//www.thymeleaf.org"
-  xmlns:sec="//www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  lang="en"
 >
   <head lang="en">
     <title>Error</title>
-
-    <!-- Meta -->
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self';" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="GAMS MIRO Server" />
     <meta name="author" content="GAMS Development Corp." />
 
-    <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
     <link rel="shortcut icon" th:href="@{${resourcePrefix} + '/favicon'}" />
     <link
       rel="stylesheet"
       media="screen"
-      th:href="@{/assets/css/bootstrap.min.css}"
+      th:href="@{${resourcePrefix} + ${bootstrapCss}}"
     />
     <link
       id="theme-style"
@@ -81,16 +55,17 @@
   <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
     <div class="site-wrapper">
-      <section class="cards-section text-center full-height">
+      <section
+        class="cards-section text-center min-vh-100 d-flex align-items-center"
+      >
         <div class="container">
           <h2 class="title">Error</h2>
           <div id="error">
             <p>Oops. An error has occurred. Please try again later.</p>
-            <p><a th:href="@{/}">Home</a></p>
+            <p><a class="btn btn-secondary" th:href="@{/}">Home</a></p>
           </div>
         </div>
       </section>
-      <!--//cards-section-->
     </div>
   </body>
 </html>

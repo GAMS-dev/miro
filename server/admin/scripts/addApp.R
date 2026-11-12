@@ -77,6 +77,10 @@ tryCatch(
       appId <- miroAppValidator$getAppId()
     } else {
       appId <- tolower(trimws(appId))
+      tryCatch(miroAppValidator$validateAppId(appId), error = function(e) {
+        write(sprintf("merr:::400:::%s", conditionMessage(e)), stderr())
+        quit("no", 1L, FALSE)
+      })
     }
     modelName <- miroAppValidator$getModelName()
     modelId <- miroAppValidator$getModelId()
@@ -94,6 +98,7 @@ tryCatch(
       appDbCredentials <- modelConfig$getAppDbConf(appId)
 
       appConfig$containerEnv[["MIRO_VERSION_STRING"]] <- miroAppValidator$getMIROVersion()
+      appConfig$containerEnv[["MIRO_APP_UPLOADER"]] <- APP_UPLOADER
       if (IN_KUBERNETES) {
         appConfig$containerEnv[["MIRO_MODEL_PATH"]] <- paste0("/home/miro/model/", modelName)
       } else {
@@ -113,7 +118,6 @@ tryCatch(
         }
       }
       extractAppData(appPath, paste0("~$", appId), modelId)
-      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
     } else {
       appDir <- getModelPath(appId)
       dataDir <- getDataPath(appId)
@@ -141,6 +145,7 @@ tryCatch(
           MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
           MIRO_MODE = "base",
           MIRO_ENGINE_MODELNAME = appId,
+          MIRO_APP_UPLOADER = APP_UPLOADER,
           MIRO_DB_USERNAME = appDbCredentials$user,
           MIRO_DB_PASSWORD = appDbCredentials$password,
           MIRO_DB_SCHEMA = appDbCredentials$user
@@ -152,7 +157,7 @@ tryCatch(
       )
       if (IN_KUBERNETES) {
         newAppConfig$containerEnv$MIRO_MODEL_PATH <- paste0(
-          "/home/miro/mnt/model/", modelName
+          "/home/miro/model/", modelName
         )
         newAppConfig$containerEnv$MIRO_DATA_DIR <- "/home/miro/data"
         newAppConfig$containerEnv$MIRO_CACHE_DIR <- "/home/miro/cache"
@@ -216,6 +221,7 @@ tryCatch(
     runMiroProcAPI(appId, procEnv, MIRO_APP_PATH, ADD_DATA_TIMEOUT, cleanupFn = cleanup)
 
     if (updateApp) {
+      engineClient$updateModel(appId, userGroups = FALSE, modelDataPath = file.path(appDirTmp, paste0(modelId, ".zip")))
       moveFilesFromTemp(appId)
       modelConfig$update(modelConfig$getAppIndex(appId), list(
         containerEnv = appConfig$containerEnv,

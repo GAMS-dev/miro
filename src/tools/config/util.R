@@ -415,7 +415,7 @@ isAdvanced <- function(cfg, mode = "light") {
   }
 
   if (identical(mode, "dark")) {
-    if (is.null(cfg$miro_primary_color_dark) && is.null(cfg$miro_main_bg_dark)) {
+    if (is.null(cfg$miro_primary_color_dark)) {
       return(FALSE)
     }
     sidebar <- hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
@@ -429,18 +429,8 @@ isAdvanced <- function(cfg, mode = "light") {
       hslHex(hue(cfg$miro_primary_color_dark), 6, 12)
     }
 
-    neutralBg <- (hue(cfg$miro_main_bg_dark) == 0) &&
-      (saturation(cfg$miro_main_bg_dark) == 0)
-
-    bodybg <- if (neutralBg) {
-      hslHex(hue(cfg$miro_main_bg_dark), 0, 12)
-    } else {
-      hslHex(hue(cfg$miro_main_bg_dark), 10, 18)
-    }
-
     defaults <- list(
       miro_sidebar_color_dark = sidebar,
-      miro_body_bg_color_dark = bodybg,
       miro_navbar_color_dark  = navbar
     )
   } else {
@@ -450,19 +440,10 @@ isAdvanced <- function(cfg, mode = "light") {
 
     sidebar <- hslHex(hue(cfg$miro_primary_color), 6, 12)
 
-    neutral <- (hue(cfg$miro_primary_color) == 0) &&
-      (saturation(cfg$miro_primary_color) == 0)
-
-    bodybg <- if (neutral) {
-      makeHsl(cfg$miro_primary_color, 80, 0)
-    } else {
-      makeHsl(cfg$miro_primary_color, 94, 26)
-    }
-
     defaults <- list(
       miro_sidebar_color = sidebar,
-      miro_body_bg_color = bodybg,
-      miro_navbar_color  = "#ffffff"
+      miro_navbar_color  = "#ffffff",
+      miro_main_bg       = "#ffffff"
     )
   }
 
@@ -570,4 +551,49 @@ resolveColor <- function(val, default) {
   } else {
     return(default)
   }
+}
+plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
+getPreviewFilterId <- function(tool) {
+  if (tool %in% plotlyChartTools) tool <- "plotly"
+
+  switch(tool,
+    plotly = "#preview_output_plotly-miroPlotly-data_filter",
+    dygraphs = "#preview_output_dygraphs-miroDygraphs-data_filter",
+    leaflet = "#preview_output_leaflet-miroLeaflet-data_filter",
+    timevis = "#preview_output_timevis-miroTimevis-data_filter",
+    NULL
+  )
+}
+# runs exprFn() while capturing anything it prints to stdout (e.g. print()/cat()
+# calls in a user's Output/render function), so authors can debug their code from
+# the preview instead of having to inspect the R console. Partial console output
+# is preserved even if exprFn() errors.
+runCapturingConsole <- function(exprFn) {
+  consoleOutputLines <- character(0)
+  con <- textConnection("consoleOutputLines", "w", local = TRUE)
+  sink(con, type = "output")
+  result <- NULL
+  errCaught <- NULL
+  tryCatch(
+    {
+      result <- exprFn()
+    },
+    error = function(e) {
+      errCaught <<- e
+    },
+    finally = {
+      sink(type = "output")
+      close(con)
+    }
+  )
+  return(list(result = result, console = consoleOutputLines, error = errCaught))
+}
+isSilentError <- function(e) {
+  return(inherits(e, "shiny.silent.error"))
+}
+# combines already-captured console text with a fresh message (e.g. an error the user
+# should see in-context), skipping empty parts so no stray blank lines appear
+appendPreviewConsoleMsg <- function(existing, msg) {
+  parts <- c(existing, msg)
+  paste(parts[nzchar(parts)], collapse = "\n")
 }

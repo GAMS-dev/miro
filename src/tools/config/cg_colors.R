@@ -4,15 +4,15 @@ customBaseColors <- reactive({
     miro_secondary_color         = resolveColor(input$secondary_color, baseColors$miro_secondary_color),
     miro_sidebar_color           = resolveColor(input$sidebar_color, baseColors$miro_sidebar_color),
     miro_navbar_color            = resolveColor(input$navbar_color, baseColors$miro_navbar_color),
-    miro_body_bg_color           = resolveColor(input$body_bg_color, baseColors$miro_body_bg_color),
+    miro_body_bg_color           = baseColors$miro_body_bg_color,
     miro_alert_color             = resolveColor(input$alert_color, baseColors$miro_alert_color),
-    miro_main_bg                 = "#ffffff",
+    miro_main_bg                 = resolveColor(input$main_bg, baseColors$miro_main_bg),
     miro_console_text_color      = resolveColor(input$console_text_color, baseColors$miro_console_text_color),
     miro_primary_color_dark      = resolveColor(input$primary_color_dark, baseColors$miro_primary_color_dark),
     miro_secondary_color_dark    = resolveColor(input$secondary_color_dark, baseColors$miro_secondary_color_dark),
     miro_sidebar_color_dark      = resolveColor(input$sidebar_color_dark, baseColors$miro_sidebar_color_dark),
     miro_navbar_color_dark       = resolveColor(input$navbar_color_dark, baseColors$miro_navbar_color_dark),
-    miro_body_bg_color_dark      = resolveColor(input$body_bg_color_dark, baseColors$miro_body_bg_color_dark),
+    miro_body_bg_color_dark      = baseColors$miro_body_bg_color_dark,
     miro_alert_color_dark        = resolveColor(input$alert_color_dark, baseColors$miro_alert_color_dark),
     miro_main_bg_dark            = resolveColor(input$main_bg_dark, baseColors$miro_main_bg_dark),
     miro_console_text_color_dark = resolveColor(input$console_text_color_dark, baseColors$miro_console_text_color_dark),
@@ -184,7 +184,7 @@ derivePalette <- function(b = baseColors) {
   v[["miro_if_7f94f006"]] <- if_7f94f006
   if_8215301a <- if (abs(luma(b$miro_main_bg_dark) - luma(darken(b$miro_primary_color_dark, 10))) < 8) lighten(b$miro_primary_color_dark, 50) else darken(b$miro_primary_color_dark, 10)
   v[["miro_if_8215301a"]] <- if_8215301a
-  if_d2f31bc0 <- if (abs(luma(b$miro_main_bg_dark) - luma(b$miro_primary_color_dark)) < 15) contrast(b$miro_main_bg_dark) else b$miro_primary_color_dark
+  if_d2f31bc0 <- if (abs(luma(b$miro_main_bg_dark) - luma(b$miro_primary_color_dark)) < 15) hslHex(hue(b$miro_primary_color_dark), 34, 60) else b$miro_primary_color_dark
   v[["miro_if_d2f31bc0"]] <- if_d2f31bc0
   if_ea8983c1 <- if (abs(luma(b$miro_primary_color_dark) - luma(b$miro_text_color_dark)) < 8) contrast(b$miro_primary_color_dark) else b$miro_text_color_dark
   v[["miro_if_ea8983c1"]] <- if_ea8983c1
@@ -291,6 +291,14 @@ derivePalette <- function(b = baseColors) {
   v[["miro_sidebar_contrast_light"]] <- sidebar_contrast_light
   sidebar_contrast_light2 <- if (boolean_486b1f24) "#222222" else "#ffffff"
   v[["miro_sidebar_contrast_light2"]] <- sidebar_contrast_light2
+  sidebar_active_color <- if (goodContrast(b$miro_primary_color, b$miro_sidebar_color, threshold = 3)) {
+    b$miro_primary_color
+  } else if (boolean_486b1f24) {
+    if (goodContrast(darken(b$miro_primary_color, 20), b$miro_sidebar_color, threshold = 3)) darken(b$miro_primary_color, 20) else sidebar_contrast_light2
+  } else {
+    if (goodContrast(lighten(b$miro_primary_color, 30), b$miro_sidebar_color, threshold = 3)) lighten(b$miro_primary_color, 30) else sidebar_contrast_light2
+  }
+  v[["miro_sidebar_active_color"]] <- sidebar_active_color
 
   navbar_contrast_light <- if (goodContrast("#333333", b$miro_navbar_color)) "#333333" else "#eeeeee"
   v[["miro_navbar_contrast_light"]] <- navbar_contrast_light
@@ -371,7 +379,7 @@ derivePalette <- function(b = baseColors) {
   v[["miro_if_c1a0bfe3"]] <- if_c1a0bfe3
   if_f1a3b180 <- if (boolean_880ef169) hslHex(hue(b$miro_main_bg_dark), 0, 12) else hslHex(hue(b$miro_main_bg_dark), 10, 18)
   v[["miro_if_f1a3b180"]] <- if_f1a3b180
-  if_4a0e097b <- if (abs(luma(if_f1a3b180) - luma(b$miro_primary_color_dark)) < 8) "#A9A9A9" else if_f1a3b180
+  if_4a0e097b <- if_f1a3b180
   v[["miro_if_4a0e097b"]] <- if_4a0e097b
   fade_ece660c0 <- fade(if_f1a3b180, 56)
   v[["miro_fade_ece660c0"]] <- fade_ece660c0
@@ -402,6 +410,8 @@ derivePalette <- function(b = baseColors) {
 
   if_a8c57869 <- if (abs(luma("#030303") - luma(b$miro_text_color_dark)) < 15) contrast("#030303") else b$miro_text_color_dark
   v[["miro_if_a8c57869"]] <- if_a8c57869
+
+  v[["miro_sidebar_color_gradient"]] <- "none"
 
   v
 }
@@ -446,14 +456,8 @@ observeEvent(input$advanced_light,
 
     sidebarColor <- hslHex(hue(input$primary_color), 6, 12)
     updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
-
-    isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
-    if (isNeutral) {
-      bodyBgColor <- makeHsl(input$primary_color, 80, 0)
-    } else {
-      bodyBgColor <- makeHsl(input$primary_color, 94, 26)
-    }
-    updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
+    updateColorPickerInput(session, "navbar_color", value = "#ffffff")
+    updateColorPickerInput(session, "main_bg", value = "#ffffff")
   },
   ignoreInit = TRUE
 )
@@ -467,14 +471,6 @@ observeEvent(input$primary_color, {
   req(!input$advanced_light)
   sidebarColor <- hslHex(hue(input$primary_color), 6, 12)
   updateColorPickerInput(session, "sidebar_color", value = sidebarColor)
-
-  isNeutral <- boolean(hue(input$primary_color) == 0 & saturation(input$primary_color) == 0)
-  if (isNeutral) {
-    bodyBgColor <- makeHsl(input$primary_color, 80, 0)
-  } else {
-    bodyBgColor <- makeHsl(input$primary_color, 94, 26)
-  }
-  updateColorPickerInput(session, "body_bg_color", value = bodyBgColor)
 })
 
 observeEvent(input$advanced_dark,
@@ -491,14 +487,6 @@ observeEvent(input$advanced_dark,
       navBarColorDark <- hslHex(hue(input$primary_color_dark), 6, 12)
     }
     updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
-
-    isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
-    if (isNeutral) {
-      bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 0, 12)
-    } else {
-      bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 10, 18)
-    }
-    updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
   },
   ignoreInit = TRUE
 )
@@ -522,21 +510,12 @@ observeEvent(input$primary_color_dark, {
   updateColorPickerInput(session, "navbar_color_dark", value = navBarColorDark)
 })
 
-observeEvent(input$main_bg_dark, {
-  if (identical(input$main_bg_dark, "")) {
-    updateColorPickerInput(session, "main_bg_dark", value = customBaseColors()$miro_main_bg_dark)
-    return()
-  }
-
-  req(!input$advanced_dark)
-
-  isNeutral <- boolean(hue(input$main_bg_dark) == 0 & saturation(input$main_bg_dark) == 0)
-  if (isNeutral) {
-    bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 0, 12)
-  } else {
-    bodyBgColorDark <- hslHex(hue(input$main_bg_dark), 10, 18)
-  }
-  updateColorPickerInput(session, "body_bg_color_dark", value = bodyBgColorDark)
+lapply(c("main_bg", "main_bg_dark"), function(id) {
+  observeEvent(input[[id]], {
+    if (identical(input[[id]], "")) {
+      updateColorPickerInput(session, id, value = customBaseColors()[[paste0("miro_", id)]])
+    }
+  })
 })
 
 lapply(
@@ -634,15 +613,20 @@ output$downloadTheme <- downloadHandler(
   content = function(file) {
     pal <- palette()
 
+    miro_server_launch_text_color <- if (goodContrast("#494d55", input$server_primary_color)) "#494d55" else "#fff"
+    miro_server_launch_text_color_dark <- if (goodContrast("#fff", input$server_primary_color_dark)) "#fff" else "#494d55"
+
     miroServerColors <- list(
-      miro_server_primary_color        = input$server_primary_color,
-      miro_server_body_bg              = input$server_body_bg,
-      miro_server_main_bg              = input$server_main_bg,
-      miro_server_login_header_bg      = input$server_login_header_bg,
-      miro_server_primary_color_dark   = input$server_primary_color_dark,
-      miro_server_body_bg_dark         = input$server_body_bg_dark,
-      miro_server_main_bg_dark         = input$server_main_bg_dark,
-      miro_server_login_header_bg_dark = input$server_login_header_bg_dark
+      miro_server_primary_color = input$server_primary_color,
+      miro_server_body_bg = input$server_body_bg,
+      miro_server_main_bg = input$server_main_bg,
+      miro_server_login_header_bg = input$server_login_header_bg,
+      miro_server_launch_text_color = miro_server_launch_text_color,
+      miro_server_primary_color_dark = input$server_primary_color_dark,
+      miro_server_body_bg_dark = input$server_body_bg_dark,
+      miro_server_main_bg_dark = input$server_main_bg_dark,
+      miro_server_login_header_bg_dark = input$server_login_header_bg_dark,
+      miro_server_launch_text_color_dark = miro_server_launch_text_color_dark
     )
 
     miroServerColors <- miroServerColors[!vapply(miroServerColors, is.null, logical(1))]

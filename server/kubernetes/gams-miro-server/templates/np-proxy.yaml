@@ -27,6 +27,11 @@ spec:
           protocol: UDP
         - port: 53
           protocol: TCP
+      to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
     # Allow outbound connections to auth container
     - ports:
         - port: 8081
@@ -74,6 +79,9 @@ spec:
         - protocol: TCP
           port: 2049
     {{- end }}
+    {{- end }}
+    {{- if .Values.proxy.networkPolicy.extraEgress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.proxy.networkPolicy.extraEgress "context" $ ) | nindent 4 }}
     {{- end }}
   ingress:
     - ports:

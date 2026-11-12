@@ -1,5 +1,22 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
+  "definitions": {
+    "podPatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "op": {
+            "enum": ["add", "remove", "replace", "move", "copy", "test"]
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": ["op", "path"]
+      }
+    }
+  },
   "type": "object",
   "properties": {
     "global": {
@@ -43,7 +60,63 @@
         }
       },
       "required": ["networkPolicy"]
+    },
+     "secrets": {
+      "type": "object",
+      "properties": {
+        "dbPassword": {
+          "type": "string",
+          "minLength": 8
+        },
+        "oidcClientSecret": {
+          "type": "string"
+        },
+        "engineAnonymousPassword": {
+          "type": "string"
+        },
+        "containerLogS3SecretAccessKey": {
+          "type": "string"
+        },
+        "redisPassword": {
+          "type": "string"
+        }
+      },
+      "required": ["dbPassword"]
+     },
+    "db": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "user": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["port", "user", "name"]
+    },
+    "miro": {
+      "type": "object",
+      "properties": {
+        "podPatches": {
+          "$ref": "#/definitions/podPatches"
+        }
+      }
+    },
+    "admin": {
+      "type": "object",
+      "properties": {
+        "podPatches": {
+          "$ref": "#/definitions/podPatches"
+        }
+      }
     }
   },
-  "required": ["global"]
+  "required": ["global", "db", "secrets"]
 }

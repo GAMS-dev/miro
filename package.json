@@ -1,12 +1,14 @@
 {
   "name": "com.gams.miro",
   "productName": "GAMS MIRO",
-  "version": "2.12.0",
+  "version": "2.13.9999",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
   "type": "module",
   "main": "./main.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "postinstall": "electron-builder install-app-deps && (cd src && npm install)",
     "test": "node ./test/run-ui-tests.js",
     "start": "electron .",
@@ -22,9 +24,11 @@
     "afterAllArtifactBuild": "build/scripts/notarize.js",
     "extraResources": [
       "src/conf/*",
+      "src/whats-new/*",
       "src/global.R",
       "src/app.R",
       "src/LICENSE",
+      "src/miro-pkg-lock.csv",
       "src/modules/**",
       "src/components/**",
       "src/JS/**",
@@ -42,7 +46,6 @@
       "!scripts/**",
       "!r/**",
       "!r-src/**",
-      "!electron-builder.env",
       "!src/**",
       "!server/**"
     ],
@@ -72,6 +75,7 @@
       "extraResources": [
         "r"
       ],
+      "identity": null,
       "category": "public.app-category.productivity",
       "icon": "./build/icon.icns",
       "darkModeSupport": true,
@@ -84,9 +88,11 @@
         "r/**"
       ],
       "target": "nsis",
-      "signtoolOptions": {
-        "timeStampServer": "http://timestamp.digicert.com",
-        "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01"
+      "azureSignOptions": {
+        "publisherName": "GAMS Development Corporation",
+        "endpoint": "https://eus.codesigning.azure.net",
+        "certificateProfileName": "GAMS-Public-Cert",
+        "codeSigningAccountName": "GAMS-Development-Corp"
       },
       "icon": "./build/icon.ico"
     },
@@ -100,6 +106,23 @@
       "createStartMenuShortcut": true,
       "include": "build/uninstaller.nsh"
     },
+    "deb": {
+      "maintainer": "GAMS Development Corp <support@gams.com>",
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0",
+        "libuuid1",
+        "libsecret-1-0",
+        "r-base-dev",
+        "libcurl-dev",
+        "libpng-dev"
+      ]
+    },
     "linux": {
       "extraFiles": [
         "r/**",
@@ -107,8 +130,12 @@
         "scripts/install_source.R"
       ],
       "artifactName": "GAMS-MIRO-${version}.${ext}",
-      "target": "AppImage",
-      "category": "Science"
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Science",
+      "icon": "build/icons"
     }
   },
   "repository": {
@@ -123,30 +150,37 @@
   "author": "GAMS Development Corp.",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "@playwright/test": "^1.53.0",
-    "electron": "^36.4.0",
-    "electron-builder": "26.0.12",
-    "eslint": "^8.57.1",
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
+    "cheerio": "^1.2.0",
+    "electron": "^45.1.0",
+    "electron-builder": "26.18.1",
+    "eslint": "^10",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.31.0",
-    "playwright": "^1.53.0",
-    "prettier": "3.4.2"
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.7",
+    "fast-xml-parser": "^5.11.2",
+    "globals": "^17.13.0",
+    "playwright": "^1.64.1",
+    "prettier": "3.9.10"
   },
   "dependencies": {
+    "@azure/msal-node": "^7.1.1",
     "@fortawesome/fontawesome-free": "^6.7.2",
-    "ajv": "^8.17.1",
-    "axios": "^1.9.0",
+    "ajv": "^8.20.0",
+    "axios": "^1.21.0",
     "bootstrap": "^4.6.2",
-    "electron-log": "^5.4.1",
-    "electron-store": "^10.0.1",
-    "execa": "^9.6.0",
-    "fs-extra": "^11.3.0",
+    "electron-log": "^5.4.4",
+    "electron-store": "^12.0.0",
+    "execa": "^10.2.1",
+    "fs-extra": "^11.4.1",
     "jquery": "^3.7.1",
     "popper.js": "^1.16.1",
     "portscanner": "^2.2.0",
     "tree-kill": "^1.2.2",
-    "which": "^5.0.0",
-    "yauzl": "^3.2.0"
+    "which": "^7.0.0",
+    "yauzl": "^3.4.0"
   }
 }

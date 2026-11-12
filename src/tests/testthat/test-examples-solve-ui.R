@@ -1,6 +1,6 @@
 test_that(
   "Example models solve",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     skip_if(
       identical(Sys.getenv("GAMS_SYS_DIR"), ""),
       "GAMS_SYS_DIR environment variable not set. Skipping tests."
@@ -13,7 +13,7 @@ test_that(
 
     for (modelToTest in c(
       "pickstock", "transport", "sudoku", "farming",
-      "inscribedsquare", "tsp", "cpack", "lubrication", "indus89"
+      "inscribedsquare", "tsp", "cpack", "lubrication", "indus89", "stg1"
     )) {
       createTestDb()
       if (modelToTest %in% c("indus89")) {

@@ -13,7 +13,7 @@ Note that both node and yarn need to be added to the [PATH](https://en.wikipedia
 In order to compile the data.table package from source, you need an OpenMP compatible C compiler. See [here](https://github.com/Rdatatable/data.table/wiki/Installation#openmp-enabled-compiler-for-mac) for more information.
 Additionally, v8 and openssl need to be installed. To install it via [Homebrew](https://brew.sh), use: `brew update && brew install v8 openssl@3`.
 
-Openssl3 will be installed in `/usr/local/opt/openssl@3`. MIRO uses a custom version of the [openssl](https://github.com/jeroen/openssl) R package that sets the `PKG_CONFIG_PATH` environment variable to the content of the `OPENSSL_PKG_CONFIG_PATH` environment variable. Thus, setting `export OPENSSL_PKG_CONFIG_PATH=/usr/local/opt/openssl@3/lib/pkgconfig` allows MIRO to find this version of openssl. To build statically against openssl (in case you want to distribute MIRO to users who do not have the openssl libraries in `/usr/local/opt/openssl@3`), the dynamic libraries: `libcrypto.dylib`, `libcrypto.3.dylib`, `libssl.dylib` and `libssl.3.dylib` must be removed/renamed in `/usr/local/opt/openssl@3/lib`.
+Openssl3 will be installed in `/usr/local/opt/openssl@3`. When installing the [openssl](https://github.com/jeroen/openssl) R package, MIRO's build script prepends the content of the `OPENSSL_PKG_CONFIG_PATH` environment variable to `PKG_CONFIG_PATH`. Thus, setting `export OPENSSL_PKG_CONFIG_PATH=/usr/local/opt/openssl@3/lib/pkgconfig` allows MIRO to find this version of openssl. To build statically against openssl (in case you want to distribute MIRO to users who do not have the openssl libraries in `/usr/local/opt/openssl@3`), the dynamic libraries: `libcrypto.dylib`, `libcrypto.3.dylib`, `libssl.dylib` and `libssl.3.dylib` must be removed/renamed in `/usr/local/opt/openssl@3/lib`.
 
 On some systems, libpng is also required. To install via [Homebrew](https://brew.sh), use: `brew update && brew install libpng`.
 
@@ -31,7 +31,7 @@ To build the gdxrrwMIRO package, you need either an intel compiler (https://soft
 Additionally, the following system libraries are required:
 
 * libcurl
-    - deb: libcurl4-openssl-dev (Debian, Ubuntu, etc)
+    - deb: libcurl-dev (Debian, Ubuntu, etc)
     - rpm: libcurl-devel (Fedora, CentOS, RHEL)
     - csw: libcurl_dev (Solaris)
 * libpng

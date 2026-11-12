@@ -108,6 +108,8 @@ table abserror;
 Singleton Set
 firstDayTraining(date)   'first date of training period'
 lastDayTraining(date)    'last date of training period' ;
+Parameter
+       testAliasFilter(s,symbol);
 $offExternalOutput
 
 stock_weight(s)                        = w.l(s);
@@ -123,6 +125,11 @@ if(error_train > 0,
    error_ratio = error_test/error_train;
 else
    error_ratio = inf;);
+*testAliasFilter(s,symbol) = w.l(s);
+testAliasFilter('CSCO','DD') = 1;
+testAliasFilter('DD','CSCO') = 2;
+testAliasFilter('GE','BA') = 3;
+testAliasFilter('GS','DIS') = 4;
 
 * parameter including all stocks and dow jones index
 $onExternalOutput

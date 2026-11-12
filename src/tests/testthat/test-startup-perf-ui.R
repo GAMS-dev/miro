@@ -11,6 +11,7 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(
   "transport.gms"
 ))
 Sys.setenv(MIRO_MODE = "base")
+ensureChromote()
 pr <- PerformanceReporter$new()
 pr$measure(
   "startup",

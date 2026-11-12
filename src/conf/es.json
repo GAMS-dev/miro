@@ -1,0 +1,2888 @@
+{
+  "general": {
+    "modal": {
+      "okButton": "Aceptar",
+      "cancelButton": "Cancelar"
+    }
+  },
+  "nav": {
+    "scalarAliases": {
+      "scalars": "Escalares",
+      "scalarsOut": "Escalares de salida",
+      "cols": {
+        "name": "Nombre del escalar",
+        "desc": "Descripción del escalar",
+        "value": "Valor del escalar"
+      }
+    },
+    "sidebarMenu": {
+      "inputScreen": "Entrada",
+      "outputScreen": "Salida",
+      "gams": "Interacción con GAMS",
+      "load": "Cargar escenarios",
+      "scen": "Comparar escenarios"
+    },
+    "sidebarButtons": {
+      "importInput": "Cargar datos",
+      "solve": "Resolver modelo",
+      "submitJob": "Enviar trabajo",
+      "submitHcJob": "Enviar Hypercube",
+      "solveHcube": "Enviar trabajo",
+      "splitView": "Vista dividida",
+      "pivotView": "Vista Pivot",
+      "tabView": "Vista de pestañas",
+      "compareStart": "Sincronizar pestañas",
+      "compareStop": "Detener sincronización",
+      "download": "Descargar salida",
+      "interrupt": "Detener"
+    },
+    "header": {
+      "aiAssistant": "Mira",
+      "scenario": {
+        "title": "Escenario",
+        "edit": "Editar metadatos",
+        "removeDuplicates": "Eliminar duplicados",
+        "save": "Guardar",
+        "saveAs": "Guardar como",
+        "export": "Exportar",
+        "delete": "Eliminar"
+      },
+      "help": {
+        "title": "Ayuda",
+        "doc": "Documentación",
+        "forum": "Foro de GAMS",
+        "whatsNew": "Novedades",
+        "commandPalette": "Paleta de comandos",
+        "settings": "Ajustes de Engine",
+        "about": "Acerca de"
+      }
+    },
+    "inputScreen": {
+      "btCollapsedTabs": "Más",
+      "noDataDep": "Importe primero todos los datos de los que depende este elemento.",
+      "widgetTabTitle": "Widgets de entrada",
+      "dirtyFlag": "El escenario contiene datos de salida que podrían ya no corresponder a los datos de entrada modificados."
+    },
+    "gams": {
+      "boxModelStatus": {
+        "title": "Estado del modelo"
+      },
+      "boxGamsOutput": {
+        "title": "Salida de GAMS",
+        "tabCurrent": "Trabajo actual",
+        "tabJobList": "Lista de trabajos",
+        "gamsOutputTabset": {
+          "logFile": "Archivo de registro",
+          "lstFile": "Archivo de listado",
+          "miroLogFile": "Archivo de registro de MIRO",
+          "logUpdate": "Actualizar",
+          "detachButton": "Desvincular trabajo actual",
+          "detachedInfoMsg": "El trabajo se ha desvinculado"
+        }
+      }
+    },
+    "outputScreen": {
+      "boxResults": {
+        "title": "Resultados",
+        "noData": "sin datos"
+      }
+    },
+    "scen": {
+      "noScen": "No hay escenarios seleccionados",
+      "btLoad": "Cargar",
+      "btCloseAll": "Cerrar todo",
+      "scenNameSandboxSuffix": "(Sandbox)",
+      "tooltips": {
+        "btExport": "exportar escenario",
+        "btRefreshGraph": "actualizar datos",
+        "btTableView": "cambiar vista",
+        "btSymbolLink": "Usar como datos de entrada",
+        "btClose": "cerrar escenario",
+        "btCloseAll": "cerrar",
+        "btAddPivot": "añadir escenarios",
+        "btRefresh": "actualizar",
+        "btDownloadTmpFiles": "archivos temporales",
+        "inputSheet": "entrada del modelo",
+        "outputSheet": "salida del modelo",
+        "load": "Cargar escenario guardado",
+        "loadActive": "Cargar escenario sandbox"
+      },
+      "split": {
+        "load": "Cargar escenario",
+        "loadActive": "Cargar sandbox"
+      },
+      "pivot": {
+        "scenColName": "Escenario",
+        "viewPrefix": "Comparación Pivot:"
+      }
+    },
+    "hcubeImport": {
+      "title": "Importar trabajos",
+      "btManualImport": "Importación manual",
+      "btShowHistory": "Mostrar historial"
+    },
+    "queryBuilder": {
+      "title": "Cargar escenarios",
+      "noData": "Su consulta no ha devuelto datos",
+      "invalidCsvFilter": "'%s' no debe contener ','.",
+      "chooseSelectedButton": "Elegir escenarios seleccionados",
+      "chooseAllButton": "Elegir todos",
+      "orButton": "O",
+      "addBlock": "Añadir bloque",
+      "andButton": "Añadir condición...",
+      "rmBlock": "Eliminar bloque",
+      "conditionBlock": "Condiciones:",
+      "operators": {
+        "is": "es",
+        "notis": "no es",
+        "contains": "contiene",
+        "notcontains": "no contiene",
+        "startswith": "empieza por",
+        "endswith": "termina en",
+        "exists": "existe",
+        "notexists": "no existe",
+        "between": "entre"
+      },
+      "queryButton": "Obtener resultados",
+      "metaColAliases": {
+        "uid": "Propietario",
+        "sname": "Nombre",
+        "stime": "Fecha de creación",
+        "stag": "Etiquetas"
+      }
+    },
+    "hcubeAnalyze": {
+      "title": "Analizar escenarios",
+      "loadMsg": "Espere mientras se calculan los resultados. Esto puede tardar un poco.",
+      "failMsg": "Se ha producido un error al intentar ejecutar PAVER.",
+      "duplicatesMsg": "PAVER ha encontrado una instancia duplicada: '%s'. Asegúrese de no seleccionar duplicados.",
+      "btCancel": "Cancelar",
+      "btNew": "Seleccionar escenarios"
+    },
+    "gamsModelStatus": {
+      "submission": "Enviando el modelo",
+      "queued": "Modelo en cola",
+      "queuedWithPosition": "Modelo en cola (posición en la cola: %s)",
+      "exec": "Fase de ejecución del modelo",
+      "collection": "Descargando los resultados",
+      "success": "La ejecución finalizó correctamente.",
+      "error": "La ejecución no finalizó correctamente: ",
+      "errorReturnCode": "El proceso finalizó con el estado: %d"
+    },
+    "notificationNewInput": {
+      "new": "%s conjuntos de datos importados desde: %s.",
+      "noNew": "No se importó ningún conjunto de datos desde: %s.",
+      "importerNames": {
+        "database": "Base de datos"
+      }
+    },
+    "notificationOutputAttachmentAdded": {
+      "desc": "Nuevos adjuntos de salida añadidos: %s."
+    },
+    "notificationFileNotFound": {
+      "lst": "No se ha encontrado el archivo de listado de GAMS.",
+      "log": "No se ha encontrado el archivo de registro de GAMS.",
+      "mirolog": "No se ha encontrado el archivo de registro."
+    },
+    "dialogExportScen": {
+      "title": "Exportar escenario",
+      "desc": "Seleccione un tipo de archivo",
+      "selDatasets": "Seleccione los conjuntos de datos que desea exportar",
+      "noDsSelected": "No ha seleccionado ningún conjunto de datos para exportar.",
+      "cbSelectManually": "Elegir conjuntos de datos manualmente",
+      "cancelButton": "Cancelar",
+      "okButton": "Exportar"
+    },
+    "dialogSaveSuccess": {
+      "title": "Éxito",
+      "desc": " %d conjuntos de datos se guardaron correctamente."
+    },
+    "dialogNewScen": {
+      "title": "Nuevo escenario",
+      "desc": "Introduzca un nombre para el escenario:",
+      "discardAttach": "¿Descartar adjuntos?",
+      "discardViews": "¿Descartar vistas?",
+      "tags": "Añada etiqueta(s) a su escenario (opcional):",
+      "newScenName": "Nuevo escenario",
+      "badName": "Elija un nombre válido para el nuevo escenario.",
+      "scenExists": "El nombre de escenario elegido ya existe. ¿Desea sobrescribir los datos existentes?",
+      "btNewName": "Elegir otro nombre",
+      "btOverwrite": "Sobrescribir",
+      "cancelButton": "Cancelar",
+      "okButton": "Aceptar"
+    },
+    "dialogEditMeta": {
+      "title": "Editar metadatos",
+      "categoryGeneral": "Opciones generales",
+      "categoryAttachments": "Adjuntos",
+      "categoryViews": "Vistas",
+      "categoryAccessPerm": "Permisos de acceso",
+      "newName": "Nuevo nombre",
+      "badName": "El nombre elegido no es válido (demasiado largo o demasiado corto). Elija otro nombre.",
+      "newTags": "Nuevas etiquetas",
+      "badTags": "Las etiquetas introducidas no son válidas. Asegúrese de que las etiquetas no estén vacías ni duplicadas y de que no contengan más de 1000 caracteres.",
+      "scenExists": "Ya existe un escenario con el nombre elegido.",
+      "emptyPerm": "Los permisos de acceso del escenario no pueden estar vacíos.",
+      "incapOwner": "No puede revocar los permisos de acceso del propietario.",
+      "attachmentsAdd": "Añadir adjuntos",
+      "attachmentsExecPerm": "Permitir que el modelo lea este archivo",
+      "attachSuccess": "Los adjuntos se actualizaron correctamente",
+      "attachMaxSizeError": "Sus adjuntos superan el tamaño máximo de adjuntos de %s bytes.",
+      "attachMaxNoError": "Se ha alcanzado el número máximo de adjuntos. Elimine primero algunos adjuntos antes de subir otros nuevos.",
+      "attachDuplicateError": "Ya existe un adjunto con el mismo nombre. Elija otro nombre e inténtelo de nuevo.",
+      "attachForbiddenFnameError": "Un adjunto que intenta subir usa un nombre de archivo no permitido. Elija otro nombre de archivo e inténtelo de nuevo.",
+      "viewsSuccess": "Las vistas se actualizaron correctamente.",
+      "viewsInvalidData": "Los datos que ha subido no son datos de vista válidos. Asegúrese de que el archivo sea un archivo JSON y de que la sintaxis sea correcta.",
+      "viewsDuplicateError": "Las siguientes vistas no se importaron porque ya existe una vista con el mismo nombre para ese símbolo: '%s'.",
+      "viewsInvalidError": "Algunas de las vistas que intentó importar no se importaron porque están definidas para símbolos que no existen: '%s'.",
+      "noViewData": "Sin vistas",
+      "noAttachments": "Sin adjuntos",
+      "selectAllViews": "Seleccionar todo",
+      "selectNoViews": "No seleccionar ninguna",
+      "viewsNoneSelected": "No hay vistas seleccionadas. Seleccione vistas haciendo clic en la fila.",
+      "viewsAdd": "Añadir vistas",
+      "viewsTableHeaderSymbol": "Símbolo",
+      "viewsTableHeaderId": "Nombre",
+      "viewsDownload": "Descargar vistas",
+      "viewsRemove": "Eliminar vistas",
+      "errMsg": "Se produjeron problemas al actualizar los metadatos del escenario. Si el problema persiste, póngase en contacto con el administrador del sistema.",
+      "cancelButton": "Cerrar",
+      "okButton": "Actualizar metadatos"
+    },
+    "dialogRemoveDuplicates": {
+      "noDuplicates": "Ninguna de sus tablas de entrada contiene registros duplicados.",
+      "title": "Eliminar registros duplicados",
+      "desc": "Los siguientes símbolos contienen registros duplicados: '%s'.\n¿Desea conservar solo el primer o solo el último valor de estos registros duplicados?",
+      "cancelButton": "Cancelar",
+      "btKeepFirst": "Conservar el primero",
+      "btKeepLast": "Conservar el último",
+      "success": "Registros duplicados eliminados correctamente",
+      "pivotReadonlyWarning": "La tabla se ha establecido como de solo lectura porque el símbolo contiene registros duplicados.\nPuede eliminar los duplicados mediante el diálogo \"Escenario\"->\"Eliminar duplicados\"."
+    },
+    "dialogInconsistentOutput": {
+      "title": "Datos de salida incoherentes",
+      "desc": "Es posible que los datos de salida no sean coherentes con los datos de entrada cargados actualmente en su sandbox. ¿Desea importar los resultados de todos modos?",
+      "okButton": "Importar",
+      "cancelButton": "Cancelar"
+    },
+    "dialogDeleteScen": {
+      "title": "Eliminar escenario",
+      "desc": "¿Está seguro de que desea eliminar el escenario seleccionado de la base de datos?",
+      "cancelButton": "Cancelar",
+      "okButton": "Sí",
+      "removeFromUI": {
+        "title": "Quitar escenario del sandbox",
+        "desc": "¿Desea quitar el escenario del sandbox? ¡Se perderán los datos no guardados!",
+        "cancelButton": "Cancelar",
+        "okButton": "Quitar del sandbox"
+      }
+    },
+    "dialogRemoveScen": {
+      "title": "Cerrar escenario",
+      "desc": "¿Está seguro de que desea cerrar el escenario activo? ¡Se perderán los datos no guardados!",
+      "cancelButton": "Cancelar",
+      "okButton": "Cerrar"
+    },
+    "dialogCloseScen": {
+      "title": "Cerrar escenario",
+      "desc": "¿Está seguro de que desea cerrar el escenario seleccionado?",
+      "cancelButton": "No",
+      "okButton": "Sí"
+    },
+    "dialogCloseAllScen": {
+      "title": "Cerrar escenarios",
+      "desc": "¿Está seguro de que desea cerrar todos los escenarios?",
+      "cancelButton": "No",
+      "okButton": "Sí"
+    },
+    "dialogExistingOutput": {
+      "title": "Existen datos de salida",
+      "desc": "El escenario que desea guardar contiene datos de salida que podrían no corresponder a los datos de entrada actuales. ¿Desea descartar los datos de salida?",
+      "cancelButton": "Cancelar",
+      "saveOutputButton": "Guardar datos de salida",
+      "discardOutputButton": "Descartar datos de salida"
+    },
+    "dialogSaveScen": {
+      "title": "Guardar escenario",
+      "desc": "¿Está seguro de que desea guardar el escenario seleccionado en la base de datos?",
+      "cancelButton": "No",
+      "okButton": "Sí"
+    },
+    "dialogImport": {
+      "title": "Cargar datos",
+      "tabLocal": "Local",
+      "tabExternal": "Externo",
+      "tabDatabase": "Base de datos",
+      "selInputData": "Seleccione los conjuntos de datos de entrada que desea cargar",
+      "selDecimalSep": "Seleccione el separador decimal",
+      "selDelim": "Seleccione el delimitador",
+      "selExcelIndexSheet": "Seleccione la hoja de índice",
+      "excelIndexSheetRng": "Seleccione el rango de índice",
+      "selExternalSource": "Seleccione la fuente externa",
+      "descLocal": "Elija el archivo con los datos que desea cargar",
+      "newScenName": "Elija un nombre para el nuevo escenario",
+      "scenNameExistsErr": "El nombre de escenario elegido ya existe.",
+      "descClearSandbox": "Ya hay datos cargados en el sandbox. Se perderán los datos/resultados no guardados. ¿Desea borrar estos datos?",
+      "descOverwriteInput": "Ya hay datos cargados para los símbolos seleccionados. ¿Desea combinar los nuevos datos con los existentes o reemplazar los datos existentes?",
+      "cbSelectManually": "Elegir conjuntos de datos manualmente",
+      "overwriteWarning": "Los conjuntos de datos ya importados podrían perderse si no los ha guardado.",
+      "cancelButton": "Cancelar",
+      "mergeButton": "Combinar",
+      "replaceButton": "Reemplazar",
+      "okButton": "Cargar"
+    },
+    "dialogLoadScen": {
+      "title": "Cargar escenario",
+      "tabDB": "Base de datos",
+      "tabUI": "Local",
+      "titleNoScen": "No se encontraron escenarios",
+      "descNoScen": "No se encontró ningún escenario guardado.",
+      "selLoadScen": "Seleccione los escenarios que desea cargar",
+      "selTags": "Mostrar solo escenarios con las etiquetas:",
+      "includeSandbox": "Incluir escenario sandbox: %s",
+      "selBaseline": "Escenario base",
+      "baselineDesc": "Todos los demás escenarios se comparan con este escenario.",
+      "titleDataError": "Datos dañados",
+      "descDataError": "Los datos del escenario parecen estar dañados. Error al cargar.",
+      "maxNoScenExceeded": "Se ha superado el número máximo de escenarios que se pueden mostrar. Solo se muestra un subconjunto.",
+      "noDsSelected": "Seleccione el nombre del conjunto de datos que desea importar.",
+      "symNotInDataSrc": "Los conjuntos de datos que desea importar no se encontraron en los datos proporcionados.",
+      "invalidFile": "No se pudo validar el archivo subido.",
+      "sortBy": "Ordenar por:",
+      "btSortNameASC": "Nombre (ASC)",
+      "btSortTimeASC": "Fecha (ASC)",
+      "btSortNameDESC": "Nombre (DESC)",
+      "btSortTimeDESC": "Fecha (DESC)",
+      "cancelButton": "Cancelar",
+      "okButton": "Importar"
+    },
+    "dialogNewCol": {
+      "title": "Nueva columna",
+      "desc": "Introduzca un nombre para la nueva columna:",
+      "cancelButton": "Cancelar",
+      "okButton": "Aceptar"
+    },
+    "fileExport": {
+      "fileTypes": [
+        "Escenario de MIRO (MIROSCEN)",
+        "GAMS Data eXchange (GDX)",
+        "Valores separados por comas (CSV)",
+        "Microsoft Excel (XLSX)"
+      ],
+      "infoDataOnly": "Con el tipo de archivo seleccionado solo se exportan los datos. Los metadatos, como adjuntos, vistas, etiquetas, etc., no se incluyen."
+    },
+    "excelExport": {
+      "metadataSheet": {
+        "title": "Info",
+        "uid": "Usuario",
+        "sname": "Nombre del escenario",
+        "stime": "Fecha de creación",
+        "stag": "Etiquetas del escenario",
+        "readPerm": "Permisos de lectura",
+        "writePerm": "Permisos de escritura",
+        "execPerm": "Permisos de ejecución",
+        "symbol": "Nombre del símbolo",
+        "desc": "Descripción"
+      },
+      "inputSuffix": " (Entrada)",
+      "outputSuffix": " (Salida)"
+    },
+    "dialogLockScen": {
+      "title": "Escenario bloqueado",
+      "desc": "El escenario que desea cargar está siendo utilizado actualmente por el usuario: '%s'."
+    },
+    "dialogReadonly": {
+      "title": "Sin permisos de escritura",
+      "descErr": "No tiene permisos de escritura para este escenario.",
+      "desc": "No tiene permisos de escritura para este escenario. ¿Desea guardarlo como un nuevo escenario?",
+      "okButton": "Guardar como",
+      "cancelButton": "Cancelar"
+    },
+    "dialogNoExecPerm": {
+      "title": "Sin permisos de ejecución",
+      "desc": "No tiene permisos de ejecución para este escenario."
+    },
+    "dialogDownloadTmp": {
+      "title": "Descargar archivos temporales",
+      "desc": "Seleccione los archivos que desea descargar",
+      "noFiles": "No se encontraron archivos",
+      "downloadAllButton": "Descargar todo",
+      "downloadButton": "Descargar",
+      "cancelButton": "Cancelar"
+    },
+    "dialogHashExists": {
+      "title": "Escenario ya resuelto",
+      "desc": "El escenario que desea resolver ya existe en la base de datos con el nombre: '%s'%s y fue guardado por última vez por '%s' el '%s'.",
+      "descTags": "(etiquetas: '%s')",
+      "cancelButton": "Cancelar",
+      "okButton": "Resolver de nuevo"
+    },
+    "dialogJobSubmission": {
+      "title": "Enviar trabajo",
+      "desc": "Envíe un nuevo trabajo para que se resuelva de forma asíncrona.",
+      "jobName": "Indique un nombre para su trabajo (opcional)",
+      "workerInstance": "Elija una instancia en la que ejecutar su trabajo",
+      "instanceDropdownCategories": [
+        "Pools de instancias",
+        "Instancias"
+      ],
+      "descWait": "Espere mientras se envía el trabajo...",
+      "badName": "Elija un nombre válido para el nuevo trabajo.",
+      "cancelButton": "Cancelar",
+      "okButton": "Enviar",
+      "successMsg": "Su trabajo se ha programado correctamente. Podrá obtener los resultados en cuanto el trabajo termine de ejecutarse."
+    },
+    "dialogHcube": {
+      "title": "Configuración de Hypercube",
+      "desc": "Ha seleccionado %d escenarios para resolver en modo Hypercube. De ellos, %s escenarios ya han sido resueltos por usted o por otra persona.",
+      "descSolveAgain": "¿Desea resolver de nuevo todos los escenarios o solo los que aún no se han resuelto?",
+      "descJobSubmission": "Espere mientras se envía el trabajo...",
+      "newTags": "Asigne una o varias etiquetas a su trabajo:",
+      "manualSwitch": "¿Procesar el trabajo manualmente?",
+      "cancelButton": "Cancelar",
+      "processAllButton": "Procesar todos",
+      "processUnsolvedButton": "Procesar solo los no resueltos",
+      "successMsg": "Su trabajo de Hypercube se ha programado correctamente. Podrá obtener los resultados en cuanto el trabajo termine de ejecutarse.",
+      "exportError": "No se pudieron exportar algunos escenarios: %s.",
+      "waitTime": "Espere unos segundos antes de enviar un nuevo trabajo.",
+      "waitDialog": {
+        "title": "Configurando el trabajo de Hypercube",
+        "desc": "Espere mientras se configura el trabajo de Hypercube."
+      },
+      "exceedMaxNoDialog": {
+        "title": "Número máximo de escenarios superado",
+        "desc": "Ha seleccionado resolver %s escenarios en su ejecución de Hypercube. Esto supera el número máximo permitido por ejecución (%s). Reduzca el número de escenarios e inténtelo de nuevo."
+      },
+      "noScenSelectedDialog": {
+        "title": "No hay escenarios seleccionados",
+        "desc": "Primero debe seleccionar al menos un escenario que desee resolver."
+      },
+      "badStepSizeDialog": {
+        "title": "Tamaño de paso no válido",
+        "desc": "El tamaño de paso indicado no se pudo procesar. Seleccione un tamaño de paso válido e inténtelo de nuevo."
+      }
+    },
+    "dialogWhatsNew": {
+      "title": "Novedades",
+      "newFeaturesHdr": "Nuevas funciones",
+      "minorImprovementsHdr": "Funciones nuevas menores y mejoras",
+      "cancelButton": "Cerrar",
+      "releaseNotes": "Leer las notas de la versión completas"
+    },
+    "dialogSettings": {
+      "title": "Ajustes de GAMS Engine",
+      "quotaInfoHeader": "Cuota restante",
+      "quotaVolumeLabel": "Cuota de volumen",
+      "unlimitedQuotaLabel": "ilimitada",
+      "quotaDiskLabel": "Cuota de disco",
+      "selDefaultInstance": "Seleccione la instancia predeterminada",
+      "instancePoolLabel": "Pool de instancias",
+      "instanceLabel": "Instancia",
+      "scalingUpLabel": "Escalando hacia arriba…",
+      "scalingDownLabel": "Escalando hacia abajo…",
+      "memoryLabel": "memoria",
+      "cpuLabel": "cpu",
+      "multiplierLabel": "multiplicador",
+      "poolOwnerLabel": "propietario",
+      "activeWorkersLabel": "activos",
+      "busyWorkersLabel": "ocupados",
+      "desiredWorkersLabel": "deseados",
+      "btUpdateDefaultInstance": "Actualizar instancia predeterminada",
+      "closeButton": "Cerrar"
+    },
+    "importJobsDialog": {
+      "title": "Trabajos activos",
+      "noJobs": "No hay trabajos activos",
+      "noJobsHist": "No se encontraron trabajos descartados o importados",
+      "discardSuccess": "El trabajo se ha descartado",
+      "importSuccess": "El trabajo se ha importado correctamente",
+      "accessDenied": "Acceso denegado",
+      "maxDownloads": "Se ha alcanzado el número máximo de descargas simultáneas.",
+      "jobNotFound": "No se encontró el trabajo en GAMS Engine.",
+      "histTitle": "Historial de trabajos",
+      "status": {
+        "downloading": "Descargando resultados",
+        "downloaded": "Descargado",
+        "queued": "En cola",
+        "running": "En ejecución",
+        "imported": "Importado",
+        "completed": "Completado",
+        "corrupted": "Dañado",
+        "discarded": "Descartado"
+      },
+      "ttips": {
+        "importedManual": "El trabajo se importó manualmente.",
+        "discardedCorrupted": "El trabajo estaba dañado.",
+        "discardedActive": "El trabajo seguía activo.",
+        "discardedScheduled": "El trabajo estaba programado.",
+        "discardedCompleted": "El trabajo se había completado.",
+        "corruptedNoDir": "No se pudo localizar el directorio de trabajo del trabajo.",
+        "corruptedNoProcess": "El trabajo ha finalizado, pero no se encontraron resultados.",
+        "corruptedManual": "Error en la importación manual del trabajo."
+      },
+      "header": {
+        "owner": "Propietario",
+        "date": "Fecha de envío",
+        "tags": "Etiquetas del trabajo",
+        "name": "Nombre del trabajo",
+        "status": "Estado",
+        "action": "Acción"
+      },
+      "buttons": {
+        "import": "Importar",
+        "download": "Descargar resultados",
+        "log": "Mostrar registro",
+        "progress": "Mostrar progreso",
+        "discard": "Descartar"
+      },
+      "discardConfirm": {
+        "title": "Confirmar descarte",
+        "desc": "¿Está seguro de que desea descartar el trabajo seleccionado? Los trabajos en ejecución se detendrán.",
+        "cancelButton": "Cancelar",
+        "confirmButton": "Confirmar"
+      }
+    },
+    "newCompletedJobsDialog": {
+      "title": "Nuevos trabajos completados",
+      "desc": "Algunos de sus trabajos se han resuelto y ya están listos para importarse.",
+      "cancelButton": "Cancelar",
+      "okButton": "Mostrar trabajos"
+    },
+    "dialogBatchLoad": {
+      "title": "Seleccionar acción",
+      "selectMethod": "¿Qué desea hacer con los escenarios seleccionados?",
+      "compareSettingsTitle": "Comparar %d escenario(s) en el modo: %s",
+      "compareButton": "Comparar",
+      "backButton": "Atrás",
+      "scenNameCols": "Seleccione las columnas para nombrar los escenarios",
+      "scenNamePrefix": "Prefijo para el nombre del escenario",
+      "selExportType": "Seleccione un tipo de archivo",
+      "maxScenWarning1": "Solo puede seleccionar hasta '%d' escenarios para cargarlos a la vez en modo interactivo.",
+      "maxScenWarning2": " Seleccione menos escenarios o utilice scripts de análisis personalizados para compararlos.",
+      "cancelButton": "Cancelar",
+      "analysisButton": "Analizar",
+      "selAnalysisScript": "Seleccione el script que desea ejecutar",
+      "tabScript": "Scripts",
+      "analysisRunScriptRunning": "Hay un análisis en curso. Espere a que finalice o interrúmpalo.",
+      "removeConfirm": "¿Está seguro de que desea eliminar los %s escenarios seleccionados de la base de datos? ¡Esta acción no se puede deshacer!",
+      "removeSuccess": "Los escenarios seleccionados se eliminaron correctamente.",
+      "runScriptButton": "Iniciar script",
+      "downloadAnalysisButton": "Descargar",
+      "interactiveButtonSb": "Cargar en el sandbox",
+      "interactiveButtonTab": "Comparar (pestañas)",
+      "interactiveButtonPivot": "Comparar (Pivot)",
+      "interactiveButtonSplit": "Comparar (dividida)",
+      "interactiveButtonAi": "Preguntar a Mira",
+      "downloadButton": "Descargar datos",
+      "removeButton": "Eliminar escenarios",
+      "removeIncompleteError": "No se pudieron eliminar todos los escenarios seleccionados. Puede deberse a que son de solo lectura o a que otra persona ya los ha eliminado mientras tanto."
+    },
+    "aiBotDialog": {
+      "title": "Mira",
+      "welcomeMessage": "¡Hola! Soy Mira, su asistente de IA. Estoy aquí para ayudarle a explorar sus resultados de optimización, tanto si analiza un único escenario como si compara varios.",
+      "welcomeMessageCustomRenderer": "¡Hola! Soy Mira, su asistente de IA. Estoy aquí para ayudarle a crear el código de su renderer personalizado. Indíqueme cómo desea visualizar sus datos.",
+      "currentContextSandbox": "Escenario sandbox: %s",
+      "currentContextCompare": "Comparación de %d escenarios",
+      "backToSandbox": "Volver al sandbox",
+      "requestAbortedMessage": "Solicitud cancelada.",
+      "sandboxSyncFailedMessage": "Mira no pudo acceder a los datos actuales del sandbox, por lo que su mensaje no se envió. Inténtelo de nuevo.",
+      "chatBubbleUserHeader": "Usuario:",
+      "chatBubbleAssistantHeader": "Mira:",
+      "userTextPlaceholder": "Escriba aquí su pregunta sobre el escenario...",
+      "userTextPlaceholderRenderer": "¿Qué creamos hoy?",
+      "inputTokensLabel": "Tokens de entrada: %s",
+      "inputTokensTitle": "Tokens usados para el prompt.",
+      "outputTokensLabel": "Tokens de salida: %s",
+      "outputTokensTitle": "Tokens generados por el modelo de IA.",
+      "disclaimer": "Mira puede cometer errores. Verifique la información importante.",
+      "nfApplySuccess": "¡Código aplicado!",
+      "nfApplyErrNoCode": "No se encontró ninguna función de salida ni de renderer en la última respuesta de la IA",
+      "nfApplyErrNoResponse": "El último mensaje debe ser de la IA para aplicar el código.",
+      "btClear": "Borrar chat",
+      "btClose": "Cerrar",
+      "resizeHandle": "Arrastre para cambiar el tamaño, haga doble clic para restablecerlo",
+      "btCopy": "Copiar texto",
+      "btDownloadChart": "Descargar como PNG",
+      "chartUnavailable": "Este gráfico ya no está disponible.",
+      "btOpenChartInPivot": "Abrir en la vista pivote",
+      "openChartReplaceDesc": "Los escenarios cargados actualmente en la vista pivote serán reemplazados.",
+      "btOpenChartReplace": "Reemplazar",
+      "chartNotInPivot": "Estos datos no se pueden mostrar en la vista pivote.",
+      "btApplyCode": "Aplicar código",
+      "changeProposalHeader": "Cambio propuesto en los datos de entrada",
+      "changeProposalBefore": "antes",
+      "changeProposalAfter": "después",
+      "changeProposalRow": "1 fila",
+      "changeProposalRows": "%s filas",
+      "changeRowAdded": "nueva",
+      "changeRowRemoved": "eliminada",
+      "changeProposalTruncated": "Se muestran las primeras %s de %s filas afectadas.",
+      "changeOpMultiply": "multiplicar por %s",
+      "changeOpDivide": "dividir entre %s",
+      "changeOpAdd": "sumar %s",
+      "changeOpSubtract": "restar %s",
+      "changeOpSet": "establecer en %s",
+      "changeOpUpsert": "escribir filas",
+      "changeOpDelete": "eliminar filas",
+      "changeStatusApplied": "Aplicado al escenario sandbox.",
+      "changeStatusDiscarded": "Descartado.",
+      "changeStatusOutdated": "Obsoleto: los datos de este símbolo han cambiado mientras tanto. Pida al asistente que vuelva a proponer el cambio.",
+      "changeStatusFailed": "No se pudo aplicar: %s",
+      "changeErrNoRows": "Ninguna fila de los datos de entrada actuales coincide con los filtros propuestos.",
+      "changeErrBadChoice": "'%s' no es uno de los valores que este símbolo acepta actualmente.",
+      "nfChangeApplied": "Datos de entrada de '%s' actualizados.",
+      "btApplyChange": "Aplicar",
+      "btDiscardChange": "Descartar",
+      "changeRebased": "Los datos han cambiado desde que se propuso este cambio, por lo que se ha actualizado la vista previa. Revísela antes de aplicarlo.",
+      "changeGroupRebased": "Los datos han cambiado desde que se propusieron estos cambios, por lo que se ha actualizado la vista previa. Revísela antes de aplicarlos.",
+      "changeGroupHeader": "%d cambios propuestos",
+      "changeGroupIndependent": "Estos cambios no se afectan entre sí, por lo que al aplicarlos juntos se obtiene exactamente lo que muestra cada tarjeta anterior.",
+      "changeGroupCombined": "Algunos de estos cambios afectan a los mismos valores, por lo que, aplicados juntos y en este orden, dan un resultado distinto al que muestran sus tarjetas anteriores por separado:",
+      "changeGroupStatusApplied": "Todos los cambios se han aplicado al escenario sandbox.",
+      "changeGroupStatusRetired": "Algunos de estos cambios ya se procesaron uno a uno.",
+      "btApplyAllChanges": "Aplicar los %d",
+      "nfChangesApplied": "%d cambios en los datos de entrada aplicados.",
+      "toolActivityStatusError": "Error",
+      "toolActivityStatusRows": "%s filas",
+      "toolActivitySymbol": "Símbolo",
+      "toolActivityScenarios": "Escenarios",
+      "toolActivityAggregation": "Agregación",
+      "toolActivityAnalysisMode": "Comparación",
+      "toolActivityGroupBy": "Agrupado por",
+      "toolActivityFilter": "Filas",
+      "toolActivityOrderBy": "Ordenado por",
+      "toolActivityLimit": "Límite",
+      "toolActivityRows": "Filas devueltas",
+      "toolActivityGroupCount": "%s consultas a la base de datos"
+    },
+    "hcubeMode": {
+      "sliderAllCombinations": "¿Todas las combinaciones?",
+      "stepsize": "Tamaño de paso",
+      "checkboxAliases": [
+        "No",
+        "Sí"
+      ],
+      "invalidScenDialog": {
+        "title": "Escenarios no válidos",
+        "desc": "%d de los escenarios que desea subir no son válidos (%s). ¿Desea continuar de todos modos?",
+        "okButton": "Continuar",
+        "cancelButton": "Cancelar"
+      },
+      "duplicatedScenDialog": {
+        "title": "Se encontraron escenarios duplicados",
+        "allDuplicated": "Todos los escenarios que desea importar ya existen en la base de datos con las etiquetas: '%s'. ¿Desea continuar de todos modos?",
+        "someDuplicated": "%d de los escenarios que desea importar ya existen en la base de datos con las etiquetas: '%s'. ¿Desea continuar de todos modos o importar solo los escenarios que aún no existen?",
+        "cancelButton": "Cancelar",
+        "importNewButton": "Importar solo nuevos",
+        "importAllButton": "Importar todos"
+      },
+      "showLogFileDialog": {
+        "title": "Archivo de registro",
+        "noContent": "No se pudo acceder al archivo de registro o este no contiene datos.",
+        "fileSize": "El archivo de registro contiene demasiados datos para mostrarse.",
+        "cancelButton": "Cancelar"
+      },
+      "showJobProgressDialog": {
+        "title": "Progreso del trabajo",
+        "failedMsg": "%s con errores",
+        "cancelButton": "Cancelar"
+      },
+      "jobsCompletedDialog": {
+        "title": "Trabajos completados",
+        "desc": "Se han completado trabajos de Hypercube que ya están listos para importarse."
+      }
+    },
+    "dialogPaverInUse": {
+      "title": "PAVER ya está en uso",
+      "desc": "Espere hasta que finalice el proceso.",
+      "closeButton": "Cerrar"
+    },
+    "scriptOutput": {
+      "runButton": "Ejecutar script",
+      "interruptButton": "Interrumpir script",
+      "errMsg": {
+        "noScript": "No se encontró el archivo de script.",
+        "noOutput": "No se encontró el archivo de salida del script.",
+        "timeout": "Se agotó el tiempo de espera del script.",
+        "crash": "El script se bloqueó."
+      }
+    },
+    "hot": {
+      "search": "Buscar:"
+    },
+    "migrationModule": {
+      "title": "Migración de la base de datos",
+      "desc": "Hemos detectado que su contrato de datos de GAMS/MIRO ha cambiado de forma incompatible con la estructura actual de la base de datos de su app. Indique cómo deben migrarse sus datos.",
+      "backupWarning": "Le recomendamos encarecidamente que haga una copia de seguridad de su base de datos antes de la migración.",
+      "successMsg": "¡Sus datos se migraron correctamente! Reinicie la aplicación.",
+      "labelSymbol": "Símbolo: '%s'",
+      "selectTableToMap": "Migrar datos desde",
+      "selectColToMap": "Columna: ",
+      "btCancelMigration": "Cancelar",
+      "btConfirmMigration": "Confirmar migración",
+      "errDuplicateTables": "¡Las tablas '%s' no se pueden duplicar!",
+      "incompatibleTypeWarning": "Los datos existentes deben convertirse a un valor numérico para ajustarse a la nueva tabla de la base de datos. ¡Los valores que no se puedan convertir pasarán a ser 0!",
+      "dialogConfirmDataLoss": {
+        "title": "Advertencia: pérdida de datos",
+        "descTables": "Atención: con su configuración de migración actual se eliminarán las siguientes tablas: '%s'.",
+        "descTableCols": "Atención: con su configuración de migración actual se eliminarán las columnas '%s' de la tabla '%s'.",
+        "cbConfirmDataLoss": "Confirmo",
+        "btCancel": "Cancelar",
+        "btConfirm": "Eliminar datos"
+      },
+      "progress": {
+        "title": "Migrando datos",
+        "desc": "Migrando tabla %s/%s"
+      },
+      "btRemoveTables": {
+        "label": "Eliminar todas las tablas de la base de datos",
+        "confirmTitle": "Eliminar tablas de la base de datos",
+        "confirmDesc": "¿Está seguro de que desea eliminar todas las tablas de la base de datos que pertenecen al modelo? ¡Esta acción no se puede deshacer! Es recomendable que guarde primero la base de datos antes de continuar.",
+        "cbConfirm": "¿Eliminar todas las tablas?",
+        "btCancel": "Cancelar",
+        "btConfirm": "Eliminar tablas",
+        "msgSuccess": "¡Tablas de la base de datos eliminadas correctamente! Reinicie la aplicación."
+      }
+    },
+    "hcModule": {
+      "submissionDialog": {
+        "title": "Nuevo trabajo de Hypercube",
+        "btCancel": "Cancelar",
+        "btSubmitAll": "Enviar todos",
+        "btSubmitUnsolved": "Enviar no resueltos"
+      }
+    }
+  },
+  "renderers": {
+    "dropdownFilter": {
+      "placeholder": "Buscar..."
+    },
+    "miroPivot": {
+      "btDownload": "Descargar",
+      "btDownloadCsv": "Descargar CSV",
+      "btDownloadPng": "Descargar PNG",
+      "btDownloadCsvShort": "CSV",
+      "btDownloadPngShort": "PNG",
+      "btHidePivotControls": "Ocultar controles de la tabla dinámica (modo presentación)",
+      "btHidePivotControlsShort": "Modo presentación",
+      "btShowPivotControls": "Mostrar controles de la tabla dinámica",
+      "btShowPivotControlsShort": "Controles",
+      "btLoadView": "Cargar vista",
+      "btShowSettings": "Ajustes",
+      "btNewView": "Añadir vista",
+      "btNewViewDisabledTooltip": "Las vistas solo se pueden añadir en el escenario sandbox.",
+      "btNewViewDisabledCompareTooltip": "Las vistas solo se pueden añadir cuando el escenario sandbox es el escenario base. Para añadir una vista a esta comparación, cargue de nuevo los escenarios, seleccione el escenario sandbox como escenario base, añada la vista y guarde el escenario sandbox.",
+      "btEnableEdit": "Habilitar edición",
+      "btAddRow": "Añadir fila",
+      "btRemoveRows": "Eliminar filas",
+      "rows": "Filas",
+      "columns": "Columnas",
+      "aggregation": "Agregación",
+      "aggregateLabel": "Agregar",
+      "filterLabel": "Filtrar",
+      "allPlaceholder": "Todos",
+      "defaultViewName": "predeterminada",
+      "colTruncationWarning": "Los datos se truncaron a las primeras %s columnas.",
+      "rowTruncationWarning": "Los datos se truncaron a las primeras %s filas.",
+      "updateSettingsTitle": "Ajustes",
+      "updateSettingsBtCancel": "Cancelar",
+      "updateSettingsBtSave": "Guardar",
+      "domainFilterShowAllTitle": "Mostrar todo",
+      "errUniqueViewName": "El nombre de vista introducido ya existe. ¿Desea sobrescribir la vista?",
+      "duplicateRecordTitle": "Registro duplicado",
+      "duplicateRecordDesc": "El registro introducido ya existe.",
+      "errPivotDuplicate": "Los datos contienen registros duplicados y, por lo tanto, no se pueden pivotar.",
+      "errPivot": "No se pudieron pivotar los datos. Esto puede deberse a que los datos son demasiado grandes.",
+      "errorTitle": "Error",
+      "duplicateRecordError": "El registro: '%s' ya existe. Elimínelo e inténtelo de nuevo.",
+      "newView": {
+        "tabGeneral": "General",
+        "tabScales": "Ejes",
+        "tabMultiChart": "Gráfico combinado",
+        "tabSecondAxis": "Eje secundario",
+        "tabSeries": "Estilo de series",
+        "title": "Nueva vista",
+        "label": "Elija un nombre para la vista.",
+        "info": "Los ajustes de los ejes se invierten en los gráficos horizontales.",
+        "chartTitle": "Título (opcional)",
+        "xTitle": "Etiqueta del eje X (opcional)",
+        "yTitle": "Etiqueta del eje Y (opcional)",
+        "yLogScale": "Escala logarítmica en el eje y",
+        "singleStack": "Apilar valores positivos y negativos juntos",
+        "groupDimension": "Agrupar pilas por dimensión",
+        "xGrid": "Dibujar cuadrícula para el eje x",
+        "yGrid": "Dibujar cuadrícula para el eje y",
+        "showDataMarkers": "Dibujar puntos de datos",
+        "stepPlot": "Gráfico de líneas escalonadas",
+        "hideLegend": "Ocultar leyenda",
+        "minY": "Valor mínimo fijo en el eje y (opcional)",
+        "maxY": "Valor máximo fijo en el eje y (opcional)",
+        "multiChartSeries": "Representar series con otro tipo de gráfico",
+        "multiChartSeriesTypeSelection": "Tipo de gráfico",
+        "showMultiChartDataMarkers": "Dibujar puntos de datos del gráfico secundario",
+        "stackMultiChartSeries": "Incluir series del gráfico secundario en la pila",
+        "stackType1": "No",
+        "stackType2": "Sí - Añadir a la pila normal",
+        "stackType3": "Sí - Pila individual",
+        "x2axis": "Usar un eje x secundario",
+        "y2axis": "Usar un eje y secundario",
+        "y2axisSeries": "Series que se representan en el eje secundario",
+        "y2axisTitle": "Etiqueta del eje secundario (opcional)",
+        "y2axisGrid": "Dibujar cuadrícula para el eje secundario",
+        "y2axisLogScale": "Escala logarítmica en el eje secundario",
+        "minY2": "Valor mínimo fijo en el eje secundario (opcional)",
+        "maxY2": "Valor máximo fijo en el eje secundario (opcional)",
+        "cbCustomColors": "Usar colores personalizados",
+        "cbManualColors": "Introducir colores manualmente",
+        "fillOpacity": "Opacidad de relleno",
+        "cbLineDash": "Usar líneas discontinuas",
+        "cbManualLineDashTooltip": "Array de valores que definen longitudes alternas de línea y espacio",
+        "solid": "Continua",
+        "dotted": "Punteada",
+        "dashed": "Discontinua",
+        "wideDashed": "Discontinua ancha",
+        "dashDot": "Raya-punto",
+        "dashDotDot": "Raya-punto-punto",
+        "customPattern": "Patrón personalizado",
+        "cbBorderWidth": "Usar ancho de borde personalizado",
+        "selectizePlaceholder": "Seleccione una opción o cree una nueva",
+        "btCancel": "Cancelar",
+        "btSave": "Guardar",
+        "btCancelOverwrite": "No",
+        "btOverwrite": "Sí"
+      },
+      "settings": {
+        "tabGeneral": "General",
+        "tabTable": "Tablas",
+        "tabChart": "Gráficos",
+        "tabBaselineComp": "Comparación con referencia",
+        "cbHideEmptyCols": "Ocultar columnas vacías",
+        "cbDecimals": "Número de decimales",
+        "cbDecimalsTooltip": "Introduzca -1 para desactivar el redondeo",
+        "singleDropdown": "Dimensión(es) limitadas a un filtro desplegable de selección única",
+        "cbShowTableSummaryRow": "Mostrar resumen de la tabla (filas)",
+        "cbShowTableSummaryCol": "Mostrar resumen de la tabla (columnas)",
+        "rowSummaryFunction": "Función de resumen de filas",
+        "colSummaryFunction": "Función de resumen de columnas",
+        "fixedColumns": "Fijar columnas de la tabla a la izquierda",
+        "chartFontSize": "Tamaño de fuente de los gráficos",
+        "baselineComparison": {
+          "cbEnable": "Habilitar comparación con referencia",
+          "selDomain": "Dominio",
+          "selRecord": "Registro de referencia",
+          "baselineScen": "Escenario base",
+          "selMetrics": "Métricas de comparación (máx. 2)",
+          "errorAggregated": "El dominio de referencia no se puede agregar. La comparación con referencia se ha desactivado; se muestran los valores sin procesar.",
+          "metrics": {
+            "values": "Valores sin procesar",
+            "percDiff": "Δ relativa (%)",
+            "absDiff": "Δ absoluta",
+            "norm": "Normalización"
+          }
+        }
+      },
+      "dialogAddRow": {
+        "title": "Añadir nueva fila",
+        "btCancel": "Cancelar",
+        "invalidKeysError": "Los elementos introducidos no son válidos. Tenga en cuenta que los elementos deben contener al menos un carácter imprimible.",
+        "invalidValuesError": "Los datos introducidos no son válidos. Asegúrese de que los valores introducidos sean numéricos.",
+        "unknownError": "Se produjo un error inesperado al intentar añadir los nuevos datos."
+      },
+      "aggregationFunctions": {
+        "sum": "Suma",
+        "count": "Recuento",
+        "median": "Mediana",
+        "mean": "Media",
+        "min": "Mín.",
+        "max": "Máx.",
+        "sd": "Desviación estándar"
+      },
+      "renderer": {
+        "table": "Tabla",
+        "heatmap": "Mapa de calor",
+        "pie": "Gráfico circular",
+        "doughnut": "Gráfico de anillo",
+        "bar": "Gráfico de barras",
+        "horizontalbar": "Gráfico de barras (horizontal)",
+        "stackedbar": "Gráfico de barras apiladas",
+        "horizontalstackedbar": "Gráfico de barras apiladas (horizontal)",
+        "radar": "Gráfico radial",
+        "line": "Gráfico de líneas",
+        "scatter": "Gráfico de dispersión",
+        "area": "Gráfico de áreas",
+        "stackedarea": "Gráfico de áreas apiladas",
+        "timeseries": "Gráfico de series temporales"
+      },
+      "invalidFilters": {
+        "title": "Algunos filtros no se pudieron aplicar porque los valores no están presentes en los datos.",
+        "message": "Filtro: '%s', valores no válidos: '%s'."
+      }
+    },
+    "datatable": {
+      "addRowPos": [
+        "Añadir fila encima de la selección",
+        "Añadir fila debajo de la selección"
+      ],
+      "addRowPosNoneSelected": [
+        "Añadir encima de la primera fila",
+        "Añadir debajo de la última fila"
+      ]
+    },
+    "handsontable": {
+      "newCol": {
+        "nameLeft": "Insertar columna a la izquierda",
+        "nameRight": "Insertar columna a la derecha",
+        "prompt": "Introduzca un nombre para la nueva columna"
+      },
+      "renameCol": {
+        "name": "Cambiar nombre de columna",
+        "prompt": "Introduzca un nuevo nombre para la columna"
+      },
+      "removeCol": {
+        "name": "Eliminar columna",
+        "namePlural": "Eliminar columnas",
+        "prompt1": "¿Está seguro de que desea eliminar la(s) columna(s):",
+        "prompt2": "? ¡Esta acción no se puede deshacer!"
+      }
+    },
+    "dashboard": {
+      "noDataWarning": "Sin datos"
+    },
+    "dashboardComparison": {
+      "selectScen": "Seleccionar escenario"
+    }
+  },
+  "progressBar": {
+    "renderOutput": {
+      "title": "Generando gráficos de salida",
+      "progress": "Generando salida "
+    },
+    "prepRun": {
+      "title": "Preparando",
+      "sendInput": "Enviando datos de entrada",
+      "downloadAttach": "Descargando adjuntos"
+    },
+    "importScen": {
+      "title": "Importando escenario",
+      "downloadResults": "Descargando datos de resultados",
+      "renderInput": "Generando datos de entrada",
+      "renderOutput": "Generando datos de salida"
+    },
+    "exportScen": {
+      "title": "Exportando escenario",
+      "exportDs": "Exportando conjunto de datos %s de %s",
+      "success": "Datos del escenario exportados correctamente a: %s."
+    },
+    "loadScenDb": {
+      "title": "Cargando datos del escenario desde la base de datos",
+      "progress": "Cargando conjunto de datos "
+    },
+    "saveScenDb": {
+      "title": "Guardando datos del escenario en la base de datos",
+      "attachments": "Guardando adjuntos",
+      "progress": "Guardando conjunto de datos "
+    },
+    "hcubeImport": {
+      "title": "Importando trabajo Hypercube",
+      "refresh": "actualizar",
+      "unzip": "Extrayendo archivo zip",
+      "zipValidation": "Validando archivo zip",
+      "scenValidation": "Validando datos del escenario",
+      "duplicateCheck": "Comprobando escenarios duplicados",
+      "scenRead": "Leyendo datos del escenario",
+      "dbUpload": "Subiendo escenarios a la base de datos",
+      "success": "Importación correcta"
+    }
+  },
+  "errMsg": {
+    "unknownError": "Se produjo un error inesperado. Si el problema persiste, póngase en contacto con un administrador del sistema.",
+    "permErr": "La operación falló porque no tiene permisos suficientes.",
+    "fileRead": {
+      "title": "Error al leer el archivo",
+      "desc": "Se produjo un error al leer el archivo: '%s'.",
+      "tooLarge": "El archivo al que intenta acceder es demasiado grande para mostrarse."
+    },
+    "csvio": {
+      "warnings": {
+        "ambiguousDelim": "ADVERTENCIA: No se pudo identificar de forma inequívoca el delimitador del archivo. Selecciónelo manualmente a continuación."
+      },
+      "errors": {
+        "noColsSelected": "ERROR: Debe seleccionar al menos una columna para importar.",
+        "badDelim": "ERROR: No se pudo determinar el delimitador. Los delimitadores válidos son: '%s'.",
+        "duplicateCol": "ERROR: No se admite la selección múltiple de la misma columna.",
+        "badEncoding": "El archivo subido no tiene codificación UTF-8. ¡No se admiten codificaciones distintas de UTF-8!"
+      }
+    },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "Registros duplicados en el símbolo: '%s'",
+        "duplicateRecordsTruncated": "(Solo se muestran los primeros 10 registros duplicados)"
+      }
+    },
+    "xlsio": {
+      "warnings": {
+        "invalidSymbols": "ADVERTENCIA: Se ignoraron símbolos no válidos en el archivo de Excel: '%s'.",
+        "skipOptionsPersistence": "ADVERTENCIA: Se omitieron algunas filas no vacías. MIRO no admite opciones con persistencia como 'skipEmpty'. Declárelas como parte de la declaración del símbolo.",
+        "keyValueCols": "ADVERTENCIA: MIRO no admite columnas Key=value y se ignorarán. Utilice solo encabezados de columna.",
+        "invalidSkipEmpty": "ADVERTENCIA: MIRO no admite skipEmpty mayor que 1 (símbolo(s): '%s'). Los valores no válidos se han establecido en 1.",
+        "invalidSqueeze": "ADVERTENCIA: Valor no válido para la opción squeeze (símbolo(s): '%s'). Los valores permitidos son: 1, y, 0, n. Los valores no válidos se establecieron en 1.",
+        "invalidOptions": "ADVERTENCIA: Se encontraron opciones no válidas desconocidas para MIRO en el índice: '%s'.",
+        "scalarDeclarations": "ADVERTENCIA: Se encontraron en el índice tanto una declaración de tabla de escalares como una declaración de escalar individual. ¡La declaración individual se ignora si el escalar ya forma parte de la tabla!",
+        "invalidDsets": "ADVERTENCIA: El tipo de datos 'dSet' no se admite para conjuntos de más de una dimensión (símbolo(s): '%s')."
+      },
+      "errors": {
+        "badFormat": "ERROR: el archivo no es un archivo de Excel válido.",
+        "indexNoSymInfo": "ERROR: No se encontró información sobre los nombres de los símbolos en el índice.",
+        "indexNoRangeInfo": "ERROR: No se encontró información sobre los rangos en el índice.",
+        "indexInvalidRdim": "ERROR: Los símbolos: '%s' tienen una dimensión de filas no válida.",
+        "indexInvalidCdim": "ERROR: Los símbolos: '%s' tienen dimensiones de columnas no válidas.",
+        "indexInvalidDim": "ERROR: Los símbolos: '%s' tienen una dimensión no válida.",
+        "indexDuplicateRdim": "ERROR: No se pudo identificar de forma inequívoca la columna rowdim.",
+        "indexDuplicateCdim": "ERROR: No se pudo identificar de forma inequívoca la columna coldim.",
+        "indexDuplicateIgnoreCol": "ERROR: No se pudo identificar de forma inequívoca la columna ignoreColumns.",
+        "indexDuplicateSkipEmpty": "ERROR: No se pudo identificar de forma inequívoca la columna skipEmpty.",
+        "indexDuplicateSqueeze": "ERROR: No se pudo identificar de forma inequívoca la columna squeeze.",
+        "indexInvalidRdimCol": "ERROR: La columna rowdim no es un número entero.",
+        "indexInvalidCdimCol": "ERROR: La columna coldim no es un número entero.",
+        "indexInvalidValues": "ERROR: Se encontraron opciones 'values' no válidas para los símbolos: '%s'. Las opciones posibles son: auto, nodata, yn, sparse, dense.",
+        "symbolNotFound": "ERROR: No se encontró el símbolo: '%s' en el archivo de Excel.",
+        "badIndexRange": "ERROR: El rango de índice introducido no es válido.",
+        "badSymbolRange": "ERROR: Rango no válido para el símbolo: '%s'.",
+        "badSymbolDim": "ERROR: El símbolo '%s' tiene dimensiones no válidas.",
+        "invalidRecords": "ERROR: Se encontraron registros no válidos en el símbolo '%s': '%s'.",
+        "duplicateSymbols": "ERROR: Los símbolos: '%s' se han declarado varias veces. Asegúrese de que cada símbolo se declare una sola vez.",
+        "duplicateScalars": "ERROR: Los escalares: '%s' se han declarado varias veces. Asegúrese de que cada símbolo se declare una sola vez.",
+        "duplicateScalarVE": "ERROR: Las variables/ecuaciones escalares: '%s' se han declarado varias veces. Asegúrese de que cada símbolo se declare una sola vez.",
+        "invalidRange": "ERROR: Especificación de rango no válida.",
+        "invalidColRange": "ERROR: Especificación de rango de columnas no válida.",
+        "maxDimExceeded": "Los datos superan el número máximo de filas y/o columnas admitido por Excel."
+      }
+    },
+    "invalidFileType": {
+      "title": "Tipo de archivo no válido",
+      "desc": "MIRO no puede leer el archivo que intenta importar. Los tipos de archivo admitidos son: %s."
+    },
+    "fileWrite": {
+      "title": "Error al escribir el archivo",
+      "desc": "Se produjo un error al escribir el archivo: '%s'."
+    },
+    "initErrors": {
+      "title": "Se produjeron algunos errores",
+      "desc": "Corrija los errores indicados a continuación y reinicie MIRO:",
+      "okButton": "Aceptar"
+    },
+    "fetchScenData": {
+      "title": "Error al obtener los metadatos del escenario",
+      "desc": "No se pudieron recuperar los metadatos del escenario."
+    },
+    "renderSlider": {
+      "title": "Datos de entrada incorrectos para el control deslizante",
+      "desc": "El valor '%s' del control deslizante: '%s' no es de tipo numérico."
+    },
+    "saveInput": {
+      "title": "Error al guardar los datos de entrada",
+      "desc": "Se produjo un error al guardar los datos en la base de datos."
+    },
+    "readOutput": {
+      "title": "Error al leer los resultados",
+      "desc": "Se produjo un error al leer los resultados devueltos por GAMS."
+    },
+    "dataError": {
+      "title": "Error en los datos",
+      "desc": "Se produjo un error en los datos. Póngase en contacto con el administrador del sistema si el problema persiste."
+    },
+    "ddLenMismatch": {
+      "title": "El número de alias y de valores no coincide",
+      "desc": "El número de alias del menú desplegable: '%s' no coincide con el número de valores."
+    },
+    "fetchDataset": {
+      "title": "Error al leer el conjunto de datos",
+      "desc": "Se produjo un error al obtener el conjunto de datos: '%s' de la base de datos.",
+      "badColName": "No se encontraron las columnas '%s' en el conjunto de datos : '%s'",
+      "noData": "No se pudo cargar el conjunto de datos: '%s'. Asegúrese de que el conjunto de datos contenga realmente datos."
+    },
+    "GAMSInput": {
+      "title": "Se produjeron errores al escribir los archivos de entrada",
+      "desc": "Se produjeron algunos errores al escribir los archivos de entrada de GAMS.",
+      "excelRead": "Se produjo un error al leer el archivo: '%s'.",
+      "badColName": "No se encontraron las columnas '%s' en el conjunto de datos : '%s'",
+      "noData": "No se pudo cargar el conjunto de datos: '%s'. Asegúrese de que el conjunto de datos contenga realmente datos.",
+      "badInputData": "El conjunto de datos de entrada de GAMS: '%s' no es válido. Compruebe el formato de los datos que desea importar.",
+      "writeCsv": "Se produjo un error al escribir el archivo csv: '%s'."
+    },
+    "GAMSOutput": {
+      "title": "Errores al leer los archivos de salida",
+      "badOutputData": "El conjunto de datos de salida de GAMS: '%s' no es válido. Compruebe el formato de los datos que desea importar."
+    },
+    "gamsExec": {
+      "title": "No se pudo ejecutar GAMS",
+      "desc": "No se pudo ejecutar GAMS. ¿Olvidó especificar la ruta de instalación de GAMS?"
+    },
+    "quotaWarning": {
+      "titleWarning": "Advertencia de cuota",
+      "titleError": "Cuota superada",
+      "quotaExceeded": "No se pudo enviar el trabajo porque se superó su cuota. Aumente su cuota e inténtelo de nuevo.",
+      "remainingVolume": "Cuota de *volumen* restante: %s",
+      "remainingDisk": "Cuota de *disco* restante: %s"
+    },
+    "sessionExpired": {
+      "title": "Sesión caducada",
+      "desc": "El token de sesión para la comunicación con GAMS Engine ha caducado. Cierre sesión y vuelva a iniciarla."
+    },
+    "jobRunning": {
+      "title": "Trabajo activo",
+      "desc": "Hay un trabajo de GAMS en ejecución. Debe detenerlo o esperar a que finalice antes de ejecutar otro trabajo.",
+      "descAsyncSubmitting": "Se está enviando un trabajo de GAMS. Debe esperar a que se envíe antes de ejecutar otro trabajo.",
+      "descAsyncSubmittingDetach": "Los trabajos no se pueden desvincular mientras se están enviando.",
+      "descAsync": "Ya hay un trabajo de GAMS en ejecución. ¿Desea desvincular el trabajo actual y vincular este trabajo en su lugar? Podrá seguir accediendo al trabajo en ejecución a través de la lista de trabajos.",
+      "cancelButton": "Cancelar",
+      "detachButton": "Desvincular ejecución actual"
+    },
+    "unzipProcessRunning": {
+      "title": "MIRO ocupado",
+      "desc": "MIRO todavía está extrayendo los archivos del modelo en su espacio de trabajo. Espere e inténtelo de nuevo."
+    },
+    "gamsTerm": "Se produjo un error al finalizar GAMS (p. ej., el proceso ya ha terminado).",
+    "readLog": {
+      "title": "Error al leer el archivo de registro",
+      "desc": "Se produjo un error al leer el archivo de registro de GAMS."
+    },
+    "readLst": {
+      "title": "Error al leer el archivo de listado",
+      "desc": "Se produjo un error al leer el archivo de listado de GAMS.",
+      "fileSize": "El archivo lst que intenta leer es demasiado grande para mostrarse. Descargue el archivo lst para acceder a él.",
+      "fileNotFound": "No se encontró el archivo de listado."
+    },
+    "saveScen": {
+      "title": "Error al guardar el escenario",
+      "desc": "Se produjo un error al intentar guardar el escenario."
+    },
+    "loadScen": {
+      "title": "Error al cargar el escenario",
+      "desc": "Se produjo un error al cargar los escenarios seleccionados.",
+      "inconsistentDataWarning": "El escenario se modificó mientras lo estaba visualizando. Por lo tanto, es posible que los datos no sean coherentes. Puede que desee actualizar el escenario."
+    },
+    "deleteScen": {
+      "title": "Error al eliminar el escenario",
+      "desc": "Se produjo un error al eliminar el escenario. Si el error persiste, póngase en contacto con el administrador del sistema."
+    },
+    "renderTable": {
+      "title": "Error al generar la tabla",
+      "desc": "Se produjo un error al generar la tabla de los datos de salida: '%s'."
+    },
+    "renderGraph": {
+      "title": "Error al generar el gráfico",
+      "desc": "Se produjo un error al generar el gráfico de los datos de salida: '%s'."
+    },
+    "blankScenName": {
+      "title": "No se introdujo ningún nombre",
+      "desc": "Seleccione un nombre válido para el escenario que desea guardar."
+    },
+    "maxScen": {
+      "title": "Se alcanzó el número máximo de escenarios",
+      "desc": "Ha alcanzado el número máximo de escenarios que puede cargar simultáneamente. Elimine primero algunos escenarios antes de importar otros nuevos."
+    },
+    "lockScen": {
+      "title": "Error al establecer/eliminar el bloqueo del escenario",
+      "desc": "Se produjo un error al bloquear o desbloquear el escenario activo."
+    },
+    "hcubeImport": {
+      "extract": {
+        "title": "Error al extraer el archivo comprimido",
+        "desc": "Problemas al extraer el archivo comprimido. Asegúrese de subir un archivo zip válido.",
+        "invalidFiles": "El archivo comprimido que intenta importar contiene archivos no válidos. ¡Solo se permiten archivos trace, archivos CSV y archivos GDX!"
+      },
+      "scenRead": {
+        "title": "Error al leer los archivos",
+        "desc": "Problemas al leer los datos del escenario. Si el problema persiste, póngase en contacto con el administrador del sistema."
+      },
+      "invalidJob": {
+        "title": "Trabajo Hypercube no válido",
+        "desc": "No hay escenarios válidos en el archivo comprimido. Suba datos de trabajo Hypercube válidos."
+      },
+      "duplicateFetch": {
+        "title": "Error de base de datos",
+        "desc": "Problemas al obtener los escenarios existentes de la base de datos. Si el problema persiste, póngase en contacto con el administrador del sistema."
+      },
+      "dbUpload": {
+        "title": "Error de base de datos",
+        "desc": "Problemas al subir los escenarios a la base de datos. Inténtelo de nuevo más tarde."
+      }
+    },
+    "paverFileLoad": {
+      "desc": "No se pudieron cargar los datos de esta categoría."
+    },
+    "paverExec": {
+      "title": "Error al ejecutar Python",
+      "desc": "Se produjo un error al ejecutar Python."
+    },
+    "paverTerm": {
+      "title": "Error al finalizar Python",
+      "desc": "Se produjo un error al finalizar Python."
+    },
+    "saveGAMSLog": {
+      "title": "Error al guardar los archivos log/lst de GAMS",
+      "noFileAccess": "No se pudo acceder a uno o varios archivos de salida de GAMS (.log/.lst).",
+      "fileSizeExceeded": "Uno o varios archivos de salida de GAMS (.log/.lst) superan el tamaño máximo permitido para su almacenamiento."
+    },
+    "saveAttachments": {
+      "title": "Problemas al guardar los adjuntos",
+      "noFileAccess": "No se pudieron guardar los adjuntos: '%s' porque los archivos no son accesibles.",
+      "fileSizeExceeded": "No se pudieron guardar los adjuntos: '%s' porque superan el tamaño máximo permitido.",
+      "maxNoExceeded": "Se ha superado el número máximo de adjuntos (%s)."
+    }
+  },
+  "adminMode": {
+    "invalidSymbolsDialog": {
+      "title": "Configuración no válida",
+      "desc": "Algunos gráficos y/o widgets se han configurado para símbolos que ya no forman parte de su contrato de datos GAMS/MIRO o que están ocultos. ¿Desea eliminarlos de su configuración? Tenga en cuenta que esta acción no se puede deshacer. Configuración de gráficos para símbolo(s) no válido(s): '%s'. Configuración de widgets para símbolo(s) no válido(s): '%s'.",
+      "msgSuccess": "La configuración no válida se eliminó correctamente",
+      "btRemoveWidgets": "Eliminar widgets no válidos",
+      "btRemoveGraphs": "Eliminar gráficos no válidos",
+      "btCancel": "Cancelar"
+    },
+    "uiR": {
+      "configMode": "Modo de configuración de GAMS MIRO",
+      "general": "Ajustes generales",
+      "symbol": "Símbolos",
+      "table": "Tablas",
+      "widgets": "Widgets de entrada",
+      "graphs": "Gráficos",
+      "colors": "Colores",
+      "database": "Gestión de la base de datos",
+      "restartRequired": "Nota: para que estos cambios surtan efecto, debe reiniciar el Modo de configuración."
+    },
+    "general": {
+      "ui": {
+        "title": "Ajustes generales",
+        "tabInterface": "Interfaz de usuario",
+        "tabSubmission": "Envío de trabajos",
+        "tabLogs": "Archivos de registro",
+        "tabComparison": "Comparación de escenarios",
+        "tabAiAssistant": "Asistente de IA",
+        "tabData": "Datos de escenario y adjuntos",
+        "tabSymbolLinks": "Símbolos ocultos y vínculos de símbolos",
+        "headerGeneral": "Título y logotipo",
+        "headerPivotcompare": "Modo de comparación Pivot",
+        "descriptionPivotcompare": "Estos ajustes sirven como valores predeterminados para el usuario, pero pueden modificarse en cualquier momento durante una sesión.",
+        "headerRenderers": "Renderers predeterminados",
+        "headerLanguage": "Idioma personalizado",
+        "headerAppearance": "Apariencia",
+        "headerSymbolDisplay": "Ocultar símbolos",
+        "headerTabGrouping": "Agrupación de pestañas",
+        "headerTabSymlinks": "Usar datos de salida como datos de entrada",
+        "headerInputGroups": "Grupos de entrada",
+        "headerInputWidgetGroups": "Grupos de widgets",
+        "headerOutputGroups": "Grupos de salida",
+        "tabNameOrder": "Orden y grupos de símbolos",
+        "headerSymbolNaming": "Nombres de símbolos y columnas",
+        "headerSymbolGrouping": "Ordenación",
+        "headerOutputAttach": "Adjuntos de salida",
+        "headerExport": "Exportar",
+        "headerImport": "Importar",
+        "tooltipDocs": "Abrir documentación"
+      },
+      "modalDialog": {
+        "title": "Error al copiar la imagen",
+        "content": "Se produjo un problema al copiar la imagen. Si el problema persiste, póngase en contacto con un administrador del sistema."
+      },
+      "language": {
+        "label": "Idioma",
+        "choices": [
+          "Inglés",
+          "Alemán",
+          "Chino"
+        ]
+      },
+      "theme": {
+        "label": "Modo de color",
+        "choices": [
+          "Usar ajustes del sistema/navegador",
+          "Modo claro",
+          "Modo oscuro"
+        ]
+      },
+      "customCss": {
+        "label": "Incluir un archivo CSS personalizado",
+        "tooltip": "El archivo debe llamarse 'custom.css' y encontrarse en el directorio static_<modelname>."
+      },
+      "maxTabsExpanded": {
+        "title": "Número máx. de pestañas antes de agruparlas en la pestaña desplegable Más»",
+        "pivotComp": "Comparación Pivot",
+        "splitComp": "Comparación dividida",
+        "tabComp": "Comparación en pestañas"
+      },
+      "pageTitle": {
+        "label": "Título de la aplicación",
+        "tooltip": "El título es visible en la pestaña del navegador"
+      },
+      "scen": {
+        "label": "Modo predeterminado de comparación de escenarios",
+        "choices": [
+          "Vista dividida (adecuada para comparar 2 escenarios)",
+          "Vista en pestañas (adecuada para comparar > 2 escenarios)",
+          "Vista Pivot (adecuada para comparar > 2 escenarios)"
+        ]
+      },
+      "defaultScenName": {
+        "checkbox": "Cargar un escenario predeterminado al iniciar",
+        "tooltip": "Permite rellenar previamente tablas y widgets con datos al iniciar MIRO",
+        "label": "Nombre del escenario predeterminado"
+      },
+      "args": {
+        "label": "Especifique argumentos de línea de comandos adicionales con los que se llamará a GAMS/Python"
+      },
+      "groups": {
+        "input": "Añadir grupo para símbolos de entrada",
+        "widgets": "Añadir grupo para widgets de entrada",
+        "output": "Añadir grupo para símbolos de salida"
+      },
+      "symlinks": {
+        "label": "Añadir vínculo de símbolo (resultados que pueden usarse como datos de entrada)"
+      },
+      "outputAttach": {
+        "label": "Añadir nuevo adjunto"
+      },
+      "overwriteSheetOrder": {
+        "input": "Orden de las pestañas de símbolos de entrada (modificar arrastrando y soltando)",
+        "output": "Orden de las pestañas de símbolos de salida (arrastrar y soltar)"
+      },
+      "overwriteSymbolAliases": {
+        "label": "Especificar alias de símbolo",
+        "input": "Símbolos de entrada",
+        "output": "Símbolos de salida"
+      },
+      "overwriteSymbolHeaders": {
+        "label": "Especificar encabezados de columna"
+      },
+      "hiddenOutputSymbols": {
+        "label": "Símbolos de salida que no deben mostrarse, pero que pueden usarse en gráficos, etc."
+      },
+      "hiddenOutputScalars": {
+        "label": "Escalares de salida que no deben mostrarse en la tabla de escalares, pero que pueden usarse en gráficos, etc."
+      },
+      "hiddenCompareSymbols": {
+        "label": "Símbolos de entrada/salida que no deben mostrarse como pestaña en los modos de comparación de escenarios dividida, en pestañas y pivot. Fuera de la comparación de escenarios, estos símbolos se siguen mostrando normalmente."
+      },
+      "mirologfile": {
+        "label": "¿Incluir un archivo de registro personalizado?",
+        "tooltip": "Introduzca el nombre del archivo de registro de MIRO (mínimo 3 caracteres). De lo contrario, deje este campo vacío.",
+        "miroLogExclusiveError": "Solo se puede analizar un archivo de registro según la sintaxis de registro de MIRO. Por lo tanto, solo se analizará stdout, pero el registro de MIRO se seguirá mostrando."
+      },
+      "mirologStdout": "¿Debe analizarse el archivo de registro estándar (stdout del proceso) según la sintaxis de registro de MIRO?",
+      "readme": {
+        "label": "Archivo README",
+        "readmeTooltip": "Un archivo README se muestra en la sección de entrada como página de inicio independiente",
+        "useReadme": "Incluir archivo README",
+        "tabTitle": "Título de la pestaña README",
+        "fileName": "Nombre del archivo README",
+        "enableMath": "¿Habilitar la composición tipográfica matemática?",
+        "btEdit": "Editar README",
+        "dialogEdit": {
+          "title": "Editor de README",
+          "rawHeader": "Contenido Markdown",
+          "markdownHeader": "Vista previa del README",
+          "msgErrSave": "Se produjeron problemas al escribir el archivo README. Compruebe si dispone de permisos de escritura suficientes en el directorio del modelo.",
+          "btCancel": "Cancelar",
+          "btSave": "Guardar"
+        }
+      },
+      "aiAssistant": {
+        "cbEnable": "Habilitar el asistente de IA",
+        "btEditContext": "Editar contexto del dominio",
+        "btEditInstructions": "Editar instrucciones generales",
+        "tooltipContext": "Proporciona al asistente conocimientos de base sobre su modelo, p. ej., su finalidad, su terminología y su funcionamiento. - Abrir documentación.",
+        "tooltipInstructions": "Define reglas de formato, tono y comportamiento para las respuestas del asistente. - Abrir documentación.",
+        "dialogEditContext": {
+          "title": "Editar el contexto del dominio del asistente de IA",
+          "helpText": "**Qué hace:** Proporciona a la IA conocimientos de base sobre su modelo de optimización para que pueda ofrecer análisis de datos y conclusiones relevantes y adaptados al dominio.\n\n**Cómo usarlo:** Describa la finalidad de su aplicación, el problema empresarial o científico subyacente que resuelve, la terminología clave y el funcionamiento del modelo.\n\n**Consejo:** Puede usar el marcador de posición `[[README]]` en cualquier parte de este campo. MIRO lo sustituirá automáticamente por el contenido actual del archivo README de su aplicación, lo que le evita duplicar la documentación.",
+          "rawHeader": "Contenido Markdown",
+          "markdownHeader": "Vista previa",
+          "btCancel": "Cancelar",
+          "btSave": "Guardar"
+        },
+        "dialogEditInstructions": {
+          "title": "Editar las instrucciones del asistente de IA",
+          "helpText": "**Qué hace:** Define reglas específicas, pautas de comportamiento y restricciones sobre cómo debe interactuar el asistente de IA con los usuarios y dar formato a sus respuestas.\n\n**Cómo usarlo:** Proporcione directrices claras para el comportamiento de la IA. Esto incluye preferencias de formato (p. ej., \"Mostrar siempre los importes monetarios en millones de dólares\" o \"Usar tablas para comparar los resultados de los escenarios\"), el tono o los pasos concretos que debe seguir al analizar incoherencias en los datos (p. ej., \"Marcar siempre como error los valores negativos de la tabla de demanda\").",
+          "rawHeader": "Contenido Markdown",
+          "markdownHeader": "Vista previa",
+          "btCancel": "Cancelar",
+          "btSave": "Guardar"
+        }
+      },
+      "saveDuration": {
+        "label": "Tiempo durante el que se almacenan los archivos de registro y lst de GAMS en la base de datos (en días)."
+      },
+      "decimal": {
+        "label": "Número de decimales usados para redondear valores numéricos (ajuste global).",
+        "tooltip": "Afecta a todas las tablas de salida, a las tablas de entrada Big Data y a la tabla del módulo Batch Load. - Abrir documentación."
+      },
+      "numericalTolerance": {
+        "label": "Número de decimales usados para tratar como cero los valores cercanos a cero (ajuste global).",
+        "tooltip": "Afecta a la comparación con la línea base en el dashboard y en MIRO Pivot: un valor se trata exactamente como cero si es menor que 10 elevado a menos este número, lo que evita divisiones por cero o valores porcentuales/normalizados inflados. - Abrir documentación."
+      },
+      "defaultRenderer": {
+        "labelOutput": "Renderer predeterminado para los datos de salida",
+        "choicesOutput": [
+          "Tabla Pivot",
+          "Tabla"
+        ]
+      },
+      "customLanguage": {
+        "checkbox": "Usar un archivo de idioma personalizado",
+        "tooltip": "Permite sobrescribir y personalizar todos o algunos de los textos y etiquetas de la interfaz.",
+        "label": "Nombre del archivo de idioma"
+      },
+      "logo": {
+        "header": "Vista previa del logotipo:",
+        "label": "Cargue un logotipo personalizado para su aplicación MIRO",
+        "tooltip": "Archivo png/jpg (formato óptimo: 4.6:1 o 230:50px)",
+        "placeholder": "Ningún archivo seleccionado"
+      },
+      "actScen": {
+        "title": "Guardar, eliminar y comparar escenarios",
+        "label": "Activar la funcionalidad de escenarios"
+      },
+      "actStrict": {
+        "label": "¿Iniciar la aplicación en modo estricto? Esto hace que se muestren mensajes de error en lugar de aceptar entradas de usuario posiblemente erróneas."
+      },
+      "actUpload": {
+        "title": "Permite al usuario importar datos locales en un escenario sandbox",
+        "label": "Habilitar la carga de datos locales"
+      },
+      "actShareScen": {
+        "label": "Habilitar el uso compartido de escenarios entre distintos usuarios"
+      },
+      "actLog": {
+        "label": "Mostrar archivo de registro"
+      },
+      "actLst": {
+        "label": "Mostrar archivo de listado (lst)"
+      },
+      "actAttach": {
+        "title": "Pueden ser archivos de cualquier formato. MIRO distingue entre dos tipos de adjuntos: adjuntos que su modelo GAMS puede ver y leer, y archivos que no puede ver.",
+        "label": "Permitir al usuario añadir adjuntos a los escenarios"
+      },
+      "aggregate": {
+        "title": "Si no se activa, cada widget de entrada se muestra en una pestaña independiente.",
+        "label": "¿Deben agruparse todos los widgets de entrada (control deslizante, menú desplegable, etc.) en una sola pestaña?"
+      },
+      "parent": {
+        "label": "¿Incluir el directorio superior de la carpeta del modelo en las ejecuciones del modelo (p. ej., porque varios modelos comparten archivos)?"
+      },
+      "meta": {
+        "title": "Los metadatos contienen información sobre el nombre de usuario, el nombre del escenario y la fecha de creación del escenario",
+        "label": "Incluir una hoja de metadatos en el archivo Excel (al exportar un escenario)"
+      },
+      "empty": {
+        "title": "Las hojas pueden estar vacías, p. ej., cuando el escenario exportado solo contiene datos de entrada.",
+        "label": "Incluir hojas vacías en el archivo Excel"
+      },
+      "downloadTempFiles": {
+        "label": "Permitir el acceso al directorio de trabajo temporal"
+      },
+      "protectModelFiles": {
+        "title": "Los adjuntos que puede leer el modelo GAMS se colocan en el directorio de trabajo del modelo. Si se habilita, dichos adjuntos no pueden tener el mismo nombre que uno de los archivos del modelo.",
+        "label": "Impedir que los adjuntos legibles por el modelo sobrescriban archivos del modelo"
+      },
+      "hcubeModule": {
+        "label": "Activar el módulo Hypercube",
+        "tooltip": "Requiere el backend GAMS Engine"
+      },
+      "auto": {
+        "label": "Generar gráficos automáticamente para cada símbolo de entrada (herramienta pivot)"
+      }
+    },
+    "tables": {
+      "ui": {
+        "title": "Ajustes de tablas",
+        "input": "Tablas de entrada (ajustes globales)",
+        "output": "Tablas de salida (ajustes globales)",
+        "symbol": "Tablas de salida (símbolos individuales)",
+        "resetTable": "Restablecer",
+        "saveTable": "Guardar",
+        "tableTooltip": "Las tablas de entrada se configuran en la sección de widgets.",
+        "outputSymbols": "Símbolo de salida"
+      },
+      "hot": {
+        "height": "Altura de las tablas de entrada (en px)",
+        "readonly": "¿Restringir la edición de tablas? Si se activa, el usuario no puede modificar las tablas.",
+        "stretch": "Estiramiento predeterminado de columnas.",
+        "stretchChoices": [
+          "Sin estiramiento",
+          "Estirar la última columna",
+          "Estirar todas las columnas"
+        ],
+        "colwidth": "Ancho de una columna individual (no estirada). Deje vacío o 0 para usar el valor predeterminado.",
+        "enable": "Habilitar el menú contextual de la tabla (accesible con el botón derecho del ratón).",
+        "contextRowedit": "Habilitar la edición de filas",
+        "contextColedit": "Habilitar la edición de columnas"
+      },
+      "dt": {
+        "class": {
+          "label": "Estilo de tabla",
+          "choices": [
+            "display",
+            "borde de celda",
+            "compacto",
+            "resaltar al pasar el cursor",
+            "sin ajuste de línea",
+            "columna de orden",
+            "borde de fila",
+            "rayas"
+          ]
+        },
+        "filter": {
+          "label": "Incluir filtros de columna",
+          "choices": [
+            "Sin filtros de columna",
+            "Posición: abajo",
+            "Posición: arriba"
+          ]
+        },
+        "pagelength": {
+          "label": "Número de elementos por página"
+        },
+        "decimals": {
+          "label": "Número de decimales que se mostrarán"
+        },
+        "rownames": {
+          "label": "Mostrar números de fila"
+        },
+        "colReorder": {
+          "label": "¿Permitir reordenar las columnas?"
+        },
+        "buttons": {
+          "title": "Si un símbolo contiene varias páginas de tabla, un botón de exportación solo afecta a la página de tabla visible en ese momento.",
+          "choices": [
+            "copiar",
+            "CSV",
+            "Excel",
+            "PDF",
+            "imprimir",
+            "visibilidad de columnas"
+          ],
+          "select": "Seleccione los botones que desea usar. Nota: todas las funciones de los botones solo afectan a la página de tabla visible."
+        }
+      },
+      "symbol": {
+        "removeDialog": {
+          "title": "Confirme",
+          "message": "¿Seguro que desea restablecer la configuración existente para este símbolo? Esta acción no se puede deshacer.",
+          "cancel": "Cancelar",
+          "confirm": "Confirmar"
+        },
+        "noGraph": "Mostrar solo la tabla y ningún gráfico para este símbolo",
+        "saveJson": {
+          "warnTitle": "Ya existen datos",
+          "warnContent": "Según la configuración, no debe mostrarse ningún gráfico para el símbolo '%s'. Ya existe una configuración de gráfico para este símbolo. ¿Desea sobrescribir esta configuración? Esta acción no se puede deshacer.",
+          "cancel": "Cancelar",
+          "overwrite": "Sobrescribir"
+        }
+      }
+    },
+    "widgets": {
+      "ui": {
+        "title": "Configurar widgets de entrada",
+        "widgetUpdateSuccess": "La configuración del widget se actualizó correctamente",
+        "widgetTableUpdateSuccess": "La configuración de la tabla se actualizó correctamente",
+        "gams": "Todos los símbolos / widgets",
+        "go": "Nueva opción de GAMS",
+        "dd": "Nuevo parámetro de doble guion",
+        "widgetCategorieOpt": "Opciones de GAMS",
+        "widgetCategorieDoubleDash": "Parámetros de doble guion",
+        "choices": [
+          "Símbolo",
+          "Nueva opción de GAMS",
+          "Nuevo parámetro de doble guion"
+        ],
+        "noSymbolMsg": "No se ha marcado ningún símbolo GAMS para su uso en MIRO",
+        "noWidgetMsg": "Todavía no se ha configurado ningún widget",
+        "noWidgetConfigMsg": "Actualmente no hay ningún widget configurado para este símbolo",
+        "optionConfigMsg": "Información: el símbolo seleccionado es una opción de GAMS: %s",
+        "doubledashConfigMsg": "Información: el símbolo seleccionado es un parámetro de doble guion: %s",
+        "widgetExternallyDefinedMsg": "Información: el símbolo seleccionado ya está definido por el widget del símbolo: '%s'. Configurar un widget para este símbolo puede seguir siendo útil (p. ej., para el módulo Hypercube o el módulo Batch Load).",
+        "tableWidget": "La configuración de tablas se realiza en '",
+        "inputSymbol": "Símbolo de entrada",
+        "widgetGo": "Opción de GAMS",
+        "widgetDd": "Parámetro de doble guion",
+        "inputSymbolTooltip": "Seleccione el símbolo de entrada para el que desea crear un widget",
+        "tableTooltip": "Seleccione el símbolo de entrada cuya tabla desea configurar",
+        "widgetGoTooltip": "Nombre de la opción de GAMS (p. ej., 'LP' u 'OptCR')",
+        "widgetDdTooltip": "Nombre del parámetro de doble guion (sin '--')",
+        "widgetType": "Seleccione el tipo de widget",
+        "alias": "Nombre de la pestaña del widget (sin vista previa en directo)",
+        "pivotColsRestriction": "Nota: no es posible añadir ni eliminar columnas en la tabla del símbolo si está configurada como de solo lectura o se muestra como mapa de calor.",
+        "notConfigurable": "La configuración de widget encontrada en su archivo JSON no es compatible actualmente con el tipo de símbolo seleccionado en el Modo de configuración. Esto no significa que la configuración no sea válida. Símbolo: '%s'; tipo de widget configurado: '%s'",
+        "tooltip": "Información sobre herramientas (opcional)",
+        "scalarSymbols": "Símbolos de entrada escalares",
+        "multiDimSymbols": "Símbolos de entrada multidimensionales"
+      },
+      "validate": {
+        "val1": "El alias del elemento no puede estar vacío.",
+        "val2": "El nombre del parámetro de doble guion no puede estar vacío.",
+        "val3": "El nombre de la opción de GAMS no puede estar vacío.",
+        "val6": "El valor predeterminado no es válido.",
+        "val7": "El valor predeterminado debe ser un número en el intervalo [min, max].",
+        "val8": "El identificador de marcas debe ser booleano.",
+        "val9": "El tamaño de paso debe ser un número.",
+        "val10": "Su menú desplegable debe tener el mismo número de alias que de opciones o ningún alias.",
+        "val11": "El valor predeterminado debe ser una de las opciones especificadas.",
+        "val12": "El valor debe ser booleano.",
+        "val13": "La fecha predeterminada no es válida.",
+        "val14": "La fecha más temprana no es válida.",
+        "val15": "La fecha más tardía no es válida.",
+        "val16": "La fecha predeterminada debe ser posterior a la fecha de inicio.",
+        "val17": "La fecha predeterminada debe ser anterior a la fecha de fin.",
+        "val18": "La fecha más temprana debe ser anterior a la fecha más tardía.",
+        "val19": "La longitud mínima del formato de fecha personalizado es 1.",
+        "val20": "La fecha de inicio no es válida.",
+        "val21": "La fecha de fin no es válida.",
+        "val22": "La fecha más temprana no es válida.",
+        "val23": "La fecha más tardía no es válida.",
+        "val24": "La fecha de inicio debe ser posterior a la fecha más temprana.",
+        "val25": "La fecha de fin debe ser anterior a la fecha más tardía.",
+        "val26": "La fecha de inicio debe ser posterior a la fecha más temprana.",
+        "val27": "La fecha de fin debe ser anterior a la fecha más tardía.",
+        "val28": "La fecha más temprana debe ser anterior a la fecha más tardía.",
+        "val29": "La longitud mínima del formato de fecha personalizado es 1.",
+        "val30": "La fecha de inicio debe ser anterior a la fecha de fin.",
+        "val31": "La fecha más temprana debe ser anterior a la fecha más tardía.",
+        "val32": "El identificador de solo lectura debe ser booleano.",
+        "val33": "El identificador de mapa de calor debe ser booleano.",
+        "val34": "Algunas columnas que seleccionó como de solo lectura no existen en el símbolo seleccionado actualmente.",
+        "val35": "Tipo de widget no válido",
+        "val36": "El nombre del grupo debe tener al menos 1 carácter.",
+        "val37": "Cada grupo debe tener al menos 2 miembros y cada elemento solo puede aparecer en un único grupo.",
+        "val37a": "Cada grupo debe tener al menos 1 miembro y cada elemento solo puede aparecer en un único grupo.",
+        "val38": "Debe especificarse al menos una opción.",
+        "val39": "No se permiten espacios en el nombre.",
+        "val40": "No se encontró ningún valor mínimo del control deslizante.",
+        "val41": "No se encontró ningún valor máximo del control deslizante.",
+        "val42": "El valor mínimo debe ser menor que el valor máximo.",
+        "val43": "Para un control deslizante de intervalo deben definirse 2 valores predeterminados.",
+        "val44": "Debe indicarse un separador.",
+        "val45": "El nombre del parámetro de línea de comandos debe tener al menos 1 carácter.",
+        "val46": "Especifique los argumentos de línea de comandos y sus valores por separado.",
+        "val47": "El símbolo de origen y el de destino deben tener la misma dimensión.",
+        "val48": "El tamaño de paso mínimo no puede ser menor que cero.",
+        "val49": "El identificador del script no puede estar vacío y solo puede contener caracteres alfanuméricos.",
+        "val50": "El identificador del script debe ser único.",
+        "val51": "El título es obligatorio.",
+        "val52": "El comando es obligatorio.",
+        "val53": "El nombre del archivo de salida es obligatorio.",
+        "val55": "Solo se puede seleccionar un elemento en el menú desplegable si solo se comunica el texto del elemento a GAMS.",
+        "val56": "Ya existe un adjunto con este nombre de archivo.",
+        "val57": "El nombre del archivo contiene caracteres no válidos. No se admiten adjuntos en subdirectorios.",
+        "val58": "El separador decimal y el separador de miles no pueden ser idénticos.",
+        "val59": "El símbolo GAMS %s está declarado como table. Esto hace que la última columna se pivote en MIRO. MIRO Pivot no puede usarse con símbolos ya pivotados. Declare el símbolo como parámetro en su lugar.",
+        "val60": "Cada miembro solo puede aparecer en un único grupo.",
+        "val61": "La opción de GAMS no puede ser una de las opciones reservadas: '%s'."
+      },
+      "widgetOptions": {
+        "slider": "Control deslizante",
+        "sliderrange": "Control deslizante de intervalo",
+        "checkbox": "Casilla de verificación",
+        "dropdown": "Menú desplegable",
+        "table": "Tabla",
+        "date": "Fecha",
+        "daterange": "Intervalo de fechas",
+        "text": "Campo de texto",
+        "numericinput": "Entrada numérica"
+      },
+      "table": {
+        "label": "Etiqueta (se admite Markdown)",
+        "type": "Seleccione el tipo de tabla que desea usar",
+        "typeChoices": [
+          "Predeterminada",
+          "Tabla Big Data",
+          "Tabla Pivot"
+        ],
+        "hideIndexCol": "¿Ocultar la columna de índice?",
+        "readonly": "¿Debe ser la tabla de solo lectura?",
+        "readonlyCols": "Seleccione las columnas de solo lectura",
+        "colWidths": "Anchos de columna en px",
+        "colWidthsTooltip": "El Modo de configuración permite especificar un único ancho para todas las columnas de la tabla. Para especificar el ancho de cada columna individualmente, debe modificarse manualmente el archivo de configuración JSON. - Abrir documentación",
+        "customColWidths": "Se encontró una configuración personalizada de anchos de columna en el archivo JSON (no compatible con el Modo de configuración). Tenga en cuenta que cambiar los anchos de columna en el Modo de configuración sobrescribe los anchos personalizados.",
+        "pivotCols": "Seleccione una columna para pivotar",
+        "fixedColumnsLeft": "¿Fijar las columnas que no se pivotan?",
+        "heatmap": "¿Convertir la tabla en un mapa de calor?",
+        "colDecimals": "Especifique el número de decimales para la columna: '%s'",
+        "dropdownColsTitle": "Menú desplegable en la tabla de entrada",
+        "dropdownColsDesc": "Una tabla de entrada puede configurarse de modo que el usuario no pueda editar libremente las celdas, sino solo modificarlas mediante un menú desplegable. Esta opción no está disponible en el Modo de configuración, sino que debe configurarse manualmente. Más información aquí: "
+      },
+      "slider": {
+        "label": "Elija una etiqueta",
+        "minlabel": "Valor mínimo",
+        "maxlabel": "Valor máximo",
+        "defaultlabel": "Valor predeterminado",
+        "min": "Establecer valor mínimo estático",
+        "max": "Establecer valor máximo estático",
+        "default": "Establecer valor predeterminado estático",
+        "dep": "Seleccione el símbolo y el encabezado de los que depende",
+        "depOp": {
+          "label": "Seleccione el operador",
+          "choices": [
+            "Mínimo",
+            "Máximo",
+            "Recuento",
+            "Media",
+            "Mediana",
+            "Varianza",
+            "Desviación estándar"
+          ]
+        },
+        "depSelector": "Valor estático",
+        "step": "Tamaño de paso (también se admiten decimales)",
+        "minStep": "Tamaño de paso mínimo",
+        "minStepTooltip": "Solo relevante en el módulo Hypercube. Si está vacío, se usa el tamaño de paso. - Abrir documentación",
+        "ticks": "¿Mostrar marcas de graduación?",
+        "hcube": "Ampliar a control deslizante de intervalo al enviar trabajos de Hypercube"
+      },
+      "sliderrange": {
+        "label": "Elija una etiqueta",
+        "minlabel": "Valor mínimo",
+        "maxlabel": "Valor máximo",
+        "min": "Establecer valor mínimo estático",
+        "dep": "Seleccione el símbolo y el encabezado de los que depende",
+        "depOp": {
+          "label": "Seleccione el operador",
+          "choices": [
+            "Mínimo",
+            "Máximo",
+            "Recuento",
+            "Media",
+            "Mediana",
+            "Varianza",
+            "Desviación estándar"
+          ]
+        },
+        "depSelector": "Valor estático",
+        "max": "Establecer valor máximo estático",
+        "default1": "Valor predeterminado inferior",
+        "default2": "Valor predeterminado superior",
+        "step": "Tamaño de paso (también se admiten decimales)",
+        "ticks": "¿Mostrar marcas de graduación?",
+        "hcube": "Ampliar automáticamente al enviar trabajos de Hypercube"
+      },
+      "dropdown": {
+        "label": "Elija una etiqueta",
+        "choices": "Opciones entre las que elegir",
+        "choicesAlias": "Alias de las opciones (opcional)",
+        "choiceDep": {
+          "label": "Seleccione el símbolo y el encabezado de los que depende",
+          "depChoices": [
+            "Todos"
+          ],
+          "selector": "¿Opciones estáticas?"
+        },
+        "default": "Valor predeterminado",
+        "multiple": "¿Deben poder seleccionarse varios elementos?",
+        "clearValue": "Comunicar como texto del elemento a GAMS",
+        "clearValueTooltip": "Hace que la etiqueta del elemento sea una cadena vacía. - Abrir documentación",
+        "hcube": "Ampliar a menú desplegable múltiple al enviar trabajos de Hypercube"
+      },
+      "checkbox": {
+        "label": "Elija una etiqueta",
+        "default": "Establecer true como predeterminado",
+        "hcube": "Ampliar a menú desplegable múltiple al enviar trabajos de Hypercube"
+      },
+      "date": {
+        "label": "Elija una etiqueta",
+        "defaultlabel": "Fecha predeterminada",
+        "default": "Elija la fecha predeterminada",
+        "defOff": "Usar la fecha actual",
+        "minlabel": "Fecha más temprana",
+        "min": "Elija la fecha disponible más temprana",
+        "minOff": "¿Sin fecha más temprana?",
+        "maxlabel": "Fecha más tardía",
+        "max": "Elija la fecha disponible más tardía",
+        "maxOff": "¿Sin fecha más tardía?",
+        "format": "Elija el formato de la fecha.",
+        "formatCustom": "Introduzca un formato de fecha personalizado",
+        "formatCustomSelector": "¿Formato de fecha personalizado?",
+        "startview": {
+          "label": "¿Qué intervalo de fechas debe mostrarse de forma predeterminada?",
+          "choices": [
+            "Mes",
+            "Año",
+            "Década"
+          ]
+        },
+        "weekstart": {
+          "label": "¿Qué día debe ser el inicio de la semana?",
+          "choices": [
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado"
+          ]
+        },
+        "daysDisabled": "Seleccione los días de la semana que desea deshabilitar",
+        "autoclose": "¿Debe cerrarse el selector de fecha inmediatamente al seleccionar una fecha?",
+        "hcube": "Ampliar a selector de intervalo de fechas al enviar trabajos de Hypercube"
+      },
+      "daterange": {
+        "label": "Elija una etiqueta",
+        "defaultStart": "Elija la fecha de inicio predeterminada",
+        "startOff": "Usar la fecha actual",
+        "defaultEnd": "Elija la fecha de fin predeterminada",
+        "endOff": "Usar la fecha actual",
+        "min": "Elija la fecha disponible más temprana",
+        "minOff": "¿Sin fecha más temprana?",
+        "max": "Elija la fecha disponible más tardía",
+        "defaultStartlabel": "Fecha de inicio predeterminada",
+        "defaultEndlabel": "Fecha de fin predeterminada",
+        "minlabel": "Fecha más temprana",
+        "maxlabel": "Fecha más tardía",
+        "maxOff": "¿Sin fecha más tardía?",
+        "format": "Elija el formato de la fecha.",
+        "formatCustom": "Introduzca un formato de fecha personalizado",
+        "formatCustomSelector": "¿Formato de fecha personalizado?",
+        "startview": {
+          "label": "¿Qué intervalo de fechas se muestra de forma predeterminada?",
+          "choices": [
+            "Mes",
+            "Año",
+            "Década"
+          ]
+        },
+        "weekstart": {
+          "label": "¿Qué día debe ser el inicio de la semana?",
+          "choices": [
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado"
+          ]
+        },
+        "separator": "Seleccione el separador entre el selector de fecha de inicio y el de fecha de fin",
+        "autoclose": "¿Debe cerrarse el selector de fecha inmediatamente al seleccionar un intervalo de fechas?",
+        "hcube": "Ampliar automáticamente al enviar trabajos de Hypercube"
+      },
+      "textinput": {
+        "label": "Elija una etiqueta",
+        "value": "Elija el valor predeterminado",
+        "placeholder": "Elija un texto de marcador de posición",
+        "clearValue": "Comunicar como texto del elemento a GAMS",
+        "clearValueTooltip": "Hace que la etiqueta del elemento sea una cadena vacía. - Abrir documentación"
+      },
+      "numericinput": {
+        "label": "Elija una etiqueta",
+        "value": "Valor predeterminado (opcional)",
+        "min": "Valor mínimo (opcional)",
+        "max": "Valor máximo (opcional)",
+        "decimal": "Número de decimales (opcional)",
+        "sign": "Símbolo de moneda (opcional)",
+        "decimalCharacter": "Separador decimal que se usará",
+        "decimalCharacterChoices": [
+          ", (coma)",
+          ". (punto)",
+          "· (punto medio)",
+          "٫ (separador decimal árabe)",
+          "⎖ (símbolo de la tecla de separador decimal)"
+        ],
+        "digitGroupSeparator": "Separador de miles que se usará",
+        "digitGroupSeparatorChoices": [
+          ", (coma)",
+          ". (punto)",
+          " (espacio)",
+          "(sin separador)",
+          "' (apóstrofo)",
+          "٬ (separador de miles árabe)",
+          "˙ (punto superior)"
+        ]
+      },
+      "removeDialog": {
+        "title": "Confirme",
+        "message": "¿Seguro que desea eliminar la configuración existente para este símbolo? Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar"
+      }
+    },
+    "database": {
+      "title": "Gestión de la base de datos",
+      "infoPostgres": "Está usando GAMS MIRO Desktop con una base de datos <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a> como backend. La base de datos usada se llama: %s y se encuentra en: %s. Para hacer una copia de seguridad de su base de datos, lea <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">aquí</a>.",
+      "infoSQLite": "Está usando GAMS MIRO Desktop con una base de datos <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a> como backend. La base de datos usada se encuentra en: %s.",
+      "backup": "Copia de seguridad de la base de datos",
+      "backupWrapper": "¿Desea crear una copia de seguridad de la base de datos?",
+      "btDownloadBackup": "Copia de seguridad de la base de datos",
+      "backupProgress": "Guardando la base de datos...",
+      "remove": "Eliminar datos",
+      "removeWrapper": "¿Desea eliminar todas las tablas que pertenecen a su modelo (p. ej., porque el esquema ha cambiado)?"
+    },
+    "graphs": {
+      "toolCategories": {
+        "main": "Principal",
+        "general": "General",
+        "xaxis": "Eje x",
+        "yaxis": "Eje y",
+        "ydata": "Datos y",
+        "filterDomain": "Filtro y dominios",
+        "filter": "Filtro",
+        "animation": "Animación",
+        "bars": "Barras",
+        "histogram": "Histograma",
+        "event": "Evento (eje x)",
+        "limit": "Límite (eje y)",
+        "annotation": "Anotación",
+        "shading": "Sombreado",
+        "rangeSelector": "Selector de rango",
+        "highlight": "Resaltado",
+        "legend": "Leyenda",
+        "markers": "Marcadores",
+        "flows": "Flujos",
+        "advanced": "Opciones avanzadas",
+        "minicharts": "Minigráficos",
+        "groupsLayers": "Grupos y capas",
+        "data": "Datos"
+      },
+      "ui": {
+        "title": "Configurar gráficos",
+        "label": "Etiqueta (se admite Markdown)",
+        "graphUpdateSuccess": "La configuración del gráfico se actualizó correctamente",
+        "localInput": "Cargue un archivo GDX o una hoja de cálculo de Excel con datos que se utilizarán para la vista previa",
+        "gamsSymbols": "Símbolo GAMS",
+        "input": "Símbolos de entrada",
+        "output": "Símbolos de salida",
+        "chartTitle": "Elija un título para su gráfico",
+        "height": "Elija una altura para su gráfico (px) (sin vista previa en vivo)",
+        "tool": "Tipo de gráfico",
+        "choices": [
+          "Gráfico circular",
+          "Gráfico de barras",
+          "Gráfico de dispersión",
+          "Gráfico de líneas",
+          "Gráfico de burbujas",
+          "Histograma",
+          "Diagrama de series temporales",
+          "Gráfico de mapa",
+          "Diagrama de Gantt",
+          "Tabla dinámica y gráficos dinámicos",
+          "Value box para valores escalares",
+          "Renderer personalizado"
+        ],
+        "deleteGraph": "Eliminar",
+        "saveGraph": "Guardar",
+        "toggleLeft": "Mostrar el panel izquierdo a pantalla completa",
+        "toggleRight": "Mostrar el panel derecho a pantalla completa",
+        "previewError": "Se produjo un error: '%s'",
+        "previewErrorObs": "Se produjo un error en un observador: '%s'"
+      },
+      "graphOptions": {
+        "pie": "Gráfico circular",
+        "bar": "Gráfico de barras",
+        "scatter": "Gráfico de dispersión",
+        "line": "Gráfico de líneas",
+        "bubble": "Gráfico de burbujas",
+        "hist": "Histograma",
+        "dygraphs": "Diagrama de series temporales",
+        "leaflet": "Gráfico de mapa",
+        "timevis": "Diagrama de Gantt",
+        "miropivot": "Tabla dinámica y gráficos dinámicos",
+        "dashboard": "Dashboard",
+        "valuebox": "Value box para valores escalares",
+        "custom": "Renderer personalizado"
+      },
+      "validate": {
+        "val1": "No se pudo establecer el rango del eje x. Compruebe que el formato de los datos sea correcto.",
+        "custom1": "No se pudieron analizar las opciones adicionales. Asegúrese de utilizar una sintaxis JSON válida.",
+        "pieValues": "El símbolo seleccionado tiene demasiados valores para mostrarse como gráfico circular. El número máximo de valores que se pueden mostrar en un gráfico circular es 100.",
+        "tableNeeded": "Un símbolo que se va a configurar como mapa debe declararse como tabla GAMS, ya que se requieren varias columnas de valores (p. ej., información de latitud y longitud).",
+        "customOutputInvalid": "La función de salida debe devolver contenido de interfaz de Shiny (p. ej., envuelva el valor devuelto en tagList(...)), no una función sin más."
+      },
+      "errMsg": {
+        "errTitle1": "No hay datos válidos",
+        "errContent1": "No se encontraron conjuntos de datos válidos. Cargue un archivo Excel o gdx con datos en el formato correcto.",
+        "scalarConfig": "La configuración de los escalares de entrada se realiza en '"
+      },
+      "updateToolScalars": [
+        "Value box para valores escalares"
+      ],
+      "updateToolNoScalars": [
+        "Gráfico circular",
+        "Gráfico de barras",
+        "Gráfico de dispersión",
+        "Gráfico de líneas",
+        "Gráfico de burbujas",
+        "Histograma",
+        "Diagrama de series temporales",
+        "Gráfico de mapa",
+        "Diagrama de Gantt",
+        "Tabla dinámica y gráficos dinámicos",
+        "Renderer personalizado"
+      ],
+      "axisOptions": {
+        "leftAxis": "eje izquierdo",
+        "rightAxis": "eje derecho",
+        "title": "Etiqueta del eje",
+        "labelOnlyTitle": "Etiqueta del eje (eje %s)",
+        "showgrid": "Mostrar cuadrícula",
+        "zeroline": "Mostrar línea de cero",
+        "showticklabels": "Mostrar etiquetas de las marcas",
+        "range": "Establezca el rango del eje. El formato debe coincidir con el formato de los datos. Si no se especifica, se utiliza un valor predeterminado.",
+        "rangeFrom": "Inicio del rango",
+        "rangeTo": "Fin del rango",
+        "animationDataFormatSelector": "¿Datos en formato de fecha?",
+        "categoryorder": "orden del eje",
+        "categoryorderChoices": [
+          "traza",
+          "categoría ascendente",
+          "categoría descendente",
+          "total ascendente",
+          "total descendente",
+          "mínimo ascendente",
+          "mínimo descendente",
+          "máximo ascendente",
+          "máximo descendente",
+          "suma ascendente",
+          "suma descendente",
+          "media ascendente",
+          "media descendente",
+          "mediana ascendente",
+          "mediana descendente"
+        ],
+        "scaleRatioCheck": "¿Ejes con proporción fija?",
+        "scaleRatio": "Proporción de escala (y/x)"
+      },
+      "chartOptions": {
+        "xdata": "¿Qué debe representarse en el eje x?",
+        "ydata": "Añadir serie de datos",
+        "color": "¿Debe pivotarse una dimensión del símbolo (agruparse para la representación)? Tenga en cuenta que los colores resultantes solo son válidos si no se han establecido otros colores de línea o de marcador",
+        "symbol": "Seleccione una dimensión que se asignará a distintos símbolos. No debe establecerse ningún símbolo de marcador.",
+        "options": {
+          "title": "Opciones",
+          "paperBgColor": "¿Qué color de fondo debe tener el lienzo?",
+          "plotBgColor": "¿Qué color de fondo debe tener el gráfico?",
+          "showlegend": "¿Mostrar leyenda?",
+          "staticPlot": "¿Representar un gráfico estático?",
+          "fixedHeight": "Fijar la altura del gráfico (px): deje vacío o 0 para el valor predeterminado",
+          "fixedWidth": "Fijar el ancho del gráfico (px): deje vacío o 0 para el valor predeterminado",
+          "outType": "¿Mostrar el gráfico y la tabla de datos en pantalla dividida? (sin vista previa en vivo)"
+        }
+      },
+      "barOptions": {
+        "mode": "Seleccione el modo de barras",
+        "choicesMode": [
+          "agrupado",
+          "apilado"
+        ],
+        "orientation": "Orientación",
+        "choicesOrientation": [
+          "vertical",
+          "horizontal"
+        ],
+        "width": "Dominio que se utiliza para seleccionar distintos anchos de barra"
+      },
+      "valueboxOptions": {
+        "width": "Número máximo de cuadros por fila (sin vista previa)",
+        "color": "Seleccione el color del value box",
+        "colorChoices": [
+          "rojo",
+          "amarillo",
+          "aguamarina",
+          "azul",
+          "azul claro",
+          "verde",
+          "azul marino",
+          "verde azulado",
+          "oliva",
+          "lima",
+          "naranja",
+          "fucsia",
+          "morado",
+          "granate",
+          "negro"
+        ],
+        "icon": "Especifique un icono para el value box (opcional).",
+        "valueboxIconChoices": [
+          "_",
+          "monedas",
+          "cartera",
+          "Dólar",
+          "Euro",
+          "Yen",
+          "Won",
+          "Séquel",
+          "Rupia",
+          "Rublo",
+          "Libra",
+          "Lira",
+          "Usuario",
+          "Usuarios",
+          "Más",
+          "Menos",
+          "Signo de exclamación",
+          "Signo de interrogación",
+          "Reproducir",
+          "Marca de verificación",
+          "Casa",
+          "Engranaje",
+          "Asterisco",
+          "Prohibido",
+          "Corazón",
+          "Hoja",
+          "Bombilla",
+          "Sonrisa",
+          "Estrella"
+        ],
+        "desc": "Texto descriptivo",
+        "round": "Número de decimales (redondeo)"
+      },
+      "animationOptions": {
+        "title": "Opciones de animación",
+        "frame": "Fotogramas por segundo",
+        "transition": "Duración de la transición suave entre fotogramas (en milisegundos).",
+        "easing": "Tipo de suavizado de la transición",
+        "easingChoices": [
+          "lineal",
+          "cuadrática",
+          "cúbica",
+          "sin",
+          "exp",
+          "circular",
+          "elástica",
+          "retroceso",
+          "rebote",
+          "lineal-entrada",
+          "cuadrática-entrada",
+          "cúbica-entrada",
+          "sin-entrada",
+          "exp-entrada",
+          "circular-entrada",
+          "elástica-entrada",
+          "retroceso-entrada",
+          "rebote-entrada",
+          "lineal-salida",
+          "cuadrática-salida",
+          "cúbica-salida",
+          "sin-salida",
+          "exp-salida",
+          "circular-salida",
+          "elástica-salida",
+          "retroceso-salida",
+          "rebote-salida",
+          "lineal-entrada-salida",
+          "cuadrática-entrada-salida",
+          "cúbica-entrada-salida",
+          "sin-entrada-salida",
+          "exp-entrada-salida",
+          "circular-entrada-salida",
+          "elástica-entrada-salida",
+          "retroceso-entrada-salida",
+          "rebote-entrada-salida"
+        ],
+        "redraw": "¿Volver a dibujar el gráfico al finalizar la transición? (Esto puede afectar considerablemente al rendimiento, pero puede ser necesario para actualizar elementos gráficos que no admiten transiciones).",
+        "mode": "¿Cómo deben interactuar las nuevas llamadas de animación con las animaciones en curso?",
+        "modeChoices": [
+          "inmediatamente",
+          "a continuación",
+          "después de todas"
+        ],
+        "noAnimation": "No se ha seleccionado ningún dominio para la animación (categoría: Datos y)."
+      },
+      "animationSliderOptions": {
+        "hide": "¿Quitar el control deslizante de la animación?",
+        "label": "Etiqueta que aparecerá en el control deslizante",
+        "prefix": "Prefijo de la etiqueta",
+        "fontColor": "¿Qué color de fuente debe utilizarse para la etiqueta del control deslizante?"
+      },
+      "histOptions": {
+        "xdata": "Añadir serie de datos",
+        "norm": "Tipo de normalización",
+        "normChoices": [
+          "Número de ocurrencias",
+          "Porcentaje de ocurrencias",
+          "Número de ocurrencias/ Tamaño del intervalo"
+        ],
+        "nbins": "Número de intervalos",
+        "barmode": "¿Cómo desea que se muestren las barras?",
+        "alpha": "Opacidad de las barras (solo válido si no se ha establecido un color de barra)",
+        "cumulative": "¿Mostrar la distribución acumulada?",
+        "horizontal": "Orientación de las barras",
+        "orientationChoices": [
+          "vertical",
+          "horizontal"
+        ],
+        "barmodeChoices": [
+          "superpuesto",
+          "apilado",
+          "agrupado",
+          "relativo"
+        ]
+      },
+      "dygraphsOptions": {
+        "previewError": "No se encontraron índices escalares en sus datos.",
+        "xdata": "¿Qué índice desea representar en el eje x?",
+        "ydata": "Añadir serie de datos",
+        "ydataGeneral": "Se ha seleccionado una dimensión para pivotar. Puede establecer más opciones relacionadas con los datos y en 'General'",
+        "color": "¿Debe pivotarse una dimensión del símbolo (agruparse para la representación)?",
+        "dyEvent": "Añadir línea de evento",
+        "dyLimit": "Añadir línea de límite",
+        "dyAnnotation": "Añadir anotación",
+        "dyShading": "Añadir sombreado",
+        "rngSelOpts": {
+          "title": "Opciones del selector de rango",
+          "activate": "¿Desea ver un selector de rango?",
+          "height": "¿Qué altura debe tener (en px)?",
+          "retainDateWindow": "¿Debe conservarse el rango de fechas actual al volver a dibujar el gráfico?",
+          "keepMouseZoom": "¿Desea seguir pudiendo hacer zoom con el ratón?",
+          "fillColor": "¿Qué color de relleno debe utilizarse?",
+          "strokeColor": "¿Qué color de trazo debe utilizarse?"
+        },
+        "generalOpts": {
+          "title": "Opciones generales",
+          "logscale": "¿Mostrar el eje y en escala logarítmica?",
+          "drawGrid": "¿Deben mostrarse las líneas de cuadrícula?",
+          "stepPlot": "¿Desea un gráfico escalonado?",
+          "stemPlot": "¿Desea un gráfico de tallos?",
+          "fillGraph": "¿Debe rellenarse el área bajo el gráfico?",
+          "fillAlpha": "Transparencia de las áreas rellenas",
+          "drawPoints": "¿Deben dibujarse los puntos?",
+          "pointShape": "¿Qué forma deben tener los puntos?",
+          "pointShapeChoices": [
+            "punto",
+            "triángulo",
+            "cuadrado",
+            "rombo",
+            "pentágono",
+            "hexágono",
+            "círculo",
+            "estrella",
+            "más",
+            "equis"
+          ],
+          "pointSize": "¿Qué tamaño deben tener los puntos?"
+        },
+        "axisOptions": {
+          "title": "Etiqueta",
+          "independentTicks": "Marcas independientes",
+          "logscale": "¿Mostrar el eje y en escala logarítmica?",
+          "drawGrid": "¿Deben mostrarse las líneas de cuadrícula?",
+          "gridLineColor": "Color de las líneas de cuadrícula",
+          "gridLineWidth": "Ancho de las líneas de cuadrícula",
+          "axisLineColor": "Color de la línea del eje",
+          "axisLineWidth": "Ancho de la línea del eje",
+          "axisLabelFontSize": "Tamaño de fuente de la etiqueta del eje",
+          "valueRange": "Establezca el rango del eje. El formato debe coincidir con el formato de los datos. Si no se especifica, se utiliza un valor predeterminado.",
+          "valueRangeFrom": "Inicio del rango",
+          "valueRangeTo": "Fin del rango"
+        },
+        "highOpts": {
+          "title": "Opciones de resaltado",
+          "activate": "¿Desea ver efectos de resaltado?",
+          "circleSize": "¿Qué tamaño debe tener el círculo (en px)?",
+          "seriesBackgroundAlpha": "Elija la opacidad del fondo",
+          "strokeWidth": "Ancho de las líneas resaltadas",
+          "strokeBorderWidth": "Dibujar un borde alrededor de las líneas resaltadas",
+          "strokeBorderColor": "Color del borde de las líneas resaltadas",
+          "hideOnMouseOut": "¿Ocultar los efectos de resaltado cuando el ratón sale del gráfico?"
+        },
+        "legend": {
+          "title": "Opciones de leyenda",
+          "activate": "Mostrar una leyenda",
+          "show": "Estilo de visualización",
+          "showChoices": [
+            "automático",
+            "siempre",
+            "al pasar el ratón",
+            "seguir"
+          ],
+          "width": "Ancho de la leyenda (en px)",
+          "showZeroValues": "Mostrar etiquetas de valores cero en la leyenda",
+          "labelsSeparateLines": "Mostrar las etiquetas en líneas separadas",
+          "hideOnMouseOut": "Ocultar la leyenda cuando el ratón sale del gráfico"
+        }
+      },
+      "leafletOptions": {
+        "markers": "Añadir marcadores",
+        "flows": "Añadir flujos",
+        "minicharts": "Añadir gráficos",
+        "hideGroups": "Seleccione los grupos que deben ocultarse al inicio",
+        "layer": {
+          "title": "Opciones del control de capas",
+          "baseGroups": "Grupos base seleccionables",
+          "overlayGroups": "Grupos superpuestos seleccionables",
+          "position": "Posición del control de capas",
+          "positionChoices": [
+            "Arriba a la derecha",
+            "Abajo a la derecha",
+            "Abajo a la izquierda",
+            "Arriba a la izquierda"
+          ],
+          "collapsed": "Contraer el panel de control de capas"
+        }
+      },
+      "timevisOptions": {
+        "series": "Añadir serie de datos",
+        "custom": "Añadir una barra vertical en un punto temporal que el usuario puede arrastrar (vista previa no disponible)",
+        "options": {
+          "title": "Opciones del diagrama de Gantt",
+          "showZoom": "¿Incluir los botones 'Acercar' / 'Alejar'? También se puede hacer zoom con ctrl + rueda del ratón",
+          "zoomFactor": "¿Factor de zoom? Al alejar desde 20 días con un factor de zoom de 1 se mostrarán 40 días. Vista previa no disponible.",
+          "fit": "¿Ajustar todos los datos en la línea de tiempo al inicializarla? De lo contrario, la línea de tiempo mostrará la fecha actual.",
+          "editable": "Habilitar la edición de elementos",
+          "multiselect": "Habilitar la selección múltiple de elementos (ctrl+clic, mayús+clic)",
+          "showCurrentTime": "Mostrar una barra vertical en la hora actual"
+        }
+      },
+      "miroPivotOptions": {
+        "externalDefaultViewSwitch": "Usar vista predeterminada externa",
+        "externalDefaultViewName": "Nombre de la vista que se usará como predeterminada",
+        "infoMsg": "Utilice directamente la vista previa del lado derecho para configurar la vista predeterminada. Esto incluye la configuración (%s) y las opciones de vista (%s)",
+        "hideEmptyColsSwitch": "Activar de forma predeterminada el interruptor para ocultar columnas vacías",
+        "emptyUEL": "UEL que indica un valor ausente (no debe ser una cadena vacía)",
+        "emptyUELTooltip": "El interruptor para ocultar columnas vacías (ubicado en el menú de configuración de la tabla dinámica) permite ocultar las columnas vacías de una tabla. Esto resulta especialmente útil en un cubo de datos en el que algunas vistas pueden tener dimensiones vacías.",
+        "hidePivotControlsSwitch": "Mostrar el modo de presentación de forma predeterminada",
+        "fixedColumnsSwitch": "Fijar columnas",
+        "fixedColumnsTooltip": "Si esta opción está activada, las columnas de la tabla dinámica se fijan en el lado izquierdo de la tabla y permanecen visibles al desplazarse horizontalmente.",
+        "infoMsgDummyData": "Actualmente, la vista previa utiliza datos ficticios. Esto significa que los filtros tendrán valores ficticios. Si desea cambiarlos, debe editar manualmente el archivo de configuración JSON."
+      },
+      "datatableOptions": {
+        "infoMsg": "La configuración de tablas se realiza en '"
+      },
+      "pivotOptions": {
+        "rows": "Rellenar previamente las filas de la tabla dinámica",
+        "cols": "Rellenar previamente las columnas de la tabla dinámica",
+        "aggregator": "Agregador que se utilizará",
+        "aggregatorChoices": [
+          "Recuento",
+          "Recuento de valores únicos",
+          "Lista de valores únicos",
+          "Suma",
+          "Suma de enteros",
+          "Promedio",
+          "Mediana",
+          "Varianza muestral",
+          "Desviación estándar muestral",
+          "Mínimo",
+          "Máximo",
+          "Primero",
+          "Último",
+          "Suma sobre suma",
+          "Límite superior del 80%",
+          "Límite inferior del 80%",
+          "Suma como fracción del total",
+          "Suma como fracción de las filas",
+          "Suma como fracción de las columnas",
+          "Recuento como fracción del total",
+          "Recuento como fracción de las filas",
+          "Recuento como fracción de las columnas"
+        ],
+        "vals": "Nombre de la columna que se agregará.",
+        "renderer": "Nombre del renderer seleccionado.",
+        "rendererChoices": [
+          "Tabla",
+          "Tabla con barras",
+          "Mapa de calor",
+          "Mapa de calor por filas",
+          "Mapa de calor por columnas",
+          "Mapa de árbol",
+          "Gráfico de barras horizontales",
+          "Gráfico de barras horizontales apiladas",
+          "Gráfico de barras",
+          "Gráfico de barras apiladas",
+          "Gráfico de líneas",
+          "Gráfico de áreas"
+        ],
+        "options": {
+          "title": "Opciones de la tabla dinámica",
+          "locale": "Opciones de localización. Un cambio de 'en' a otro idioma hará que se pierda la configuración del gráfico utilizado.",
+          "localeChoices": [
+            "cs",
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nl",
+            "pl",
+            "pt",
+            "ru",
+            "sq",
+            "tr",
+            "zh"
+          ],
+          "subtotals": "¿Debe utilizarse el plugin de subtotales? Para ver ejemplos, consulte: "
+        }
+      },
+      "customOptions": {
+        "btUpdate": "Actualizar",
+        "externalRenderer": "Usar el renderer de otro símbolo",
+        "symNotFoundSuffix": "(símbolo no encontrado)",
+        "packages": "Paquetes necesarios para el renderer",
+        "options": "Opciones adicionales que se pasan a las funciones del renderer",
+        "additionalData": "Conjuntos de datos adicionales para comunicarse con el renderer personalizado"
+      },
+      "filterOptions": {
+        "filter": "¿Debe poder seleccionarse un dominio del símbolo mediante un menú desplegable?",
+        "dimension": "¿Qué dimensión debe poder filtrarse?",
+        "label": "Etiqueta del filtro (sin vista previa en vivo)",
+        "placeholder": "Filtrar por elemento",
+        "multiple": "¿Deben poder seleccionarse varios elementos como filtro al mismo tiempo? (No hay vista previa en vivo disponible para el menú desplegable simple)",
+        "date": "Los datos de la columna que se va a filtrar contienen fechas (horas). No hay vista previa en vivo disponible."
+      },
+      "saveJson": {
+        "warnTitle": "Los datos ya existen",
+        "warnContent": "Ya existe una configuración de gráfico para el símbolo: '%s'. ¿Desea sobrescribir esta configuración? Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "overwrite": "Sobrescribir"
+      },
+      "removeDialog": {
+        "title": "Confirme, por favor",
+        "message": "¿Está seguro de que desea eliminar la configuración de gráfico existente para este símbolo? Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar"
+      },
+      "js": {
+        "addInputGroup": {
+          "symbolInputgroups": "Nombre del grupo de entrada",
+          "symbolWidgetgroups": "Nombre del grupo de widgets",
+          "groupMemberIn": "Seleccione los miembros del grupo",
+          "groupMemberWidget": "Seleccione los miembros del grupo",
+          "groupSameTabIn": "Mostrar todos los símbolos en la misma pestaña",
+          "groupSameTabInNoCols": "Número de símbolos uno al lado del otro",
+          "groupSameTabWidget": "Mostrar todos los widgets uno al lado del otro en la misma pestaña"
+        },
+        "addOutputGroup": {
+          "symbolOutputgroups": "Nombre del grupo de salida",
+          "groupMemberOut": "Seleccione los miembros del grupo",
+          "groupSameTabOut": "Mostrar todos los símbolos en la misma pestaña",
+          "groupSameTabOutNoCols": "Número de símbolos uno al lado del otro"
+        },
+        "addSymlink": {
+          "source": "Nombre del símbolo de salida",
+          "target": "Nombre del símbolo de entrada al que se vinculará"
+        },
+        "addScript": {
+          "id": "Identificador único (alfanumérico)",
+          "title": "Alias del script (se muestra en la interfaz)",
+          "cmd": "Comando que se ejecutará",
+          "args": "Argumentos del comando",
+          "outFile": "Nombre del archivo de salida (incluida la extensión)",
+          "markdown": "El archivo de salida es un archivo Markdown",
+          "timeout": "Tiempo de espera (segundos, -1 para infinito)"
+        },
+        "addOutAttach": {
+          "file": "Nombre del archivo que se adjuntará",
+          "exec": "Permitir que el modelo lea este archivo",
+          "error": "Mostrar un error si no se encuentra el archivo"
+        },
+        "addDyEvent": {
+          "dyDyEventCheck": "Evento estático",
+          "dyDyEventTrue": "Establezca una fecha para el evento (yyyy-mm-dd)",
+          "dyDyEventFalse": "¿Qué símbolo debe utilizarse?",
+          "label": "Etiqueta",
+          "labelLoc": "Posición de la etiqueta",
+          "labelLocChoices": [
+            "arriba",
+            "abajo"
+          ],
+          "color": "Color de la línea de evento",
+          "strokePattern": "Tipo de patrón de trazo",
+          "strokePatternChoices": [
+            "discontinuo",
+            "punteado",
+            "punto y raya",
+            "continuo"
+          ]
+        },
+        "addDyLimit": {
+          "dyDyLimitCheck": "Límite estático",
+          "dyDyLimitTrue": "Establezca un valor numérico para el límite",
+          "dyDyLimitFalse": "¿Qué símbolo debe utilizarse?",
+          "limit": "Establezca un valor numérico para el límite",
+          "label": "Etiqueta",
+          "labelLoc": "Posición de la etiqueta",
+          "labelLocChoices": [
+            "izquierda",
+            "derecha"
+          ],
+          "color": "Color de la línea de límite",
+          "strokePattern": "Tipo de patrón de trazo",
+          "strokePatternChoices": [
+            "discontinuo",
+            "punteado",
+            "punto y raya",
+            "continuo"
+          ]
+        },
+        "addDyAnnotation": {
+          "dyDyAnnotation": "¿Qué debe anotarse?",
+          "text": "Etiqueta",
+          "tooltip": "Información emergente",
+          "width": "Especifique el ancho de la anotación",
+          "height": "Especifique la altura de la anotación",
+          "attachAtBottom": "Anclar la anotación al eje x"
+        },
+        "addDyShading": {
+          "dyDyShadingCheck": "Valor estático",
+          "dyDyShadingTrue": "Límite inferior estático",
+          "dyDyShadingFalse": "Símbolo para el límite inferior",
+          "dyDyShadingUpCheck": "Valor estático",
+          "dyDyShadingUpTrue": "Límite superior estático",
+          "dyDyShadingUpFalse": "Símbolo para el límite superior",
+          "axis": "Eje al que se aplicará el sombreado",
+          "axisChoices": [
+            "eje x",
+            "eje y"
+          ],
+          "color": "Color del sombreado"
+        },
+        "addLeafletMarkers": {
+          "leafletMarkers": "Seleccione la columna con los datos de latitud",
+          "lng": "Seleccione la columna con los datos de longitud",
+          "groupName": "Elija un nombre de grupo para estos marcadores",
+          "label": "Elija una etiqueta",
+          "iconOptions": "Opciones de icono",
+          "icon": "Icono que se utilizará",
+          "iconChoices": [
+            "Círculo",
+            "Círculo con muesca",
+            "Círculo con punto",
+            "Cuadrado",
+            "Aspa",
+            "Usuario",
+            "Usuarios",
+            "Más",
+            "Menos",
+            "Signo de exclamación",
+            "Signo de interrogación",
+            "Reproducir",
+            "Marca de verificación",
+            "Casa",
+            "Engranaje",
+            "Asterisco",
+            "Prohibido",
+            "Corazón",
+            "Hoja",
+            "Bombilla",
+            "Sonrisa",
+            "Estrella"
+          ],
+          "iconColor": "Color del icono",
+          "markerColor": "Color del marcador",
+          "markerColorChoices": [
+            "rojo",
+            "rojo oscuro",
+            "rojo claro",
+            "naranja",
+            "beige",
+            "verde",
+            "verde oscuro",
+            "verde claro",
+            "azul",
+            "azul oscuro",
+            "azul claro",
+            "morado",
+            "morado oscuro",
+            "rosa",
+            "azul cadete",
+            "blanco",
+            "gris",
+            "gris claro",
+            "negro"
+          ],
+          "options": "Opciones de etiqueta",
+          "labelPermanent": "Mostrar las etiquetas solo al pasar el ratón",
+          "labelcolor": "Elija un color de fuente para la etiqueta",
+          "labelbgcolor": "Elija un color de fondo para la etiqueta",
+          "labelsize": "Elija un tamaño de fuente para la etiqueta (en px)"
+        },
+        "addLeafletFlows": {
+          "leafletFlows": "Seleccione los datos de latitud del origen del flujo",
+          "lng": "Seleccione los datos de longitud del origen del flujo",
+          "lat1": "Seleccione los datos de latitud del destino del flujo",
+          "lng1": "Seleccione los datos de longitud del destino del flujo",
+          "flow": "Seleccione los datos de flujo",
+          "time": "Seleccione los datos de tiempo",
+          "label": "Elija una etiqueta única para cada flujo (opcional)",
+          "labelTooltip": "Una configuración adecuada para la etiqueta consiste en especificar el origen y el destinatario de cada flujo - abrir documentación",
+          "options": "Opciones de flujo adicionales",
+          "color": "Elija un color",
+          "minThickness": "Elija el grosor mínimo",
+          "maxThickness": "Elija el grosor máximo"
+        },
+        "addLeafletMinicharts": {
+          "leafletMinicharts": "Seleccione los datos de latitud donde debe representarse el minigráfico",
+          "lng": "Seleccione los datos de longitud donde debe representarse el minigráfico",
+          "chartdata": "Seleccione los datos del gráfico",
+          "time": "Seleccione los datos de tiempo",
+          "type": "Seleccione el tipo de gráfico",
+          "typeChoices": [
+            "gráfico de barras",
+            "gráfico circular",
+            "gráfico de área polar",
+            "gráfico de radio polar",
+            "automático"
+          ],
+          "options": "Opciones de gráfico adicionales",
+          "width": "Elija el ancho máximo de los elementos creados",
+          "height": "Elija la altura máxima de los elementos creados",
+          "variableSize": "¿Debe ser el tamaño de los gráficos proporcional a los valores?",
+          "opacity": "Opacidad del gráfico",
+          "showlabels": "¿Deben mostrarse los valores sobre los elementos del gráfico?",
+          "transitionTime": "Seleccione la duración de las transiciones cuando se actualiza una propiedad de un gráfico (en milisegundos)",
+          "layerId": "Seleccione el ID de capa",
+          "legend": "Mostrar una leyenda (nombres de las columnas de datos)",
+          "legendPosition": "Posición de la leyenda",
+          "legendPositionChoices": [
+            "arriba a la derecha",
+            "arriba a la izquierda",
+            "abajo a la derecha",
+            "abajo a la izquierda"
+          ]
+        },
+        "addPieDataEl": {
+          "chartValues": "Valores",
+          "chartLabels": "Etiquetas",
+          "holeSize": "Tamaño del agujero del anillo",
+          "chartName": "Nombre del elemento (solo relevante si se muestran varios gráficos circulares)"
+        },
+        "addBarDataEl": {
+          "chartYdatabar": "¿Qué debe representarse en el eje y?",
+          "chartYlabel": "Etiqueta de datos (p. ej., para la leyenda)",
+          "color": "Seleccione el color de la barra (elimine el color para una selección automática)",
+          "lineWidth": "Seleccione el ancho del contorno de la barra",
+          "lineColor": "Seleccione el color del contorno de la barra"
+        },
+        "addScatterDataEl": {
+          "chartYdata": "¿Qué debe representarse en el eje y?",
+          "chartYlabel": "Etiqueta de datos (p. ej., para la leyenda)",
+          "yaxis": "Posición del eje",
+          "yaxisChoices": [
+            "izquierda",
+            "derecha"
+          ],
+          "symbol": "Seleccione el símbolo del marcador",
+          "symbolChoices": [
+            "_",
+            "círculo",
+            "círculo vacío",
+            "cuadrado",
+            "cuadrado vacío",
+            "rombo",
+            "rombo vacío",
+            "cruz",
+            "cruz vacía",
+            "x",
+            "x vacía",
+            "triángulo hacia arriba",
+            "triángulo hacia arriba vacío",
+            "triángulo hacia abajo",
+            "triángulo hacia abajo vacío",
+            "pentágono",
+            "pentágono vacío",
+            "hexágono",
+            "hexágono vacío",
+            "octágono",
+            "octágono vacío",
+            "estrella",
+            "estrella vacía",
+            "hexagrama",
+            "hexagrama vacío",
+            "asterisco",
+            "asterisco vacío",
+            "almohadilla",
+            "almohadilla vacía",
+            "línea horizontal",
+            "línea horizontal vacía",
+            "línea vertical",
+            "línea vertical vacía"
+          ],
+          "color": "Seleccione el color del marcador",
+          "size": "Seleccione el tamaño del marcador",
+          "lineWidth": "Seleccione el ancho del contorno del marcador",
+          "lineColor": "Seleccione el color del contorno del marcador",
+          "legend": "Mostrar leyenda (esta opción puede quedar anulada por la opción global de mostrar leyenda)",
+          "frame": "Usar una dimensión de datos para la animación (como fotogramas)"
+        },
+        "addLineDataEl": {
+          "chartYdata": "¿Qué debe representarse en el eje y?",
+          "chartYlabel": "Etiqueta de datos (p. ej., para la leyenda)",
+          "yaxis": "Posición del eje",
+          "yaxisChoices": [
+            "izquierda",
+            "derecha"
+          ],
+          "color": "Seleccione el color de la línea",
+          "width": "Seleccione el ancho de la línea",
+          "shape": "Seleccione la forma de la línea",
+          "shapeChoices": [
+            "linear",
+            "spline",
+            "hv",
+            "vh",
+            "hvh",
+            "vhv"
+          ],
+          "dash": "Seleccione el tipo de trazo de la línea",
+          "dashChoices": [
+            "continuo",
+            "punteado",
+            "discontinuo",
+            "discontinuo largo",
+            "punto y raya",
+            "punto y raya largo"
+          ],
+          "fill": "¿Rellenar el gráfico de áreas?",
+          "fillChoices": [
+            "ninguno",
+            "hasta y cero",
+            "hasta x cero",
+            "hasta la siguiente y",
+            "hasta la siguiente x",
+            "sobre sí mismo",
+            "hasta la siguiente"
+          ],
+          "legend": "¿Mostrar leyenda? (esta opción puede quedar anulada por la opción global de mostrar leyenda)",
+          "frame": "¿Usar una dimensión de datos para la animación (como fotogramas)?"
+        },
+        "addBubbleDataEl": {
+          "chartYdata": "¿Qué debe representarse en el eje y?",
+          "chartYlabel": "Etiqueta de datos (p. ej., para la leyenda)",
+          "symbol": "Seleccione el símbolo del marcador",
+          "colorCheck": "Color estático",
+          "colorCheckTrue": "Seleccione el color del marcador",
+          "colorCheckFalse": "Seleccione un dominio del que debe depender el color.",
+          "size": "Seleccione el tamaño del marcador",
+          "sizemode": "¿Cómo debe medirse el tamaño?",
+          "sizemodeChoices": [
+            "área",
+            "diámetro"
+          ],
+          "maxsize": "Seleccione el tamaño máximo del marcador (opcional)",
+          "lineWidth": "Seleccione el ancho del contorno del marcador",
+          "lineColor": "Seleccione el color del contorno del marcador",
+          "legend": "Mostrar leyenda (esta opción puede quedar anulada por la opción global de mostrar leyenda)",
+          "frame": "¿Usar una dimensión de datos para la animación (como fotogramas)?"
+        },
+        "addHistDataEl": {
+          "histXdata": "¿Qué debe representarse?",
+          "label": "Etiqueta",
+          "color": "Color de la barra"
+        },
+        "addDyDataEl": {
+          "chartYdata": "¿Qué índice desea representar en el eje y?",
+          "label": "Etiqueta",
+          "yaxis": "Posición del eje",
+          "yaxisChoices": [
+            "izquierda",
+            "derecha"
+          ],
+          "color": "Color",
+          "stepPlot": "Dibujar la serie como gráfico escalonado",
+          "stemPlot": "Dibujar la serie como gráfico de tallos",
+          "fillGraph": "Rellenar el área bajo el gráfico",
+          "drawPoints": "Dibujar puntos",
+          "pointShape": "Forma de los puntos",
+          "pointShapeChoices": [
+            "punto",
+            "triángulo",
+            "cuadrado",
+            "rombo",
+            "pentágono",
+            "hexágono",
+            "círculo",
+            "estrella",
+            "más",
+            "equis"
+          ],
+          "pointSize": "Tamaño de los puntos"
+        },
+        "addTimevisDataEl": {
+          "timevisSeries": "¿Contenido de los elementos?",
+          "start": "Fecha de inicio",
+          "end": "Fecha de fin",
+          "type": "¿Tipo de elemento? Nota: los tipos box y point solo necesitan una fecha de inicio; los tipos range y background necesitan una fecha de inicio y una de fin.",
+          "typeChoices": [
+            "box",
+            "point",
+            "range",
+            "background"
+          ],
+          "title": "¿Añadir un título para cada elemento, que se muestre al pasar el ratón por encima?",
+          "group": "ID de grupo. Si se proporciona un grupo, todos los elementos del mismo grupo se colocan en una línea.",
+          "subgroup": "ID de subgrupo. Agrupa todos los elementos de un grupo por subgrupo y los coloca a la misma altura en lugar de apilarlos unos sobre otros.",
+          "grouptitle": "¿Añadir un título para cada grupo, que se muestre al pasar el ratón por encima?",
+          "subgrouporder": "Ordenar los subgrupos por un nombre de campo. De forma predeterminada, los grupos se ordenan por orden de llegada."
+        },
+        "addCustomTimeEl": {
+          "timevisCustom": "Fecha/hora que se añadirá",
+          "placeholder": "p. ej., 2016-08-21"
+        }
+      }
+    },
+    "colors": {
+      "title": "Colores",
+      "themeColors": {
+        "title": "Colores de tema personalizados",
+        "light": "Modo claro",
+        "dark": "Modo oscuro",
+        "advanced": "Establecer manualmente los colores de superficie",
+        "primary": "Color primario",
+        "secondary": "Color secundario",
+        "sidebar": "Color de la barra lateral",
+        "navbar": "Color del encabezado",
+        "alert": "Color de alerta",
+        "mainBg": "Color de fondo principal",
+        "console": "Color del texto de la consola",
+        "primaryDark": "Color primario",
+        "secondaryDark": "Color secundario",
+        "sidebarDark": "Color de la barra lateral",
+        "navbarDark": "Color del encabezado",
+        "alertDark": "Color de alerta",
+        "mainBgDark": "Color de fondo principal",
+        "consoleDark": "Color del texto de la consola",
+        "widgetBgDark": "Color de fondo de los widgets",
+        "primaryTooltip": "Color principal de la marca. Es el que más se usa en la aplicación para resaltar las acciones principales y dirigir la atención del usuario.",
+        "secondaryTooltip": "Color de acento para advertencias, barras de progreso, mensajes de validación y el estado al pasar el cursor de los botones con contorno. Las acciones principales con relleno (p. ej., resolver, confirmar) usan el color primario.",
+        "alertTooltip": "El color de alerta se aplica a los botones que desencadenan acciones como quitar, vaciar o eliminar, para enfatizar la precaución y llamar la atención sobre cambios potencialmente irreversibles.",
+        "consoleTooltip": "Se usa para mostrar la salida de los archivos de registro y de listado en la sección de interacción con GAMS.",
+        "widgetBgDarkTooltip": "Fondo de los menús desplegables y de otros controles, como casillas de verificación, selectores de fecha y barras de desplazamiento. Los campos de texto y las tablas se adaptan automáticamente al fondo principal.",
+        "mainBgTooltip": "Fondo del área de contenido principal, incluidas secciones, diálogos y tablas."
+      },
+      "themeButtons": {
+        "buttonsTitle": "Guardar colores del tema",
+        "saveLocal": "Guardar para esta aplicación",
+        "saveGlobal": "Guardar para todas las aplicaciones",
+        "downloadTheme": "Descargar para MIRO Server",
+        "saveLocalDesc": "Un tema específico de la aplicación se integra en la aplicación y prevalece sobre todos los demás ajustes de tema. Una vez exportada la aplicación, sus colores no se pueden cambiar.",
+        "saveGlobalDesc": "Un tema global se almacena de forma centralizada y se aplica a todas las aplicaciones del dispositivo. Se selecciona en las preferencias de MIRO Desktop.",
+        "removeColorsDesc": "Elimina la configuración de tema específica de la aplicación, si existe.",
+        "saveLocalNote": "Tema guardado.",
+        "saveGlobalModalTitle": "El archivo ya existe",
+        "saveGlobalModalText": "Ya existe un archivo llamado '%s' en el espacio de trabajo de GAMS MIRO.",
+        "saveGlobalModalCancel": "Cancelar",
+        "saveGlobalModalOverwrite": "Sobrescribir",
+        "saveGlobalModalNote1": "Archivo sobrescrito.",
+        "saveGlobalModalNote2": "Tema exportado.",
+        "saveGlobalModalNoteDesc": "Ahora puede seleccionar el tema de colores 'Custom' en las preferencias de MIRO Desktop.",
+        "removeColors": "Eliminar para esta aplicación",
+        "removeColorsTitle": "Eliminar colores del tema",
+        "removeColorsText": "Esto eliminará todos los 'themeColors' de su archivo de configuración.",
+        "removeColorsCancel": "Cancelar",
+        "removeColorsConfirm": "Eliminar",
+        "removeColorsNote1": "Se han eliminado los colores del tema.",
+        "removeColorsNote2": "No se encontraron colores del tema."
+      },
+      "miroServerColors": {
+        "checkbox": "Preparar el tema para MIRO Server",
+        "title": "Colores de MIRO Server",
+        "titleTooltip": "Colores de la pantalla de inicio de sesión de MIRO Server, de la página de resumen de aplicaciones, etc.",
+        "primary": "Color primario",
+        "bodyBg": "Color de fondo del cuerpo",
+        "mainBg": "Color de fondo principal",
+        "loginHeaderBg": "Fondo del encabezado de inicio de sesión",
+        "primaryTooltip": "Color principal de la marca. Se usa para resaltar las acciones principales y dirigir la atención del usuario."
+      }
+    }
+  }
+}

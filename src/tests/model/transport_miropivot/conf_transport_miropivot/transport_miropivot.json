@@ -23,6 +23,27 @@
             },
             "outType": "valueBox"
         },
+        "a": {
+            "height": 700,
+            "options": {
+                "aggregationFunction": "sum",
+                "aggregations": {
+                    "i": null
+                },
+                "emptyUEL": "-",
+                "fixedColumns": true,
+                "hideEmptyCols": false,
+                "hidePivotControls": false,
+                "pivotRenderer": "table",
+                "tableSummarySettings": {
+                    "colEnabled": false,
+                    "colSummaryFunction": "sum",
+                    "rowEnabled": false,
+                    "rowSummaryFunction": "sum"
+                }
+            },
+            "outType": "miroPivot"
+        },
         "schedule": {
             "height": 700,
             "options": {
@@ -47,10 +68,10 @@
                 "filter": {
                     "Hdr": "quantities"
                 },
-                "pivotRenderer": "bar",
-                "rows": "i",
+                "fixedColumns": true,
                 "hideEmptyCols": true,
-                "fixedColumns": true
+                "pivotRenderer": "bar",
+                "rows": "i"
             },
             "outType": "miroPivot"
         }
@@ -226,6 +247,7 @@
         ]
     },
     "pageTitle": "A transportation problem",
+    "parseLogForMiroLogSyntax": false,
     "pivotCompSettings": {
         "emptyUEL": "-",
         "fixedColumns": true,

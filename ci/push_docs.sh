@@ -3,10 +3,6 @@
 set -e
 
 MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\"")
-pushd src > /dev/null
-    MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' app.R | cut -f2 -d'"' | xargs -0 date +%Y-%m-%d -d )
-popd > /dev/null
-./scripts/fix_docs.sh
 
 # update MIRO Server API OpenAPI schema
 pushd server > /dev/null
@@ -17,9 +13,11 @@ pushd server > /dev/null
     rm -rf data models
 popd > /dev/null
 
-rsync -rlptvz doc/* ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro
+./scripts/fix_docs.sh
 
-git add ./doc/release.html ./doc/index.html ./doc/miro_server_api.json ./server/image-docs/*
+rsync -rlptvz --no-perms doc/_build/html/ ubuntu@gams.com:/var/www/html/new.gams.com/public_html/miro/
+
+git add ./doc/source/release.rst ./doc/source/index.rst ./doc/source/r_packages ./doc/miro_server_api.json ./server/image-docs/*
 
 git commit -m "[CI skip] Update documentation" || true
 

@@ -17,7 +17,13 @@ function updatePivotPresentationData(id) {
     }
     domainConfig.indexHTML[item] = domainConfig.indexList[item] == null ? '' : domainConfig.indexList[item].map((indexName) => {
       const filterNode = document.getElementById(`${id}filter_${indexName}`);
-      const filterElements = filterNode == null ? null : filterNode.selectize.getValue();
+      const rawValue = filterNode?.selectize.getValue();
+      let filterElements = [];
+      if (Array.isArray(rawValue)) {
+        filterElements = rawValue;
+      } else if (rawValue != null) {
+        filterElements = [rawValue];
+      }
       const filterHTML = item === 'row' || filterElements == null ? ''
         : filterElements.map((filterElement) => `<div class="uel-item-presentation">${escapeHTML(filterElement)}</div>`).join('');
       const indexAlias = $(`#${id}${item}IndexList [data-rank-id='${indexName}']`).text();

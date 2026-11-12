@@ -49,32 +49,35 @@ Sys.sleep(1)
 app$click(selector = "#sidebarItemExpanded a[data-value='inputData']")
 app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
+app$wait_for_js("$('#modelStatus').is(':visible')", timeout = 20000L)
 timeout <- 20
 repeat{
-  isRunning <- app$get_js("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');")
-  if (isRunning) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && startsWith(modelStatus, "Model execution phase")) {
     break
   }
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later.. (1)")
+    print(app$get_logs())
+    stop(sprintf("Engine seems to be busy (%s). Try again later.. (1)", modelStatus))
   }
 }
 app$click(selector = "#btInterrupt")
-timeout <- 600L
+timeout <- 200L
 repeat{
-  isTerminated <- app$get_js("$('#modelStatus').text().startsWith('Run did not')")
-  if (isTerminated) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && startsWith(modelStatus, "Run did not")) {
     break
   }
-  if (timeout < 560L) {
-    print("Engine busy.. Waiting..")
+  if (timeout < 160L) {
+    print(sprintf("Engine busy (%s).. Waiting..", modelStatus))
   }
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
-    stop("Engine seems to be busy. Try again later.. (2)")
+    print(app$get_logs())
+    stop(sprintf("Engine seems to be busy: %s. Try again later.. (2)", modelStatus))
   }
 }
 app$click(selector = "#sidebarItemExpanded a[data-value='gamsinter']")
@@ -95,6 +98,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (3)")
   }
 }
@@ -104,13 +108,15 @@ app$click(selector = ".btSolve .dropdown-toggle")
 app$click(selector = ".change-dd-button[data-action-id='btSolve']")
 timeout <- 30
 repeat{
-  if (identical(app$get_js("$('#modelStatus').text().startsWith('Model queued')||$('#modelStatus').text()==='Model execution phase'"), TRUE)) {
+  modelStatus <- trimws(app$get_js("$('#modelStatus').text()"))
+  if (length(modelStatus) && (startsWith(modelStatus, "Model queued") || identical(modelStatus, "Model execution phase"))) {
     break
   }
   Sys.sleep(0.5)
   timeout <- timeout - 0.5
   if (timeout <= 0) {
-    stop("Engine seems to be busy. Try again later.. (4)")
+    print(app$get_logs())
+    stop(sprintf("Engine seems to be busy (%s). Try again later.. (4)", modelStatus))
   }
 }
 app$stop()
@@ -126,6 +132,7 @@ repeat{
   Sys.sleep(2L)
   timeout <- timeout - 2L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (5)")
   }
 }
@@ -221,6 +228,7 @@ repeat{
   Sys.sleep(4L)
   timeout <- timeout - 4L
   if (timeout <= 0L) {
+    print(app$get_logs())
     stop("Engine seems to be busy. Try again later.. (6)")
   }
 }
@@ -295,7 +303,7 @@ Sys.sleep(0.5)
 attachmentList <- app$get_js("$('.attachment-line').length")
 expect_identical(attachmentList, 2L)
 idx <- which(app$get_js("$('.attachment-line a').map(function(){return $.trim($(this).text());}).get();") == "README.md")
-expect_true(app$get_js(paste0("$('.attachment-line > div:nth-child(2) input[type=checkbox]').get(", idx - 1L, ").checked")))
+expect_true(app$get_js(paste0("$('.attachment-line .attachment-exec input[type=checkbox]').get(", idx - 1L, ").checked")))
 Sys.sleep(0.5)
 app$click(selector = '#editMetaUI a[data-value="views"]')
 Sys.sleep(0.5)
@@ -363,4 +371,17 @@ app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeo
 expect_true(app$get_js("$('.shiny-notification-content').text().includes('Quota exceeded');"))
 expect_true(app$get_js("/volume quota: -?\\d+ s/.test($('.shiny-notification-content').text())"))
 app$run_js("$('.shiny-notification-close').click()")
+
+app$set_inputs(btShowSettingsDialog = "click")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown===true", timeout = 10000L)
+app$wait_for_js("$('.quota-info-volume').is(':visible');", timeout = 10000L)
+expect_identical(app$get_js("$('.quota-info-disk').text()"), "unlimited")
+remainingQuota <- as.numeric(strsplit(app$get_js("$('.quota-info-volume').text()"), " ", fixed = TRUE)[[1L]][1L])
+expect_true(!is.na(remainingQuota) && remainingQuota < 0L)
+expect_false(app$get_js("$('#settingsDialogUnknownError').is(':visible');"))
+# Engine test server is Engine One -> no instances
+app$wait_for_js("$('#selEngineDefaultInstanceSpinner').is(':hidden');", timeout = 10000L)
+expect_true(app$get_js("$('#selEngineDefaultInstanceWrapper').is(':hidden');"))
+app$click(selector = "#shiny-modal button[data-dismiss='modal']")
+app$wait_for_js("($('#shiny-modal').data('bs.modal')||{}).isShown!==true", timeout = 10000L)
 app$stop()

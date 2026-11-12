@@ -6,7 +6,7 @@ genAccessPermInputs <- function(containerSelector, resetPerm = FALSE) {
   if (tryCatch(
     {
       if (isShinyProxy) {
-        accessGroups <- worker$getRemoteAccessGroups()
+        accessGroups <- engineClient$getRemoteAccessGroups(db$getUserAccessGroups())
         db$setRemoteUsers(accessGroups)
       } else {
         accessGroups <- db$getUserAccessGroups()
@@ -211,29 +211,29 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     }
   }
 
-  if (tryCatch(
-    {
-      if (!saveOutput) {
-        scenData$clearSandbox()
-      }
-      scenData$loadSandbox(
-        getInputDataFromSandbox(),
-        if (length(modelInFileNames)) modelInFileNames else character(),
-        activeScen$getMetadataDf()
+  if (saveAsFlag) {
+    newPerms <- list(
+      read = input$editMetaReadPerm,
+      write = input$editMetaWritePerm,
+      execute = input$editMetaExecPerm
+    )
+    currentPerms <- list()
+    if (!is.null(activeScen)) {
+      currentPerms <- list(
+        read = activeScen$getReadPerm(),
+        write = activeScen$getWritePerm(),
+        execute = activeScen$getExecPerm()
       )
-      FALSE
-    },
-    no_data = function(e) {
-      flog.error(conditionMessage(e))
-      showErrorMsg(lang$errMsg$GAMSInput$title, conditionMessage(e))
-      return(TRUE)
-    },
-    error = function(e) {
-      flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
-      showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
-      return(TRUE)
     }
-  )) {
+    allowedPerms <- c(db$getUserAccessGroups(), db$getRemoteUsers())
+    if (any(vapply(names(newPerms), function(permId) {
+      any(!newPerms[[permId]] %in% c(allowedPerms, currentPerms[[permId]]))
+    }, logical(1L), USE.NAMES = FALSE))) {
+      flog.error("Attempt to tamper with access permissions!")
+      return(showErrorMsg(lang$errMsg$saveScen$title, lang$errMsg$saveScen$desc))
+    }
+  }
+  if (saveScenRefreshScenData(saveOutput)) {
     return()
   }
   removeModal()
@@ -259,8 +259,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
                 execute = input$editMetaExecPerm
               )
             )
+            activeScen$destroy()
             activeScen <<- NULL
-            gc()
             if (isTRUE(input$newScenDiscardAttach) && length(currentScenHash)) {
               attachmentListTmp <- attachments$getMetadata()
               if (length(attachmentListTmp) && any(attachmentListTmp[["execPerm"]])) {
@@ -270,9 +270,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
           } else {
             activeScen$updateMetadata(
               newName = input$scenName, newTags = scenTags,
-              newReadPerm = input$editMetaReadPerm,
-              newWritePerm = input$editMetaWritePerm,
-              newExecPerm = input$editMetaExecPerm
+              newReadPerm = if (length(input$editMetaReadPerm)) unique(c(uid, input$editMetaReadPerm)),
+              newWritePerm = if (length(input$editMetaWritePerm)) unique(c(uid, input$editMetaWritePerm)),
+              newExecPerm = if (length(input$editMetaExecPerm)) unique(c(uid, input$editMetaExecPerm))
             )
             if (isTRUE(input$newScenDiscardAttach)) {
               if (length(currentScenHash)) {

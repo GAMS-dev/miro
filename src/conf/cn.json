@@ -1,179 +1,177 @@
 {
-  "general":{
-    "modal":{
+  "general": {
+    "modal": {
       "okButton": "确定",
       "cancelButton": "取消"
     }
   },
-  "nav":{
-    "scalarAliases":{
-      "scalars":"标量",
-      "scalarsOut":"输出标量",
-      "cols":{
-        "name":"标量名称",
-        "desc":"标量描述",
-        "value":"标量值"
+  "nav": {
+    "scalarAliases": {
+      "scalars": "标量",
+      "scalarsOut": "输出标量",
+      "cols": {
+        "name": "标量名称",
+        "desc": "标量描述",
+        "value": "标量值"
       }
     },
-    "sidebarMenu":{
+    "sidebarMenu": {
       "inputScreen": "输入",
       "outputScreen": "输出",
-      "gams":"GAMS交互",
-      "load":"加载场景",
-      "scen":"场景比较"
+      "gams": "GAMS交互",
+      "load": "加载场景",
+      "scen": "场景比较"
     },
-    "sidebarButtons":{
-      "importInput":"加载数据",
-      "solve":"求解模型",
+    "sidebarButtons": {
+      "importInput": "加载数据",
+      "solve": "求解模型",
       "submitJob": "提交作业",
       "submitHcJob": "提交Hypercube作业",
-      "solveHcube":"提交作业",
-      "splitView":"拆分视图",
-      "pivotView": "枢轴检视",
-      "tabView":"标签视图",
-      "compareStart":"选项卡同步",
-      "compareStop":"停止同步",
-      "download":"下载输出",
-      "interrupt":"停止"
+      "solveHcube": "提交作业",
+      "splitView": "拆分视图",
+      "pivotView": "数据透视视图",
+      "tabView": "选项卡视图",
+      "compareStart": "选项卡同步",
+      "compareStop": "停止同步",
+      "download": "下载输出",
+      "interrupt": "停止"
     },
-    "header":{
-      "remoteExec":{
-        "login": "登陆",
-        "logout": "退出"
-      },
-      "scenario":{
-        "title":"场景选项",
-        "edit":"编辑元数据",
+    "header": {
+      "aiAssistant": "Mira",
+      "scenario": {
+        "title": "场景选项",
+        "edit": "编辑元数据",
         "removeDuplicates": "删除重复项",
-        "save":"保存",
-        "saveAs":"另存为",
-        "export":"导出",
-        "delete":"删除"
+        "save": "保存",
+        "saveAs": "另存为",
+        "export": "导出",
+        "delete": "删除"
       },
-      "help":{
-        "title":"帮助",
-        "doc":"文档",
-        "forum": "GAMS Forum",
-        "commandPalette": "命令调色板",
-        "about":"关于"
+      "help": {
+        "title": "帮助",
+        "doc": "文档",
+        "forum": "GAMS 论坛",
+        "whatsNew": "最新动态",
+        "commandPalette": "命令面板",
+        "settings": "Engine 设置",
+        "about": "关于"
       }
     },
-    "inputScreen":{
+    "inputScreen": {
       "btCollapsedTabs": "更多",
-      "noDataDep":"请先导入此元素所依赖的所有数据。",
-      "widgetTabTitle":"输入小部件",
-	  "dirtyFlag": "该场景包含可能与修改后的输入数据不再对应的输出数据。"
+      "noDataDep": "请先导入此元素所依赖的所有数据。",
+      "widgetTabTitle": "输入控件",
+      "dirtyFlag": "该场景包含可能与修改后的输入数据不再对应的输出数据。"
     },
-    "gams":{
-      "boxModelStatus":{
-        "title":"模型状态"
+    "gams": {
+      "boxModelStatus": {
+        "title": "模型状态"
       },
-      "boxGamsOutput":{
-        "title":"GAMS输出",
+      "boxGamsOutput": {
+        "title": "GAMS输出",
         "tabCurrent": "当前作业",
         "tabJobList": "作业列表",
-        "gamsOutputTabset":{
-          "logFile":"日志文件",
-          "lstFile":"列表文件",
-          "miroLogFile":"MIRO日志文件",
+        "gamsOutputTabset": {
+          "logFile": "日志文件",
+          "lstFile": "列表文件",
+          "miroLogFile": "MIRO日志文件",
           "logUpdate": "更新",
           "detachButton": "分离当前作业",
           "detachedInfoMsg": "作业已分离"
         }
       }
     },
-    "outputScreen":{
-      "boxResults":{
-        "title":"结果",
-        "noData":"无数据"
+    "outputScreen": {
+      "boxResults": {
+        "title": "结果",
+        "noData": "无数据"
       }
     },
-    "scen":{
-      "noScen":"未选择任何场景",
+    "scen": {
+      "noScen": "未选择任何场景",
       "btLoad": "加载",
       "btCloseAll": "关闭所有",
       "scenNameSandboxSuffix": "(沙盒)",
-      "tooltips":{
-        "btExport":"导出场景",
+      "tooltips": {
+        "btExport": "导出场景",
         "btRefreshGraph": "刷新数据",
-        "btTableView":"切换视图",
-		"btSymbolLink": "作为输入数据",
-        "btClose":"关闭场景",
+        "btTableView": "切换视图",
+        "btSymbolLink": "作为输入数据",
+        "btClose": "关闭场景",
         "btCloseAll": "关闭",
         "btAddPivot": "添加场景",
         "btRefresh": "刷新",
-        "btDownloadTmpFiles":"临时文件",
-        "inputSheet":"模型输入",
-        "outputSheet":"模型输出",
-        "load":"加载已有的场景",
-        "loadActive":"加载沙盒场景"
+        "btDownloadTmpFiles": "临时文件",
+        "inputSheet": "模型输入",
+        "outputSheet": "模型输出",
+        "load": "加载已有的场景",
+        "loadActive": "加载沙盒场景"
       },
-      "split":{
-        "load":"加载场景",
-        "loadActive":"加载沙盒场景"
+      "split": {
+        "load": "加载场景",
+        "loadActive": "加载沙盒场景"
       },
-      "pivot":{
-        "scenColName": "场景选项",
-        "viewPrefix": "枢轴比较："
+      "pivot": {
+        "scenColName": "场景",
+        "viewPrefix": "数据透视比较："
       }
     },
-    "hcubeImport":{
-      "title":"导入作业",
-      "btManualImport":"手动导入",
-      "btShowHistory":"显示历史"
+    "hcubeImport": {
+      "title": "导入作业",
+      "btManualImport": "手动导入",
+      "btShowHistory": "显示历史"
     },
-    "queryBuilder":{
-      "title":"加载场景",
-      "noData":"查询未返回任何数据",
-      "invalidCsvFilter": "“%s”不得包含“，”。",
-      "chooseSelectedButton":"仅选中的场景",
-      "chooseCurrentButton":"当前页面的场景",
-      "chooseAllButton":"所有场景",
-      "orButton":"或",
-      "addBlock":"添加块",
-      "andButton":"添加条件",
+    "queryBuilder": {
+      "title": "加载场景",
+      "noData": "查询未返回任何数据",
+      "invalidCsvFilter": "'%s'不得包含','。",
+      "chooseSelectedButton": "选择所选场景",
+      "chooseAllButton": "全部选择",
+      "orButton": "或",
+      "addBlock": "添加块",
+      "andButton": "添加条件",
       "rmBlock": "删除块",
       "conditionBlock": "条件:",
-      "operators":{
+      "operators": {
         "is": "等于",
         "notis": "不等于",
         "contains": "包含",
         "notcontains": "不包含",
-        "startswith": "以开始",
-        "endswith": "以结束",
+        "startswith": "开头是",
+        "endswith": "结尾是",
         "exists": "存在",
         "notexists": "不存在",
-        "between": "间"
+        "between": "介于"
       },
-      "queryButton":"获取结果",
-      "metaColAliases":{
+      "queryButton": "获取结果",
+      "metaColAliases": {
         "uid": "所有者",
         "sname": "名称",
-        "stime":"创建时间",
-        "stag":"标签"
+        "stime": "创建时间",
+        "stag": "标签"
       }
     },
-    "hcubeAnalyze":{
-      "title":"分析场景",
-      "loadMsg":"正在计算，请等待。",
-      "failMsg":"试图运行PAVER时出现错误。",
-      "duplicatesMsg":"PAVER发现了一个重复的实例:'%s'。请确保没有选择重复项。",
-	  "btCancel":"取消",
-	  "btNew":"选择场景"
+    "hcubeAnalyze": {
+      "title": "分析场景",
+      "loadMsg": "正在计算结果，请稍候。这可能需要一些时间。",
+      "failMsg": "试图运行PAVER时出现错误。",
+      "duplicatesMsg": "PAVER发现了一个重复的实例:'%s'。请确保没有选择重复项。",
+      "btCancel": "取消",
+      "btNew": "选择场景"
     },
-    "gamsModelStatus":{
+    "gamsModelStatus": {
       "submission": "正在提交模型",
       "queued": "模型已加入队列",
-      "queuedWithPosition": "排队 (排队位置：%s)",
+      "queuedWithPosition": "模型已加入队列（队列位置：%s）",
       "collection": "正在下载结果",
-      "exec":"模型执行阶段",
-      "success":"运行已终止。",
-      "error":"运行未终止:",
+      "exec": "模型执行阶段",
+      "success": "运行已成功结束。",
+      "error": "运行未成功结束：",
       "errorReturnCode": "进程终止，状态为：%d"
     },
-    "notificationNewInput":{
-      "new":"%s 个数据集导入自：%s。",
-      "noNew":"没有从 %s 导入新的数据集。",
+    "notificationNewInput": {
+      "new": "%s 个数据集导入自：%s。",
+      "noNew": "没有从 %s 导入新的数据集。",
       "importerNames": {
         "database": "数据库"
       }
@@ -181,399 +179,523 @@
     "notificationOutputAttachmentAdded": {
       "desc": "添加了新的输出附件：%s。"
     },
-    "notificationFileNotFound":{
+    "notificationFileNotFound": {
       "lst": "找不到 GAMS 列表文件。",
       "log": "找不到 GAMS 日志文件。",
       "mirolog": "找不到日志文件。"
     },
-    "dialogExportScen":{
-      "title":"导出场景",
-      "desc":"选择文件类型",
-      "cancelButton":"取消",
-	  "selDatasets":"选择要导出的数据集",
+    "dialogExportScen": {
+      "title": "导出场景",
+      "desc": "选择文件类型",
+      "cancelButton": "取消",
+      "selDatasets": "选择要导出的数据集",
       "noDsSelected": "未指定任何要导出的数据集。",
-      "cbSelectManually":"手动指定数据集",
-      "okButton":"导出"
+      "cbSelectManually": "手动指定数据集",
+      "okButton": "导出"
     },
-    "dialogSaveSuccess":{
-      "title":"保存成功",
-      "desc":"%d个数据集已保存。"
+    "dialogSaveSuccess": {
+      "title": "保存成功",
+      "desc": "%d个数据集已保存。"
     },
-    "dialogNewScen":{
-      "title":"新建场景",
-      "desc":"请输入场景的名称:",
-      "tags":"请为场景添加标签（可选）:",
+    "dialogNewScen": {
+      "title": "新建场景",
+      "desc": "请输入场景的名称:",
+      "tags": "请为场景添加标签（可选）:",
       "discardAttach": "舍弃附件？",
-      "discardViews": "抛弃观点？",
-      "newScenName":"新建场景",
-      "badName":"请输入正确的名称。",
-      "scenExists":"输入的名称已存在，要替换它吗？",
-      "btNewName":"选择不同的名称",
+      "discardViews": "舍弃视图？",
+      "newScenName": "新建场景",
+      "badName": "请输入正确的名称。",
+      "scenExists": "输入的名称已存在，要替换它吗？",
+      "btNewName": "选择不同的名称",
       "btOverwrite": "替换",
       "cancelButton": "取消",
       "okButton": "确认"
     },
-    "dialogEditMeta":{
-      "title":"编辑元数据",
+    "dialogEditMeta": {
+      "title": "编辑元数据",
       "categoryGeneral": "通用选项",
       "categoryAttachments": "附件",
-      "categoryViews": "浏览次数",
+      "categoryViews": "视图",
       "categoryAccessPerm": "访问权限",
-      "newName":"新建名称",
-      "badName":"该名称无效（太长或太短），请选择其他名称。",
-      "newTags":"新建标签",
-      "badTags": "输入的标签无效。 确保标记不为空或复制，不包含1000多个字符。",
-      "scenExists":"带有该名称的场景已存在。",
-      "emptyPerm":"场景的访问权限不能为空!",
-      "incapOwner": "无法撤销该文件所有者的访问权限。",
-      "attachmentsAdd":"添加附件",
-      "attachmentsExecPerm":"允许模型读取此文件",
-      "attachSuccess":"附件已更新",
-      "attachMaxSizeError":"该附件已超过允许的最大附件大小（%s字节）。",
-      "attachMaxNoError":"已达最大附件数。请先删除附件,再上传新附件。",
-      "attachDuplicateError":"已存在相同名称的附件。请选择其他名称,再重试。",
-      "attachForbiddenFnameError":"尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
-      "viewsSuccess": "观点已成功更新。",
+      "newName": "新名称",
+      "badName": "该名称无效（太长或太短），请选择其他名称。",
+      "newTags": "新标签",
+      "badTags": "输入的标签无效。请确保标签不为空、不重复，且不超过1000个字符。",
+      "scenExists": "带有该名称的场景已存在。",
+      "emptyPerm": "场景的访问权限不能为空!",
+      "incapOwner": "无法撤销所有者的访问权限。",
+      "attachmentsAdd": "添加附件",
+      "attachmentsExecPerm": "允许模型读取此文件",
+      "attachSuccess": "附件已更新",
+      "attachMaxSizeError": "该附件已超过允许的最大附件大小（%s字节）。",
+      "attachMaxNoError": "已达最大附件数。请先删除附件,再上传新附件。",
+      "attachDuplicateError": "已存在相同名称的附件。请选择其他名称,再重试。",
+      "attachForbiddenFnameError": "尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
+      "viewsSuccess": "视图已成功更新。",
       "viewsInvalidData": "您上传的数据不是有效的视图数据。请确认该文件是JSON文件，且语法正确。",
-      "viewsDuplicateError": "以下视图没有被导入，因为该符号已经存在相同名称的视图。'%s'.",
-      "viewsInvalidError": "您尝试导入的某些视图未导入，因为它们是为不存在的符号定义的：'%s'.",
-      "noViewData": "没有意见",
+      "viewsDuplicateError": "以下视图未被导入，因为该符号已存在同名视图：'%s'。",
+      "viewsInvalidError": "您尝试导入的某些视图未导入，因为它们是为不存在的符号定义的：'%s'。",
+      "noViewData": "没有视图",
+      "noAttachments": "没有附件",
       "selectAllViews": "选择所有",
       "selectNoViews": "选择无",
       "viewsNoneSelected": "没有选择视图。点击行选择视图。",
-      "viewsAdd": "添加意见",
+      "viewsAdd": "添加视图",
       "viewsTableHeaderSymbol": "符号",
       "viewsTableHeaderId": "名称",
-      "viewsDownload": "下载浏览量",
-      "viewsRemove": "删除观点",
-      "errMsg":"更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
+      "viewsDownload": "下载视图",
+      "viewsRemove": "删除视图",
+      "errMsg": "更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
-      "okButton":"更新元数据"
+      "okButton": "更新元数据"
     },
     "dialogRemoveDuplicates": {
       "noDuplicates": "你的输入表都不包含重复的记录。",
       "title": "删除重复的记录",
-      "desc": "以下符号包含重复的记录。'%s'.n你想只保留这些重复记录的第一个或最后一个值吗？",
+      "desc": "以下符号包含重复的记录：'%s'。\n您想只保留这些重复记录中的第一个值还是最后一个值？",
       "cancelButton": "取消",
-      "btKeepFirst": "保留第一个数据集",
-      "btKeepLast": "保留最后一个数据集",
+      "btKeepFirst": "保留第一个",
+      "btKeepLast": "保留最后一个",
       "success": "成功删除重复记录",
       "pivotReadonlyWarning": "由于符号中包含重复记录，表格被设置为只读。\n您可以使用 \"场景选项\"->\"删除重复项\" 对话框删除重复记录。"
     },
-    "dialogInconsistentOutput":{
+    "dialogInconsistentOutput": {
       "title": "输出数据不一致",
-      "desc": "输出数据可能与当前加载到沙箱中的输入数据不一致。 您仍然要导入结果吗？",
-      "okButton": "进口",
+      "desc": "输出数据可能与当前加载到沙盒中的输入数据不一致。您仍然要导入结果吗？",
+      "okButton": "导入",
       "cancelButton": "取消"
     },
-    "dialogDeleteScen":{
-      "title":"删除场景",
-      "desc":"确定要从数据库中删除该场景吗？",
+    "dialogDeleteScen": {
+      "title": "删除场景",
+      "desc": "确定要从数据库中删除该场景吗？",
       "cancelButton": "取消",
       "okButton": "确认",
-      "removeFromUI":{
-        "title":"从编辑器中删除场景",
-        "desc":"确定要从编辑器中删除该场景吗？未保存的数据会丢失！",
+      "removeFromUI": {
+        "title": "从沙盒中移除场景",
+        "desc": "确定要从沙盒中移除该场景吗？未保存的数据会丢失！",
         "cancelButton": "取消",
-        "okButton":"从编辑器中删除"
+        "okButton": "从沙盒中移除"
       }
     },
-    "dialogRemoveScen":{
-      "title":"关闭场景",
-      "desc":"确定要关闭当前活跃的场景吗？未保存的数据将会丢失！",
+    "dialogRemoveScen": {
+      "title": "关闭场景",
+      "desc": "确定要关闭当前活跃的场景吗？未保存的数据将会丢失！",
       "cancelButton": "取消",
       "okButton": "关闭"
     },
-    "dialogCloseScen":{
-      "title":"关闭场景",
-      "desc":"确定要关闭所选的场景吗？",
+    "dialogCloseScen": {
+      "title": "关闭场景",
+      "desc": "确定要关闭所选的场景吗？",
       "cancelButton": "否",
       "okButton": "是"
     },
-    "dialogCloseAllScen":{
-      "title":"关闭所有场景",
-      "desc":"您确定要关闭所场景？",
-      "cancelButton":"否",
-      "okButton":"是"
-    },
-    "dialogExistingOutput":{
-      "title":"已存在输出数据",
-      "desc":"要保存的场景包含与当前输入数据不对应的输出数据，丢弃该输出数据？",
-      "cancelButton":"取消",
-      "saveOutputButton":"保存输出数据",
-      "discardOutputButton":"丢弃输出数据"
-    },
-    "dialogSaveScen":{
-      "title":"保存场景",
-      "desc":"确定要保存所选场景到数据库吗？",
+    "dialogCloseAllScen": {
+      "title": "关闭所有场景",
+      "desc": "您确定要关闭所有场景吗？",
       "cancelButton": "否",
       "okButton": "是"
     },
-    "dialogImport":{
-      "title":"加载数据",
+    "dialogExistingOutput": {
+      "title": "已存在输出数据",
+      "desc": "要保存的场景包含可能与当前输入数据不对应的输出数据。是否丢弃这些输出数据？",
+      "cancelButton": "取消",
+      "saveOutputButton": "保存输出数据",
+      "discardOutputButton": "丢弃输出数据"
+    },
+    "dialogSaveScen": {
+      "title": "保存场景",
+      "desc": "确定要保存所选场景到数据库吗？",
+      "cancelButton": "否",
+      "okButton": "是"
+    },
+    "dialogImport": {
+      "title": "加载数据",
       "tabLocal": "本地",
       "tabExternal": "外部",
       "tabDatabase": "数据库",
-      "selInputData":"选择要加载的输入数据",
+      "selInputData": "选择要加载的输入数据",
       "selDecimalSep": "选择小数点分隔符",
-      "selDelim": "选择定界符",
+      "selDelim": "选择分隔符",
       "selExcelIndexSheet": "选择索引工作表",
-      "excelIndexSheetRng": "选择指数范围",
+      "excelIndexSheetRng": "选择索引范围",
       "selExternalSource": "选择外部数据源",
-      "descLocal":"选择要加载数据的文件",
-      "newScenName":"为新场景选择一个名称",
-      "scenNameExistsErr":"该场景名称已存在。",
-      "descClearSandbox": "沙箱中已经装入数据。未保存的数据/结果将会丢失。您想删除此数据吗？",
-      "descOverwriteInput":"您选择的符号的数据已经加载。你想将新数据与现有数据合并，还是替换现有数据？",
-      "cbSelectManually":"手动选择数据集",
-      "overwriteWarning":"已导入的数据集,可能会丢失！",
+      "descLocal": "选择要加载数据的文件",
+      "newScenName": "为新场景选择一个名称",
+      "scenNameExistsErr": "该场景名称已存在。",
+      "descClearSandbox": "沙盒中已加载数据。未保存的数据/结果将会丢失。是否清除这些数据？",
+      "descOverwriteInput": "您选择的符号的数据已经加载。你想将新数据与现有数据合并，还是替换现有数据？",
+      "cbSelectManually": "手动选择数据集",
+      "overwriteWarning": "如果未保存，已导入的数据集可能会丢失！",
       "mergeButton": "合并",
-      "replaceButton": "代替",
+      "replaceButton": "替换",
       "cancelButton": "取消",
       "okButton": "加载"
     },
-    "dialogLoadScen":{
-      "title":"加载场景",
-      "tabDB":"数据库",
-      "tabUI":"本地",
-      "titleNoScen":"未找到任何场景",
-      "descNoScen":"未找到任何保存过的场景。",
-      "selLoadScen":"选择要加载的场景",
-      "selTags":"仅显示带标签的场景:",
-      "baseScenLabel": "基地场景:",
-      "titleDataError":"数据已损坏",
-      "descDataError":"场景数据似乎已损坏，加载失败。",
-      "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
+    "dialogLoadScen": {
+      "title": "加载场景",
+      "tabDB": "数据库",
+      "tabUI": "本地",
+      "titleNoScen": "未找到任何场景",
+      "descNoScen": "未找到任何保存过的场景。",
+      "selLoadScen": "选择要加载的场景",
+      "selTags": "仅显示带标签的场景:",
+      "includeSandbox": "包含沙盒场景: %s",
+      "selBaseline": "基准场景",
+      "baselineDesc": "所有其他场景都将与此场景进行比较。",
+      "titleDataError": "数据已损坏",
+      "descDataError": "场景数据似乎已损坏，加载失败。",
+      "maxNoScenExceeded": "已超出可显示场景数的上限，仅显示一个子集。",
       "noDsSelected": "指定要导入的数据集的名称",
-      "symNotInDataSrc": "在您提供的数据中找不到您要导入的记录。",
+      "symNotInDataSrc": "在您提供的数据中找不到您要导入的数据集。",
       "invalidFile": "无法验证上传文件的有效性",
-      "sortBy":"排序依据:",
-      "btSortNameASC":"名称（ASC）",
-      "btSortTimeASC":"时间（ASC）",
-      "btSortNameDESC":"名称（DESC）",
-      "btSortTimeDESC":"时间（DESC）",
+      "sortBy": "排序依据:",
+      "btSortNameASC": "名称（ASC）",
+      "btSortTimeASC": "时间（ASC）",
+      "btSortNameDESC": "名称（DESC）",
+      "btSortTimeDESC": "时间（DESC）",
       "cancelButton": "取消",
       "okButton": "导入"
     },
-    "dialogNewCol":{
-      "title":"新建列",
-      "desc":"请输入新列的名称:",
+    "dialogNewCol": {
+      "title": "新建列",
+      "desc": "请输入新列的名称:",
       "cancelButton": "取消",
       "okButton": "确认"
     },
-    "fileExport":{
-      "fileTypes": ["MIRO场景（MIROSCEN）", "GAMS数据交换（GDX）", "逗号分隔值（CSV）", "Microsoft Excel（XLSX）"],
+    "fileExport": {
+      "fileTypes": [
+        "MIRO场景（MIROSCEN）",
+        "GAMS数据交换（GDX）",
+        "逗号分隔值（CSV）",
+        "Microsoft Excel（XLSX）"
+      ],
       "infoDataOnly": "使用所选文件类型时，仅导出数据。 不包括元数据，例如附件，视图，标签等。"
     },
-    "excelExport":{
-      "metadataSheet":{
-        "title":"信息",
+    "excelExport": {
+      "metadataSheet": {
+        "title": "信息",
         "uid": "用户",
-        "sname":"场景名称",
-        "stime":"创建时间",
-        "stag":"场景标签",
-        "readPerm":"读取权限",
-        "writePerm":"写入权限",
+        "sname": "场景名称",
+        "stime": "创建时间",
+        "stag": "场景标签",
+        "readPerm": "读取权限",
+        "writePerm": "写入权限",
         "execPerm": "执行权限",
         "symbol": "符号名称",
         "desc": "描述"
       },
-      "inputSuffix":"（输入）",
-      "outputSuffix":"（输出）"
+      "inputSuffix": "（输入）",
+      "outputSuffix": "（输出）"
     },
-    "dialogLockScen":{
-      "title":"场景锁定",
-      "desc":"用户'%s'正在访问要加载的场景。"
+    "dialogLockScen": {
+      "title": "场景已锁定",
+      "desc": "用户'%s'正在访问要加载的场景。"
     },
-    "dialogReadonly":{
-      "title":"无写入权限",
-      "descErr":"没有该场景的写入权限。",
-      "desc":"没有该场景的写入权限，另存为新场景？",
-      "okButton":"另存为",
-      "cancelButton":"取消"
+    "dialogReadonly": {
+      "title": "无写入权限",
+      "descErr": "没有该场景的写入权限。",
+      "desc": "没有该场景的写入权限，另存为新场景？",
+      "okButton": "另存为",
+      "cancelButton": "取消"
     },
-    "dialogNoExecPerm":{
+    "dialogNoExecPerm": {
       "title": "没有执行权限",
       "desc": "没有该场景的执行权限。"
     },
-    "dialogDownloadTmp":{
-      "title":"下载临时文件",
-      "desc":"选择要下载的文件",
-      "noFiles":"未找到文件",
-      "downloadAllButton":"全部下载",
-      "downloadButton":"下载",
+    "dialogDownloadTmp": {
+      "title": "下载临时文件",
+      "desc": "选择要下载的文件",
+      "noFiles": "未找到文件",
+      "downloadAllButton": "全部下载",
+      "downloadButton": "下载",
       "cancelButton": "取消"
     },
-    "dialogHashExists":{
-      "title": "场景已经解决",
-      "desc": "您要解决的方案已存在于数据库中，名称为：“%s”%s并且最后由“%s”在“%s”上保存。",
-      "descTags": "（标签：“%s”）",
-      "cancelButton":"取消",
-      "okButton": "再次解决"
+    "dialogHashExists": {
+      "title": "场景已求解",
+      "desc": "您要求解的场景已存在于数据库中，名称为：'%s'%s，最后由'%s'于'%s'保存。",
+      "descTags": "（标签：'%s'）",
+      "cancelButton": "取消",
+      "okButton": "再次求解"
     },
-    "dialogJobSubmission":{
+    "dialogJobSubmission": {
       "title": "提交作业",
-      "desc": "提交一个要异步解决的新作业。",
+      "desc": "提交一个要异步求解的新作业。",
       "jobName": "为当前作业指定名称（可选）",
-      "workerInstance": "选择运行作业的机器类型",
-      "instanceDropdownCategories": ["工作池", "机器的种类"],
+      "workerInstance": "选择运行作业的实例",
+      "instanceDropdownCategories": [
+        "实例池",
+        "实例"
+      ],
       "descWait": "正在提交作业，请等待",
       "badName": "请指定一个有效的作业名称",
-      "cancelButton":"取消",
+      "cancelButton": "取消",
       "okButton": "提交",
       "successMsg": "该作业已安排。 在作业完成执行后可以立即检索结果。"
     },
-    "dialogHcube":{
-      "title":"Hypercube配置",
-      "desc":"选中%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
-      "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
-	  "descJobSubmission": "正在提交作业，请等待",
-      "newTags":"为作业分配一个或多个标签:",
-      "manualSwitch":"手动处理作业？",
+    "dialogHcube": {
+      "title": "Hypercube配置",
+      "desc": "您选择了%d个场景以Hypercube模式求解。其中%s个场景已由您或他人求解。",
+      "descSolveAgain": "再次求解所有场景，还是仅求解尚未求解的场景？",
+      "descJobSubmission": "正在提交作业，请等待",
+      "newTags": "为作业分配一个或多个标签:",
+      "manualSwitch": "手动处理作业？",
       "cancelButton": "取消",
-      "processAllButton":"处理所有",
-      "processUnsolvedButton":"仅处理未解决的",
-      "successMsg":"Hypercube作业已安排，在作业完成后可以立即查看结果。",
+      "processAllButton": "处理所有",
+      "processUnsolvedButton": "仅处理未求解的",
+      "successMsg": "Hypercube作业已安排，在作业完成后可以立即查看结果。",
       "exportError": "某些场景无法导出: %s。",
-      "waitTime":"提交新作业前，请等待几秒钟。",
-      "waitDialog":{
-        "title":"正在配置Hypercube作业",
-        "desc":"正在配置Hypercube作业，请等待。"
+      "waitTime": "提交新作业前，请等待几秒钟。",
+      "waitDialog": {
+        "title": "正在配置Hypercube作业",
+        "desc": "正在配置Hypercube作业，请等待。"
       },
-      "exceedMaxNoDialog":{
-        "title":"超出最大允许场景数量",
-        "desc":"在Hypercube运行中，您已选中%s个场景，该数量已超出每次可运行最大量（%s个）。请减少场景数量,再重试。"
+      "exceedMaxNoDialog": {
+        "title": "超出最大允许场景数量",
+        "desc": "在Hypercube运行中，您已选中%s个场景，该数量已超出每次可运行最大量（%s个）。请减少场景数量,再重试。"
       },
-      "noScenSelectedDialog":{
-        "title":"未选择任何场景",
-        "desc":"至少选择一个要求解的场景。"
+      "noScenSelectedDialog": {
+        "title": "未选择任何场景",
+        "desc": "至少选择一个要求解的场景。"
       },
-      "badStepSizeDialog":{
-        "title":"错误的步长大小",
-        "desc":"无法处理指定的步长大小。请选择有效的步长,再重试。"
+      "badStepSizeDialog": {
+        "title": "错误的步长大小",
+        "desc": "无法处理指定的步长大小。请选择有效的步长,再重试。"
       }
     },
-    "importJobsDialog":{
-        "title":"当前活跃的Hypercube作业",
-        "noJobs":"当前没有 Hypercube 作业处于活跃状态",
-        "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
-        "discardSuccess":"作业已丢弃",
-        "importSuccess":"作业已导入",
-        "accessDenied": "拒绝访问",
-		"maxDownloads": "文件数量已达到可以同时下载的最大值。",
-        "jobNotFound": "在GAMS ENGINE上没有找到这份工作。",
-        "histTitle": "作业历史",
-        "status":{
-          "downloading": "正在下载结果",
-          "downloaded": "已下载",
-          "queued": "排队",
-          "running": "正在求解",
-          "imported": "已导入",
-          "completed": "已完成",
-          "corrupted": "已损坏",
-          "discarded": "已丢弃"
-        },
-        "ttips":{
-          "importedManual":"作业已手动导入。",
-          "discardedCorrupted":"该作业已损坏。",
-          "discardedActive":"该作业仍然活跃。",
-          "discardedScheduled":"该作业已安排。",
-          "discardedCompleted":"该作业已完成。",
-          "corruptedNoDir":"未找到该作业的工作目录。",
-          "corruptedNoProcess":"作业已终止,但未发现任何结果。",
-          "corruptedManual":"手动导入作业失败。"
-        },
-        "header":{
-          "owner":"所有者",
-          "date":"提交日期",
-          "tags":"作业标签",
-		  "name": "作业名称",
-          "status":"状态",
-          "action":"行动"
-        },
-        "buttons":{
-          "import":"导入",
-		  "download": "下载结果",
-          "log":"显示日志",
-          "progress": "显示进度",
-          "discard":"丢弃"
-        },
-        "discardConfirm":{
-          "title":"确认丢弃",
-          "desc":"确定要丢弃所选的Hypercube作业吗？当前运行的作业将停止。",
-          "cancelButton":"取消",
-          "confirmButton":"确认"
-        }
+    "dialogWhatsNew": {
+      "title": "最新动态",
+      "newFeaturesHdr": "新功能",
+      "minorImprovementsHdr": "小型新功能和改进",
+      "cancelButton": "关闭",
+      "releaseNotes": "阅读完整的版本说明"
     },
-    "newCompletedJobsDialog":{
+    "dialogSettings": {
+      "title": "GAMS Engine 设置",
+      "quotaInfoHeader": "剩余配额",
+      "quotaVolumeLabel": "用量配额",
+      "unlimitedQuotaLabel": "无限制",
+      "quotaDiskLabel": "磁盘配额",
+      "selDefaultInstance": "选择默认实例",
+      "instancePoolLabel": "实例池",
+      "instanceLabel": "实例",
+      "scalingUpLabel": "扩容中…",
+      "scalingDownLabel": "缩容中…",
+      "memoryLabel": "内存",
+      "cpuLabel": "CPU",
+      "multiplierLabel": "倍率",
+      "poolOwnerLabel": "所有者",
+      "activeWorkersLabel": "活动",
+      "busyWorkersLabel": "繁忙",
+      "desiredWorkersLabel": "目标",
+      "btUpdateDefaultInstance": "更新默认实例",
+      "closeButton": "关闭"
+    },
+    "importJobsDialog": {
+      "title": "当前活跃的作业",
+      "noJobs": "当前没有活跃的作业",
+      "noJobsHist": "未发现已丢弃或已导入的作业",
+      "discardSuccess": "作业已丢弃",
+      "importSuccess": "作业已导入",
+      "accessDenied": "拒绝访问",
+      "maxDownloads": "文件数量已达到可以同时下载的最大值。",
+      "jobNotFound": "在GAMS Engine上未找到该作业。",
+      "histTitle": "作业历史",
+      "status": {
+        "downloading": "正在下载结果",
+        "downloaded": "已下载",
+        "queued": "排队中",
+        "running": "正在求解",
+        "imported": "已导入",
+        "completed": "已完成",
+        "corrupted": "已损坏",
+        "discarded": "已丢弃"
+      },
+      "ttips": {
+        "importedManual": "作业已手动导入。",
+        "discardedCorrupted": "该作业已损坏。",
+        "discardedActive": "该作业仍然活跃。",
+        "discardedScheduled": "该作业已安排。",
+        "discardedCompleted": "该作业已完成。",
+        "corruptedNoDir": "未找到该作业的工作目录。",
+        "corruptedNoProcess": "作业已终止,但未发现任何结果。",
+        "corruptedManual": "手动导入作业失败。"
+      },
+      "header": {
+        "owner": "所有者",
+        "date": "提交日期",
+        "tags": "作业标签",
+        "name": "作业名称",
+        "status": "状态",
+        "action": "操作"
+      },
+      "buttons": {
+        "import": "导入",
+        "download": "下载结果",
+        "log": "显示日志",
+        "progress": "显示进度",
+        "discard": "丢弃"
+      },
+      "discardConfirm": {
+        "title": "确认丢弃",
+        "desc": "确定要丢弃所选的作业吗？正在运行的作业将被停止。",
+        "cancelButton": "取消",
+        "confirmButton": "确认"
+      }
+    },
+    "newCompletedJobsDialog": {
       "title": "新完成的作业",
-      "desc": "部分作业已解决，现在可以导入了。",
+      "desc": "部分作业已求解，现在可以导入了。",
       "cancelButton": "取消",
       "okButton": "显示作业"
     },
-    "dialogBatchLoad":{
+    "dialogBatchLoad": {
       "title": "选择操作",
       "selectMethod": "对选定的场景进行什么操作？",
-      "scenNameCols": "选择用于命名方案的列",
+      "compareSettingsTitle": "在以下模式中比较 %d 个场景: %s",
+      "compareButton": "比较",
+      "backButton": "返回",
+      "scenNameCols": "选择用于命名场景的列",
       "scenNamePrefix": "场景名称的前缀",
       "selExportType": "选择文件类型",
-      "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
-      "maxScenWarning2":"选择更少的场景或使用自定义分析脚本进行比较。",
-      "cancelButton":"取消",
-      "analysisButton":"分析",
+      "maxScenWarning1": "一次最多选择'%d'个场景加载到交互模式。",
+      "maxScenWarning2": "选择更少的场景或使用自定义分析脚本进行比较。",
+      "cancelButton": "取消",
+      "analysisButton": "分析",
       "tabScript": "脚本",
       "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
-      "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
-      "removeSuccess":"已删除所选场景。",
+      "removeConfirm": "确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
+      "removeSuccess": "已删除所选场景。",
       "selAnalysisScript": "选择要运行的脚本",
       "runScriptButton": "启动脚本",
       "downloadAnalysisButton": "下载",
-      "interactiveButtonSb": "将数据加载到沙箱",
-      "interactiveButtonTab": "比较(标签视图)",
-      "interactiveButtonPivot": "比较(枢轴检视)",
-      "interactiveButtonSplit": "比较(拆分视图)",
-      "downloadButton":"下载数据",
-      "removeButton":"删除场景",
+      "interactiveButtonSb": "加载到沙盒",
+      "interactiveButtonTab": "比较（选项卡视图）",
+      "interactiveButtonPivot": "比较（数据透视视图）",
+      "interactiveButtonSplit": "比较（拆分视图）",
+      "interactiveButtonAi": "询问 Mira",
+      "downloadButton": "下载数据",
+      "removeButton": "删除场景",
       "removeIncompleteError": "并非所有选定的场景都可以删除。 这可能是因为它们是只读的，或者在此期间已被其他人删除。"
     },
-    "hcubeMode":{
-      "sliderAllCombinations":"所有组合？",
+    "aiBotDialog": {
+      "title": "Mira",
+      "welcomeMessage": "你好！我是 Mira，你的 AI 助手。无论你是想分析单个场景还是对比多个场景，我都能随时为你提供帮助，与你一起探索优化结果。",
+      "welcomeMessageCustomRenderer": "你好！我是 Mira，你的 AI 助手。我来协助你编写自定义渲染器代码。只需告诉我你想如何可视化你的数据即可。",
+      "currentContextSandbox": "沙盒场景：%s",
+      "currentContextCompare": "对比 %d 个场景",
+      "backToSandbox": "返回沙盒",
+      "requestAbortedMessage": "请求已中止。",
+      "sandboxSyncFailedMessage": "Mira 无法访问当前沙盒的数据，因此您的消息未发送。请重试。",
+      "chatBubbleUserHeader": "用户：",
+      "chatBubbleAssistantHeader": "Mira：",
+      "userTextPlaceholder": "在此输入关于场景的问题...",
+      "userTextPlaceholderRenderer": "今天构建什么？",
+      "inputTokensLabel": "输入 Token 数量：%s",
+      "inputTokensTitle": "提示词所消耗的 Token 数量。",
+      "outputTokensLabel": "输出 Token 数量：%s",
+      "outputTokensTitle": "AI 模型生成的 Token 数量。",
+      "disclaimer": "Mira 可能会出错。请核对重要信息。",
+      "nfApplySuccess": "代码应用成功！",
+      "nfApplyErrNoCode": "在最新的 AI 回复中未找到输出函数或渲染器函数",
+      "nfApplyErrNoResponse": "最后一条消息必须来自 AI 才能应用代码。",
+      "btClear": "清空对话",
+      "btClose": "关闭",
+      "resizeHandle": "拖动以调整宽度，双击以重置",
+      "btCopy": "复制文本",
+      "btDownloadChart": "下载为 PNG",
+      "chartUnavailable": "此图表已不可用。",
+      "btOpenChartInPivot": "在透视视图中打开",
+      "openChartReplaceDesc": "当前在透视视图中加载的场景将被替换。",
+      "btOpenChartReplace": "替换",
+      "chartNotInPivot": "这些数据无法在透视视图中显示。",
+      "btApplyCode": "应用代码",
+      "changeProposalHeader": "建议的输入数据更改",
+      "changeProposalBefore": "更改前",
+      "changeProposalAfter": "更改后",
+      "changeProposalRow": "1 行",
+      "changeProposalRows": "%s 行",
+      "changeRowAdded": "新增",
+      "changeRowRemoved": "删除",
+      "changeProposalTruncated": "仅显示 %2$s 个受影响行中的前 %1$s 行。",
+      "changeOpMultiply": "乘以 %s",
+      "changeOpDivide": "除以 %s",
+      "changeOpAdd": "加上 %s",
+      "changeOpSubtract": "减去 %s",
+      "changeOpSet": "设为 %s",
+      "changeOpUpsert": "写入行",
+      "changeOpDelete": "删除行",
+      "changeStatusApplied": "已应用到沙盒场景。",
+      "changeStatusDiscarded": "已丢弃。",
+      "changeStatusOutdated": "已过时：该符号的数据在此期间已发生变化。请让助手重新提出该更改。",
+      "changeStatusFailed": "无法应用：%s",
+      "changeErrNoRows": "当前输入数据中没有任何行符合所建议的筛选条件。",
+      "changeErrBadChoice": "“%s”不是该符号当前允许的取值之一。",
+      "nfChangeApplied": "“%s”的输入数据已更新。",
+      "btApplyChange": "应用",
+      "btDiscardChange": "丢弃",
+      "changeRebased": "自提出此建议以来数据已更改，因此预览已更新。请在应用前查看。",
+      "changeGroupRebased": "自提出这些建议以来数据已更改，因此预览已更新。请在应用前查看。",
+      "changeGroupHeader": "%d 项建议的更改",
+      "changeGroupIndependent": "这些更改互不影响，因此一起应用的结果与上方各卡片单独显示的完全一致。",
+      "changeGroupCombined": "其中一些更改影响相同的值，因此按此顺序一起应用时，结果与上方各卡片单独显示的不同：",
+      "changeGroupStatusApplied": "所有更改均已应用到沙盒场景。",
+      "changeGroupStatusRetired": "其中部分更改已被单独处理。",
+      "btApplyAllChanges": "全部应用（%d）",
+      "nfChangesApplied": "已应用 %d 项输入数据更改。",
+      "toolActivityStatusError": "错误",
+      "toolActivityStatusRows": "%s 行",
+      "toolActivitySymbol": "符号",
+      "toolActivityScenarios": "场景",
+      "toolActivityAggregation": "聚合",
+      "toolActivityAnalysisMode": "比较",
+      "toolActivityGroupBy": "分组依据",
+      "toolActivityFilter": "行",
+      "toolActivityOrderBy": "排序依据",
+      "toolActivityLimit": "限制",
+      "toolActivityRows": "返回的行数",
+      "toolActivityGroupCount": "%s 次数据库查询"
+    },
+    "hcubeMode": {
+      "sliderAllCombinations": "所有组合？",
       "stepsize": "步长",
-      "checkboxAliases":["否","是"],
-      "invalidScenDialog":{
-        "title":"无效场景",
-        "desc":"上传的场景中%d个无效，分别是第%s个场景。要继续上传吗？",
-        "okButton":"继续",
-        "cancelButton":"中止"
+      "checkboxAliases": [
+        "否",
+        "是"
+      ],
+      "invalidScenDialog": {
+        "title": "无效场景",
+        "desc": "上传的场景中%d个无效，分别是第%s个场景。要继续上传吗？",
+        "okButton": "继续",
+        "cancelButton": "中止"
       },
-      "duplicatedScenDialog":{
-        "title":"发现重复场景",
-        "allDuplicated":"目标已包含标签为：'%s'的所有场景，要继续导入吗？",
-        "someDuplicated":"%d个要导入的场景已存在，标签为'%s'。要继续导入吗？或者仅导入新的场景。",
+      "duplicatedScenDialog": {
+        "title": "发现重复场景",
+        "allDuplicated": "要导入的所有场景均已存在于数据库中，标签为：'%s'。是否仍要继续？",
+        "someDuplicated": "%d个要导入的场景已存在于数据库中，标签为：'%s'。是否仍要继续，还是仅导入尚不存在的场景？",
         "cancelButton": "中止",
-        "importNewButton":"仅导入新场景",
-        "importAllButton":"全部导入"
+        "importNewButton": "仅导入新场景",
+        "importAllButton": "全部导入"
       },
-      "showLogFileDialog":{
-        "title":"日志文件",
-        "noContent":"无法访问日志文件或该日志文件不包含任何数据。",
-        "fileSize":"日志文件包含过多要显示的数据。",
+      "showLogFileDialog": {
+        "title": "日志文件",
+        "noContent": "无法访问日志文件或该日志文件不包含任何数据。",
+        "fileSize": "日志文件包含的数据过多，无法显示。",
         "cancelButton": "取消"
       },
-      "showJobProgressDialog":{
-        "title": "正在处理作业",
-        "failedMsg": "%s 失败的",
+      "showJobProgressDialog": {
+        "title": "作业进度",
+        "failedMsg": "%s 个失败",
         "cancelButton": "取消"
       },
-      "jobsCompletedDialog":{
-        "title":"已完成的作业",
-        "desc":"Hypercube作业已完成,现在可以导入。"
+      "jobsCompletedDialog": {
+        "title": "已完成的作业",
+        "desc": "Hypercube作业已完成,现在可以导入。"
       }
     },
-    "dialogPaverInUse":{
-      "title" :"正在使用PAVER",
-      "desc":"请等待。",
-      "closeButton" :"关闭"
+    "dialogPaverInUse": {
+      "title": "PAVER 已在使用中",
+      "desc": "请等待该进程完成。",
+      "closeButton": "关闭"
     },
     "scriptOutput": {
       "runButton": "运行脚本",
@@ -585,37 +707,37 @@
         "crash": "脚本崩溃了"
       }
     },
-    "hot":{
+    "hot": {
       "search": "搜索："
     },
     "migrationModule": {
       "title": "数据库迁移",
-      "desc": "我们确定您的GAMS / MIRO数据合同已以与您的应用程序当前数据库布局不兼容的方式进行了更改。 请指定您的数据应如何迁移。",
+      "desc": "我们检测到您的 GAMS/MIRO 数据契约发生了更改，与应用当前的数据库布局不兼容。请指定数据应如何迁移。",
       "backupWarning": "强烈建议您在迁移之前备份数据库。",
       "successMsg": "您的数据已成功迁移！请重新启动应用程序。",
       "labelSymbol": "符号：“%s”",
-      "selectTableToMap": "从迁移数据",
-      "selectColToMap": "栏目：",
+      "selectTableToMap": "迁移数据来源",
+      "selectColToMap": "列：",
       "btCancelMigration": "取消",
       "btConfirmMigration": "确认迁移",
       "errDuplicateTables": "表：'%s'不能重复！",
       "incompatibleTypeWarning": "必须将现有数据转换为数字以适合新的数据库表。 无法转换的值变为0！",
       "dialogConfirmDataLoss": {
         "title": "警告：数据丢失",
-        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'％s'！",
-        "descTableCols": "注意力。 您当前的迁移配置将删除表“%s”中的列“%s”！",
+        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'%s'！",
+        "descTableCols": "注意：当前的迁移配置将删除表'%2$s'中的列'%1$s'！",
         "cbConfirmDataLoss": "我确定",
         "btCancel": "取消",
-        "btConfirm": "删除资料"
+        "btConfirm": "删除数据"
       },
-      "progress":{
+      "progress": {
         "title": "数据正在迁移",
         "desc": "表%s/%s正在迁移"
       },
-      "btRemoveTables":{
+      "btRemoveTables": {
         "label": "删除所有数据库表",
         "confirmTitle": "删除数据库表",
-        "confirmDesc": "你确定要删除所有属于模型的数据库表吗？该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
+        "confirmDesc": "确定要删除属于该模型的所有数据库表吗？此操作无法撤消！建议在继续之前先保存数据库。",
         "cbConfirm": "删除所有表格？",
         "btCancel": "取消",
         "btConfirm": "删除表格",
@@ -623,78 +745,80 @@
       }
     },
     "hcModule": {
-      "submissionDialog":{
-        "title": "新的 HYPERCUBE 作业",
+      "submissionDialog": {
+        "title": "新的 Hypercube 作业",
         "btCancel": "取消",
         "btSubmitAll": "提交所有",
-        "btSubmitUnsolved": "仅提交未解决的"
+        "btSubmitUnsolved": "仅提交未求解的"
       }
     }
   },
-  "progressBar":{
-    "renderOutput":{
-      "title":"绘制输出图",
-      "progress":"正在绘制输出"
+  "progressBar": {
+    "renderOutput": {
+      "title": "绘制输出图",
+      "progress": "正在绘制输出"
     },
-    "prepRun":{
-      "title":"准备",
-      "sendInput":"发送输入数据",
-      "downloadAttach":"正在下载附件"
+    "prepRun": {
+      "title": "准备",
+      "sendInput": "发送输入数据",
+      "downloadAttach": "正在下载附件"
     },
-    "importScen":{
+    "importScen": {
       "title": "导入场景",
       "downloadResults": "正在下载结果数据",
       "renderInput": "正在绘制输入数据",
       "renderOutput": "正在绘制输出数据"
     },
-	"exportScen":{
+    "exportScen": {
       "title": "正在导出场景",
-      "exportDs": "正在导出数据集，%s中的%s已完成",
+      "exportDs": "正在导出数据集 %s/%s",
       "success": "场景数据已成功导出至：%s。"
     },
-    "loadScenDb":{
-      "title":"从数据库加载场景数据",
-      "progress":"正在加载数据集"
+    "loadScenDb": {
+      "title": "从数据库加载场景数据",
+      "progress": "正在加载数据集"
     },
-    "saveScenDb":{
-      "title":"在数据库中保存场景数据",
-	  "attachments": "正在保存附件",
-      "progress":"正在保存数据集"
+    "saveScenDb": {
+      "title": "在数据库中保存场景数据",
+      "attachments": "正在保存附件",
+      "progress": "正在保存数据集"
     },
-    "hcubeImport":{
-      "title":"正在导入Hypercube作业",
+    "hcubeImport": {
+      "title": "正在导入Hypercube作业",
       "refresh": "刷新",
-      "unzip":"提取zip文件",
-      "zipValidation":"验证zip文件",
-      "scenValidation":"验证场景数据",
-      "duplicateCheck":"检查重复的场景",
-      "scenRead":"读取场景的数据",
-      "dbUpload":"将场景上传到数据库",
-      "success":"导入成功"
+      "unzip": "提取zip文件",
+      "zipValidation": "验证zip文件",
+      "scenValidation": "验证场景数据",
+      "duplicateCheck": "检查重复的场景",
+      "scenRead": "读取场景的数据",
+      "dbUpload": "将场景上传到数据库",
+      "success": "导入成功"
     }
   },
-  "renderers":{
-    "dropdownFilter":{
+  "renderers": {
+    "dropdownFilter": {
       "placeholder": "搜索..."
     },
-    "miroPivot":{
+    "miroPivot": {
       "btDownload": "下载",
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",
       "btDownloadCsvShort": "CSV",
       "btDownloadPngShort": "PNG",
-      "btHidePivotControls": "隐藏枢纽控制（演示模式）。",
+      "btHidePivotControls": "隐藏数据透视控件（演示模式）",
       "btHidePivotControlsShort": "演示模式",
-      "btShowPivotControls": "显示枢纽控制（演示模式）。",
-      "btShowPivotControlsShort": "显示枢纽控制",
+      "btShowPivotControls": "显示数据透视控件",
+      "btShowPivotControlsShort": "控件",
       "btLoadView": "加载视图",
       "btShowSettings": "设置",
       "btNewView": "添加视图",
+      "btNewViewDisabledTooltip": "只能在沙盒场景中添加视图。",
+      "btNewViewDisabledCompareTooltip": "仅当沙盒场景为基准场景时才能添加视图。要向此比较添加视图，请重新加载场景，选择沙盒场景作为基准场景，添加视图并保存沙盒场景。",
       "btEnableEdit": "激活编辑",
       "btAddRow": "添加行",
       "btRemoveRows": "删除行",
-      "rows": "行数",
-      "columns": "专栏",
+      "rows": "行",
+      "columns": "列",
       "aggregation": "汇总",
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
@@ -707,38 +831,39 @@
       "updateSettingsBtSave": "保存",
       "domainFilterShowAllTitle": "显示所有数据",
       "errUniqueViewName": "您输入的视图名称已经存在。您要覆盖视图吗？",
-      "duplicateRecordTitle": "双重记录",
+      "duplicateRecordTitle": "重复记录",
       "duplicateRecordDesc": "您输入的记录已经存在。",
-      "errPivotDuplicate": "数据中包含重复的记录，因此无法进行枢纽。",
+      "errPivotDuplicate": "数据中包含重复的记录，因此无法进行透视。",
       "errPivot": "数据无法透视。 这可能是因为您的数据太大。",
       "errorTitle": "错误",
-      "duplicateRecordError": "记录：'％s'已经存在。 请删除它，然后重试。",
+      "duplicateRecordError": "记录：'%s'已经存在。 请删除它，然后重试。",
       "newView": {
         "tabGeneral": "常规",
         "tabScales": "轴",
         "tabMultiChart": "组合图",
         "tabSecondAxis": "第二轴",
         "tabSeries": "系列样式",
-        "title": "新增检视",
+        "title": "新建视图",
         "label": "请为该视图选择一个名称。",
         "info": "请注意，水平图表的轴设置会交换。",
         "chartTitle": "标题（可选的）",
         "xTitle": "X轴标签（可选的）",
         "yTitle": "Y轴标签（可选的）",
-        "yLogScale": "在 y 轴上使用对数刻度？",
+        "yLogScale": "y 轴使用对数刻度",
         "singleStack": "将正值和负值堆叠在一起",
         "groupDimension": "按维度分组堆栈",
         "xGrid": "绘制 x 轴网格",
         "yGrid": "绘制 y 轴网格",
         "showDataMarkers": "绘制数据点",
         "stepPlot": "阶梯线图",
+        "hideLegend": "隐藏图例",
         "minY": "Y轴的静态最小值（可选的）",
         "maxY": "Y轴的静态最大值（可选的）",
         "multiChartSeries": "以不同图表类型渲染系列",
         "multiChartSeriesTypeSelection": "图表类型",
         "showMultiChartDataMarkers": "为次要图表绘制数据点",
         "stackMultiChartSeries": "在堆栈中包含辅助图表系列",
-        "stackType1": "没有",
+        "stackType1": "否",
         "stackType2": "是 - 添加到常规堆栈",
         "stackType3": "是 - 独立堆栈",
         "x2axis": "使用辅助 x 轴",
@@ -749,8 +874,8 @@
         "y2axisLogScale": "次要轴上的对数刻度",
         "minY2": "次要轴的静态最小值（可选的）",
         "maxY2": "次要轴的静态最大值（可选的）",
-        "cbCustomColors": "使用自定义颜色？",
-        "cbManualColors": "手动输入颜色？",
+        "cbCustomColors": "使用自定义颜色",
+        "cbManualColors": "手动输入颜色",
         "fillOpacity": "填充不透明度",
         "cbLineDash": "使用虚线",
         "cbManualLineDashTooltip": "定义线条和间隔长度的数组",
@@ -765,8 +890,8 @@
         "selectizePlaceholder": "选择一个选项或创建一个新选项",
         "btCancel": "取消",
         "btSave": "保存",
-        "btCancelOverwrite": "不",
-        "btOverwrite": "是的"
+        "btCancelOverwrite": "否",
+        "btOverwrite": "是"
       },
       "settings": {
         "tabGeneral": "常规",
@@ -774,6 +899,8 @@
         "tabChart": "图表",
         "tabBaselineComp": "基准比较",
         "cbHideEmptyCols": "隐藏空列",
+        "cbDecimals": "小数位数",
+        "cbDecimalsTooltip": "输入 -1 以禁用舍入",
         "singleDropdown": "限制为单选下拉过滤器的维度",
         "cbShowTableSummaryRow": "显示表格摘要（行）",
         "cbShowTableSummaryCol": "显示表格摘要（列）",
@@ -785,6 +912,7 @@
           "cbEnable": "启用基准比较",
           "selDomain": "维度",
           "selRecord": "基准记录",
+          "baselineScen": "基准场景",
           "selMetrics": "比较指标（最多 2 个）",
           "errorAggregated": "无法对基准维度进行汇总。已关闭基准比较 — 现显示原始值。",
           "metrics": {
@@ -795,31 +923,31 @@
           }
         }
       },
-      "dialogAddRow":{
+      "dialogAddRow": {
         "title": "添加新行",
         "btCancel": "取消",
         "invalidKeysError": "您输入的元素无效。 请注意，这些元素必须至少包含一个可打印字符。",
         "invalidValuesError": "您输入的数据无效。 确保您输入的值是数字。",
         "unknownError": "尝试添加新数据时发生意外错误。"
       },
-      "aggregationFunctions":{
-        "sum": "总额",
+      "aggregationFunctions": {
+        "sum": "求和",
         "count": "计数",
         "median": "中位数",
-        "mean": "中位数",
-        "min": "最低值",
+        "mean": "平均值",
+        "min": "最小值",
         "max": "最大值",
         "sd": "标准偏差"
       },
-      "renderer":{
+      "renderer": {
         "table": "表格",
         "heatmap": "热图",
         "pie": "饼图",
-        "doughnut": "甜甜圈图表",
+        "doughnut": "环形图",
         "bar": "柱形图",
         "horizontalbar": "水平条形图",
         "stackedbar": "堆积柱形图",
-        "horizontalstackedbar": "水平叠加条形图",
+        "horizontalstackedbar": "水平堆积条形图",
         "radar": "雷达图",
         "line": "折线图",
         "scatter": "散点图",
@@ -827,46 +955,55 @@
         "stackedarea": "堆积面积图",
         "timeseries": "时间序列图"
       },
-      "invalidFilters":{
+      "invalidFilters": {
         "title": "由于数据中不存在这些值，因此无法应用某些过滤器。",
         "message": "过滤器：'%s'，无效值：'%s'。"
       }
     },
-    "datatable":{
-      "addRowPos": ["在选择上面添加一行", "在选择下面增加一行"],
-      "addRowPosNoneSelected": ["在第一行之上增加一行", "在最后一行下面添加一行"]
+    "datatable": {
+      "addRowPos": [
+        "在所选行上方添加一行",
+        "在所选行下方添加一行"
+      ],
+      "addRowPosNoneSelected": [
+        "在第一行之上增加一行",
+        "在最后一行下面添加一行"
+      ]
     },
-    "handsontable":{
-      "newCol":{
+    "handsontable": {
+      "newCol": {
         "nameLeft": "向左插入列",
         "nameRight": "向右插入列",
         "prompt": "输入新列的名称"
       },
-      "renameCol":{
+      "renameCol": {
         "name": "重命名列",
         "prompt": "为该列输入一个新的名称"
       },
-      "removeCol":{
-        "name": "删除栏",
-        "namePlural": "删除栏",
-        "prompt1": "你确定要删除",
-        "prompt2": "这两列？这不能被撤消！"
+      "removeCol": {
+        "name": "删除列",
+        "namePlural": "删除列",
+        "prompt1": "确定要删除以下列：",
+        "prompt2": "吗？此操作无法撤消！"
       }
     },
-    "dashboardComparison":{
-      "selectScen": "Select scenario"
+    "dashboard": {
+      "noDataWarning": "无数据"
+    },
+    "dashboardComparison": {
+      "selectScen": "选择场景"
     }
   },
-  "errMsg":{
-    "unknownError":"出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
-    "permErr":"操作失败,因为没有足够的权限。",
-    "csvio":{
-      "warnings":{
-        "ambiguousDelim": "警告：文件的定界符无法唯一标识。 请在下面手动选择。"
+  "errMsg": {
+    "unknownError": "出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
+    "permErr": "操作失败,因为没有足够的权限。",
+    "csvio": {
+      "warnings": {
+        "ambiguousDelim": "警告：无法唯一识别文件的分隔符。请在下方手动选择。"
       },
-      "errors":{
+      "errors": {
         "noColsSelected": "错误：您必须至少选择一列来导入。",
-        "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
+        "badDelim": "错误：无法确定分隔符。有效的分隔符为：'%s'。",
         "duplicateCol": "错误：不支持同一列的多项选择。",
         "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"
       }
@@ -877,24 +1014,24 @@
         "duplicateRecordsTruncated": "（仅显示前10个重复记录）"
       }
     },
-    "xlsio":{
-      "warnings":{
+    "xlsio": {
+      "warnings": {
         "invalidSymbols": "警告：Excel文件中的无效符号被忽略：'%s'。",
         "skipOptionsPersistence": "警告：一些非空行被跳过。MIRO不支持像'skipEmpty'这样具有持久性的选项。请将它们声明为符号声明的一部分。",
         "keyValueCols": "警告：MIRO不支持键=值列，它们将被忽略。 请仅使用列标题。",
         "invalidSkipEmpty": "警告：MIRO不支持大于1的 skipEmpty (符号：'%s')。无效值已被设置为1。",
-        "invalidSqueeze": "警告：挤压选项的值无效（符号：'%s'）。 允许值为：1，y，0，n。 无效值设置为1。",
-        "invalidOptions": "警告：MIRO未知的无效选项在索引'%s'中找到。",
+        "invalidSqueeze": "警告：squeeze 选项的值无效（符号：'%s'）。允许的值为：1，y，0，n。无效值已设置为1。",
+        "invalidOptions": "警告：在索引中发现 MIRO 无法识别的无效选项：'%s'。",
         "scalarDeclarations": "警告：在索引中发现标量表声明和单个标量声明。如果标量已经是表的一部分，单个声明将被忽略。",
         "invalidDsets": "警告：数据类型：'dSet'不支持多于一个维度的集合（符号：'%s'）。"
       },
-      "errors":{
+      "errors": {
         "badFormat": "错误：文件不是有效的Excel文件。",
         "indexNoSymInfo": "错误：在索引中找不到符号名称信息。",
         "indexNoRangeInfo": "错误：在索引中找不到范围信息。",
-        "indexInvalidRdim": "错误：符号：'%s'具有无效的行尺寸。",
-        "indexInvalidCdim": "错误：符号：'%s'具有无效的列尺寸。",
-        "indexInvalidDim": "错误：符号：'%s'的尺寸无效。",
+        "indexInvalidRdim": "错误：符号'%s'的行维度无效。",
+        "indexInvalidCdim": "错误：符号'%s'的列维度无效。",
+        "indexInvalidDim": "错误：符号'%s'的维度无效。",
         "indexDuplicateRdim": "错误：无法唯一标识rowdim列。",
         "indexDuplicateCdim": "错误：无法唯一识别coldim列。",
         "indexDuplicateIgnoreCol": "错误：不能唯一地标识ignoreColumns列。",
@@ -902,97 +1039,97 @@
         "indexDuplicateSqueeze": "错误：无法唯一识别squeeze列。",
         "indexInvalidRdimCol": "错误：rowdim列不是整数。",
         "indexInvalidCdimCol": "错误：coldim列不是整数。",
-        "indexInvalidValues": "错误：发现符号（%s）的无效“值”选项。 可能的选项是：auto，nodata，yn，sparse，dense。",
-        "symbolNotFound": "错误：符号：在Excel文件中找不到'%s'。",
+        "indexInvalidValues": "错误：符号'%s'的'values'选项无效。可选值为：auto，nodata，yn，sparse，dense。",
+        "symbolNotFound": "错误：在Excel文件中找不到符号'%s'。",
         "badIndexRange": "错误：输入的索引范围无效。",
         "badSymbolRange": "错误：符号'%s'的范围无效。",
-        "badSymbolDim": "错误：符号'%s'具有无效的尺寸。",
+        "badSymbolDim": "错误：符号'%s'的维度无效。",
         "invalidRecords": "错误：在符号'%s'中找到无效的记录：'%s'。",
         "duplicateSymbols": "错误：符号：'%s'已被多次声明。 请确保每个符号仅声明一次。",
         "duplicateScalars": "错误：标量：'%s'已被声明多次。 请确保每个符号仅声明一次。",
-        "duplicateScalarVE": "错误：标量变量/等式：'%s'已被声明多次。 请确保每个符号仅声明一次。",
+        "duplicateScalarVE": "错误：标量变量/方程：'%s'已被声明多次。请确保每个符号仅声明一次。",
         "invalidRange": "错误：范围规格无效。",
         "invalidColRange": "错误：无效的列范围规范。",
         "maxDimExceeded": "数据超出 Excel 支持的最大行数和/或列数。"
       }
     },
-    "fileRead":{
-      "title":"读取文件时出错",
-      "desc":"读取以下文件时出现错误：'%s'。",
+    "fileRead": {
+      "title": "读取文件时出错",
+      "desc": "读取以下文件时出现错误：'%s'。",
       "tooLarge": "您尝试访问的文件太大而无法显示。"
     },
-    "invalidFileType":{
-      "title":"无效的文件类型",
-      "desc":"MIRO无法读取要导入的文件。 支持的文件类型为： %s."
+    "invalidFileType": {
+      "title": "无效的文件类型",
+      "desc": "MIRO无法读取要导入的文件。支持的文件类型为：%s。"
     },
-    "fileWrite":{
-      "title":"保存文件时出错",
-      "desc":"保存以下文件时出现错误：'%s'。"
+    "fileWrite": {
+      "title": "保存文件时出错",
+      "desc": "保存以下文件时出现错误：'%s'。"
     },
-    "initErrors":{
-      "title":"发生了一些错误",
-      "desc":"请修正以下错误并重新启动MIRO：",
-      "okButton":"确认"
+    "initErrors": {
+      "title": "发生了一些错误",
+      "desc": "请修正以下错误并重新启动MIRO：",
+      "okButton": "确认"
     },
-    "fetchScenData":{
-      "title":"获取场景元数据时出错",
-      "desc":"无法检索场景元数据。"
+    "fetchScenData": {
+      "title": "获取场景元数据时出错",
+      "desc": "无法检索场景元数据。"
     },
-    "renderSlider":{
-      "title":"滑动条的输入数据不正确",
-      "desc":"滑动条的值'%s'不是数字类型。"
+    "renderSlider": {
+      "title": "滑动条的输入数据不正确",
+      "desc": "滑动条'%2$s'的值'%1$s'不是数字类型。"
     },
-    "saveInput":{
-      "title":"保存输入数据时出错",
-      "desc":"将数据保存到数据库时出现错误。"
+    "saveInput": {
+      "title": "保存输入数据时出错",
+      "desc": "将数据保存到数据库时出现错误。"
     },
-    "readOutput":{
-      "title":"读取结果时出错",
-      "desc":"读取从GAMS返回的结果时出现错误。"
+    "readOutput": {
+      "title": "读取结果时出错",
+      "desc": "读取从GAMS返回的结果时出现错误。"
     },
-    "dataError":{
-      "title":"数据错误",
-      "desc":"数据出现错误。如果此问题仍然存在,请与系统管理员联系。"
+    "dataError": {
+      "title": "数据错误",
+      "desc": "数据出现错误。如果此问题仍然存在,请与系统管理员联系。"
     },
-    "ddLenMismatch":{
-      "title":"别名和值的数量不匹配",
-      "desc":"下拉菜单的别名数'%s'与值的数量不匹配。"
+    "ddLenMismatch": {
+      "title": "别名和值的数量不匹配",
+      "desc": "下拉菜单'%s'的别名数量与值的数量不匹配。"
     },
-    "fetchDataset":{
-      "title":"读取数据集时出错",
-      "desc":"从数据库中获取数据集时出现错误：'%s'来自数据库。",
-      "badColName":"在数据集中找不到列'%s'",
-      "noData":"数据集'%s'无法加载。请确保该数据集包含数据。"
+    "fetchDataset": {
+      "title": "读取数据集时出错",
+      "desc": "从数据库中获取数据集'%s'时出现错误。",
+      "badColName": "在数据集'%2$s'中找不到列'%1$s'",
+      "noData": "数据集'%s'无法加载。请确保该数据集包含数据。"
     },
-    "GAMSInput":{
-      "title":"保存输入文件时出错",
-      "desc":"编写GAMS输入文件时出现错误。",
-      "excelRead":"读取文件时出现错误：'%s'。",
-      "badColName":"在数据集中找不到列'%s'",
-      "noData":"数据集'%s'无法加载。请确保数据集实际包含数据。",
-      "badInputData":"GAMS输入数据集：'%s'无效。请检查导入数据的格式。",
-      "writeCsv":"编写csv文件时出现错误：'%s'。"
+    "GAMSInput": {
+      "title": "保存输入文件时出错",
+      "desc": "写入GAMS输入文件时出现错误。",
+      "excelRead": "读取文件时出现错误：'%s'。",
+      "badColName": "在数据集'%2$s'中找不到列'%1$s'",
+      "noData": "数据集'%s'无法加载。请确保数据集实际包含数据。",
+      "badInputData": "GAMS输入数据集：'%s'无效。请检查导入数据的格式。",
+      "writeCsv": "写入CSV文件时出现错误：'%s'。"
     },
-    "GAMSOutput":{
-      "title":"读取输出文件时出误",
-      "badOutputData":"GAMS输出数据集：'%s'无效。请检查导入数据的格式。"
+    "GAMSOutput": {
+      "title": "读取输出文件时出错",
+      "badOutputData": "GAMS输出数据集：'%s'无效。请检查导入数据的格式。"
     },
-    "gamsExec":{
-      "title":"执行GAMS中出错",
-      "desc":"执行GAMS过程中出现错误。"
+    "gamsExec": {
+      "title": "无法运行GAMS",
+      "desc": "无法运行GAMS。您是否忘记指定GAMS安装路径？"
     },
-    "quotaWarning":{
+    "quotaWarning": {
       "titleWarning": "配额警告",
       "titleError": "超出配额",
-      "quotaExceeded": "由于超出了您的配额，因此无法提交订单。 请增加您的配额，然后重试。",
-      "remainingVolume": "剩余 *数量* 配额：%s",
+      "quotaExceeded": "由于超出了您的配额，无法提交作业。请增加配额后重试。",
+      "remainingVolume": "剩余 *用量* 配额：%s",
       "remainingDisk": "剩余 *磁盘* 配额：%s"
     },
     "sessionExpired": {
       "title": "会话已过期",
       "desc": "用于与 GAMS Engine 通信的会话令牌已过期。 请注销并重新登录。"
     },
-	"jobRunning": {
+    "jobRunning": {
       "title": "正在求解的作业",
       "desc": "正在求解一个GAMS作业。只有停止求解该作业或等待该作业完成后，才能运行其他的作业。",
       "descAsync": "目前已经有一个 GAMS 作业在运行。 是否要分离当前作业并附加此作业？ 当前运行的作业仍然可以通过作业列表访问。",
@@ -1001,159 +1138,169 @@
       "cancelButton": "取消",
       "detachButton": "分离当前作业"
     },
-    "unzipProcessRunning":{
+    "unzipProcessRunning": {
       "title": "MIRO忙",
       "desc": "MIRO正在工作区中提取模型文件。 请等待，然后重试。"
     },
     "gamsTerm": "终止 GAMS 时发生了一些错误（例如，进程已完成）。",
-    "readLog":{
-      "title":"读取日志文件时出错",
-      "desc":"读取GAMS日志文件时出现错误。"
+    "readLog": {
+      "title": "读取日志文件时出错",
+      "desc": "读取GAMS日志文件时出现错误。"
     },
-    "readLst":{
-      "title":"读取列表文件时出错",
-      "desc":"读取GAMS列表文件时出现错误。",
-      "fileSize":"尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。",
-      "fileNotFound": "找不到清单文件。"
+    "readLst": {
+      "title": "读取列表文件时出错",
+      "desc": "读取GAMS列表文件时出现错误。",
+      "fileSize": "尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。",
+      "fileNotFound": "找不到列表文件。"
     },
-    "saveScen":{
-      "title":"保存场景时出错",
-      "desc":"尝试保存场景时出现错误。"
+    "saveScen": {
+      "title": "保存场景时出错",
+      "desc": "尝试保存场景时出现错误。"
     },
-    "loadScen":{
-      "title":"加载场景时出错",
-      "desc":"加载所选场景时出现错误。",
-      "inconsistentDataWarning": "在您查看场景时，该场景已更改。 因此，数据可能不一致。 您可能要刷新方案。"
+    "loadScen": {
+      "title": "加载场景时出错",
+      "desc": "加载所选场景时出现错误。",
+      "inconsistentDataWarning": "在您查看场景时，该场景已被更改。因此，数据可能不一致。您可能需要刷新场景。"
     },
-    "deleteScen":{
-      "title":"删除场景时出错",
-      "desc":"删除场景时出现错误。如果此错误仍然存​​在,请联系系统管理员。"
+    "deleteScen": {
+      "title": "删除场景时出错",
+      "desc": "删除场景时出现错误。如果此错误仍然存在,请联系系统管理员。"
     },
-    "renderTable":{
-      "title":"绘制图表时出错",
-      "desc":"绘制输出数据的图表时出现错误:'%s'。"
+    "renderTable": {
+      "title": "渲染表格时出错",
+      "desc": "渲染输出数据的表格时出现错误：'%s'。"
     },
-    "renderGraph":{
-      "title":"绘制图形时出错",
-      "desc":"绘制输出数据的图形时出现错误:'%s'。"
+    "renderGraph": {
+      "title": "渲染图表时出错",
+      "desc": "渲染输出数据的图表时出现错误：'%s'。"
     },
-    "blankScenName":{
-      "title":"未键入名称",
-      "desc":"请为要保存的场景输入有效的名称。"
+    "blankScenName": {
+      "title": "未键入名称",
+      "desc": "请为要保存的场景输入有效的名称。"
     },
-    "maxScen":{
-      "title":"已达到场景个数上限",
-      "desc":"已达到可加载场景数的上限，在添加新场景前请先删除部分已存在的场景。"
+    "maxScen": {
+      "title": "已达到场景个数上限",
+      "desc": "已达到可加载场景数的上限，在添加新场景前请先删除部分已存在的场景。"
     },
-    "lockScen":{
-      "title":"设置场景锁定或者删除场景锁定时出错",
-      "desc":"在锁定或解锁当前活跃的场景时发生了一些错误。"
+    "lockScen": {
+      "title": "设置场景锁定或者删除场景锁定时出错",
+      "desc": "在锁定或解锁当前活跃的场景时发生了一些错误。"
     },
-    "hcubeImport":{
-      "extract":{
-        "title":"提取存档时出错",
-        "desc":"提取存档时出现错误，请确保上传有效的zip文件。",
-        "invalidFiles":"要导入的存档包含无效文件，仅支持trace文件、CSV文件和GDX文件"
+    "hcubeImport": {
+      "extract": {
+        "title": "提取存档时出错",
+        "desc": "提取存档时出现错误，请确保上传有效的zip文件。",
+        "invalidFiles": "要导入的存档包含无效文件，仅支持trace文件、CSV文件和GDX文件"
       },
-      "scenRead":{
-        "title":"读取文件时出错",
-        "desc":"读取场景数据时出现错误。如果此问题仍然存在,请与系统管理员联系。"
+      "scenRead": {
+        "title": "读取文件时出错",
+        "desc": "读取场景数据时出现错误。如果此问题仍然存在,请与系统管理员联系。"
       },
-      "invalidJob":{
-        "title":"无效的Hypercube作业",
-        "desc":"存档中没有有效的场景。请上传有效的Hypercube作业数据。"
+      "invalidJob": {
+        "title": "无效的Hypercube作业",
+        "desc": "存档中没有有效的场景。请上传有效的Hypercube作业数据。"
       },
-      "duplicateFetch":{
-        "title":"数据库错误",
-        "desc":"从数据库中获取现有场景时出现错误。如果此问题仍然存在,请与系统管理员联系。"
+      "duplicateFetch": {
+        "title": "数据库错误",
+        "desc": "从数据库中获取现有场景时出现错误。如果此问题仍然存在,请与系统管理员联系。"
       },
-      "dbUpload":{
-        "title":"数据库错误",
-        "desc":"将场景上传到数据库时出现错误，请稍后再试。"
+      "dbUpload": {
+        "title": "数据库错误",
+        "desc": "将场景上传到数据库时出现错误，请稍后再试。"
       }
     },
-    "paverFileLoad":{
-      "desc":"无法为此类别加载数据。"
+    "paverFileLoad": {
+      "desc": "无法为此类别加载数据。"
     },
-    "paverExec":{
-      "title":"执行Python时出错",
-      "desc":"执行Python时出现错误。"
+    "paverExec": {
+      "title": "执行Python时出错",
+      "desc": "执行Python时出现错误。"
     },
-    "paverTerm":{
-      "title":"终止python时出错",
-      "desc":"终止python时出现错误。"
+    "paverTerm": {
+      "title": "终止python时出错",
+      "desc": "终止python时出现错误。"
     },
-    "saveGAMSLog":{
-       "title":"保存GAMS日志文件或lst文件时出错",
-       "noFileAccess":"无法访问一个或多个GAMS输出文件（.log /.lst）。",
-       "fileSizeExceeded":"一个或多个GAMS输出文件（.log /.lst）超过允许存储的最大文件大小。"
+    "saveGAMSLog": {
+      "title": "保存GAMS日志文件或lst文件时出错",
+      "noFileAccess": "无法访问一个或多个GAMS输出文件（.log /.lst）。",
+      "fileSizeExceeded": "一个或多个GAMS输出文件（.log /.lst）超过允许存储的最大文件大小。"
     },
     "saveAttachments": {
-      "title": "保存附件的问题",
-      "noFileAccess": "附件。'%s'无法保存，因为文件无法访问。",
-      "fileSizeExceeded": "附件。'%s'无法保存，因为它们超过了允许的最大尺寸。",
+      "title": "保存附件时出现问题",
+      "noFileAccess": "附件'%s'无法保存，因为无法访问这些文件。",
+      "fileSizeExceeded": "附件'%s'无法保存，因为其超过了允许的最大大小。",
       "maxNoExceeded": "已超出最大附件数 (%s)。"
     }
   },
-  "adminMode":{
-    "invalidSymbolsDialog":{
+  "adminMode": {
+    "invalidSymbolsDialog": {
       "title": "无效的配置",
-      "desc": "用于配置的部分图形和小部件已不再属于GAMS或者MIRO的数据集了。要从配置中删除它们吗？请注意，此操作无法撤消！无效符号的图形配置：'%s'。 无效符号的窗口小部件配置：'%s'。",
+      "desc": "部分图形和/或控件所配置的符号已不再属于您的 GAMS/MIRO 数据契约，或已被隐藏。要从配置中删除它们吗？请注意，此操作无法撤消！无效符号的图形配置：'%s'。无效符号的控件配置：'%s'。",
       "msgSuccess": "已删除无效的配置",
-      "btRemoveWidgets": "删除无效的小部件",
+      "btRemoveWidgets": "删除无效的控件",
       "btRemoveGraphs": "删除无效的图形",
       "btCancel": "取消"
     },
-    "uiR":{
+    "uiR": {
       "configMode": "GAMS MIRO配置模式",
       "general": "通用设置",
-      "symbol": "GAMS符号配置",
-      "table": "图表设置",
-      "widgets": "配置小部件",
+      "symbol": "符号",
+      "table": "表格",
+      "widgets": "输入控件",
       "graphs": "配置图表",
       "colors": "颜色",
       "database": "管理数据库",
       "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
-    "general":{
-      "ui":{
-        "title":"通用设置",
-		    "tabInterface": "用户界面",
-        "tabSubmission": "工作提交",
+    "general": {
+      "ui": {
+        "title": "通用设置",
+        "tabInterface": "用户界面",
+        "tabSubmission": "作业提交",
         "tabLogs": "日志文件",
-        "tabComparison": "情景比较",
-        "tabData": "情景数据和附件",
+        "tabComparison": "场景比较",
+        "tabAiAssistant": "AI 助手",
+        "tabData": "场景数据和附件",
         "tabSymbolLinks": "隐藏的符号和符号链接",
         "headerGeneral": "标题和标志",
-        "headerPivotcompare": "枢轴比较模式",
+        "headerPivotcompare": "数据透视比较模式",
         "descriptionPivotcompare": "这些设置是用户的默认值，但可以在会话期间随时更改。",
         "headerRenderers": "默认渲染器",
+        "headerLanguage": "自定义语言",
         "headerAppearance": "外观",
-        "headerSymbolDisplay": "Symbol display",
-        "headerTabGrouping": "组合选项卡",
+        "headerSymbolDisplay": "隐藏符号",
+        "headerTabGrouping": "选项卡分组",
         "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
-        "headerInputWidgetGroups": "小工具组",
-        "headerOutputGroups": "输入组",
-        "tabNameOrder": "顺序和组别",
+        "headerInputWidgetGroups": "控件组",
+        "headerOutputGroups": "输出组",
+        "tabNameOrder": "符号顺序和分组",
         "headerSymbolNaming": "符号和列名",
-        "headerSymbolGrouping": "组合",
-        "headerOutputAttach": "附件",
+        "headerSymbolGrouping": "排序",
+        "headerOutputAttach": "输出附件",
         "headerExport": "文件导出",
-        "headerImport": "进口",
+        "headerImport": "导入",
         "tooltipDocs": "打开文档"
       },
-      "modalDialog":{
+      "modalDialog": {
         "title": "复制图像时出错",
         "content": "复制图像时出现错误. 如果该问题仍然存在，请与系统管理员联系。"
       },
-      "language":{
+      "language": {
         "label": "语言",
-        "choices": ["英语", "德语", "中文"]
+        "choices": [
+          "英语",
+          "德语",
+          "中文"
+        ]
       },
-      "theme":{
+      "theme": {
         "label": "颜色模式",
-        "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
+        "choices": [
+          "使用系统或浏览器的设置",
+          "浅色模式",
+          "深色模式"
+        ]
       },
       "customCss": {
         "label": "包含自定义 CSS 文件。",
@@ -1165,58 +1312,65 @@
         "splitComp": "拆分比较模式",
         "tabComp": "选项卡比较模式"
       },
-      "pageTitle":{
+      "pageTitle": {
         "label": "应用程序标题",
-        "tooltip": "标题在浏览器标签中是可见的"
+        "tooltip": "标题显示在浏览器选项卡中"
       },
-      "scen":{
+      "scen": {
         "label": "指定默认的场景比较模式",
-        "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）", "枢轴视图 （适合多于两个的场景之间的比较）"]
+        "choices": [
+          "分屏视图 （适合比较两个场景）",
+          "选项卡视图 （适合多于两个的场景之间的比较）",
+          "数据透视视图 （适合多于两个的场景之间的比较）"
+        ]
       },
-      "defaultScenName":{
+      "defaultScenName": {
         "checkbox": "启动时加载一个默认场景",
-        "tooltip": "启动MIRO时，可以使用数据预填充表和窗口小部件",
+        "tooltip": "启动MIRO时，可以用数据预先填充表格和控件",
         "label": "默认场景的名称"
       },
-      "args":{
+      "args": {
         "label": "指定调用 GAMS/Python 的额外命令行参数"
       },
-      "groups":{
+      "groups": {
         "input": "将输入GAMS符号分组",
-        "widgets": "将输入部件划分为一组",
+        "widgets": "为输入控件添加分组",
         "output": "将输出GAMS符号分组"
       },
-      "symlinks":{
+      "symlinks": {
         "label": "指定符号链接（即可以用作输入数据的结果）"
       },
       "outputAttach": {
         "label": "添加新的附件"
       },
-	  "overwriteSheetOrder":{
+      "overwriteSheetOrder": {
         "input": "指定输入符号的选项卡顺序（拖放）",
         "output": "指定输出符号的选项卡顺序（拖放）"
       },
-      "overwriteSymbolAliases":{
+      "overwriteSymbolAliases": {
         "label": "指定符号的别名",
         "input": "输入的GAMS符号",
         "output": "输出的GAMS符号"
       },
-      "overwriteSymbolHeaders":{
+      "overwriteSymbolHeaders": {
         "label": "指定列标题"
       },
-      "hiddenOutputSymbols":{
-        "label": "不应显示但可用于图表等的符号。"
+      "hiddenOutputSymbols": {
+        "label": "不应显示但可用于图表等的输出符号。"
       },
-      "hiddenOutputScalars":{
-        "label": "对于不能用标量图表显示的标量，使用其他图形表示"
+      "hiddenOutputScalars": {
+        "label": "不应在标量表格中显示、但可用于图表等的输出标量。"
       },
-      "mirologfile":{
+      "hiddenCompareSymbols": {
+        "label": "在拆分、选项卡和数据透视场景比较模式下不显示为选项卡的输入/输出符号。这些符号在场景比较模式之外仍会正常显示。"
+      },
+      "mirologfile": {
         "label": "包括自定义日志文件？",
         "tooltip": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。",
         "miroLogExclusiveError": "只能解析一个日志文件以匹配MIRO日志语法。因此，仅解析标准输出(stdout)，但MIRO日志仍会显示。"
       },
       "mirologStdout": "是否应解析标准日志文件（进程的标准输出）以匹配MIRO日志语法？",
-      "readme":{
+      "readme": {
         "label": "README文件",
         "readmeTooltip": "README文件在输入中显示为单独的起始页",
         "useReadme": "包含README文件",
@@ -1226,181 +1380,248 @@
         "btEdit": "编辑README",
         "dialogEdit": {
           "title": "README编辑器",
-          "reamdeHeader": "Markdown内容",
+          "rawHeader": "Markdown内容",
           "markdownHeader": "README预览",
-          "msgErrSave": "编写README文件时出现错误。 请检查您在模型目录中是否具有足够的写入权限。",
+          "msgErrSave": "写入README文件时出现错误。 请检查您在模型目录中是否具有足够的写入权限。",
           "btCancel": "取消",
           "btSave": "保存"
         }
       },
-      "saveDuration":{
+      "aiAssistant": {
+        "cbEnable": "启用 AI 助手",
+        "btEditContext": "编辑领域上下文",
+        "btEditInstructions": "编辑通用指令",
+        "tooltipContext": "为助手提供有关您的模型的背景知识，例如其用途、术语和运作方式。- 打开文档。",
+        "tooltipInstructions": "设置助手回复的格式、语气和行为规则。- 打开文档。",
+        "dialogEditContext": {
+          "title": "编辑 AI 助手领域上下文",
+          "helpText": "**它的作用：** 为 AI 提供关于您的优化模型的背景知识，以便其能够提供相关的、具有领域意识的见解和数据分析。\n\n**如何使用：** 描述您的应用程序的目的、它所解决的潜在商业或科学问题、关键术语以及模型的运作方式。\n\n**提示：** 您可以在此字段中的任何位置使用占位符 `[[README]]`。MIRO 将自动使用您应用程序的 README 文件的当前内容替换它，从而避免您重复编写文档。",
+          "rawHeader": "Markdown 内容",
+          "markdownHeader": "预览",
+          "btCancel": "取消",
+          "btSave": "保存"
+        },
+        "dialogEditInstructions": {
+          "title": "编辑 AI 助手指令",
+          "helpText": "**它的作用：** 定义 AI 助手应如何与用户交互及其输出格式的具体规则、行为准则和约束。\n\n**如何使用：** 提供关于 AI 行为的明确指令。这包括格式偏好（例如，“始终将货币值格式化为百万美元”或“使用表格比较场景结果”）、语气或分析数据不一致时应采取的具体步骤（例如，“始终将需求表中的负值标记为错误”）。",
+          "rawHeader": "Markdown 内容",
+          "markdownHeader": "预览",
+          "btCancel": "取消",
+          "btSave": "保存"
+        }
+      },
+      "saveDuration": {
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"
       },
-      "decimal":{
-        "label": "指定输出值的精确小数位数",
-        "tooltip": "影响所有输出表，大数据输入表和批量负载模块中的表。 - 打开文档"
+      "decimal": {
+        "label": "用于对数值进行舍入的小数位数（全局设置）。",
+        "tooltip": "影响所有输出表格、大数据输入表格以及批量加载模块中的表格。 - 打开文档"
       },
-      "defaultRenderer":{
+      "numericalTolerance": {
+        "label": "用于将接近零的值视为零的小数位数（全局设置）",
+        "tooltip": "影响仪表板和MIRO Pivot中的基线比较：小于10的负这个数次方的值将被视为精确的零，以避免除以零或百分比/归一化值过高。 - 打开文档"
+      },
+      "defaultRenderer": {
         "labelOutput": "输出数据的默认渲染器",
-        "choicesOutput": ["数据透视表", "桌子"]
+        "choicesOutput": [
+          "数据透视表",
+          "表格"
+        ]
       },
-      "logo":{
+      "customLanguage": {
+        "checkbox": "使用自定义语言文件",
+        "tooltip": "允许您覆盖并个性化所有或个别界面文本和标签。",
+        "label": "语言文件名称"
+      },
+      "logo": {
         "header": "预览标志:",
         "label": "上传该MIRO应用程序的自定义标志",
-        "tooltip": "png文件或者jpg文件（最佳格式：4,6：1）",
+        "tooltip": "png/jpg 文件（最佳格式：4.6:1 或 230:50px）",
         "placeholder": "无选中的文件"
       },
-      "actScen":{
-        "title" :"保存场景，删除场景和比较场景",
+      "actScen": {
+        "title": "保存场景，删除场景和比较场景",
         "label": "激活场景的功能"
       },
-      "actStrict":{
+      "actStrict": {
         "label": "确定以严格模式启动应用程序？ 这会导致在遇到可能带有错误的用户条目时直接提示错误消息而不是接受它。"
       },
-      "actUpload":{
-        "title": "允许用户将本地数据导入沙盒情景中",
+      "actUpload": {
+        "title": "允许用户将本地数据导入沙盒场景中",
         "label": "启用本地数据上传"
       },
-      "actShareScen":{
+      "actShareScen": {
         "label": "允许不同用户之间的场景共享"
       },
-      "actLog":{
+      "actLog": {
         "label": "在用户界面中显示日志文件"
       },
-      "actLst":{
-        "label": "在用户界面中显示列表文件（Ist）"
+      "actLst": {
+        "label": "在用户界面中显示列表文件（lst）"
       },
-      "actAttach":{
+      "actAttach": {
         "title": "可以是任何格式的文件。 MIRO可以区分这两种类型的附件：可以被GAMS模型识别和读取的附件以及无法被GAMS模型识别的文件。",
-        "label": "允许用户在方案中添加附件"
+        "label": "允许用户在场景中添加附件"
       },
-      "aggregate":{
-        "title": "如果未激活，则每个输入小部件都显示在单独的选项卡中。",
-        "label": "允许在单个选项卡上添加所有输入小部件（滑动条，下拉菜单等）？"
+      "aggregate": {
+        "title": "如果未激活，则每个输入控件都显示在单独的选项卡中。",
+        "label": "是否将所有输入控件（滑动条、下拉菜单等）汇总到单个选项卡中？"
       },
-      "parent":{
+      "parent": {
         "label": "在当前运行的模型中包含模型文件夹的父目录（例如，当多个模型共享文件时）？"
       },
-      "meta":{
-        "title": "元数据包含有关用户名, 场景名称创建场景时间的信息",
+      "meta": {
+        "title": "元数据包含用户名、场景名称和场景创建时间等信息",
         "label": "（导出场景时）在Excel文件中包含元数据表"
       },
-      "empty":{
-        "title": "表格可以是空的，例如，当导出的场景仅包含输入数据时。",
-        "label": "在Excel文件中包含空白表格"
+      "empty": {
+        "title": "工作表可以是空的，例如，当导出的场景仅包含输入数据时。",
+        "label": "在Excel文件中包含空白工作表"
       },
-      "downloadTempFiles":{
+      "downloadTempFiles": {
         "label": "允许访问临时工作目录"
       },
-      "hcubeModule":{
-        "label": "激活 Hypercube 模块",
-        "tooltip": "需要GAMS引擎后端"
+      "protectModelFiles": {
+        "title": "可被GAMS模型读取的附件会被放置在模型的工作目录中。启用后，此类附件不得与任何模型文件同名。",
+        "label": "防止模型可读取的附件覆盖模型文件"
       },
-      "auto":{
-        "label": "自动生成每个输入表格的图形（数据透视工具）"
+      "hcubeModule": {
+        "label": "激活 Hypercube 模块",
+        "tooltip": "需要 GAMS Engine 后端"
+      },
+      "auto": {
+        "label": "自动为每个输入符号生成图形（数据透视工具）"
       }
     },
-    "tables":{
-      "ui":{
+    "tables": {
+      "ui": {
         "title": "通用表格设置",
-        "input": "输入表格",
-        "output": "输出表格",
-        "symbol": "符号表格",
-        "resetTable": "重启",
+        "input": "输入表格（全局设置）",
+        "output": "输出表格（全局设置）",
+        "symbol": "输出表格（单个符号）",
+        "resetTable": "重置",
         "saveTable": "保存",
-        "tableTooltip": "输入表是在小工具部分配置的。",
+        "tableTooltip": "输入表格在控件部分中配置。",
         "outputSymbols": "输出的GAMS符号"
       },
-      "hot":{
+      "hot": {
         "height": "输入表格的高度（以px为单位）",
         "readonly": "要限制用户编辑表格？ 如果激活，则用户无法修改表格。",
-        "stretch": "指定默认单元格的列的拉伸样式",
-        "stretchChoices": ["无拉伸", "仅拉伸最后一列", "拉伸所有列"],
-        "colwidth": "单个（未拉伸）列的宽度。",
+        "stretch": "默认列拉伸方式。",
+        "stretchChoices": [
+          "无拉伸",
+          "仅拉伸最后一列",
+          "拉伸所有列"
+        ],
+        "colwidth": "单个（未拉伸）列的宽度。留空或设为 0 则使用默认值。",
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
         "contextRowedit": "允许行编辑",
         "contextColedit": "允许列编辑"
       },
-      "dt":{
-        "class":{
-          "label":"表格样式",
-          "choices": ["显示框线和条纹", "所有框线", "紧凑", "宽松", "无框线", "列序", "上下框线", "条纹"]
+      "dt": {
+        "class": {
+          "label": "表格样式",
+          "choices": [
+            "显示框线和条纹",
+            "所有框线",
+            "紧凑",
+            "悬停高亮",
+            "不换行",
+            "排序列高亮",
+            "上下框线",
+            "条纹"
+          ]
         },
-        "filter":{
-          "label":"列筛选",
-          "choices": ["没有列筛选", "置于底部", "置于顶部"]
+        "filter": {
+          "label": "列筛选",
+          "choices": [
+            "没有列筛选",
+            "置于底部",
+            "置于顶部"
+          ]
         },
-        "pagelength":{
-          "label":"每页显示信息的条目"
+        "pagelength": {
+          "label": "每页显示的条目数"
         },
-        "decimals":{
-          "label":"显示的小数点位数"
+        "decimals": {
+          "label": "显示的小数点位数"
         },
-        "rownames":{
-          "label":"显示行号？"
+        "rownames": {
+          "label": "显示行号？"
         },
-        "colReorder":{
-          "label":"允许重新排序列？"
+        "colReorder": {
+          "label": "允许重新排序列？"
         },
-        "buttons":{
+        "buttons": {
           "title": "如果一个符号包含多个表格页面，使用导出按钮仅会对当前可见的表格页面有效。",
-          "choices": ["复制", "CSV文件", "Excel工作簿", "PDF", "打印", "列可见性"],
+          "choices": [
+            "复制",
+            "CSV文件",
+            "Excel工作簿",
+            "PDF",
+            "打印",
+            "列可见性"
+          ],
           "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }
       },
-      "symbol":{
-        "removeDialog":{
+      "symbol": {
+        "removeDialog": {
           "title": "请确认",
           "message": "确定要重置此符号的现有配置吗？ 该操作无法撤消！",
           "cancel": "取消",
           "confirm": "确认"
         },
-		"noGraph": "不要显示图形。 只显示表格。",
-        "saveJson":{
-          "warnTitle": "数据存在",
-          "warnContent": "根据配置，不应显示该符号的图形：'％s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
+        "noGraph": "不要显示图形。 只显示表格。",
+        "saveJson": {
+          "warnTitle": "数据已存在",
+          "warnContent": "根据配置，不应显示该符号的图形：'%s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
           "cancel": "取消",
           "overwrite": "确定覆盖"
         }
       }
     },
-    "widgets":{
-      "ui":{
-        "title":"配置输入小部件",
-        "widgetUpdateSuccess": "小部件配置已更新",
+    "widgets": {
+      "ui": {
+        "title": "配置输入控件",
+        "widgetUpdateSuccess": "控件配置已更新",
         "widgetTableUpdateSuccess": "表格配置已更新",
-        "gams": "GAMS符号和输入小工具",
-        "go": "新建GAMS option",
-        "dd": "新建double-dash parameter",
-        "widgetCategorieOpt": "GAMS options",
-        "widgetCategorieDoubleDash": "Double-dash parameters",
-        "choices": ["GAMS符号", "新建GAMS option", "新建double-dash parameter"],
+        "gams": "所有符号/控件",
+        "go": "新建 GAMS 选项",
+        "dd": "新建双破折号参数",
+        "widgetCategorieOpt": "GAMS 选项",
+        "widgetCategorieDoubleDash": "双破折号参数",
+        "choices": [
+          "GAMS符号",
+          "新建 GAMS 选项",
+          "新建双破折号参数"
+        ],
         "noSymbolMsg": "没有在MIRO中可使用的GAMS符号",
-        "noWidgetMsg": "尚未配置任何小部件",
-        "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
-        "optionConfigMsg": "消息：该符号是GAMS选项：%s",
-        "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
-        "widgetExternallyDefinedMsg": "消息： 你所选择的符号已经被符号 %s 的小部件所定义。为该符号配置小部件仍然很有用（例如，对于 Hypercube 模块或 Batch Load 模块）。",
+        "noWidgetMsg": "尚未配置任何控件",
+        "noWidgetConfigMsg": "当前没有为此GAMS符号配置控件",
+        "optionConfigMsg": "提示：所选符号是一个 GAMS 选项：%s",
+        "doubledashConfigMsg": "提示：所选符号是一个双破折号参数：%s",
+        "widgetExternallyDefinedMsg": "提示：所选符号已由符号 '%s' 的控件定义。为该符号配置控件仍然可能有用（例如用于 Hypercube 模块或批量加载模块）。",
         "tableWidget": "可以在以下部分中调整表格：'",
-        "inputSymbol": "为哪个输入符号创建一个小部件？",
-        "widgetGo": "GAMS option",
-        "widgetDd": "double-dash parameter",
-        "inputSymbolTooltip": "为哪个输入符号创建一个小部件？",
+        "inputSymbol": "输入符号",
+        "widgetGo": "GAMS 选项",
+        "widgetDd": "双破折号参数",
+        "inputSymbolTooltip": "选择要为其创建控件的输入符号",
         "tableTooltip": "选择要配置其表的输入符号",
-        "widgetGoTooltip": "GAMS option的名称（例如：'LP'或者'OptCR'）",
-        "widgetDdTooltip": "double-dash parameter的名称(不要'--')",
-        "widgetType": "选择要使用的小部件类型",
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
+        "widgetGoTooltip": "GAMS 选项的名称（例如：'LP'或者'OptCR'）",
+        "widgetDdTooltip": "双破折号参数的名称（不含'--'）",
+        "widgetType": "选择控件类型",
+        "alias": "控件选项卡的名称（不支持实时预览）",
         "pivotColsRestriction": "注意：如果符号表设置为只读或显示为热图，则无法在符号表中添加或删除列。",
-		"notConfigurable": "在您的JSON文件中找到的小组件的配置目前不支持配置模式中所选择的符号类型! 这并不意味着配置无效。 GAMS符号: '%s'; 配置的小部件类型: '%s'",
+        "notConfigurable": "在您的JSON文件中找到的控件配置目前在配置模式中不支持所选的符号类型！这并不意味着配置无效。 符号: '%s'; 配置的控件类型: '%s'",
         "tooltip": "工具提示（可选）",
         "scalarSymbols": "标量输入符号",
         "multiDimSymbols": "多维输入符号"
       },
-      "validate":{
+      "validate": {
         "val1": "元素的别名不能为空！",
-        "val2": "double-dash parameter的名称不能为空！",
-        "val3": "GAMS option的名称不能为空！",
+        "val2": "双破折号参数的名称不能为空！",
+        "val3": "GAMS 选项的名称不能为空！",
         "val6": "无效的默认值！",
         "val7": "默认值必须是[min，max]范围内的数字！",
         "val8": "刻度的标识符必须是布尔值",
@@ -1430,7 +1651,7 @@
         "val32": "只读标识符必须是布尔值！",
         "val33": "热图标识符必须是布尔值！",
         "val34": "某些被选中的只读列在当前选中的GAMS符号中不存在！",
-        "val35": "无有效的小部件",
+        "val35": "无有效的控件类型",
         "val36": "组名称的长度必须至少为一个字符。",
         "val37": "每个组必须至少有两个成员，每个元素只出现在一个组中！",
         "val37a": "每个组必须至少有一个成员，每个元素只出现在一个组中！",
@@ -1443,24 +1664,24 @@
         "val44": "必须带有分隔符！",
         "val45": "命令行参数的名称必须至少为一个字符长。",
         "val46": "请分别指定命令行的参数和值。",
-        "val47": "源符号和目标符号必须具有相同的尺寸！",
+        "val47": "源符号和目标符号必须具有相同的维度！",
         "val48": "最小步长不得小于零。",
         "val49": "脚本标识符不能为空，并且只能包含字母数字字符！",
         "val50": "脚本标识符必须唯一！",
         "val51": "标题为必填项。",
-        "val52": "命令是为必填项。",
+        "val52": "命令为必填项。",
         "val53": "输出文件名为必填项。",
         "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。",
         "val56": "这个文件名的附件已经存在!",
         "val57": "文件名包含无效字符。不支持子目录中的附件!",
-        "val58": "小数分隔符和千组分隔符不能完全相同!",
-        "val59": "GAMS符号：％s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。",
+        "val58": "小数分隔符和千位分隔符不能相同！",
+        "val59": "GAMS符号：%s被声明为表格（table）。这会导致最后一列在MIRO中被透视。MIRO数据透视不能用于已透视的符号。请改为将该符号声明为参数。",
         "val60": "每个元素只能出现在一组中！",
         "val61": "GAMS选项不得为保留选项之一：“%s”。"
       },
-      "widgetOptions":{
-	    "slider": "滑动条",
-		"sliderrange": "滑动条范围",
+      "widgetOptions": {
+        "slider": "滑动条",
+        "sliderrange": "滑动条范围",
         "checkbox": "复选框",
         "dropdown": "下拉菜单",
         "table": "表格",
@@ -1469,251 +1690,339 @@
         "text": "文本框",
         "numericinput": "数值输入"
       },
-      "table":{
+      "table": {
         "label": "标签（支持Markdown）",
-        "type": "选择您要使用的表格类型 ",
-        "typeChoices": ["默认", "大数据表", "数据透视表"],
+        "type": "选择您要使用的表格类型",
+        "typeChoices": [
+          "默认",
+          "大数据表",
+          "数据透视表"
+        ],
         "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
         "colWidths": "列的宽度，单位是px",
-        "colWidthsTooltip": "配置模式支持为表格的所有列指定一个列的宽度。要单独指定每一列的宽度，必须手动修改JSON配置文件。打开文件",
+        "colWidthsTooltip": "配置模式支持为表格的所有列指定一个列的宽度。要单独指定每一列的宽度，必须手动修改JSON配置文件。 - 打开文档",
         "customColWidths": "在JSON文件中发现的自定义列宽配置（在配置模式下不支持）。注意，在配置模式下改变列宽会覆盖自定义列宽。",
-		"pivotCols": "选择要旋转的列",
-        "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
+        "pivotCols": "选择要透视的列",
+        "fixedColumnsLeft": "是否固定未透视的列？",
         "heatmap": "把表格转换成热图？",
-        "colDecimals": "指定列“%s”列的小数位数",
+        "colDecimals": "指定列“%s”的小数位数",
         "dropdownColsTitle": "输入表中的下拉菜单",
-        "dropdownColsDesc": "可以对输入表进行配置，使其单元格不能被用户自由编辑，而只能通过下拉菜单修改。这个选项在配置模式中是不可用的，需要手动配置。在此阅读更多信息。 "
+        "dropdownColsDesc": "可以对输入表进行配置，使其单元格不能被用户自由编辑，而只能通过下拉菜单修改。这个选项在配置模式中是不可用的，需要手动配置。在此阅读更多信息： "
       },
-      "slider":{
+      "slider": {
         "label": "选择一个标签",
-		"minlabel": "最小值",
+        "minlabel": "最小值",
         "maxlabel": "最大值",
         "defaultlabel": "默认值",
-		"min": "设置默认的下限值",
-        "max": "设置默认的上限值",
-        "default": "设置默认值",
+        "min": "设置静态最小值",
+        "max": "设置静态最大值",
+        "default": "设置静态默认值",
         "dep": "选择要依赖的GAMS符号和标题",
-        "depOp":{
+        "depOp": {
           "label": "选择算子",
-          "choices": ["最小值", "最大值", "计数", "平均值", "中值", "方差", "标准差"]
+          "choices": [
+            "最小值",
+            "最大值",
+            "计数",
+            "平均值",
+            "中值",
+            "方差",
+            "标准差"
+          ]
         },
-        "depSelector": "静态值？",
+        "depSelector": "静态值",
         "step": "步长（支持小数）",
         "minStep": "最小步长",
         "minStepTooltip": "仅在Hypercube模块中相关。 如果该值为空，则默认使用步长的值。更多信息，请查看文档",
         "ticks": "显示刻度线？",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "hcube": "提交 Hypercube 作业时展开为滑动条范围"
       },
-      "sliderrange":{
+      "sliderrange": {
         "label": "选择一个标签",
-		"minlabel": "最小值",
+        "minlabel": "最小值",
         "maxlabel": "最大值",
-		"min": "设置默认的下限值",
+        "min": "设置静态最小值",
         "dep": "选择要依赖的GAMS符号和标题",
-        "depOp":{
+        "depOp": {
           "label": "选择算子",
-          "choices": ["最小值", "最大值", "计数", "平均值", "中值", "方差", "标准差"]
+          "choices": [
+            "最小值",
+            "最大值",
+            "计数",
+            "平均值",
+            "中值",
+            "方差",
+            "标准差"
+          ]
         },
-        "depSelector": "静态值？",
-		"max": "设置默认的上限值",
+        "depSelector": "静态值",
+        "max": "设置静态最大值",
         "default1": "默认的下限值",
         "default2": "默认的上限值",
         "step": "步长（支持小数）",
         "ticks": "显示刻度线？",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "hcube": "提交 Hypercube 作业时自动展开"
       },
-      "dropdown":{
+      "dropdown": {
         "label": "选择一个标签",
         "choices": "可供选择的选项",
         "choicesAlias": "选项的别名（可选）",
-        "choiceDep":{
+        "choiceDep": {
           "label": "选择要依赖的GAMS符号和标题",
-          "depChoices": ["全部"],
+          "depChoices": [
+            "全部"
+          ],
           "selector": "静态选项？"
         },
         "default": "默认值",
         "multiple": "是否允许选择多个条目？",
-        "clearValue": "与GAMS通信作为元素文本",
-        "clearValueTooltip": "元素标签为空字符串。 更多信息，请查看文档",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "clearValue": "作为元素文本与GAMS通信",
+        "clearValueTooltip": "使元素标签为空字符串。 - 打开文档",
+        "hcube": "提交 Hypercube 作业时展开为多选下拉菜单"
       },
-      "checkbox":{
+      "checkbox": {
         "label": "选择一个标签",
         "default": "设置默认为真",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "hcube": "提交 Hypercube 作业时展开为多选下拉菜单"
       },
-      "date":{
+      "date": {
         "label": "选择一个标签",
-		"defaultlabel": "默认日期",
+        "defaultlabel": "默认日期",
         "default": "选择默认日期",
         "defOff": "使用当前日期",
-		"minlabel": "最早日期",
+        "minlabel": "最早日期",
         "min": "选择允许的最早日期",
-        "minOff": "没有最早日期吗？",
-		"maxlabel": "最晚日期",
+        "minOff": "不设最早日期？",
+        "maxlabel": "最晚日期",
         "max": "选择允许的最晚日期",
-        "maxOff": "没有最晚日期吗？",
+        "maxOff": "不设最晚日期？",
         "format": "选择格式化日期的方式。",
         "formatCustom": "输入自定义日期格式",
         "formatCustomSelector": "要自定义日期的格式？",
-        "startview":{
+        "startview": {
           "label": "默认情况下应显示的日期范围？",
-          "choices": ["月", "年", "十年"]
+          "choices": [
+            "月",
+            "年",
+            "十年"
+          ]
         },
-        "weekstart":{
+        "weekstart": {
           "label": "一周从哪一天开始？",
-          "choices": ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+          "choices": [
+            "星期日",
+            "星期一",
+            "星期二",
+            "星期三",
+            "星期四",
+            "星期五",
+            "星期六"
+          ]
         },
-        "daysDisabled": "指定要禁用的工作日",
+        "daysDisabled": "选择要禁用的星期几",
         "autoclose": "选定日期后立即关闭日期选择器吗？",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "hcube": "提交 Hypercube 作业时展开为日期范围选择器"
       },
-      "daterange":{
+      "daterange": {
         "label": "选择一个标签",
         "defaultStart": "选择默认开始日期",
         "startOff": "使用当前日期",
         "defaultEnd": "选择默认结束日期",
         "endOff": "使用当前日期",
         "min": "选择允许的最早日期",
-        "minOff": "没有最早日期吗？",
+        "minOff": "不设最早日期？",
         "max": "选择允许的最晚日期",
         "defaultStartlabel": "默认开始日期",
         "defaultEndlabel": "默认结束日期",
-		"minlabel": "最早日期",
-		"maxlabel": "最晚日期",
-		"maxOff": "没有最晚日期吗？",
-		"format": "选择格式化日期的方式。",
+        "minlabel": "最早日期",
+        "maxlabel": "最晚日期",
+        "maxOff": "不设最晚日期？",
+        "format": "选择格式化日期的方式。",
         "formatCustom": "输入自定义日期格式",
         "formatCustomSelector": "要自定义日期的格式？",
-        "startview":{
+        "startview": {
           "label": "默认情况下应显示的日期范围？",
-          "choices": ["月", "年", "十年"]
+          "choices": [
+            "月",
+            "年",
+            "十年"
+          ]
         },
-        "weekstart":{
+        "weekstart": {
           "label": "一周从哪一天开始？",
-          "choices": ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+          "choices": [
+            "星期日",
+            "星期一",
+            "星期二",
+            "星期三",
+            "星期四",
+            "星期五",
+            "星期六"
+          ]
         },
         "separator": "选择开始和结束日期选择器之间的分隔符",
         "autoclose": "选定日期范围后立即关闭日期选择器吗？",
-        "hcube": "在提交Hypercube作业时，元素是否应该自动展开？"
+        "hcube": "提交 Hypercube 作业时自动展开"
       },
-      "textinput":{
+      "textinput": {
         "label": "选择一个标签",
         "value": "选择默认值",
         "placeholder": "选择占位符",
-        "clearValue": "与GAMS通信作为元素文本",
-        "clearValueTooltip": "元素标签为空字符串。 更多信息，请查看文档"
+        "clearValue": "作为元素文本与GAMS通信",
+        "clearValueTooltip": "使元素标签为空字符串。 - 打开文档"
       },
-      "numericinput":{
+      "numericinput": {
         "label": "选择一个标签",
         "value": "默认值（可选）",
         "min": "最小值（可选）",
         "max": "最大值（可选）",
         "decimal": "小数位数（可选）",
-        "sign": "货币（可选）",
+        "sign": "货币符号（可选）",
         "decimalCharacter": "要使用的小数点分隔符",
-		"decimalCharacterChoices": [", (逗号)", ". (点子)", "· (中点)", "٫ (阿拉伯小数点分隔符)", "⎖ (小数点分隔符)"],
-        "digitGroupSeparator": "千人组的分离器",
-		"digitGroupSeparatorChoices": [", (逗号)", ". (点子)", " (空间)", "(无隔板)", "' (撇号)","٬ (阿拉伯式千选机)", "˙ (顶点)"]
+        "decimalCharacterChoices": [
+          ", (逗号)",
+          ". (点)",
+          "· (中点)",
+          "٫ (阿拉伯小数点分隔符)",
+          "⎖ (小数点分隔符)"
+        ],
+        "digitGroupSeparator": "要使用的千位分隔符",
+        "digitGroupSeparatorChoices": [
+          ", (逗号)",
+          ". (点)",
+          " (空格)",
+          "(无分隔符)",
+          "' (撇号)",
+          "٬ (阿拉伯千位分隔符)",
+          "˙ (上点)"
+        ]
       },
-      "removeDialog":{
+      "removeDialog": {
         "title": "请确认",
         "message": "确定要删除此符号的现有配置吗？该操作无法撤消！",
         "cancel": "取消",
         "confirm": "确认"
       }
     },
-    "database":{
+    "database": {
       "title": "数据库管理",
       "infoPostgres": "您正在将GAMS MIRO Desktop与<a href=\"https://www.postgresql.org\" target=\"_blank\"> PostgreSQL </a>数据库后端一起使用。 所使用的数据库的名称为：%s，并且位于：%s。 要备份数据库，请在<a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">此处</a>阅读。",
       "infoSQLite": "您正在将GAMS MIRO Desktop与<a href=\"https://sqlite.org\" target=\"_blank\"> SQLite </a>数据库后端一起使用。 使用的数据库位于：%s。",
       "backup": "数据库备份",
       "backupWrapper": "您要创建数据库备份吗？",
-      "btDownloadBackup": "备份资料库",
+      "btDownloadBackup": "备份数据库",
       "backupProgress": "正在保存数据库，请稍等",
       "remove": "删除数据",
       "removeWrapper": "需要删除属于模型的所有表吗（例如，当架构更改时）？"
     },
-    "graphs":{
+    "graphs": {
       "toolCategories": {
         "main": "主要",
         "general": "通用",
         "xaxis": "X轴",
         "yaxis": "Y轴",
         "ydata": "Y 数据",
-        "filterDomain": "过滤和域",
-        "filter": "过滤",
+        "filterDomain": "筛选器和域",
+        "filter": "筛选器",
         "animation": "动画",
-        "bars": "柱形图",
+        "bars": "条形",
         "histogram": "直方图",
         "event": "事件(X轴)",
         "limit": "限制(Y轴)",
-        "annotation": "注解",
-        "shading": "底纹",
+        "annotation": "注释",
+        "shading": "阴影",
         "rangeSelector": "范围选择器",
         "highlight": "突出显示",
-        "legend": "Legend",
+        "legend": "图例",
         "markers": "标记",
         "flows": "流量",
         "advanced": "高级选项",
-        "minicharts": "小型图标",
-        "groupsLayers": "组和层",
+        "minicharts": "迷你图表",
+        "groupsLayers": "组和图层",
         "data": "数据"
       },
-      "ui":{
+      "ui": {
         "title": "配置图表",
         "label": "标签（支持Markdown）",
         "graphUpdateSuccess": "图表配置已更新",
         "localInput": "上传GDX文件或Excel电子表格，其中包含可用于预览的数据",
-        "gamsSymbols": "选择要绘制的GAMS符号",
+        "gamsSymbols": "GAMS符号",
         "input": "输入的GAMS符号",
         "output": "输出的GAMS符号",
         "chartTitle": "指定图表的标题",
         "height": "选择图表的高度（px，不支持实时预览）",
-        "tool": "选择要使用的图表工具",
-        "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
+        "tool": "图表类型",
+        "choices": [
+          "饼图",
+          "条形图",
+          "散点图",
+          "折线图",
+          "气泡图",
+          "直方图",
+          "时间序列图",
+          "地图",
+          "甘特图",
+          "数据透视表和数据透视图",
+          "标量值的值框",
+          "自定义渲染器"
+        ],
         "deleteGraph": "删除",
         "saveGraph": "保存",
-        "toggleLeft": "将左屏切换到全屏模式",
-        "toggleRight": "将右屏切换到全屏模式",
+        "toggleLeft": "将左侧面板切换到全屏模式",
+        "toggleRight": "将右侧面板切换到全屏模式",
         "previewError": "发生错误：“%s”",
         "previewErrorObs": "观察者内部发生错误：“%s”"
       },
-      "graphOptions":{
+      "graphOptions": {
         "pie": "饼图",
-        "bar": "柱形图",
+        "bar": "条形图",
         "scatter": "散点图",
         "line": "折线图",
         "bubble": "气泡图",
         "hist": "直方图",
-        "dygraphs": "时间序列图形工具",
-        "leaflet": "地图工具",
+        "dygraphs": "时间序列图",
+        "leaflet": "地图",
         "timevis": "甘特图",
-        "miropivot": "数据透视表",
-        "dashboard": "仪表盘",
+        "miropivot": "数据透视表和数据透视图",
+        "dashboard": "仪表板",
         "valuebox": "标量值的值框",
-        "custom": "自定义绘制器"
+        "custom": "自定义渲染器"
       },
-      "validate":{
+      "validate": {
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
-        "custom1": "无法解析其他自定义选项。 请确保您使用有效的JSON语法！",
+        "custom1": "无法解析附加选项。请确保您使用有效的JSON语法！",
         "pieValues": "所选GAMS符号的值太多，无法显示饼图。 饼图中最多可显示100个值。",
-        "tableNeeded": "要配置为地图的符号必须声明为GAMS表，因为需要多个值列(如经纬度信息)。"
+        "tableNeeded": "要配置为地图的符号必须声明为GAMS表，因为需要多个值列(如经纬度信息)。",
+        "customOutputInvalid": "输出函数应返回 Shiny UI 内容（例如将返回值包装在 tagList(...) 中），而不是一个裸函数。"
       },
-      "errMsg":{
+      "errMsg": {
         "errTitle1": "无有效数据",
-        "errContent1": "找不到有效的数据集。 请上传格式正确的Excel文件或者包含数据GDX的文件。",
+        "errContent1": "找不到有效的数据集。请上传包含数据且格式正确的Excel或GDX文件。",
         "scalarConfig": "输入标量的配置是在 '"
       },
-      "updateToolScalars": ["标量值的值框"],
-      "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
-      "axisOptions":{
+      "updateToolScalars": [
+        "标量值的值框"
+      ],
+      "updateToolNoScalars": [
+        "饼图",
+        "条形图",
+        "散点图",
+        "折线图",
+        "气泡图",
+        "直方图",
+        "时间序列图",
+        "地图",
+        "甘特图",
+        "数据透视表和数据透视图",
+        "自定义渲染器"
+      ],
+      "axisOptions": {
         "leftAxis": "左轴",
         "rightAxis": "右轴",
         "title": "轴标签",
-        "labelOnlyTitle": "坐标轴标签 (%s axis)",
+        "labelOnlyTitle": "轴标签（%s 轴）",
         "showgrid": "显示网格",
         "zeroline": "显示零线",
         "showticklabels": "显示刻度标签",
@@ -1721,105 +2030,237 @@
         "rangeFrom": "范围起始值",
         "rangeTo": "范围结束值",
         "animationDataFormatSelector": "是日期格式的数据？",
-        "categoryorder": "轴序",
-		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"],
+        "categoryorder": "轴顺序",
+        "categoryorderChoices": [
+          "按轨迹顺序",
+          "按字母数字顺序升序",
+          "按字母数字顺序降序",
+          "按总值升序",
+          "按总值降序",
+          "按最小值升序",
+          "按最小值降序",
+          "按最大值升序",
+          "按最大值降序",
+          "按和的大小升序",
+          "按和的大小降序",
+          "按平均值大小升序",
+          "按平均值大小降序",
+          "按中值大小升序",
+          "按中值大小降序"
+        ],
         "scaleRatioCheck": "固定比例轴？",
         "scaleRatio": "比例（Y / X）"
       },
-      "chartOptions":{
+      "chartOptions": {
         "xdata": "在x轴上绘制什么？",
         "ydata": "添加数据系列",
-        "color": "符号的一个维度是否应该被枢轴化（分组绘制）？ 注意：颜色仅在未设置线条或标记颜色时有效！",
-        "symbol": "选择一个映射到不同符号的域。 无需设置标记符号。",
-        "options":{
+        "color": "是否应对符号的某个维度进行透视（分组绘制）？注意：仅当未设置其他线或标记颜色时，生成的颜色才有效",
+        "symbol": "选择一个维度以映射到不同的符号。不得设置标记符号。",
+        "options": {
           "title": "选项",
           "paperBgColor": "设置纸张的背景颜色",
-          "plotBgColor": "该图有多少背景颜色？",
+          "plotBgColor": "设置绘图区的背景颜色",
           "showlegend": "要显示图例吗？",
           "staticPlot": "绘制静态图？",
-          "fixedHeight": "固定图表高度（像素）--留空或默认为0",
-          "fixedWidth": "固定图表w(像素)--默认为空或为0。",
+          "fixedHeight": "固定图表高度（像素）- 留空或设为0则使用默认值",
+          "fixedWidth": "固定图表宽度（像素）- 留空或设为0则使用默认值",
           "outType": "要分屏显示图形和数据表吗？ （不支持实时预览）"
         }
       },
-      "barOptions":{
-        "mode": "选择柱形图模式",
-        "choicesMode": ["簇状柱形图", "堆积柱形图"],
-        "orientation": "柱形图方向",
-        "choicesOrientation": ["纵向", "横向"],
-        "width": "用于选择不同柱形宽的域"
+      "barOptions": {
+        "mode": "选择条形图模式",
+        "choicesMode": [
+          "簇状",
+          "堆叠"
+        ],
+        "orientation": "方向",
+        "choicesOrientation": [
+          "纵向",
+          "横向"
+        ],
+        "width": "用于选择不同条形宽度的域"
       },
-      "valueboxOptions":{
+      "valueboxOptions": {
         "width": "每行最多的值框数（无预览）",
         "color": "选择值框的颜色",
-        "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
+        "colorChoices": [
+          "红色",
+          "黄色",
+          "水蓝色",
+          "蓝色",
+          "浅蓝色",
+          "绿色",
+          "藏青色",
+          "蓝绿色",
+          "橄榄绿",
+          "鲜绿色",
+          "橙色",
+          "品红",
+          "紫色",
+          "栗色",
+          "黑色"
+        ],
         "icon": "指定值框的图标（可选）。",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Gear", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "valueboxIconChoices": [
+          "_",
+          "硬币",
+          "钱包",
+          "美元",
+          "欧元",
+          "日元",
+          "韩元",
+          "谢克尔",
+          "卢比",
+          "卢布",
+          "英镑",
+          "里拉",
+          "用户",
+          "用户组",
+          "加号",
+          "减号",
+          "感叹号",
+          "问号",
+          "播放",
+          "勾号",
+          "房屋",
+          "齿轮",
+          "星号",
+          "禁止",
+          "爱心",
+          "树叶",
+          "灯泡",
+          "笑脸",
+          "五角星"
+        ],
         "desc": "说明性文字",
         "round": "小数位数（四舍五入）"
       },
-      "animationOptions":{
+      "animationOptions": {
         "title": "动画选项",
         "frame": "每秒帧数",
         "transition": "帧之间平滑过渡的持续时间（以毫秒为单位）",
-        "easing": "指定帧与帧之间的过渡类型",
-        "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
-        "redraw": "在转换后立即重新绘图？（尽管这可能会显着影响性能，但更新无法转换的图形元素是必要的。）",
-        "mode": "新动画的调用如何与当前运行的动画进行交互？",
-        "modeChoices": ["立即开始", "等当前动画结束后", "等所有安排的动画结束后"],
+        "easing": "过渡缓动类型",
+        "easingChoices": [
+          "linear",
+          "quad",
+          "cubic",
+          "sin",
+          "exp",
+          "circle",
+          "elastic",
+          "back",
+          "bounce",
+          "linear-in",
+          "quad-in",
+          "cubic-in",
+          "sin-in",
+          "exp-in",
+          "circle-in",
+          "elastic-in",
+          "back-in",
+          "bounce-in",
+          "linear-out",
+          "quad-out",
+          "cubic-out",
+          "sin-out",
+          "exp-out",
+          "circle-out",
+          "elastic-out",
+          "back-out",
+          "bounce-out",
+          "linear-in-out",
+          "quad-in-out",
+          "cubic-in-out",
+          "sin-in-out",
+          "exp-in-out",
+          "circle-in-out",
+          "elastic-in-out",
+          "back-in-out",
+          "bounce-in-out"
+        ],
+        "redraw": "过渡完成时触发重新绘图？（这可能会显著影响性能，但对于更新无法过渡的图形元素可能是必要的。）",
+        "mode": "新的动画调用应如何与当前正在运行的动画交互？",
+        "modeChoices": [
+          "立即开始",
+          "等当前动画结束后",
+          "等所有安排的动画结束后"
+        ],
         "noAnimation": "没有为动画指定任何域（类别：Y 数据）。"
       },
-      "animationSliderOptions":{
+      "animationSliderOptions": {
         "hide": "删除动画滑动条？",
         "label": "显示在滑动条上的标签",
         "prefix": "标签的前缀",
         "fontColor": "滑动条标签应使用什么字体颜色？"
       },
-      "histOptions":{
+      "histOptions": {
         "xdata": "添加数据系列",
         "norm": "要使用的规范化类型",
-        "normChoices": ["出现次数", "事件发生的百分比", "出现次数/组宽度"],
+        "normChoices": [
+          "出现次数",
+          "出现次数的百分比",
+          "出现次数/组宽度"
+        ],
         "nbins": "组数",
-        "barmode": "如何显示柱形图的柱形？",
-        "alpha": "柱形的不透明度（仅在未设置柱形颜色的情况下有效）",
+        "barmode": "条形应如何显示？",
+        "alpha": "条形的不透明度（仅在未设置条形颜色时有效）",
         "cumulative": "显示累积分布？",
-        "horizontal": "柱形方向",
-        "orientationChoices": ["纵向", "横向"],
-        "barmodeChoices": ["重叠", "堆积", "簇状", "相对"]
+        "horizontal": "条形方向",
+        "orientationChoices": [
+          "纵向",
+          "横向"
+        ],
+        "barmodeChoices": [
+          "重叠",
+          "堆叠",
+          "簇状",
+          "相对"
+        ]
       },
-      "dygraphsOptions":{
-        "previewError": "在数据中未找到可用的标量。",
-        "xdata": "在x轴上绘制哪个标量？",
-        "ydata": "加数据系列",
-        "ydataGeneral": "列已选择。 在 '常规 '下可以设置更多与y数据相关的选项。",
-        "color": "符号的一个维度是否应该被枢轴化（分组绘制）？",
+      "dygraphsOptions": {
+        "previewError": "在数据中未找到标量索引。",
+        "xdata": "在x轴上绘制哪个索引？",
+        "ydata": "添加数据系列",
+        "ydataGeneral": "已选择要透视的维度。可在“通用”下设置更多与y数据相关的选项",
+        "color": "是否应对符号的某个维度进行透视（分组绘制）？",
         "dyEvent": "添加事件线",
         "dyLimit": "添加限制线",
         "dyAnnotation": "添加注释",
         "dyShading": "添加阴影",
-        "rngSelOpts":{
+        "rngSelOpts": {
           "title": "范围选择器选项",
-          "activate": "允许使用范围选择器吗？",
+          "activate": "显示范围选择器？",
           "height": "设置范围选择器的高度（以px为单位）？",
           "retainDateWindow": "重新绘制图形时是否保留当前日期范围？",
-          "keepMouseZoom": "允许通过鼠标选择时间区域吗？",
+          "keepMouseZoom": "是否仍允许使用鼠标缩放？",
           "fillColor": "范围选择器的填充颜色？",
           "strokeColor": "范围选择器的轮廓颜色？"
         },
-        "generalOpts":{
+        "generalOpts": {
           "title": "通用选项",
           "logscale": "y轴以对数刻度显示？",
           "drawGrid": "显示网格线吗？",
-          "stepPlot": "允许绘制step图吗？",
-          "stemPlot": "允许绘制stem图吗？",
+          "stepPlot": "绘制阶梯图？",
+          "stemPlot": "绘制茎图？",
           "fillGraph": "要填满图表下方的区域？",
           "fillAlpha": "填充区域的透明度",
-          "drawPoints": "要在图上显示选中的数据点吗",
-          "pointShape": "选中的数据点以哪种标记形状显示？",
-          "pointShapeChoices": ["点", "三角形", "方形", "菱形", "五角形", "六边形", "圆圈", "星号", "加号", "叉号"],
-          "pointSize": "标记的尺寸？"
+          "drawPoints": "绘制数据点？",
+          "pointShape": "数据点应使用什么形状？",
+          "pointShapeChoices": [
+            "点",
+            "三角形",
+            "方形",
+            "菱形",
+            "五边形",
+            "六边形",
+            "圆圈",
+            "五角星",
+            "加号",
+            "叉号"
+          ],
+          "pointSize": "数据点应为多大？"
         },
-        "axisOptions":{
+        "axisOptions": {
           "title": "标签",
           "independentTicks": "独立的刻度",
           "logscale": "y轴以对数刻度显示？",
@@ -1833,55 +2274,65 @@
           "valueRangeFrom": "范围起始值",
           "valueRangeTo": "范围结束值"
         },
-        "highOpts":{
+        "highOpts": {
           "title": "突出显示选项",
           "activate": "要展示突出显示效果吗？",
           "circleSize": "圆圈的大小设置为多少（以px为单位）？",
           "seriesBackgroundAlpha": "选择背景的不透明度",
-          "strokeWidth": "Width of highlighted lines",
-          "strokeBorderWidth": "Draw a border around highlighted lines",
-          "strokeBorderColor": "Border color of highlighted lines",
+          "strokeWidth": "突出显示线的宽度",
+          "strokeBorderWidth": "在突出显示线周围绘制边框",
+          "strokeBorderColor": "突出显示线的边框颜色",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
         },
-        "legend":{
+        "legend": {
           "title": "图例选项",
-          "activate": "显示一个图例",
+          "activate": "显示图例",
           "show": "显示风格",
-          "showChoices": ["自动", "始终", "鼠标移动时", "跟着光标走"],
+          "showChoices": [
+            "自动",
+            "始终",
+            "鼠标悬停时",
+            "跟随光标"
+          ],
           "width": "图例的宽度（px）。",
           "showZeroValues": "在图例中显示零值标签",
           "labelsSeparateLines": "在单独的行中显示标签",
           "hideOnMouseOut": "当鼠标不在图表中时隐藏图例"
         }
       },
-      "leafletOptions":{
+      "leafletOptions": {
         "markers": "添加标记",
         "flows": "添加流量",
         "minicharts": "添加图表",
         "hideGroups": "指定在启动时隐藏的组",
-        "layer":{
+        "layer": {
           "title": "图层控制选项",
           "baseGroups": "哪些基础组可以选择？",
           "overlayGroups": "哪些叠加组可以选择？",
-          "position": "显示网格线吗？",
-          "positionChoices": ["右上方", "右下方", "左下方", "左上方"],
+          "position": "图层控件位置",
+          "positionChoices": [
+            "右上方",
+            "右下方",
+            "左下方",
+            "左上方"
+          ],
           "collapsed": "是否在地图上折叠图层的控制面板？"
         }
       },
-      "timevisOptions":{
-        "series": "加数据系列",
-        "custom": "在可以被用户拖动的时间点添加垂直的柱形（不支持预览）",
-        "options":{
+      "timevisOptions": {
+        "series": "添加数据系列",
+        "custom": "在某个时间点添加一条可由用户拖动的竖线（不支持预览）",
+        "options": {
           "title": "甘特图选项",
           "showZoom": "包括“放大”或者“缩小”按钮？ 也可以通过CTRL+鼠标滚轮进行缩放",
-          "zoomFactor": "添加缩放系数？缩放系数为1的20天将显示为40天（不支持预览）。",
-          "fit": "在时间线初始化时拟合时间线上的所有数据？否则，时间线仅显示当前日期。",
+          "zoomFactor": "缩放系数？以缩放系数1从20天缩小时将显示40天。不支持预览。",
+          "fit": "时间线初始化时是否使所有数据适应时间线？否则，时间线将显示当前日期。",
           "editable": "允许编辑条目",
-          "multiselect": "允许多项选项（CTRL + Click，SHIFT + Click）",
-          "showCurrentTime": "在当前时间显示垂直的柱形"
+          "multiselect": "允许多选条目（Ctrl+单击，Shift+单击）",
+          "showCurrentTime": "在当前时间处显示一条竖线"
         }
       },
-      "miroPivotOptions":{
+      "miroPivotOptions": {
         "externalDefaultViewSwitch": "使用外部默认视图",
         "externalDefaultViewName": "用作默认视图的名称",
         "infoMsg": "请直接使用右侧的预览来配置默认视图。这包括设置 (%s) 和视图选项 (%s)",
@@ -1889,77 +2340,128 @@
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",
         "emptyUELTooltip": "隐藏空列的开关（位于数据透视表设置菜单中）允许隐藏表格中的空列。这在数据立方体中特别有用，因为单个视图可能包含空维度。",
         "hidePivotControlsSwitch": "默认显示演示模式",
-        "fixedColumnsSwitch": "修复列",
-        "fixedColumnsTooltip": "如果这个选项被激活，透视表的列就会被固定在表格的左边，并且在水平滚动时保持可见。",
-        "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
+        "fixedColumnsSwitch": "固定列",
+        "fixedColumnsTooltip": "如果激活此选项，数据透视表的列将固定在表格左侧，并在水平滚动时保持可见。",
+        "infoMsgDummyData": "当前预览使用的是虚拟数据。这意味着筛选器将包含虚拟值。如果要更改这些值，必须手动编辑JSON配置文件。"
       },
-      "datatableOptions":{
+      "datatableOptions": {
         "infoMsg": "可以在以下部分中调整表格：'"
       },
-      "pivotOptions":{
+      "pivotOptions": {
         "rows": "预先填充数据透视表的行",
         "cols": "预先填充数据透视表的列",
-        "aggregator": "指定算子聚合器",
-        "aggregatorChoices": ["次数","计数唯一值","列出唯一值", "和","整数和","计算平均值","计算中值","样本方差","样本标准差","最小值","最大值","第一个值","最后一个值","比例","80％上界","80％下界","和作为Total的分数","和作为行的分数","和作为列的分数","次数作为Total的分数","次数作为行的分数","次数作为列的分数"],
+        "aggregator": "要使用的聚合器",
+        "aggregatorChoices": [
+          "计数",
+          "计数唯一值",
+          "列出唯一值",
+          "求和",
+          "整数求和",
+          "平均值",
+          "中位数",
+          "样本方差",
+          "样本标准差",
+          "最小值",
+          "最大值",
+          "第一个值",
+          "最后一个值",
+          "比例",
+          "80% 上界",
+          "80% 下界",
+          "求和占总计的比例",
+          "求和占行的比例",
+          "求和占列的比例",
+          "计数占总计的比例",
+          "计数占行的比例",
+          "计数占列的比例"
+        ],
         "vals": "要聚合的列的名称",
-        "renderer": "指定绘制器的名称",
-        "rendererChoices": ["图表","带表格的柱形图","热图","行热图","列热图","树形图","水平条形图","水平堆积条形图","柱形图","堆积柱形图","折线图","面积图"],
-        "options":{
+        "renderer": "所选渲染器的名称",
+        "rendererChoices": [
+          "表格",
+          "表格条形图",
+          "热图",
+          "行热图",
+          "列热图",
+          "树形图",
+          "水平条形图",
+          "水平堆叠条形图",
+          "条形图",
+          "堆叠条形图",
+          "折线图",
+          "面积图"
+        ],
+        "options": {
           "title": "数据透视表选项",
           "locale": "本地化选项。 从英语（EN）到另一种语言的更改会导致已有的图形配置丢失。",
-          "localeChoices": ["cs","da","de","en","es","fr","it","nl","pl","pt","ru","sq","tr","zh"],
-          "subtotals": "是否使用subtotal插件？请参考："
+          "localeChoices": [
+            "cs",
+            "da",
+            "de",
+            "en",
+            "es",
+            "fr",
+            "it",
+            "nl",
+            "pl",
+            "pt",
+            "ru",
+            "sq",
+            "tr",
+            "zh"
+          ],
+          "subtotals": "是否使用subtotal插件？示例请参见： "
         }
       },
-      "customOptions":{
+      "customOptions": {
         "btUpdate": "更新",
-        "externalRenderer": "从另一个符号使用渲染器",
+        "externalRenderer": "使用其他符号的渲染器",
         "symNotFoundSuffix": "（找不到符号）",
-        "options": "传递给渲染器功能的其他选项",
-        "packages": "绘制器所需的软件包",
-        "additionalData": "应传递给自定义渲染器的其他数据集"
+        "options": "传递给渲染器函数的附加选项",
+        "packages": "渲染器所需的软件包",
+        "additionalData": "与自定义渲染器通信的附加数据集"
       },
-      "filterOptions":{
+      "filterOptions": {
         "filter": "是否允许通过下拉菜单选择符号的域？",
-        "dimension": "筛选哪列数据？",
+        "dimension": "哪个维度应可筛选？",
         "label": "筛选器标签（不支持预览）",
         "placeholder": "按元素筛选",
         "multiple": "是否允许同时选择几个元素作为筛选器？ （不提供单个下拉菜单的实时预览）",
-        "date": "要过滤列中的数据包含日期（时间）。 不支持实时预览！"
+        "date": "要筛选的列中的数据包含日期（时间）。不支持实时预览！"
       },
-      "saveJson":{
-        "warnTitle": "数据存在",
-        "warnContent": "该GAMS符号的图形配置已存在：'％s'。 确定要覆盖此配置吗？该操作无法撤消！",
+      "saveJson": {
+        "warnTitle": "数据已存在",
+        "warnContent": "该GAMS符号的图形配置已存在：'%s'。 确定要覆盖此配置吗？该操作无法撤消！",
         "cancel": "取消",
         "overwrite": "确定覆盖"
       },
-      "removeDialog":{
+      "removeDialog": {
         "title": "请确认",
         "message": "确定要删除此GAMS符号的现有图形配置吗？该操作无法撤消！",
         "cancel": "取消",
         "confirm": "确认"
       },
-      "js":{
-        "addInputGroup":{
+      "js": {
+        "addInputGroup": {
           "symbolInputgroups": "输入组的名称",
-          "symbolWidgetgroups": "小组件组的名称",
+          "symbolWidgetgroups": "控件组的名称",
           "groupMemberIn": "选择该组成员",
           "groupMemberWidget": "选择该组成员",
           "groupSameTabIn": "在同一选项卡上显示所有符号",
           "groupSameTabInNoCols": "彼此相邻的符号数量",
-          "groupSameTabWidget": "在同一个标签页上并排显示所有小部件"
+          "groupSameTabWidget": "在同一选项卡上并排显示所有控件"
         },
-        "addOutputGroup":{
+        "addOutputGroup": {
           "symbolOutputgroups": "输出组的名称",
           "groupMemberOut": "选择该组成员",
           "groupSameTabOut": "在同一选项卡上显示所有符号",
           "groupSameTabOutNoCols": "彼此相邻的符号数量"
         },
-        "addSymlink":{
+        "addSymlink": {
           "source": "输出符号的名称",
           "target": "链接到的输入符号的名称"
         },
-        "addScript":{
+        "addScript": {
           "id": "唯一标识符（字母数字）",
           "title": "脚本别名（显示在用户界面中）",
           "cmd": "运行命令",
@@ -1968,43 +2470,59 @@
           "markdown": "输出文件是Markdown文件",
           "timeout": "超时（秒，-1 为无限）"
         },
-        "addOutAttach":{
+        "addOutAttach": {
           "file": "要附加的文件名称",
           "exec": "允许模型读取此文件",
           "error": "如果没有找到文件，显示一个错误"
         },
-        "addDyEvent":{
+        "addDyEvent": {
           "dyDyEventCheck": "静态事件",
-          "dyDyEventTrue": "设置活动日期（yyyy-mm-dd）。",
+          "dyDyEventTrue": "设置事件日期（yyyy-mm-dd）",
           "dyDyEventFalse": "使用哪个GAMS符号？",
           "label": "标签",
           "labelLoc": "标签的位置",
-          "labelLocChoices": ["顶部", "底部"],
+          "labelLocChoices": [
+            "顶部",
+            "底部"
+          ],
           "color": "事件线颜色",
-          "strokePattern": "冲程模式类型",
-          "strokePatternChoices": ["虚线", "点", "点-划线", "实线"]
+          "strokePattern": "线条样式类型",
+          "strokePatternChoices": [
+            "虚线",
+            "点线",
+            "点-划线",
+            "实线"
+          ]
         },
-        "addDyLimit":{
+        "addDyLimit": {
           "dyDyLimitCheck": "使用静态限制？",
           "dyDyLimitTrue": "设置限制的数值",
           "dyDyLimitFalse": "使用哪个GAMS符号？",
           "limit": "设置限制的数值",
           "label": "标签",
           "labelLoc": "标签的位置",
-          "labelLocChoices": ["左侧", "右侧"],
+          "labelLocChoices": [
+            "左侧",
+            "右侧"
+          ],
           "color": "限制线的颜色",
-          "strokePattern": "冲程模式类型",
-          "strokePatternChoices": ["短划线", "点", "点-划线", "实线"]
+          "strokePattern": "线条样式类型",
+          "strokePatternChoices": [
+            "虚线",
+            "点线",
+            "点-划线",
+            "实线"
+          ]
         },
-        "addDyAnnotation":{
+        "addDyAnnotation": {
           "dyDyAnnotation": "哪些需要注释？",
           "text": "标签",
-          "tooltip": "工具提示",
+          "tooltip": "提示",
           "width": "指定注释宽度",
           "height": "指定注释高度",
           "attachAtBottom": "将注释附在X轴上"
         },
-        "addDyShading":{
+        "addDyShading": {
           "dyDyShadingCheck": "使用静态下限？",
           "dyDyShadingTrue": "指定阴影的下限",
           "dyDyShadingFalse": "使用哪个GAMS符号作阴影的下限？",
@@ -2012,103 +2530,222 @@
           "dyDyShadingUpTrue": "指定阴影的上限",
           "dyDyShadingUpFalse": "使用哪个GAMS符号作阴影的上限？",
           "axis": "选择应用阴影的轴",
-          "axisChoices": ["x轴", "y轴"],
+          "axisChoices": [
+            "x轴",
+            "y轴"
+          ],
           "color": "阴影是什么颜色？"
         },
-        "addLeafletMarkers":{
+        "addLeafletMarkers": {
           "leafletMarkers": "选择包含纬度数据的列",
           "lng": "选择包含经度数据的列",
           "groupName": "为这些标记指定一个组名称",
           "label": "选择一个标签",
           "iconOptions": "图标选项",
           "icon": "使用的图标",
-          "iconChoices": ["圆", "圆刻痕", "点圆", "正方形", "倍数圆", "用户圆", "用户", "加号圆", "减号圆", "感叹号圆", "问号圆", "播放键圆", "勾号园", "家", "齿轮", "星号", "禁止符号", "爱心", "树叶", "灯泡", "笑脸", "五角星"],
+          "iconChoices": [
+            "圆",
+            "缺口圆",
+            "点圆",
+            "正方形",
+            "叉号圆",
+            "用户圆",
+            "用户组",
+            "加号圆",
+            "减号圆",
+            "感叹号圆",
+            "问号圆",
+            "播放键圆",
+            "勾号圆",
+            "房屋",
+            "齿轮",
+            "星号",
+            "禁止符号",
+            "爱心",
+            "树叶",
+            "灯泡",
+            "笑脸",
+            "五角星"
+          ],
           "iconColor": "图标颜色",
           "markerColor": "标记颜色",
-          "markerColorChoices": ["红色", "深红", "浅红", "橙色", "米色", "绿色", "深绿", "浅绿", "蓝色", "深蓝色", "浅蓝色", "紫色", "深紫色", "粉色", "藏青色", "白色", "灰色", "浅灰色", "黑色"],
+          "markerColorChoices": [
+            "红色",
+            "深红",
+            "浅红",
+            "橙色",
+            "米色",
+            "绿色",
+            "深绿",
+            "浅绿",
+            "蓝色",
+            "深蓝色",
+            "浅蓝色",
+            "紫色",
+            "深紫色",
+            "粉色",
+            "军校蓝",
+            "白色",
+            "灰色",
+            "浅灰色",
+            "黑色"
+          ],
           "options": "标签选项",
           "labelPermanent": "仅在鼠标悬停在该处时显示标签",
           "labelcolor": "选择标签的字体颜色",
           "labelbgcolor": "选择标签的背景颜色",
           "labelsize": "选择标签的字体大小（以px为单位）"
         },
-        "addLeafletFlows":{
+        "addLeafletFlows": {
           "leafletFlows": "选择流量来源的纬度数据",
           "lng": "选择流量来源的经度数据",
           "lat1": "选择流量结束的纬度数据",
           "lng1": "选择流量结束的经度数据",
           "flow": "选择流量的数据",
           "time": "选择时间的数据",
-          "label": "选择一个标签",
+          "label": "为每个流量选择唯一标签（可选）",
           "labelTooltip": "标签的正确配置是为每个流指定发起者和接收者。更多信息，请查看文档",
-          "options": "其他流量的选项",
+          "options": "其他流量选项",
           "color": "选择颜色",
-          "minThickness": "选择最小厚度",
-          "maxThickness": "选择最大厚度"
+          "minThickness": "选择最小粗细",
+          "maxThickness": "选择最大粗细"
         },
-        "addLeafletMinicharts":{
-          "leafletMinicharts": "选择绘制的迷你图表的纬度数据",
-          "lng": "选择应绘制迷你图表的经度度数据",
+        "addLeafletMinicharts": {
+          "leafletMinicharts": "选择应绘制迷你图表的纬度数据",
+          "lng": "选择应绘制迷你图表的经度数据",
           "chartdata": "选择图表的数据",
           "time": "选择时间的数据",
           "type": "选择图表的类型",
-          "typeChoices": ["柱形图", "饼图", "极区图", "极半径图", "自动"],
+          "typeChoices": [
+            "条形图",
+            "饼图",
+            "极坐标面积图",
+            "极坐标半径图",
+            "自动"
+          ],
           "options": "其他图表选项",
           "width": "选择已创建元素的最大宽度",
           "height": "选择已创建元素的最大高度",
           "variableSize": "图表的大小是否应与数值成比例？",
           "opacity": "选择图表的不透明度",
           "showlabels": "是否将值显示在图表元素上方？",
-          "transitionTime": "指定更新图表属性的持续时间（以毫秒为单位）",
+          "transitionTime": "选择图表属性更新时过渡的持续时间（以毫秒为单位）",
           "layerId": "选择图层的ID",
           "legend": "显示图例（数据列名称）",
           "legendPosition": "图例位置",
-          "legendPositionChoices": ["右上方", "左上方", "右下方", "左下方" ]
+          "legendPositionChoices": [
+            "右上方",
+            "左上方",
+            "右下方",
+            "左下方"
+          ]
         },
-        "addPieDataEl":{
+        "addPieDataEl": {
           "chartValues": "值",
           "chartLabels": "标签",
-          "holeSize": "圆环图的大小",
+          "holeSize": "环形图中心孔的大小",
           "chartName": "元素名称（仅当显示多个饼图时才相关）"
         },
-        "addBarDataEl":{
+        "addBarDataEl": {
           "chartYdatabar": "在y轴上绘制什么？",
           "chartYlabel": "数据标签（例如图例）",
-          "color": "选择柱形颜色 （删除颜色以进行自动选择）",
-          "lineWidth": "选择柱形轮廓宽度",
-          "lineColor": "选择柱形轮廓颜色"
+          "color": "选择条形颜色（删除颜色以自动选择）",
+          "lineWidth": "选择条形轮廓宽度",
+          "lineColor": "选择条形轮廓颜色"
         },
-        "addScatterDataEl":{
+        "addScatterDataEl": {
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "数据标签（例如图例）",
           "yaxis": "坐标轴的位置",
-          "yaxisChoices": ["左侧", "右侧"],
+          "yaxisChoices": [
+            "左侧",
+            "右侧"
+          ],
           "symbol": "选择标记符号",
-          "symbolChoices": ["_", "圆圈", "空心圆圈", "方形", "空心方形", "菱形","空心菱形", "加号", "空心加号", "叉号", "空心叉号", "正三角","空心正三角", "反三角", "空心反三角", "五边形", "空心五边形", "六边形", "空心六边形", "八边形", "空心八边形", "五角星", "空心五角星", "六芒星","空心六芒星", "星号", "空心星号", "井号", "空心井号","东西线", "空心东西线", "南北线", "空心南北线"],
+          "symbolChoices": [
+            "_",
+            "圆圈",
+            "空心圆圈",
+            "方形",
+            "空心方形",
+            "菱形",
+            "空心菱形",
+            "加号",
+            "空心加号",
+            "叉号",
+            "空心叉号",
+            "正三角",
+            "空心正三角",
+            "反三角",
+            "空心反三角",
+            "五边形",
+            "空心五边形",
+            "六边形",
+            "空心六边形",
+            "八边形",
+            "空心八边形",
+            "五角星",
+            "空心五角星",
+            "六芒星",
+            "空心六芒星",
+            "星号",
+            "空心星号",
+            "井号",
+            "空心井号",
+            "东西线",
+            "空心东西线",
+            "南北线",
+            "空心南北线"
+          ],
           "color": "选择标记颜色",
           "size": "选择标记大小",
-          "lineWidth": "选择择标轮廓宽度",
-          "lineColor": "选择择标轮廓颜色",
-          "legend": "是否显示图例 （此选项将被全局图例显示选项被覆盖）",
+          "lineWidth": "选择标记轮廓宽度",
+          "lineColor": "选择标记轮廓颜色",
+          "legend": "显示图例（此选项可能会被全局的显示图例选项覆盖）",
           "frame": "使用数据维度进行动画（作为帧）"
         },
-        "addLineDataEl":{
+        "addLineDataEl": {
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "数据标签（例如图例）",
           "yaxis": "坐标轴的位置",
-          "yaxisChoices": ["左侧", "右侧"],
+          "yaxisChoices": [
+            "左侧",
+            "右侧"
+          ],
           "color": "选择线条颜色",
           "width": "选择线条宽度",
-          "shape": "选择线条",
-          "shapeChoices": ["线性", "曲线", "hv", "vh", "hvh", "vhv"],
-          "dash": "选择行短划线类型",
-          "dashChoices": ["实线", "点", "短划线", "长划线", "划线-点", "长划线-点"],
+          "shape": "选择线条形状",
+          "shapeChoices": [
+            "线性",
+            "曲线",
+            "hv",
+            "vh",
+            "hvh",
+            "vhv"
+          ],
+          "dash": "选择线条虚线类型",
+          "dashChoices": [
+            "实线",
+            "点线",
+            "短划线",
+            "长划线",
+            "划线-点",
+            "长划线-点"
+          ],
           "fill": "填充图表的区域？",
-          "fillChoices": ["无填充", "从当前曲线到y轴零点", "从当前曲线到x轴零点", "从当前曲线到下一个y轴上的曲线", "从当前曲线到下一个x轴上的曲线", "从当前曲线起点到当前曲线的终点", "所有曲线起点到终点区域的不交集"],
-          "legend": "是否显示图例？ （此选项将被全局图例显示选项被覆盖）",
+          "fillChoices": [
+            "无填充",
+            "从当前曲线到y轴零点",
+            "从当前曲线到x轴零点",
+            "从当前曲线到下一个y轴上的曲线",
+            "从当前曲线到下一个x轴上的曲线",
+            "从当前曲线起点到当前曲线的终点",
+            "所有曲线起点到终点区域的不交集"
+          ],
+          "legend": "显示图例？（此选项可能会被全局的显示图例选项覆盖）",
           "frame": "使用数据维度进行动画（作为帧）？"
         },
-        "addBubbleDataEl":{
+        "addBubbleDataEl": {
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "数据标签（例如图例）",
           "symbol": "选择标记符号",
@@ -2116,52 +2753,74 @@
           "colorCheckTrue": "选择标记颜色",
           "colorCheckFalse": "选择颜色应该依赖的域。",
           "size": "选择标记大小",
-          "sizemode": "如何尺寸测量？",
-          "sizemodeChoices": ["面积", "直径"],
+          "sizemode": "应如何度量尺寸？",
+          "sizemodeChoices": [
+            "面积",
+            "直径"
+          ],
           "maxsize": "选择最大标记尺寸（可选）",
           "lineWidth": "选择标记轮廓宽度",
           "lineColor": "选择标记轮廓颜色",
-          "legend": "是否显示图例 （此选项将被全局图例显示选项被覆盖）",
+          "legend": "显示图例（此选项可能会被全局的显示图例选项覆盖）",
           "frame": "使用数据维度进行动画（作为帧）？"
         },
-        "addHistDataEl":{
+        "addHistDataEl": {
           "histXdata": "要绘制什么？",
           "label": "标签",
           "color": "条形颜色"
         },
-        "addDyDataEl":{
-          "chartYdata": "在y轴上绘制哪个标量？",
-		  "label": "标签",
+        "addDyDataEl": {
+          "chartYdata": "在y轴上绘制哪个索引？",
+          "label": "标签",
           "yaxis": "坐标轴的位置",
-          "yaxisChoices": ["左侧", "右侧"],
+          "yaxisChoices": [
+            "左侧",
+            "右侧"
+          ],
           "color": "颜色",
-          "stepPlot": "绘制该序列的step图？",
-          "stemPlot": "绘制该序列的stem图？",
-          "fillGraph": "是否填充图表下方的区域？",
-          "drawPoints": "要在图上显示选中的数据点吗？",
-          "pointShape": "选中的数据点以哪种标记形状显示？？",
-          "pointShapeChoices": ["点", "三角形", "方形", "菱形", "五角形", "六边形", "圆圈", "星号", "加号", "叉号"],
-          "pointSize": "标记的尺寸？"
+          "stepPlot": "将系列绘制为阶梯图",
+          "stemPlot": "将系列绘制为茎图",
+          "fillGraph": "填充图表下方的区域",
+          "drawPoints": "绘制数据点",
+          "pointShape": "数据点形状",
+          "pointShapeChoices": [
+            "点",
+            "三角形",
+            "方形",
+            "菱形",
+            "五边形",
+            "六边形",
+            "圆圈",
+            "五角星",
+            "加号",
+            "叉号"
+          ],
+          "pointSize": "数据点大小"
         },
-        "addTimevisDataEl":{
+        "addTimevisDataEl": {
           "timevisSeries": "条目的内容？",
-          "start": "条目的开始日期？",
-          "end": "条目的结束日期？",
-          "type": "条目的类型？注意：类型框和点只需要开始日期，类型范围和背景不仅需要开始日期也需要结束日期。",
-          "typeChoices": ["框", "点", "范围", "背景"],
+          "start": "开始日期",
+          "end": "结束日期",
+          "type": "条目的类型？注意：“框”和“点”类型只需要开始日期，“范围”和“背景”类型需要开始日期和结束日期。",
+          "typeChoices": [
+            "框",
+            "点",
+            "范围",
+            "背景"
+          ],
           "title": "为每个条目添加标题，当鼠标悬停在该条目上时显示标题？",
           "group": "组编号。 给定组的编号后，来自同组的所有项目将显示在甘特图的同一行上。",
-          "subgroup": "子组编号。 将所有条目按照子组的编号进行分组，将来自同一子组的项目放在相同的高度上，而不是堆叠成柱形。",
+          "subgroup": "子组编号。将组内所有条目按子组分组，并将它们放在同一高度上，而不是相互堆叠。",
           "grouptitle": "为每个组添加标题，当鼠标悬停在该组上时显示标题？",
-          "subgrouporder": "通过字段名称对子组进行排序。 默认情况下，按先到先得的顺序对组进行排序。"
+          "subgrouporder": "按字段名称对子组排序。默认情况下，组按出现的先后顺序排序。"
         },
-        "addCustomTimeEl":{
+        "addCustomTimeEl": {
           "timevisCustom": "要添加的日期或者时间",
           "placeholder": "例如 2016-08-21"
         }
       }
     },
-    "colors":{
+    "colors": {
       "title": "颜色",
       "themeColors": {
         "title": "自定义主题颜色",
@@ -2171,42 +2830,41 @@
         "primary": "主色",
         "secondary": "辅助色",
         "sidebar": "侧边栏颜色",
-        "navbar": "标题颜色",
-        "body_bg": "机身背景颜色",
-        "alert": "删除按钮颜色",
+        "navbar": "页眉颜色",
+        "alert": "警示颜色",
         "mainBg": "主区域背景色",
-        "console": "日志和代码背景色",
+        "console": "控制台文本颜色",
         "primaryDark": "主色",
         "secondaryDark": "辅助色",
         "sidebarDark": "侧边栏颜色",
-        "navbarDark": "标题颜色",
-        "body_bg_dark": "机身背景颜色",
-        "alertDark": "删除按钮颜色",
+        "navbarDark": "页眉颜色",
+        "alertDark": "警示颜色",
         "mainBgDark": "主区域背景色",
-        "consoleDark": "日志和代码背景色",
-        "widgetBgDark": "小部件背景色",
+        "consoleDark": "控制台文本颜色",
+        "widgetBgDark": "控件背景色",
         "primaryTooltip": "主要品牌色。它在应用中使用最频繁，用于突出主要操作并引导用户注意力。",
-        "secondaryTooltip": "次要颜色用于强化界面、区分内容、标示次要操作，同时也是应用中主要按钮的颜色。",
+        "secondaryTooltip": "强调色，用于警告、进度条、验证消息以及描边按钮的悬停状态。填充的主要操作按钮（如求解、确认）使用主色。",
         "alertTooltip": "警示颜色用于执行移除、清除或删除等操作的按钮，用以提示风险并提醒用户注意不可逆的更改。",
         "consoleTooltip": "用于在 GAMS 交互区域显示日志和列表文件中的输出。",
-        "widgetBgDarkTooltip": "控件颜色用于交互式 UI 元素，如下拉菜单、表格、滑块等控件。"
+        "widgetBgDarkTooltip": "下拉菜单以及复选框、日期选择器、滚动条等控件的背景色。文本输入框和表格会自动适配主区域背景色。",
+        "mainBgTooltip": "主内容区域的背景色，包括各个区块、对话框和表格。"
       },
       "themeButtons": {
         "buttonsTitle": "保存主题颜色",
         "saveLocal": "仅为此应用保存",
         "saveGlobal": "为所有应用保存",
-        "downloadTheme": "下载到 MIRO 服务器",
+        "downloadTheme": "为 MIRO Server 下载",
         "saveLocalDesc": "应用特定的主题嵌入在应用中，并覆盖所有其他主题设置。应用导出后，颜色将无法更改。",
-        "saveGlobalDesc": "全局主题集中存储，适用于设备上的所有应用。在 MIRO 桌面偏好设置中选择。",
+        "saveGlobalDesc": "全局主题集中存储，适用于设备上的所有应用。可在 MIRO Desktop 偏好设置中选择。",
         "removeColorsDesc": "删除任何现有的应用特定主题配置（如果存在）。",
         "saveLocalNote": "主题已保存。",
         "saveGlobalModalTitle": "文件已存在",
-        "saveGlobalModalText": "GAMS MIRO 工作区中已经存在名为“%s ”的文件。",
+        "saveGlobalModalText": "GAMS MIRO 工作区中已经存在名为“%s”的文件。",
         "saveGlobalModalCancel": "取消",
         "saveGlobalModalOverwrite": "覆盖",
         "saveGlobalModalNote1": "文件已覆盖！",
         "saveGlobalModalNote2": "主题已导出！",
-        "saveGlobalModalNoteDesc": "您现在可以在 MIRO 桌面偏好设置中选择“自定义”配色主题。",
+        "saveGlobalModalNoteDesc": "您现在可以在 MIRO Desktop 偏好设置中选择“自定义”颜色主题。",
         "removeColors": "删除此应用的主题颜色",
         "removeColorsTitle": "删除主题颜色",
         "removeColorsText": "这将从您的配置文件中移除所有 “themeColors”。",
@@ -2216,9 +2874,9 @@
         "removeColorsNote2": "未找到应用特定的主题颜色。"
       },
       "miroServerColors": {
-        "checkbox": "为 MIRO 服务器准备主题",
-        "title": "MIRO 服务器颜色",
-        "titleTooltip": "MIRO 服务器登录界面、应用概览等的颜色",
+        "checkbox": "为 MIRO Server 准备主题",
+        "title": "MIRO Server 颜色",
+        "titleTooltip": "MIRO Server 登录界面、应用概览页面等的颜色",
         "primary": "主色",
         "bodyBg": "页面背景色",
         "mainBg": "主背景色",

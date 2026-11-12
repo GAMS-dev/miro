@@ -9,7 +9,11 @@ validFatals <- c(
   "Column: 'topeka' of the GAMS symbol: 'd': The column validation has values that are declared as choices and should be excluded at the same time!",
   "Invalid defCompMode (default comparison mode) id found. Id: asd doesn't exist. Valid ids are: split, tab, pivot."
 )
-validErrors <- c("Confirm download of temporary files button clicked without any files specified.")
+validErrors <- c(
+  "Confirm download of temporary files button clicked without any files specified.",
+  "Problems generating AI response. Error message: Error: Claude API Error: ",
+  "Problems generating AI response. Error message: Error: Claude API Error: "
+)
 validWarnings <- c("Hypercube job directory: '")
 
 logFilePath <- Sys.getenv("MIRO_LOG_PATH")

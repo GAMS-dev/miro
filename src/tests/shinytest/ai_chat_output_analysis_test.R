@@ -1,0 +1,218 @@
+app <- AppDriver$new("../../",
+  name = "ai_chat_output_analysis_test", variant = NULL,
+  load_timeout = as.integer(Sys.getenv("MIRO_TEST_LOAD_TIMEOUT", "20000")),
+  timeout = as.integer(Sys.getenv("MIRO_TEST_TIMEOUT", "4000"))
+)
+Sys.sleep(2)
+
+# load the default scenario into the sandbox so the AI assistant has data to
+# analyze (mirrors the setup used by download_files_test.R)
+app$set_inputs(btImport = "click")
+Sys.sleep(0.5)
+app$set_inputs(btLoadScenConfirm = "click")
+Sys.sleep(1)
+
+# nav icon is only rendered once the AI assistant module is activated
+expect_true(app$get_js("$('#btAIOutput').length === 1;"))
+
+# the assistant lives in a drawer that is always in the DOM but only open on demand
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
+app$click(selector = "#btAIOutput")
+app$wait_for_js("$('#miroAiChatDrawer').hasClass('open');", timeout = 10000)
+expect_equal(app$get_js("$('#btAIOutput').attr('aria-expanded');"), "true")
+Sys.sleep(1)
+
+# initial state: welcome message bubble + scenario context divider, nothing else
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-bubble-wrapper').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').length;"), 1)
+expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant .miro-ai-chat-content-raw').text().includes('Mira');"))
+expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').text().includes('Sandbox scenario:');"))
+
+# model dropdown defaults to the (only) configured provider/model
+expect_equal(app$get_value(input = "miroAiModel"), "anthropic/claude-opus-5-5")
+
+# disclaimer is always shown
+expect_equal(app$get_js("$('.miro-ai-disclaimer').length;"), 1)
+
+# send button only appears once the user has typed something (textarea is not
+# a standard shiny input, so it is not covered by app$set_inputs())
+app$run_js(
+  "var ta = document.getElementById('miroAiUserText');
+  ta.value = 'What is the total cost?';
+  ta.dispatchEvent(new Event('input', {bubbles: true}));"
+)
+expect_equal(app$get_js("$('#btMiroAiSend').css('display');"), "flex")
+
+# sending renders the user bubble immediately (optimistic UI), disables the
+# textarea and shows the spinner/stop button while the request is in flight
+app$run_js("$('#btMiroAiSend').click();")
+app$wait_for_js("$('#miroAiChatLog .miro-ai-chat-user').length === 1;", timeout = 5000)
+expect_true(app$get_js("$('#miroAiUserText').prop('disabled');"))
+expect_equal(app$get_js("$('#btMiroAiStop').css('display');"), "block")
+expect_true(app$get_js("$('#miroAiChatSpinner').is(':visible');"))
+
+# no real AI credentials are configured for tests, so the request to the
+# provider is rejected -- verify the app surfaces this gracefully instead of
+# leaving the chat stuck in the "waiting for a response" state
+app$wait_for_js("$('#miroAiChatLog .miro-ai-chat-assistant').length === 2;", timeout = 30000)
+expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').last().find('.miro-ai-chat-content-raw').text().includes('Error');"))
+expect_false(app$get_js("$('#miroAiUserText').prop('disabled');"))
+expect_equal(app$get_js("$('#btMiroAiStop').css('display');"), "none")
+expect_true(app$get_js("$('#miroAiChatSpinner').is(':hidden');"))
+
+# failed responses don't count towards token usage
+expect_equal(app$get_js("$('#miroAiInputTokens').text();"), "Input Tokens: 0")
+expect_equal(app$get_js("$('#miroAiOutputTokens').text();"), "Output Tokens: 0")
+
+# clear chat resets the log back to welcome message + context divider
+app$click(selector = "#btMiroAiClearChat")
+Sys.sleep(1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-bubble-wrapper').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-context-divider').length;"), 1)
+
+# ==========================================================================
+# Stored XSS guard: assistant messages can echo back attacker-controlled data
+# (e.g. a scenario named `<img src=x onerror=alert(1)>`), so the client must
+# sanitize the `data-raw-html` payload with DOMPurify before it ever becomes
+# live DOM -- see ai_assistant.js::hydrateAiMessageContent (01efd6faa "Fix
+# potential stored XSS"). We cannot make the (fake-keyed) provider echo such
+# a payload back for real, so this simulates a malicious assistant bubble
+# reaching the chat log and re-fires the same `miro:aiDrawerShown` event the app
+# already listens for, exercising the real, already-wired hydration path
+# instead of a re-implementation of it.
+# ==========================================================================
+app$run_js(
+  "window.__miroXssFired = false;
+  var payload = '<img src=x onerror=\"window.__miroXssFired=true\">' +
+    '<script>window.__miroXssFired=true;</script>';
+  var $bubble = $(
+    '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
+    '<div class=\"miro-ai-chat-bubble\">' +
+    '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
+    '</div></div>'
+  );
+  $bubble.find('.miro-ai-chat-content-html').attr('data-raw-html', payload);
+  $('#miroAiChatLog').prepend($bubble);
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+
+expect_false(app$get_js("window.__miroXssFired;"))
+expect_equal(app$get_js("$('#miroAiChatLog [data-raw-html]').length;"), 0)
+expect_equal(app$get_js("document.querySelectorAll('#miroAiChatLog script').length;"), 0)
+expect_equal(app$get_js("document.querySelectorAll('#miroAiChatLog img[onerror]').length;"), 0)
+
+# ==========================================================================
+# LaTeX/math rendering: assistant text can contain KaTeX math delimiters
+# (`\(...\)`, `\[...\]`, `$$...$$`) preserved through
+# renderMarkdownPreservingKatexDelimiters (see test-ai-ui-components-unit.R),
+# and is expected to render as real math once hydrated -- see
+# ai_assistant.js::hydrateAiMessageContent, which runs KaTeX over every
+# message it injects (a bare `$...$` is deliberately excluded there, since it
+# is ambiguous with a plain currency mention in a cost-analysis tool). We
+# cannot make the (fake-keyed) provider return real LaTeX, so this simulates a
+# bubble reaching the chat log the same way the stored-XSS check above does.
+# Nothing here renders the math itself: hydration has to do it, which is what
+# keeps math alive when a stored message is put back into the DOM.
+# ==========================================================================
+app$run_js(
+  "window.__miroAddMathBubble = function () {
+    var $bubble = $(
+      '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
+      '<div class=\"miro-ai-chat-bubble\">' +
+      '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
+      '</div></div>'
+    );
+    var payload = '<p>Inline \\\\(x^2 + y^2 = z^2\\\\) inline math.</p>' +
+      '<p>\\\\[ 300 \\\\times 90 = 27{,}000 \\\\]</p>' +
+      '<p>Display via dollars: $$a + b = c$$</p>' +
+      '<p>Not math: $50 to $75.</p>';
+    $bubble.find('.miro-ai-chat-content-html').attr('data-raw-html', payload);
+    $('#miroAiChatLog').prepend($bubble);
+  };
+  window.__miroAddMathBubble();
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+
+# every math block (2 backslash-delimited + 1 dollar-delimited) was actually
+# picked up and rendered by KaTeX, with no parse errors ...
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex').length;"), 3)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex-error').length;"), 0)
+# ... the raw backslash delimiters are gone from the text once KaTeX has
+# taken over rendering them ...
+expect_false(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().text().includes('\\\\(');"))
+expect_false(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().text().includes('\\\\[');"))
+# ... but a plain currency mention outside any math delimiter is left
+# untouched, since a bare `$` is deliberately not treated as a delimiter
+expect_true(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().text().includes('$50 to $75');"))
+
+# Re-rendering the chat log (re-opening the drawer, clearing the chat) replays
+# the stored messages as fresh `data-raw-html` payloads. Hydration has to
+# render their math again -- it used to only happen for a message arriving as
+# a live reply, so the math vanished as soon as the chat was re-opened.
+app$run_js(
+  "$('#miroAiChatLog').empty();
+  window.__miroAddMathBubble();
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("$('#miroAiChatLog [data-raw-html]').length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex').length;"), 3)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chat-assistant').first().find('.katex-error').length;"), 0)
+
+app$run_js(
+  "window.__miroAddChartBubble = function (canOpenInPivot) {
+    var $bubble = $(
+      '<div class=\"miro-ai-chat-bubble-wrapper miro-ai-chat-assistant\">' +
+      '<div class=\"miro-ai-chat-bubble\">' +
+      '<div class=\"miro-ai-chat-content-html miro-markdown\"></div>' +
+      '</div></div>'
+    );
+    $bubble.find('.miro-ai-chat-content-html')
+      .attr('data-raw-html', '<pre><code class=\"language-mirachart\">aichart_test\\n</code></pre>' +
+        '<pre><code class=\"language-mirachart\">aichart_unknown</code></pre>')
+      .attr('data-charts', JSON.stringify([{ id: 'aichart_test', title: 'Cost', type: 'stackedbar', canOpenInPivot: canOpenInPivot,
+        labels: ['<img src=x onerror=\"window.__miroXssFired=true\">', 'b'],
+        datasets: [{ label: 'Base', data: [1, null] }, { label: 'High', data: [2, 3] }] }]));
+    $('#miroAiChatLog').prepend($bubble);
+  };
+  $('#miroAiChatLog').empty();
+  window.__miroAddChartBubble(true);
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart-unavailable').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog pre').length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart .bt-export-canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart button').length;"), 1)
+expect_true(app$get_js("Chart.getChart($('#miroAiChatLog .miro-ai-chart canvas')[0]).options.scales.y.stacked;"))
+expect_equal(app$get_js("Chart.getChart($('#miroAiChatLog .miro-ai-chart canvas')[0]).data.datasets.length;"), 2)
+expect_false(app$get_js("window.__miroXssFired;"))
+expect_equal(app$get_js("document.querySelectorAll('#miroAiChatLog img').length;"), 0)
+
+app$run_js(
+  "$('#miroAiChatLog').empty();
+  window.__miroAddChartBubble(false);
+  $('#miroAiChatDrawer').trigger('miro:aiDrawerShown');"
+)
+Sys.sleep(0.5)
+expect_equal(app$get_js("Object.values(Chart.instances).filter(function (chart) { return !chart.canvas.isConnected; }).length;"), 0)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart canvas').length;"), 1)
+expect_equal(app$get_js("$('#miroAiChatLog .miro-ai-chart button').length;"), 0)
+
+# closing the drawer does not error out and leaves the chat ready for the next request
+app$click(selector = "#miroAiChatDrawer .miro-ai-close-drawer-btn")
+Sys.sleep(1)
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
+expect_false(app$get_js("$('#miroAiUserText').prop('disabled');"))
+
+# the header button toggles the drawer, and Escape closes it again
+app$click(selector = "#btAIOutput")
+app$wait_for_js("$('#miroAiChatDrawer').hasClass('open');", timeout = 10000)
+app$run_js("document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));")
+Sys.sleep(0.5)
+expect_false(app$get_js("$('#miroAiChatDrawer').hasClass('open');"))
+
+app$stop()

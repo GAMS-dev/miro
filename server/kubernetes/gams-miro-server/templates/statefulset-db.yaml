@@ -3,6 +3,7 @@ Copyright GAMS Development Corp. All Rights Reserved.
 SPDX-License-Identifier: GPL-3.0-only
 */}}
 
+{{- if not .Values.db.externalHost }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -45,7 +46,7 @@ spec:
       priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       containers:
       - name: db
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.db.image.registry "repository" .Values.db.image.repository "tag" (coalesce .Values.db.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.db.resources | indent 10 }}
         ports:
@@ -56,8 +57,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: db_password
+              name: {{ include "common.names.fullname" . }}-secdb
+              key: password
         - name: POSTGRES_DB
           value: {{ .Values.db.name }}
         - name: PGDATA
@@ -86,3 +87,4 @@ spec:
       - name: db-data
         persistentVolumeClaim:
           claimName: {{ include "common.names.fullname" . }}-db-pvc
+{{- end }}

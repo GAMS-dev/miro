@@ -1,6 +1,6 @@
 test_that(
   "Widget dependencies work",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
     modelToTest <- "pickstock_widget_dependencies"
     testModelDir <- file.path(testDir, "model", modelToTest)

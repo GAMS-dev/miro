@@ -1,28 +1,31 @@
+import logging
 from typing import Annotated
 
-from fastapi.param_functions import Query
 from fastapi import (
     APIRouter,
     Depends,
-    HTTPException,
-    Path,
     File,
     Form,
+    HTTPException,
+    Path,
     UploadFile,
     status,
 )
+from fastapi.param_functions import Query
 from pydantic import TypeAdapter, ValidationError
 
-from app.config import logger
+from app.dependencies import Paginator, User, get_current_admin_user, get_current_user
 from app.utils.app_utils import (
-    AppConfigOutput,
     AppConfigInput,
+    AppConfigOutput,
+    add_or_update_app,
     app_is_invisible,
+    delete_app_internal,
     get_apps_internal,
 )
 from app.utils.models import AppEnvironment
-from app.dependencies import User, get_current_admin_user, get_current_user, Paginator
-from app.utils.app_utils import add_or_update_app, delete_app_internal
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/apps",
@@ -76,7 +79,8 @@ async def get_apps(
     - **access_groups**: The user groups that can see this app. If no user groups are assigned (empty array), anyone with access to the MIRO Server instance can see the app. Displays only subset of user groups of which the logged in user is a member.
     """
     logger.info("%s requested list of apps", admin_user.name)
-    return paginator.paginate(get_apps_internal(admin_user))
+    app_list = await get_apps_internal(admin_user)
+    return paginator.paginate(app_list)
 
 
 @router.put(
@@ -129,8 +133,10 @@ async def update_app(
         nonempty_access_groups = []
     invalid_user_groups = list(
         filter(
-            lambda access_group: access_group in ["admins", "users"]
-            or access_group not in admin_user.groups,
+            lambda access_group: (
+                access_group in ["admins", "users"]
+                or access_group not in admin_user.groups
+            ),
             nonempty_access_groups,
         )
     )
@@ -140,7 +146,8 @@ async def update_app(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid user group(s): {','.join(invalid_user_groups)}",
         )
-    if app_is_invisible(admin_user.groups, app_id):
+    app_invisible = await app_is_invisible(admin_user.groups, app_id)
+    if app_invisible:
         logger.info("%s is not visible", app_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -156,7 +163,7 @@ async def update_app(
     except ValidationError as exc:
         logger.warning("Invalid AppEnvironment: %s", str(exc))
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=exc.errors(),
         ) from exc
 
@@ -238,8 +245,10 @@ async def add_app(
         nonempty_access_groups = []
     invalid_user_groups = list(
         filter(
-            lambda access_group: access_group in ["admins", "users"]
-            or access_group not in admin_user.groups,
+            lambda access_group: (
+                access_group in ["admins", "users"]
+                or access_group not in admin_user.groups
+            ),
             nonempty_access_groups,
         )
     )
@@ -259,7 +268,7 @@ async def add_app(
     except ValidationError as exc:
         logger.warning("Invalid AppEnvironment: %s", str(exc))
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=exc.errors(),
         ) from exc
 
@@ -311,8 +320,9 @@ async def delete_app(
     """
     Remove an existing MIRO app (requires write permissions on namespace).
     """
-    logger.info("%s requested to add remove app with ID: %s", admin_user.name, app_id)
-    if app_is_invisible(admin_user.groups, app_id):
+    logger.info("%s requested to remove app with ID: %s", admin_user.name, app_id)
+    app_invisible = await app_is_invisible(admin_user.groups, app_id)
+    if app_invisible:
         logger.info("%s is not visible", app_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -96,12 +96,17 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
         tags$ul(
           class = "dropdown-menu maxTabsDropdown",
           c(
-            list(tags$input(
-              type = "text",
-              placeholder = lang$renderers$dropdownFilter$placeholder,
-              class = "form-control miro-dropdown-filter",
-              onkeyup = "Miro.filterMiroDropdown(this)"
-            )),
+            list(
+              tags$div(
+                class = "search-field-wrapper",
+                tags$input(
+                  type = "text",
+                  placeholder = lang$renderers$dropdownFilter$placeholder,
+                  class = "form-control miro-dropdown-filter",
+                  onkeyup = "Miro.filterMiroDropdown(this)"
+                )
+              )
+            ),
             ddLiTagList
           )
         )
@@ -115,7 +120,10 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   ))
 
   tabContent <- tags$div(
-    class = "tab-content tab-mobile",
+    class = paste0(
+      "tab-content tab-mobile",
+      if (hideTabs) " no-tabs" else ""
+    ),
     `data-tabsetid` = tabsetId, divTagList
   )
 
@@ -184,13 +192,14 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
           class = "btn btn-default bt-icon bt-cmp-close-scen", type = "button",
           title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
           onclick = paste0(
-            "Miro.confirmModalShow('",
-            scenButtonLang[["title"]], "', '",
-            scenButtonLang[["desc"]], "', '",
-            scenButtonLang[["cancelButton"]], "', '",
-            scenButtonLang[["okButton"]],
-            "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID,
-            ",{priority:\\'event\\'})')"
+            "Miro.confirmModalShow(", toJSON(list(
+              title = scenButtonLang[["title"]],
+              desc = scenButtonLang[["desc"]],
+              cancelTxt = scenButtonLang[["cancelButton"]],
+              confirmTxt = scenButtonLang[["okButton"]],
+              confirmCallKey = "btScenClose",
+              confirmCallVal = scenID
+            ), auto_unbox = TRUE), ")"
           ),
           tags$i(
             class = "fa fa-xmark",

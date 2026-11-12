@@ -13,6 +13,141 @@ showReadonlyDialog <- function() {
   ))
 }
 
+showSettingsDialog <- function() {
+  showModal(modalDialog(
+    title = lang$nav$dialogSettings$title,
+    tags$div(
+      id = "settingsDialogUnknownError", class = "gmsalert gmsalert-error",
+      style = "position:relative;",
+      lang$errMsg$unknownError
+    ),
+    tags$div(
+      id = "engineQuotaInfoSpinner",
+      genSpinner(
+        absolute = FALSE,
+        hidden = FALSE,
+        externalStyle = "left:50%;",
+        extraClasses = "gen-spinner-black"
+      )
+    ),
+    tags$div(
+      id = "engineQuotaInfoWrapper",
+      style = "display:none;",
+      tags$h4(lang$nav$dialogSettings$quotaInfoHeader),
+      tags$div(
+        class = "grid-2",
+        tags$div(tags$i(class = "fa fa-microchip"), lang$nav$dialogSettings$quotaVolumeLabel),
+        tags$div(class = "quota-info-volume"),
+        tags$div(tags$i(class = "fa fa-hard-drive"), lang$nav$dialogSettings$quotaDiskLabel),
+        tags$div(class = "quota-info-disk")
+      )
+    ),
+    tags$div(
+      id = "selEngineDefaultInstanceSpinner",
+      genSpinner(
+        absolute = FALSE,
+        hidden = FALSE,
+        externalStyle = "left:50%;",
+        extraClasses = "gen-spinner-black"
+      )
+    ),
+    tags$div(
+      id = "selEngineDefaultInstanceWrapper",
+      class = "mt-space",
+      style = "display:none;",
+      tags$h4(lang$nav$dialogSettings$selDefaultInstance),
+      selectizeInput("selEngineDefaultInstance",
+        NULL,
+        choices = NULL,
+        width = "100%"
+      ),
+      tags$div(class = "engine-instance-info"),
+      actionButton("btUpdateEngineDefaultInstance",
+        lang$nav$dialogSettings$btUpdateDefaultInstance,
+        class = "bt-highlight-1 bt-gms-confirm"
+      )
+    ),
+    footer = tagList(
+      modalButton(lang$nav$dialogSettings$closeButton),
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
+}
+
+renderWhatsNewHighlight <- function(highlight) {
+  if (is.null(highlight)) {
+    return(NULL)
+  }
+  tags$section(
+    class = "whats-new-hero",
+    tags$div(class = "whats-new-eyebrow", renderMiraIcon(), tags$span(highlight$eyebrow)),
+    tags$h3(class = "whats-new-hero-title", HTML(highlight$title)),
+    tags$p(class = "whats-new-lead", HTML(highlight$description)),
+    tags$div(
+      class = "whats-new-media",
+      # preload = "none": nothing is fetched until the user starts the video
+      tags$video(
+        src = highlight$video, poster = highlight$poster,
+        controls = NA, preload = "none", playsinline = NA, `aria-label` = highlight$mediaAlt
+      )
+    ),
+    tags$div(
+      class = "whats-new-features",
+      lapply(highlight$features, function(feature) {
+        tags$div(
+          class = "whats-new-feature",
+          tags$div(class = "whats-new-feature-icon", icon(feature$icon)),
+          tags$div(
+            tags$div(class = "whats-new-feature-title", HTML(feature$title)),
+            tags$div(class = "whats-new-feature-text", HTML(feature$text))
+          )
+        )
+      })
+    ),
+    tags$div(
+      class = "whats-new-hero-footer",
+      tags$p(class = "whats-new-note", HTML(highlight$note)),
+      tags$a(
+        class = "whats-new-cta", href = highlight$link$href, target = "_blank",
+        rel = "noreferrer noopener", highlight$link$text, HTML("&rarr;")
+      )
+    )
+  )
+}
+showWhatsNewDialog <- function(whatsNewData) {
+  makeSection <- function(title, items, modifier) {
+    if (is.null(items) || length(items) == 0) {
+      return(NULL)
+    }
+    tags$section(
+      class = "whats-new-section",
+      tags$h4(class = "whats-new-section-title", title),
+      tags$ul(
+        class = paste0("whats-new-list whats-new-list-", modifier),
+        lapply(items, function(x) tags$li(HTML(x)))
+      )
+    )
+  }
+  showModal(modalDialog(
+    title = lang$nav$dialogWhatsNew$title,
+    tags$div(
+      class = "container-fluid whats-new-dialog",
+      renderWhatsNewHighlight(whatsNewData$highlight),
+      makeSection(lang$nav$dialogWhatsNew$newFeaturesHdr, whatsNewData$major, "major"),
+      makeSection(lang$nav$dialogWhatsNew$minorImprovementsHdr, whatsNewData$minor, "minor"),
+      tags$div(
+        class = "whats-new-footer",
+        tags$a(
+          href = "https://gams.com/miro/release.html", target = "_blank", rel = "noreferrer noopener",
+          lang$nav$dialogWhatsNew$releaseNotes, HTML("&rarr;")
+        )
+      )
+    ),
+    footer = modalButton(lang$nav$dialogWhatsNew$cancelButton),
+    size = "l", fade = TRUE, easyClose = TRUE
+  ))
+}
+
 showInconsistentOutputDialog <- function() {
   showModal(modalDialog(
     title = lang$nav$dialogInconsistentOutput$title,
@@ -202,12 +337,41 @@ showRemoveExistingOutputDataDialog <- function() {
     fade = TRUE, easyClose = TRUE
   ))
 }
+attachmentLine <- function(id, name, execPerm = NULL, execPermLabel = NULL) {
+  # one row of the attachment list in the edit metadata dialog
+  # (keep in sync with the gms-updateAttachList handler in miro.js)
+  tags$div(
+    class = "attachment-line",
+    tags$i(class = "fa fa-file-lines attachment-icon", role = "presentation"),
+    tags$a(
+      href = "#", class = "attachment-name", title = name,
+      onclick = paste0("Miro.downloadAttachment(", id, ");return false;"), name
+    ),
+    if (!is.null(execPerm)) {
+      tags$div(
+        class = "attachment-exec", title = execPermLabel,
+        checkboxInput_SIMPLE(
+          label = NULL,
+          value = execPerm,
+          onChange = paste0("Shiny.setInputValue('execPermAttachment_", id, "',$(this).is(':checked'),{priority:'event'})")
+        )
+      )
+    },
+    tags$button(
+      class = "btn btn-default bt-icon attachment-remove", id = paste0("btRemoveAttachment_", id),
+      type = "button", onclick = paste0("Miro.removeAttachment(", id, ")"),
+      title = "Remove attachment",
+      tags$i(class = "fa fa-trash-can", role = "presentation", `aria-label` = "Remove attachment")
+    )
+  )
+}
 getLoadDbPanel <- function(title, scenList, tagList, iconName) {
   content <- tagList(
     tags$div(class = "space"),
-    selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
+    selectizeInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
       scenList,
-      multiple = FALSE, width = "100%"
+      multiple = FALSE, width = "100%",
+      options = scenListSelectizeOptions()
     ),
     if (length(tagList)) {
       tags$div(
@@ -587,8 +751,36 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL, selectLocalTab = FA
     }
   ))
 }
+genCompSandboxCheckbox <- function(id, sandboxName, checked = FALSE) {
+  checkboxInput(id,
+    sprintf(lang$nav$dialogLoadScen$includeSandbox, sandboxName),
+    value = checked, width = "100%"
+  )
+}
+genCompBaselineSelect <- function(wrapperId, inputId, choices, selected = NULL,
+                                  sandboxInputId = NULL, sandboxName = NULL,
+                                  scenInputId = NULL, scenChoices = NULL) {
+  tags$div(
+    id = wrapperId, class = "comp-baseline-wrapper",
+    style = if (length(choices) < 2L) "display:none;",
+    `data-sb-input` = sandboxInputId,
+    `data-sb-label` = sandboxName,
+    `data-scen-input` = scenInputId,
+    `data-scen-choices` = if (length(scenChoices)) {
+      toJSON(lapply(seq_along(scenChoices), function(i) {
+        list(value = unname(scenChoices[[i]]), label = names(scenChoices)[[i]])
+      }), auto_unbox = TRUE)
+    },
+    selectizeInput(inputId, lang$nav$dialogLoadScen$selBaseline,
+      choices,
+      selected = selected, multiple = FALSE, width = "100%",
+      options = scenListSelectizeOptions()
+    ),
+    tags$p(class = "help-block", lang$nav$dialogLoadScen$baselineDesc)
+  )
+}
 showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE,
-                               dbTagList = NULL, baseScenName = NULL) {
+                               dbTagList = NULL, sandboxOption = NULL, baselineOption = NULL) {
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if (isInSplitView && length(uiScenList)) {
@@ -602,27 +794,19 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       )
     )
   }
-  if (!noDBPanel && length(dbScenList)) {
+  if (!noDBPanel && (length(dbScenList) || length(sandboxOption))) {
     tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB,
       icon = icon("database"),
       value = "loadScenDb",
       tags$div(class = "space"),
-      if (length(baseScenName)) {
-        tagList(
-          tags$div(
-            tags$label(
-              class = "label-base-scen",
-              lang$nav$dialogLoadScen$baseScenLabel
-            ),
-            tags$span(class = "label label-default base-scen", baseScenName)
-          ),
-          tags$div(class = "small-space")
-        )
+      if (length(sandboxOption)) {
+        genCompSandboxCheckbox("cbLoadScenSandbox", sandboxOption$name, sandboxOption$checked)
       },
-      selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
+      selectizeInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen,
         dbScenList,
         selected = if (isInSplitView) NULL else unname(uiScenList),
-        multiple = if (isInSplitView) FALSE else TRUE, width = "100%"
+        multiple = if (isInSplitView) FALSE else TRUE, width = "100%",
+        options = scenListSelectizeOptions()
       ),
       if (length(dbTagList)) {
         selectInput("selLoadScenTags", lang$nav$dialogLoadScen$selTags,
@@ -643,7 +827,19 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
           icon = icon("arrow-down-1-9"),
           class = "scen-sort-by scen-sort-by-selected"
         )
-      )
+      ),
+      if (length(baselineOption)) {
+        tagList(
+          tags$div(class = "space"),
+          genCompBaselineSelect("loadScenBaselineWrapper", "selLoadScenBaseline",
+            baselineOption$choices,
+            selected = baselineOption$selected,
+            sandboxInputId = "cbLoadScenSandbox",
+            sandboxName = sandboxOption$name,
+            scenInputId = "selLoadScen"
+          )
+        )
+      }
     )
   }
   showModal(modalDialog(
@@ -788,38 +984,30 @@ showEditMetaDialog <- function(metadata,
       tags$div(class = "space"),
       downloadLink("downloadAttachmentData", "", style = "visibility:hidden;"),
       tags$div(
-        class = "input-form-mobile",
+        class = "attachment-upload",
         fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd,
           multiple = TRUE, width = "100%"
         )
       ),
-      if (length(attachmentMetadata[["name"]])) {
-        lapply(seq_along(attachmentMetadata[["name"]]), function(i) {
+      tags$div(
+        class = "attachment-list",
+        if (attachAllowExec) {
           tags$div(
-            class = "row attachment-line",
-            column(
-              width = 6,
-              HTML(paste0(
-                '<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-circle-xmark" role="presentation" aria-label="Remove attachment"></i></button>
-                                                                   <a href="#" onclick="Miro.downloadAttachment(', i, ')">',
-                htmltools::htmlEscape(attachmentMetadata[["name"]][[i]]), "</a>"
-              ))
-            ),
-            if (attachAllowExec) {
-              column(
-                width = 6,
-                checkboxInput_SIMPLE(
-                  label = lang$nav$dialogEditMeta$attachmentsExecPerm,
-                  value = attachmentMetadata[["execPerm"]][[i]],
-                  onChange = paste0("Shiny.setInputValue('execPermAttachment_", i, "',$(this).is(':checked'),{priority:'event'})")
-                )
-              )
-            }
+            class = "attachment-list-header",
+            tags$span(class = "attachment-exec", lang$nav$dialogEditMeta$attachmentsExecPerm)
           )
-        })
-      },
-      tags$div(id = "endAttachList", class = "small-space"),
+        },
+        if (length(attachmentMetadata[["name"]])) {
+          lapply(seq_along(attachmentMetadata[["name"]]), function(i) {
+            attachmentLine(i, attachmentMetadata[["name"]][[i]],
+              execPerm = if (attachAllowExec) attachmentMetadata[["execPerm"]][[i]],
+              execPermLabel = lang$nav$dialogEditMeta$attachmentsExecPerm
+            )
+          })
+        },
+        tags$div(id = "endAttachList")
+      ),
+      tags$div(class = "attachment-list-empty", lang$nav$dialogEditMeta$noAttachments),
       genSpinner(
         id = "addAttachLoading", hidden = TRUE, absolute = FALSE,
         extraClasses = "gen-spinner-black"
@@ -847,33 +1035,52 @@ showEditMetaDialog <- function(metadata,
       ),
       tags$div(class = "space"),
       tags$div(
-        class = "input-form-mobile",
+        class = "attachment-upload",
         fileInput("file_addViews", lang$nav$dialogEditMeta$viewsAdd,
           multiple = TRUE, width = "100%"
         )
       ),
       tags$div(
         id = "currentViewsTable-noData",
-        style = paste0(
-          "padding:20px;text-align:center;",
-          if (length(viewsMetadata[["id"]])) "display:none;"
-        ),
+        class = "views-list-empty",
+        style = if (length(viewsMetadata[["id"]])) "display:none;",
         lang$nav$dialogEditMeta$noViewData
       ),
+      downloadLink("downloadViews", "", style = "visibility:hidden;"),
       tags$div(
         id = "currentViewsTable-wrapper",
+        class = "views-list",
         style = if (!length(viewsMetadata[["id"]])) "display:none;",
-        tags$a(
-          onClick = "Miro.selectAllRows('currentViewsTable')",
-          href = "#", lang$nav$dialogEditMeta$selectAllViews
-        ),
-        tags$a(
-          onClick = "Miro.selectNoRow('currentViewsTable')",
-          href = "#", lang$nav$dialogEditMeta$selectNoViews,
-          style = "margin-left:30px;"
+        tags$div(
+          class = "views-list-toolbar",
+          tags$a(
+            onClick = "Miro.selectAllRows('currentViewsTable');return false;",
+            href = "#", lang$nav$dialogEditMeta$selectAllViews
+          ),
+          tags$a(
+            onClick = "Miro.selectNoRow('currentViewsTable');return false;",
+            href = "#", lang$nav$dialogEditMeta$selectNoViews
+          ),
+          tags$div(
+            class = "views-list-actions",
+            tags$button(
+              class = "btn btn-default btn-sm",
+              type = "button",
+              onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
+              icon("download"),
+              lang$nav$dialogEditMeta$viewsDownload
+            ),
+            tags$button(
+              class = "btn btn-default btn-sm bt-remove",
+              type = "button",
+              onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+              icon("trash"),
+              lang$nav$dialogEditMeta$viewsRemove
+            )
+          )
         ),
         tags$div(
-          style = "max-height:300px;overflow-y:auto;",
+          class = "views-list-scroll",
           tags$table(
             id = "currentViewsTable",
             class = "miro-table",
@@ -897,25 +1104,6 @@ showEditMetaDialog <- function(metadata,
               )
             })))
           )
-        )
-      ),
-      tags$div(class = "small-space"),
-      downloadLink("downloadViews", "", style = "visibility:hidden;"),
-      tags$div(
-        class = "input-form-mobile buttons-mobile-wrapper",
-        tags$button(
-          class = "btn btn-default buttons-mobile-left",
-          type = "button",
-          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
-          icon("download"),
-          lang$nav$dialogEditMeta$viewsDownload
-        ),
-        tags$button(
-          class = "btn btn-default bt-remove buttons-mobile-right",
-          type = "button",
-          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
-          icon("trash"),
-          lang$nav$dialogEditMeta$viewsRemove
         )
       ),
       genSpinner(
@@ -1068,7 +1256,7 @@ showHashExistsDialog <- function(scenData, uid) {
     fade = TRUE, easyClose = TRUE
   ))
 }
-showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanceInfo = NULL) {
+showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL) {
   if (length(hashExistsData) && nrow(hashExistsData)) {
     if (length(hashExistsData[["_stag"]]) && !is.na(hashExistsData[["_stag"]]) &&
       nchar(hashExistsData[["_stag"]])) {
@@ -1141,23 +1329,22 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanc
           width = "100%"
         )
       ),
-      if (!length(instanceInfo)) {
-        tags$div(
-          id = "selWorkerInstanceSpinner",
-          style = "text-align:center;",
-          tags$div(class = "space"),
-          genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
-        )
-      },
+      tags$div(
+        id = "selWorkerInstanceSpinner",
+        style = "text-align:center;",
+        tags$div(class = "space"),
+        genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")
+      ),
       tags$div(
         id = "selWorkerInstanceWrapper",
         class = "input-form-mobile",
-        style = if (!length(instanceInfo) || !identical(instanceInfo[["instancesSupported"]], TRUE)) "display:none;",
+        style = "display:none;",
         selectInput("selWorkerInstance",
           lang$nav$dialogJobSubmission$workerInstance,
-          choices = instanceInfo$choices, selected = instanceInfo$selected,
+          choices = NULL,
           width = "100%"
-        )
+        ),
+        tags$div(class = "engine-instance-info")
       ),
       tags$div(class = "small-space")
     ),
@@ -1175,7 +1362,29 @@ showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL, instanc
   ))
 }
 # Batch Load module
-showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesForNaming = NULL) {
+compModeHasBaseline <- function(compMode) {
+  return(identical(compMode, "pivot") ||
+    isTRUE(config[["customCompareModules"]][[compMode]][["selectBaseline"]]))
+}
+compModeRequiresSandbox <- function(compMode) {
+  compModeConfig <- config[["customCompareModules"]][[compMode]]
+  return(length(compModeConfig) > 0L && !isTRUE(compModeConfig[["selectBaseline"]]) &&
+    !identical(compModeConfig[["outType"]], "dashboardCompare"))
+}
+getBatchCompareOptions <- function(compareModeId, noScen) {
+  showSandbox <- switch(compareModeId,
+    split = noScen < 2L,
+    tab = noScen < 10L,
+    aiCompare = noScen <= 50L,
+    compModeHasBaseline(compareModeId)
+  )
+  return(list(
+    sandbox = showSandbox,
+    baseline = showSandbox && compModeHasBaseline(compareModeId)
+  ))
+}
+showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesForNaming = NULL,
+                                sandboxName = NULL, baselineChoices = NULL) {
   if (length(customScripts)) {
     analysisTabset <- selectInput("selHcubeAnalysisScript", lang$nav$dialogBatchLoad$selAnalysisScript,
       setNames(
@@ -1186,6 +1395,19 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
     )
   } else {
     analysisTabset <- NULL
+  }
+  genCompareModeAttribs <- function(compareModeId, label) {
+    compareOptions <- getBatchCompareOptions(compareModeId, noScenSelected)
+    list(
+      `data-mode` = compareModeId,
+      `data-sandbox` = tolower(compareOptions$sandbox),
+      `data-baseline` = tolower(compareOptions$baseline),
+      `data-title` = sprintf(
+        lang$nav$dialogBatchLoad$compareSettingsTitle,
+        noScenSelected, label
+      ),
+      onclick = "Miro.batchCompareSelectMode(this)"
+    )
   }
   createCompareModesDropdown <- function(noScenariosToCompare) {
     if (noScenariosToCompare > 50L) {
@@ -1206,6 +1428,9 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
         compareModesList[["tab"]] <- NULL
       }
     }
+    compareModeAttribs <- setNames(lapply(names(compareModesList), function(compareModeId) {
+      genCompareModeAttribs(compareModeId, compareModesList[[compareModeId]])
+    }), names(compareModesList))
     if (length(config$defCompMode) && config$defCompMode %in% names(compareModesList)) {
       defCompModeButton <- list(id = config$defCompMode, label = compareModesList[[config$defCompMode]])
       compareModesList[[config$defCompMode]] <- NULL
@@ -1213,41 +1438,38 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
       defCompModeButton <- list(id = "pivot", label = compareModesList[["pivot"]])
       compareModesList[["pivot"]] <- NULL
     }
-    defCompModeButton <- tags$button(
+    defCompModeButton <- do.call(tags$button, c(list(
       class = "btn btn-default", type = "button", id = "btBatchCompare",
-      style = if (length(compareModesList) > 0L) {
-        "margin:6px 0px 6px 5px;border-right:0px;"
-      } else {
-        "margin:6px 0px 6px 5px;"
-      },
-      onclick = paste0("Shiny.setInputValue('btBatchCompare','", defCompModeButton$id, "',{priority:'event'});"),
+      style = "flex-grow: 1;", # Removed inline margins breaking the group
       defCompModeButton$label
-    )
+    ), compareModeAttribs[[defCompModeButton$id]]))
     return(tags$div(
-      class = "btn-group", class = "batch-load-content",
-      defCompModeButton,
-      if (length(compareModeList) > 0L) {
-        tagList(
-          tags$button(
-            class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-            style = "margin:6px 0px 6px 0;display:block;",
-            tags$span(class = "caret"),
-            tags$span(class = "sr-only", "toggle dropdown")
-          ),
-          tags$ul(
-            class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
-            lapply(names(compareModesList), function(compareModeId) {
-              tags$li(
-                tags$a(
-                  href = "#",
-                  onclick = paste0("Shiny.setInputValue('btBatchCompare','", compareModeId, "',{priority:'event'});"),
-                  compareModesList[[compareModeId]]
+      class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
+      tags$div(
+        class = "btn-group", style = "display: flex; width: 100%;",
+        defCompModeButton,
+        if (length(compareModesList) > 0L) {
+          tagList(
+            tags$button(
+              class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+              style = "display:block;",
+              tags$span(class = "caret"),
+              tags$span(class = "sr-only", "toggle dropdown")
+            ),
+            tags$ul(
+              class = "dropdown-menu", role = "menu", style = "margin-left:5px;max-width:280px;overflow:hidden;",
+              lapply(names(compareModesList), function(compareModeId) {
+                tags$li(
+                  do.call(tags$a, c(
+                    list(href = "#", compareModesList[[compareModeId]]),
+                    compareModeAttribs[[compareModeId]]
+                  ))
                 )
-              )
-            })
+              })
+            )
           )
-        )
-      }
+        }
+      )
     ))
   }
   showModal(
@@ -1291,18 +1513,11 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               )
             ),
             tags$div(
-              class = "batch-load-content",
-              if (length(sidsToLoad) <= 50L) {
-                lang$nav$dialogBatchLoad$selectMethod
-              } else {
-                sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+%
-                  lang$nav$dialogBatchLoad$maxScenWarning2
-              },
+              class = "batch-load-content", style = "margin-bottom: 25px;",
               if (length(sidsToLoad) <= 50L) {
                 tagList(
                   tags$label(lang$nav$dialogBatchLoad$scenNameCols,
-                    `for` = "batchCompareNameCols",
-                    style = "font-weight:unset;margin-top:10px;"
+                    `for` = "batchCompareNameCols"
                   ),
                   selectInput("batchCompareNameCols", NULL,
                     choices = colNamesForNaming,
@@ -1313,12 +1528,37 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
                     textInput("prefixBatchCompareNameCols", label = lang$nav$dialogBatchLoad$scenNamePrefix)
                   )
                 )
-              }
+              },
+              tags$p(tags$strong(
+                if (length(sidsToLoad) <= 50L) {
+                  lang$nav$dialogBatchLoad$selectMethod
+                } else {
+                  sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, 50L) %+%
+                    lang$nav$dialogBatchLoad$maxScenWarning2
+                }
+              ))
             ),
             tags$div(
               class = "batch-load-sb-content", style = "display:none;",
               lang$nav$dialogImport$descClearSandbox
             ),
+            if (length(sidsToLoad) <= 50L) {
+              tags$div(
+                class = "batch-load-compare-content", style = "display:none;",
+                tags$p(tags$strong(id = "batchCompareSettingsTitle")),
+                genCompSandboxCheckbox("cbBatchCompareSandbox", sandboxName),
+                tags$div(
+                  id = "batchCompareBaselineOuter",
+                  genCompBaselineSelect("batchCompareBaselineWrapper", "selBatchCompareBaseline",
+                    baselineChoices,
+                    selected = baselineChoices[1],
+                    sandboxInputId = "cbBatchCompareSandbox",
+                    sandboxName = sandboxName,
+                    scenChoices = baselineChoices
+                  )
+                )
+              )
+            },
             if (length(analysisTabset)) {
               tagList(
                 tags$div(
@@ -1337,42 +1577,49 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               )
             },
             tags$div(
+              class = "row",
               tags$div(
-                class = "btn-group", class = "batch-load-content",
-                tags$a(
-                  class = "btn btn-default shiny-download-link", type = "button",
-                  id = "btBatchDownloadGDX", target = "_blank", href = "", download = NA,
-                  style = "margin:6px 0px 6px 0;border-right:0px;",
-                  paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")
-                ),
-                tags$button(
-                  class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                  style = "margin:6px 0px 6px 0;display:block;",
-                  tags$span(class = "caret"),
-                  tags$span(class = "sr-only", "toggle dropdown")
-                ),
-                tags$ul(
-                  class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                  tags$li(
-                    tags$a(
-                      class = "shiny-download-link", type = "button",
-                      id = "btBatchDownloadCSV", target = "_blank", href = "", download = NA,
-                      paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)")
+                class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
+                tags$div(
+                  class = "btn-group", style = "display: flex; width: 100%;",
+                  tags$a(
+                    class = "btn btn-default shiny-download-link", type = "button",
+                    id = "btBatchDownloadGDX", target = "_blank", href = "", download = NA,
+                    style = "flex-grow: 1; text-align: center;",
+                    paste0(lang$nav$dialogBatchLoad$downloadButton, " (GDX)")
+                  ),
+                  tags$button(
+                    class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                    style = "display: block;",
+                    tags$span(class = "caret"),
+                    tags$span(class = "sr-only", "toggle dropdown")
+                  ),
+                  tags$ul(
+                    class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                    tags$li(
+                      tags$a(
+                        class = "shiny-download-link", type = "button",
+                        id = "btBatchDownloadCSV", target = "_blank", href = "", download = NA,
+                        paste0(lang$nav$dialogBatchLoad$downloadButton, " (CSV)")
+                      )
                     )
                   )
                 )
               ),
               if (length(analysisTabset)) {
                 tagList(
-                  actionButton("btAnalysisConfig",
-                    class = "batch-load-content",
-                    lang$nav$dialogBatchLoad$analysisButton
+                  tags$div(
+                    class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
+                    actionButton("btAnalysisConfig",
+                      class = "btn-block",
+                      lang$nav$dialogBatchLoad$analysisButton
+                    )
                   ),
                   tags$div(
                     style = "display:none;",
-                    class = "batch-load-content batch-load-analysis-footer",
+                    class = "col-sm-12 batch-load-content batch-load-analysis-footer",
                     actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton,
-                      class = "bt-highlight-1 bt-gms-confirm"
+                      class = "btn-block bt-highlight-1 bt-gms-confirm"
                     )
                   ),
                   downloadButton("btDownloadBatchLoadScript",
@@ -1383,28 +1630,56 @@ showBatchLoadDialog <- function(noScenSelected, customScripts = NULL, colNamesFo
               },
               if (identical(length(sidsToLoad), 1L)) {
                 tagList(
-                  actionButton("btBatchLoadSb",
-                    class = "batch-load-content",
-                    style = "margin-left:5px",
-                    lang$nav$dialogBatchLoad$interactiveButtonSb
-                  ),
-                  actionButton("btBatchLoadSbOverwrite",
-                    class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
-                    style = "display:none",
-                    lang$nav$dialogBatchLoad$interactiveButtonSb
+                  tags$div(
+                    class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
+                    actionButton("btBatchLoadSb",
+                      class = "btn-block",
+                      lang$nav$dialogBatchLoad$interactiveButtonSb
+                    )
                   )
                 )
               },
-              createCompareModesDropdown(length(sidsToLoad))
+              createCompareModesDropdown(length(sidsToLoad)),
+              if (config$activateModules$aiAssistant) {
+                tags$div(
+                  class = "col-sm-6 batch-load-content", style = "margin-bottom: 15px;",
+                  do.call(tags$button, c(
+                    list(
+                      class = "btn btn-default btn-block", type = "button", id = "btAiCompare",
+                      lang$nav$dialogBatchLoad$interactiveButtonAi
+                    ),
+                    genCompareModeAttribs("aiCompare", lang$nav$dialogBatchLoad$interactiveButtonAi)
+                  ))
+                )
+              }
             )
           ),
           tags$div(
             class = "modal-footer",
-            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
             actionButton("btBatchRemove",
               lang$nav$dialogBatchLoad$removeButton,
-              class = "bt-remove batch-load-content batch-load-remove-content"
+              class = "bt-remove batch-load-content batch-load-remove-content pull-left"
             ),
+            actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
+            tags$button(
+              class = "btn btn-default batch-load-compare-content", type = "button",
+              style = "display:none;", onclick = "Miro.batchCompareBack()",
+              lang$nav$dialogBatchLoad$backButton
+            ),
+            tags$button(
+              id = "btBatchCompareConfirm",
+              class = "btn btn-default bt-highlight-1 bt-gms-confirm batch-load-compare-content",
+              type = "button", style = "display:none;",
+              onclick = "Miro.batchCompareConfirm(this)",
+              lang$nav$dialogBatchLoad$compareButton
+            ),
+            if (identical(length(sidsToLoad), 1L)) {
+              actionButton("btBatchLoadSbOverwrite",
+                lang$nav$dialogBatchLoad$interactiveButtonSb,
+                class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                style = "display:none;"
+              )
+            }
           )
         )
       ),
@@ -1436,7 +1711,7 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
   } else if (length(hcubeMeta) && nrow(hcubeMeta)) {
     jobIds <- hcubeMeta[[1]]
     jobOwners <- hcubeMeta[[2]]
-    jobTimes <- hcubeMeta[[4]]
+    jobTimes <- format(as.POSIXct(hcubeMeta[[4]]), "%Y-%m-%d %H:%M:%S")
     jStatuses <- hcubeMeta[[3]]
     content <- tags$table(
       class = "miro-table cJob-wrapper",
@@ -1476,21 +1751,19 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
           } else if (identical(jStatus, JOBSTATUSMAP[["completed"]])) {
             tags$td(
               tags$div(lang$nav$importJobsDialog$status$completed),
-              if (isTRUE(config$activateModules$remoteExecution)) {
+              tags$div(
+                class = "progress",
+                style = "display:none;margin-bottom:0;border:1px solid black;",
+                id = paste0("jobImportDlProgressWrapper_", jID),
                 tags$div(
-                  class = "progress",
-                  style = "display:none;margin-bottom:0;border:1px solid black;",
-                  id = paste0("jobImportDlProgressWrapper_", jID),
-                  tags$div(
-                    class = "progress-bar progress-bar-striped active",
-                    id = paste0("jobImportDlProgress_", jID),
-                    role = "progressbar", `aria-valuenow` = 5L,
-                    `aria-valuemin` = 0, `aria-valuemax` = 100,
-                    style = paste0("width:", 5L, "%;"),
-                    lang$nav$importJobsDialog$status$downloading
-                  )
+                  class = "progress-bar progress-bar-striped active",
+                  id = paste0("jobImportDlProgress_", jID),
+                  role = "progressbar", `aria-valuenow` = 5L,
+                  `aria-valuemin` = 0, `aria-valuemax` = 100,
+                  style = paste0("width:", 5L, "%;"),
+                  lang$nav$importJobsDialog$status$downloading
                 )
-              }
+              )
             )
           } else if (identical(jStatus, JOBSTATUSMAP[["downloaded"]])) {
             tags$td(lang$nav$importJobsDialog$status$downloaded)
@@ -1624,13 +1897,14 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, showLogFileDialog = TRUE) {
               tags$button(
                 class = "btn btn-default",
                 onclick = paste0(
-                  "Miro.confirmModalShow('",
-                  lang$nav$importJobsDialog$discardConfirm$title, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$desc, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$cancelButton, "', '",
-                  lang$nav$importJobsDialog$discardConfirm$confirmButton,
-                  "', 'Shiny.setInputValue(\\'discardJob\\',", jID,
-                  ",{priority:\\'event\\'})')"
+                  "Miro.confirmModalShow(", toJSON(list(
+                    title = lang$nav$importJobsDialog$discardConfirm$title,
+                    desc = lang$nav$importJobsDialog$discardConfirm$desc,
+                    cancelTxt = lang$nav$importJobsDialog$discardConfirm$cancelButton,
+                    confirmTxt = lang$nav$importJobsDialog$discardConfirm$confirmButton,
+                    confirmCallKey = "discardJob",
+                    confirmCallVal = jID
+                  ), auto_unbox = TRUE), ")"
                 ),
                 lang$nav$importJobsDialog$buttons$discard
               )
@@ -1724,7 +1998,7 @@ showJobProgressDialog <- function(jID, progressStatus) {
         id = paste0("hcubeProgress", jID),
         role = "progressbar", `aria-valuenow` = percentCompleted,
         `aria-valuemin` = 0, `aria-valuemax` = 100,
-        style = paste0("width:", percentCompleted, "%;"),
+        style = paste0("min-width:2em;width:", percentCompleted, "%;"),
         paste0(
           progressStatus$noCompleted, "/", progressStatus$noTotal,
           if (length(progressStatus$noFail)) paste0(" (", progressStatus$noFail, ")")
@@ -1853,7 +2127,7 @@ addQueryBuilderBlock <- function(id, choices) {
     ui = tags$div(
       id = paste0("block", id), style = "position:relative;", if (id > 1L) {
         tags$div(
-          tags$hr(),
+          tags$hr(class = "or-separator"),
           tags$div(class = "or-sign", lang$nav$queryBuilder$orButton)
         )
       },

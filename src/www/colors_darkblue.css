@@ -81,7 +81,7 @@
     --miro-if-3105643b: #ffffff;
     --miro-if-3b6cb002: #ffffff;
     --miro-if-417fecde: #343739;
-    --miro-if-4a0e097b: #A9A9A9;
+    --miro-if-4a0e097b: #292D32;
     --miro-if-4ab14308: #202931;
     --miro-if-4bc80e64: #eeeeee;
     --miro-if-5905ebb4: #eeeeee;
@@ -108,7 +108,7 @@
     --miro-if-c6c8bc62: #0073E6;
     --miro-if-cb57bb52: #cdcdcd;
     --miro-if-cf579cbb: #D2E6F9;
-    --miro-if-d2f31bc0: #ffffff;
+    --miro-if-d2f31bc0: #7699BC;
     --miro-navbar-color-dark: #1D1F20;
     --miro-if-d440a364: #91BDE8;
     --miro-if-dc5cf808: #ffffff;
@@ -150,6 +150,7 @@
     --miro-primary-color-dark: #2c3e50;
     --miro-secondary-color: #56799c;
     --miro-secondary-color-dark: #56799c;
+    --miro-sidebar-active-color: #2c3e50;
     --miro-sidebar-color: #ffffff;
     --miro-sidebar-color-dark: #2d3033;
     --miro-sidebar-contrast-dark: #ffffff;
@@ -168,4 +169,5 @@
     --miro-notification-bg-dark: #000000;
     --miro-logo: url('miro_logo_light.png');
     --miro-logo-dark: url('miro_logo_light_dark.png');
+    --miro-sidebar-color-gradient: none;
 }

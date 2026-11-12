@@ -25,7 +25,7 @@ closeScenario <- function(clearMeta = TRUE) {
       views$clearConf()
       attachments$clear(cleanLocal = TRUE)
     }
-    activeScen$finalize()
+    activeScen$destroy()
   }
   renderOutputData()
   activeScen <<- Scenario$new(

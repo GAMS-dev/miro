@@ -20,9 +20,15 @@ spec:
     metadata:
       labels:
         app: {{ include "common.names.fullname" . }}-auth
-      {{- if .Values.auth.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cm-proxy.yaml") . | sha256sum }}
+        checksum/secret-db: {{ include (print $.Template.BasePath "/secret-db.yaml") . | sha256sum }}
+        checksum/secret-oidc: {{ include (print $.Template.BasePath "/secret-oidc.yaml") . | sha256sum }}
+        checksum/secret-engine: {{ include (print $.Template.BasePath "/secret-engine.yaml") . | sha256sum }}
+        checksum/secret-logs3: {{ include (print $.Template.BasePath "/secret-logs3.yaml") . | sha256sum }}
+        {{- if .Values.auth.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.auth.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
     spec:
       automountServiceAccountToken: false
       {{- if .Values.global.securityContext.enabled }}
@@ -44,7 +50,7 @@ spec:
       priorityClassName: {{ include "common.names.fullname" . }}-pc-sys
       containers:
       - name: auth
-        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.image.tag .Chart.AppVersion)) "global" .Values.global) }}
+        image: {{ include "common.images.image" (dict "imageRoot" (dict "registry" .Values.auth.image.registry "repository" .Values.auth.image.repository "tag" (coalesce .Values.auth.image.tag .Values.global.imageTag .Chart.AppVersion)) "global" .Values.global) }}
         resources:
 {{ toYaml .Values.auth.resources | indent 10 }}
         ports:
@@ -65,7 +71,11 @@ spec:
         - name: ENGINE_NS
           value: "{{ .Values.proxy.config.engine.namespace }}"
         - name: GMS_MIRO_DATABASE_HOST
+          {{- if .Values.db.externalHost }}
+          value: {{ .Values.db.externalHost | quote }}
+          {{- else }}
           value: {{ include "common.names.fullname" . }}-db
+          {{- end }}
         - name: GMS_MIRO_DATABASE_PORT
           value: "{{ .Values.db.port | default 5432 }}"
         - name: GMS_MIRO_DATABASE
@@ -77,12 +87,12 @@ spec:
         - name: APP_CONFIG_FILE_PATH
           value: "/home/miro/admin/application.yml"
         - name: SCRIPT_NAME
-          value: "{{ .Values.global.rootPath | trimSuffix "/" }}"
+          value: "{{ .Values.rootPath | trimSuffix "/" }}"
         - name: GMS_MIRO_DATABASE_PWD
           valueFrom:
             secretKeyRef:
-              name: {{ include "common.names.fullname" . }}-secrets
-              key: db_password
+              name: {{ include "common.names.fullname" . }}-secdb
+              key: password
         volumeMounts:
         - name: tmp-volume
           mountPath: /tmp

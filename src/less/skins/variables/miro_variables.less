@@ -51,7 +51,7 @@
 @placeholder-color-dark:  #c9c9c9;                      //only for dark mode
 @highlight-bg-dark:       @readme-preview-dark;
 @gray-base-dark:          #fff;                         // from bootstrap variables
-@or-sign-dark:            darken(@gray-base-dark, 93.5%);  //before: lighten(@gray-base, 93.5%);
+@or-sign-dark:            @text-color-dark;  //before: lighten(@gray-base, 93.5%);
 @pivot-presentation-bg-dark:   @fade-ece660c0;
 @logo-background-dark:    @navbar-color-dark;// #222d32;  //config mode
 @warning-bg-dark:         @if-dde4565a;
@@ -84,9 +84,9 @@
 @or-sign:                 @btn-border;
 @sidebar-btn-border:      @sidebar-contrast-light;
 
-@background-color:        #fff;
+@background-color:        @main-bg;
 @modal-bg:                @background-color;
-@btn-icon-color:          @background-color;
+@btn-icon-color:          #fff;
 @table-row-odd:           @background-color;
 @dt-row-even:             @background-color;                  // before: #fff;
 @logo-background:         @background-color;
@@ -107,3 +107,4 @@
 @warning-bg:              @if-b318da33;
 
 @import "../../8_miro/miro.less";
+@import "../../8_miro/modern.less";

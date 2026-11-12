@@ -351,6 +351,10 @@
               "description": "Whether to draw a stepped line chart",
               "type": "boolean"
             },
+            "hideLegend": {
+              "description": "Hide legend in chart",
+              "type": "boolean"
+            },
             "singleStack": {
               "description": "Normally, positive and negative values are stacked separately. This setting allows stacking positive and negative values together",
               "type": "boolean"
@@ -1064,14 +1068,104 @@
                 "type": "integer"
               },
               "userFilter": {
-                "description": "Adds multi-dropdown menu(s) to a chart/table. Can also be a dataViewsConfig ID.",
-                "type": [
-                  "string",
-                  "array"
-                ],
-                "items": {
-                  "type": "string"
-                }
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": [
+                      "array"
+                    ],
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "dimension"
+                      ],
+                      "properties": {
+                        "dimension": {
+                          "type": "string"
+                        },
+                        "multiple": {
+                          "type": "boolean"
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "placeholder": {
+                          "type": "string"
+                        },
+                        "selected": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "values"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "explicit",
+                                "position"
+                              ]
+                            },
+                            "values": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                {
+                                  "type": [
+                                    "array",
+                                    "string"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "array",
+                                  "minItems": 1,
+                                  "items": {
+                                    "oneOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 1
+                                      },
+                                      {
+                                        "type": "string",
+                                        "enum": [
+                                          "first",
+                                          "last"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
               },
               "colWidth": {
                 "description": "Specifies the width of the chart. Must be between 1 and 12.",
@@ -2557,8 +2651,13 @@
       "enum": [
         "de",
         "en",
-        "cn"
+        "cn",
+        "es"
       ]
+    },
+    "customLanguage": {
+      "description": "Custom language used for MIRO. Should be the name of the custom language file without .json extension. File must be placed in static_<modelName> directory.",
+      "type": "string"
     },
     "pageTitle": {
       "description": "Name of the page (displayed in browser tab)",
@@ -2630,10 +2729,9 @@
       "default": false
     },
     "fileExchange": {
-      "description": "Method used to exchange files with GAMS",
+      "description": "DEFUNCT: Do not use this any longer. The only valid value is 'gdx'.",
       "type": "string",
       "enum": [
-        "csv",
         "gdx"
       ],
       "default": "gdx"
@@ -2859,6 +2957,11 @@
           "type": "boolean",
           "default": false
         },
+        "protectModelFiles": {
+          "description": "Prevent attachments that are visible to the model from overwriting model files?",
+          "type": "boolean",
+          "default": false
+        },
         "hcube": {
           "description": "Allow submitting Hypercube jobs (requires remote execution to be enabled)?",
           "type": "boolean",
@@ -2989,6 +3092,19 @@
     },
     "hiddenOutputScalars": {
       "description": "Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
+      "type": [
+        "array",
+        "string"
+      ],
+      "minLength": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "hiddenCompareSymbols": {
+      "description": "Specify input and/or output symbol names that will not be displayed as a tab in the split, tab and pivot scenario comparison modes. Unlike hiddenOutputSymbols/hiddenOutputScalars, symbols listed here are still shown normally outside of scenario comparison mode.",
       "type": [
         "array",
         "string"
@@ -3490,11 +3606,55 @@
       }
     },
     "roundingDecimals": {
-      "description": "Number of decimal places used for rounding output values.",
+      "description": "Number of decimal places used for rounding output values (for displaying purposes).",
       "type": "integer",
       "minimum": 0,
       "maximum": 6,
       "default": 2
+    },
+    "numericalTolerance": {
+      "description": "Numerical accuracy threshold. Values with an absolute value smaller than this threshold are treated as exactly zero to prevent division-by-zero or inflation errors (e.g., in x/y calculations).",
+      "type": "number",
+      "minimum": 1e-15,
+      "maximum": 0.001,
+      "default": 0.000001
+    },
+    "pivotTruncation": {
+      "description": "Thresholds at which MIRO Pivot truncates data before rendering, to keep the browser responsive. Can only be set via JSON, not in Configuration Mode. Warning: raising these limits can significantly impact performance and may cause the app to become unresponsive, especially on less powerful client devices.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxCategories": {
+          "description": "Maximum number of categories (data points along the axis) a line, scatter, area, bar, radar or similar chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 500
+        },
+        "maxTimeseriesPoints": {
+          "description": "Maximum number of data points a timeseries chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 20000
+        },
+        "maxPieSlices": {
+          "description": "Maximum number of slices a pie or doughnut chart can plot before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        },
+        "maxSeries": {
+          "description": "Maximum number of data series a chart can display before the series are truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 40
+        },
+        "maxTableColumns": {
+          "description": "Maximum number of columns the table/heatmap renderer can display before the data is truncated (with a warning).",
+          "type": "integer",
+          "minimum": 1,
+          "default": 300
+        }
+      }
     },
     "handsontable": {
       "description": "Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
@@ -4458,6 +4618,11 @@
           },
           "options": {
             "$ref": "#/definitions/dashboardOptions"
+          },
+          "selectBaseline": {
+            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. Use the record _baseline in baselineComparison to compare against the selected baseline scenario. The sandbox scenario is then only included if selected by the user (default: false).",
+            "type": "boolean",
+            "default": false
           }
         },
         "required": [
@@ -4507,6 +4672,11 @@
           "options": {
             "description": "Additional options",
             "type": "object"
+          },
+          "selectBaseline": {
+            "description": "Let users select a baseline scenario when loading scenarios into this comparison module. The baseline scenario is passed to the renderer as the first scenario. The sandbox scenario is then only included if selected by the user (default: false).",
+            "type": "boolean",
+            "default": false
           }
         },
         "required": [
@@ -4632,6 +4802,34 @@
               "command",
               "outputFile"
             ]
+          }
+        }
+      }
+    },
+    "aiAssistant": {
+      "type": "object",
+      "description": "Configuration of the GAMS MIRO AI Assistant!",
+      "additionalProperties": false,
+      "properties": {
+        "enable": {
+          "description": "Whether to enable the AI agent",
+          "type": "boolean",
+          "default": true
+        },
+        "domainContext": {
+          "description": "Domain context to give the AI agent (e.g. description of the app, the model, equations etc.). You can use the `[[README]]` placeholder in this string, which MIRO will automatically replace with the content of your README file. An empty string disables the domain context.",
+          "type": "string"
+        },
+        "customInstructions": {
+          "description": "Custom instructions to give to the AI agent (e.g. `Assume the user is an economist; use technical CGE terminology.` or `Always format monetary values in Billions of USD ($B).`).",
+          "type": [
+            "array",
+            "string",
+            "null"
+          ],
+          "minItems": 0,
+          "items": {
+            "type": "string"
           }
         }
       }

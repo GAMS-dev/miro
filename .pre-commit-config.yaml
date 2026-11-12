@@ -16,15 +16,17 @@ repos:
               src/tests/testthat/_snaps/.*\.md|
               src/www/default_.*\.css.*|
               src/www/miro.*\.js.*|
+              server/proxy/templates/2col/assets/css/styles\.css.*|
               server/admin/www/model_update\.js.*
           )$
       - id: trailing-whitespace
       - id: check-merge-conflict
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v1.10.0
     hooks:
-      - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+      - id: betterleaks
+        entry: betterleaks dir --config .betterleaks.toml --no-banner --redact --verbose
+        pass_filenames: true
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: 787fb9f
     hooks:
@@ -39,14 +41,15 @@ repos:
           (?x)^(
               src/.*|
               server/.*|
+              scripts/.*|
           )$
         additional_dependencies:
-          - eslint@8.3.0
-          - eslint-plugin-import@2.25.3
+          - eslint@9
+          - eslint-plugin-import@2.32.0
           - eslint-config-airbnb-base@15.0.0
-          - eslint-config-prettier@9.1.0
+          - eslint-config-prettier@10.1.8
   - repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.4.3.9009
+    rev: v0.4.3.9025
     hooks:
       - id: style-files
         exclude: |
@@ -73,5 +76,5 @@ repos:
       - id: fix-dashboard-schema
         name: fix-dashboard-schema
         entry: node ./scripts/fixConfigSchema.js
-        language: node
+        language: system
         files: ^src/conf/config_schema\.json$

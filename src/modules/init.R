@@ -192,11 +192,43 @@ validateDashboardConfig <- function(graphConfig, dashboardType) {
     for (id in c("rows", "cols", "aggregations", "filter", "userFilter", "groupDimension")) {
       if (length(config[[id]])) {
         if (id %in% c("rows", "userFilter")) {
-          if (identical(id, "userFilter") && length(config[[id]]) == 1 && config[[id]] %in% names(dc)) {
+          if (identical(id, "userFilter")) {
+            uf <- config[[id]]
             # If a dataViewsConfig ID is set as userFilter, the IDs filters are applied here as well.
-            next
+            if (is.character(uf) && length(uf) == 1 && uf %in% names(dc)) {
+              next
+            }
+
+            if (is.character(uf)) {
+              dims <- uf
+            } else if (is.list(uf)) {
+              dims <- unlist(lapply(uf, function(x) {
+                if (is.character(x) && length(x) == 1) {
+                  x
+                } else if (is.list(x) && !is.null(x$dimension)) {
+                  as.character(x$dimension)
+                } else {
+                  NA_character_
+                }
+              }), use.names = FALSE)
+            } else {
+              dims <- character(0)
+            }
+            dimsClean <- dims[!is.na(dims) & nzchar(dims)]
+            duplicateDims <- unique(dimsClean[duplicated(dimsClean)])
+            if (length(duplicateDims)) {
+              errMsgTmp <- paste(
+                errMsgTmp,
+                paste0(
+                  "\nDuplicate userFilter dimensions in view ", view, ": ",
+                  paste(duplicateDims, collapse = ", ")
+                )
+              )
+            }
+            indices <- unique(dimsClean)
+          } else {
+            indices <- config[[id]]
           }
-          indices <- config[[id]]
         } else {
           indices <- names(config[[id]])
         }
@@ -611,7 +643,8 @@ if (is.null(errMsg)) {
                 symname = el,
                 headers = modelIn[[i]]$headers,
                 symtype = modelIn[[i]]$symtype
-              )
+              ),
+              pivotTruncation = config$pivotTruncation
             )
           )
           validGraphConfig <- validateGraphConfig(modelIn[[i]], skipOutTypeCheck = TRUE)
@@ -1890,6 +1923,17 @@ if (is.null(errMsg)) {
       ), sep = "\n")
     }
   }
+  if (!LAUNCHCONFIGMODE && length(config[["hiddenCompareSymbols"]])) {
+    invalidHiddenCompareSymbols <- match(config[["hiddenCompareSymbols"]], c(names(modelOut), names(modelIn), scalarsFileName))
+    if (any(is.na(invalidHiddenCompareSymbols))) {
+      errMsg <- paste(errMsg, sprintf(
+        "The symbols: '%s' you want to be hidden in scenario comparison mode do not exist!",
+        paste0(config[["hiddenCompareSymbols"]][is.na(invalidHiddenCompareSymbols)],
+          collapse = ", "
+        )
+      ), sep = "\n")
+    }
+  }
   modelOutToDisplay <- vapply(seq_along(modelOut), function(i) {
     headers <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers <- lapply(modelOut[[i]]$headers, function(header) {
@@ -2285,6 +2329,7 @@ if (is.null(errMsg)) {
             configGraphsOut[[i]]$graph <- configGraphsOut[[i]]
             configGraphsOut[[i]]$graph$outType <- NULL
           } else if (identical(configGraphsOut[[i]]$outType, "miroPivot")) {
+            configGraphsOut[[i]]$options$pivotTruncation <- config$pivotTruncation
             validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
             if (!identical(validGraphConfig, TRUE)) {
               errMsgTmp <- paste0(
@@ -2374,6 +2419,7 @@ if (is.null(errMsg)) {
       )
 
       if (identical(configGraphsIn[[i]]$outType, "miroPivot")) {
+        configGraphsIn[[i]]$options$pivotTruncation <- config$pivotTruncation
         validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
         if (!identical(validGraphConfig, TRUE)) {
           errMsgTmp <- paste0(
@@ -2585,6 +2631,13 @@ if (is.null(errMsg)) {
         )
       }
     )
+    if (length(config$aiAssistant$domainContext)) {
+      config$aiAssistant$domainContext <- stringi::stri_replace_all_fixed(
+        config$aiAssistant$domainContext,
+        pattern = "[[README]]",
+        replacement = if (length(config$readmeFile)) config$readmeFile else ""
+      )
+    }
   }
   dropdownAliases <- lapply(modelIn, function(el) {
     if (identical(el$type, "dropdown") &&
@@ -2637,6 +2690,7 @@ if (is.null(errMsg)) {
       compareModuleConfigs[[compareModuleConfig$id]][["rendererFnName"]] <- "renderDashboardCompare"
       compareModuleConfigs[[compareModuleConfig$id]][["outputFnName"]] <- "dashboardCompareOutput"
       compareModuleConfigs[[compareModuleConfig$id]][["idx"]] <- compareModuleIdx
+      compareModuleConfigs[[compareModuleConfig$id]][["options"]][["_selectBaseline"]] <- isTRUE(compareModuleConfig$selectBaseline)
     }
     noCompareModules <- compareModuleIdx
   }

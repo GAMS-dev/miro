@@ -24,10 +24,7 @@ app$set_inputs(inputTabset = paste0("inputTabset_", widgetSheetId))
 app$expect_values(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L)))
 if (identical(Sys.getenv("GMSMODELNAME"), "pickstock")) {
   app$set_inputs(inputTabset = "inputTabset_1")
-  expect_identical(
-    length(jsonlite::fromJSON(app$get_values()$output[["in_1"]])$x$data[[1]]),
-    7560L
-  )
+  expect_identical(nrow(getHotData(app, "in_1", timeout = 20000L)), 7560L)
   app$click(selector = "#btRemove1")
   Sys.sleep(0.5)
   app$click(selector = ".modal-footer .bt-gms-confirm")

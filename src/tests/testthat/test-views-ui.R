@@ -1,6 +1,7 @@
 test_that(
   "Views work",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  {
+    ensureChromote()
     createTestDb()
 
     testModelPath <- file.path(testDir, "model", "transport")
@@ -28,5 +29,5 @@ test_that(
     source(file.path(testDir, "shinytest", "views_save_as_test.R"), local = TRUE)
 
     Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
-  })
+  }
 )

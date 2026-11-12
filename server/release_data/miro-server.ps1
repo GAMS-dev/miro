@@ -4,7 +4,7 @@ function install
 {
     if (!(Test-Path .env) -or !(type .env | Select-String -Pattern "GMS_MIRO_DATABASE_PWD" -SimpleMatch)) {
         [Reflection.Assembly]::LoadWithPartialName("System.Web") | out-null
-        $db_password = [System.Web.Security.Membership]::GeneratePassword(40,0)
+        $db_password = [System.Web.Security.Membership]::GeneratePassword(40,0) # betterleaks:allow
 		$pwd_docker = "$pwd" -replace "\\", "/"
 		$drive, $pwd_docker = "$pwd_docker".Split(':')
 		$pwd_docker = "/" + $drive.toLower() + $pwd_docker

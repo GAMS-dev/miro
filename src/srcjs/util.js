@@ -1,4 +1,4 @@
-/* global $:false HTMLWidgets:false Chart:false Shiny:false */
+/* global $:false HTMLWidgets:false Chart:false Shiny:false renderMathInElement:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => { setTimeout(resolve, ms); });
@@ -52,14 +52,16 @@ export function changeActiveButtons(tabId) {
     case 'inputData':
       $('#btImport').show();
       $('.btSolve').show();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
       break;
 
     case 'outputData':
-      $('#btImport').hide();
-      $('.btSolve').hide();
+      $('#btImport').show();
+      $('.btSolve').show();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
@@ -68,6 +70,7 @@ export function changeActiveButtons(tabId) {
     case 'gamsinter':
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').show();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
@@ -76,6 +79,7 @@ export function changeActiveButtons(tabId) {
     case 'scenarios':
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').show();
       $('#btInterrupt').hide();
       $('.btSplitView').show();
       if ($('#btCompareScen').attr('data-noshow') === 'false') {
@@ -86,6 +90,7 @@ export function changeActiveButtons(tabId) {
     default:
       $('#btImport').hide();
       $('.btSolve').hide();
+      $('#sidebarSeparator').hide();
       $('#btInterrupt').hide();
       $('.btSplitView').hide();
       $('#btCompareScen').hide();
@@ -294,4 +299,16 @@ export function getActualHeight($target, method, options) {
   restore();
   // IMPORTANT, this plugin only return the value of the first element
   return actual;
+}
+
+export function parseKatex(element, options = {}) {
+  const defaultDelimiters = [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false },
+  ];
+  const delimiters = options.delimiters || defaultDelimiters;
+  renderMathInElement(element, {
+    throwOnError: options.throwOnError !== undefined ? options.throwOnError : false,
+    delimiters,
+  });
 }

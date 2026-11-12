@@ -1,6 +1,6 @@
 test_that(
   "Output attachments work",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     skip_if(
       identical(Sys.getenv("GAMS_SYS_DIR"), ""),
       "Skipping output attachments tests as GAMS_SYS_DIR was not set."

@@ -152,6 +152,7 @@ XlsIO <- R6::R6Class("XlsIO",
         )
         metaData[[" "]] <- ""
         metaData[["  "]] <- ""
+        sheetNames <- names(dataToWrite)[seq_along(wsNamesRaw)]
         symDesc <- bind_rows(lapply(seq_along(wsNamesRaw), function(idx) {
           tibble(
             description = private$metadata[[wsNamesRaw[idx]]]$alias,
@@ -160,20 +161,20 @@ XlsIO <- R6::R6Class("XlsIO",
         }))
         symDesc <- add_column(symDesc,
           symbol = xl_hyperlink(
-            paste0(
-              "#'",
-              names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"
-            ),
-            name = wsNamesRaw
+            paste0("#'", sheetNames, "'!A1"),
+            # positional: `name` in writexl < 2.0, `value` in >= 2.0
+            wsNamesRaw
           ),
           .before = 1L
         )
+        # sort by sheet name (C locale)
+        symDesc <- symDesc[order(sheetNames, method = "radix"), ]
         names(symDesc)[1:2] <- c(
           lang$nav$excelExport$metadataSheet$symbol,
           lang$nav$excelExport$metadataSheet$desc
         )
-        metaData <- crossing(metaData, symDesc)
-        metaData[seq(2, nrow(metaData)), seq_len(length(metaData) - 3L)] <- NA
+        metaData <- bind_cols(metaData[rep(1L, nrow(symDesc)), ], symDesc)
+        metaData[-1L, seq_len(length(metaData) - 3L)] <- NA
         dataToWrite <- c(setNames(
           list(metaData),
           paste0(" ", lang$nav$excelExport$metadataSheet$title)

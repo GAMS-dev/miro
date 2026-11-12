@@ -67,7 +67,29 @@ def remove_groups():
         response.raise_for_status()
 
 
+def remove_engine_models():
+    # leftover models trigger a "Discrepancy with GAMS Engine" alert in the admin panel
+    response = requests.get(
+        f"{ENGINE_URL}/namespaces/{ENGINE_NS}",
+        headers={"X-Fields": "name"},
+        timeout=20,
+        auth=(ENGINE_USER, ENGINE_PASSWORD),
+    )
+    response.raise_for_status()
+    for model in response.json():
+        response = requests.delete(
+            f"{ENGINE_URL}/namespaces/{ENGINE_NS}/models/{model['name']}",
+            timeout=20,
+            auth=(ENGINE_USER, ENGINE_PASSWORD),
+        )
+        response.raise_for_status()
+
+
 class UITests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        remove_engine_models()
+
     def setUp(self):
         self.ui_url = UI_URL
         test_browser = os.getenv("TEST_BROWSER", "chrome")
@@ -81,8 +103,13 @@ class UITests(unittest.TestCase):
                 self.driver = webdriver.Firefox()
         elif test_browser == "chrome":
             if IN_CI:
+                _options = webdriver.ChromeOptions()
+                _options.add_argument("--headless")
+                _options.add_argument("--no-sandbox")
+                _options.add_argument("--disable-dev-shm-usage")
+                _options.add_argument("--window-size=1920,1080")
                 self.driver = webdriver.Remote(
-                    options=webdriver.ChromeOptions(),
+                    options=_options,
                     command_executor="http://selenium__standalone-chrome:4444/wd/hub",
                 )
             else:
@@ -111,7 +138,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             self.driver.find_element(
-                By.CSS_SELECTOR, "#navbar .navbar-right .navbar-text"
+                By.CSS_SELECTOR, "#navbar .navbar-user .user-name"
             ).text,
             ENGINE_USER,
         )
@@ -119,13 +146,16 @@ class UITests(unittest.TestCase):
     def logout(self):
         self.driver.switch_to.default_content()
         wait = WebDriverWait(self.driver, 3)
-        sign_out_element = wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, ".navbar-right a"))
+        user_dropdown_toggle = wait.until(
+            EC.element_to_be_clickable((By.ID, "userDropdown"))
         )
-
-        # Check if the element text matches "Sign Out" and if it is displayed
-        if sign_out_element.is_displayed() and sign_out_element.text == "Sign Out":
-            sign_out_element.click()
+        user_dropdown_toggle.click()
+        sign_out_button = wait.until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "//*[@aria-labelledby='userDropdown']//a[text()='Sign Out']")
+            )
+        )
+        sign_out_button.click()
 
     def remove_apps(self):
         self.driver.switch_to.default_content()
@@ -197,11 +227,11 @@ class UITests(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, "form-signin"))
         )
         if RUN_K8S_TESTS:
-            logo_hash = "7420e77f2fbc70ac06e3f39fa3094860"  # pragma: allowlist secret
+            logo_hash = "7420e77f2fbc70ac06e3f39fa3094860"  # betterleaks:allow
         else:
-            logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # pragma: allowlist secret
+            logo_hash = "2421dc42ba681eb41eefe56ab044bb0a"  # betterleaks:allow
         self.assertEqual(
-            get_image_hash(self.driver, ".branding img"),
+            get_image_hash(self.driver, ".form-signin img.auth-logo"),
             logo_hash,
             "Custom logo not visible",
         )
@@ -279,7 +309,7 @@ class UITests(unittest.TestCase):
                 (By.ID, "newAppName"), "Transport test app"
             )
         )
-        self.driver.find_element(By.ID, "btAddApp").click()
+        wait.until(EC.element_to_be_clickable((By.ID, "btAddApp"))).click()
         if RUN_K8S_TESTS:
             wait.until(
                 EC.text_to_be_present_in_element(
@@ -426,11 +456,11 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -462,6 +492,7 @@ class UITests(unittest.TestCase):
                     10,
                     f"Couldn't switch to output data section after 10 tries: {exc}",
                 )
+        time.sleep(2)
         table_container = wait.until(
             EC.presence_of_element_located((By.ID, "table_tab_1_1-datatable"))
         )
@@ -495,8 +526,43 @@ class UITests(unittest.TestCase):
     def test_add_app(self):
         add_groups([f"{x}{TEST_ID}" for x in ["test", "test2"]])
         self.login()
+        wait = WebDriverWait(self.driver, 10)
+
+        self.assertTrue(
+            "active"
+            in self.driver.find_element(
+                By.CSS_SELECTOR, "#navbar a.navbar-brand.nav-home"
+            )
+            .get_attribute("class")
+            .split(),
+            "My Apps link did not have class 'active'",
+        )
+        self.assertFalse(
+            "active"
+            in self.driver.find_element(By.ID, "navAdminPanel")
+            .get_attribute("class")
+            .split(),
+            "Admin Panel link should not have class 'active' on My Apps",
+        )
         # open admin panel
+
         self.driver.find_element(By.ID, "navAdminPanel").click()
+        self.assertTrue(
+            "active"
+            in self.driver.find_element(By.ID, "navAdminPanel")
+            .get_attribute("class")
+            .split(),
+            "Admin Panel link did not have class 'active'",
+        )
+        self.assertFalse(
+            "active"
+            in self.driver.find_element(
+                By.CSS_SELECTOR, "#navbar a.navbar-brand.nav-home"
+            )
+            .get_attribute("class")
+            .split(),
+            "My Apps link should not have class 'active' on Admin Panel",
+        )
 
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
@@ -506,7 +572,6 @@ class UITests(unittest.TestCase):
             EC.visibility_of_element_located((By.ID, "addAppBox"))
         )
 
-        wait = WebDriverWait(self.driver, 10)
         retry_count = 0
         while True:
             try:
@@ -636,19 +701,15 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         self.assertTrue(
             len(visible_buttons) == 1,
-            "More than one visible 'launch-app' button found.",
-        )
-        self.assertTrue(
-            visible_buttons[0].get_attribute("href").endswith("/app/test_app1"),
-            "The href of the launch-app link is not '/app/test_app1'.",
+            "More than one visible 'launch-app-box' found.",
         )
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -658,8 +719,9 @@ class UITests(unittest.TestCase):
                 "A Transportation Problem with multiple version LP/MIP/MINLP",
             )
         )
-        self.assertTrue(
-            self.driver.find_element(By.ID, "btSolve").text.strip() == "Modell lösen",
+        self.assertEqual(
+            self.driver.find_element(By.ID, "btSolve").text.strip(),
+            "Modell lösen",
             "Solve button has correct text in German (MIRO_LANG applied correctly)",
         )
         retry_count = 0
@@ -716,6 +778,212 @@ class UITests(unittest.TestCase):
         )
 
         self.driver.switch_to.default_content()
+
+    def test_update_app(self):
+        # test that updating app works
+        self.login()
+        # open admin panel
+        self.driver.find_element(By.ID, "navAdminPanel").click()
+
+        WebDriverWait(self.driver, 30).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+        )
+
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located((By.ID, "addAppBox"))
+        )
+
+        wait = WebDriverWait(self.driver, 10)
+        retry_count = 0
+        while True:
+            try:
+                wait.until(EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                break
+            except (
+                StaleElementReferenceException,
+                ElementClickInterceptedException,
+            ) as exc:
+                retry_count += 1
+                time.sleep(1)
+                self.assertLessEqual(
+                    retry_count,
+                    10,
+                    f"Couldn't click addApp box after 10 tries: {exc}",
+                )
+        file_input = wait.until(EC.presence_of_element_located((By.ID, "miroAppFile")))
+        wait.until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, "label[for='miroAppFile']")
+            )
+        )
+
+        file_input.send_keys(
+            os.path.join(os.getcwd(), "tests", "data", "transport.miroapp")
+        )
+        wait.until(
+            EC.text_to_be_present_in_element_value(
+                (By.ID, "newAppName"), "Transport test app"
+            )
+        )
+        self.driver.find_element(By.ID, "btAddApp").click()
+        WebDriverWait(self.driver, 30).until(
+            EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
+        )
+        file_input = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
+        )
+        version_fields = self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+        visible_version_fields = [
+            field for field in version_fields if field.is_displayed()
+        ]
+        assert len(visible_version_fields) == 0
+        file_input = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
+        )
+        drop_file(
+            self.driver,
+            file_input,
+            os.path.join(os.getcwd(), "tests", "data", "transport_v2.miroapp"),
+        )
+        wait.until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "bootbox-body"), "overwrite"
+            )
+        )
+        bootbox_input = wait.until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "bootbox-input-text"))
+        )
+        bootbox_input.send_keys("test_app1")
+        accept_buttons = self.driver.find_elements(By.CLASS_NAME, "bootbox-accept")
+        visible_accept_button = next(
+            btn for btn in accept_buttons if btn.is_displayed()
+        )
+        visible_accept_button.click()
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
+        wait.until(EC.invisibility_of_element((By.CLASS_NAME, "app-spinner")))
+        time.sleep(2)
+        version_fields = self.driver.find_elements(By.CLASS_NAME, "app-version-field")
+        visible_version_fields = [
+            field for field in version_fields if field.is_displayed()
+        ]
+        assert (
+            len(visible_version_fields) == 1
+            and visible_version_fields[0].text.strip() == "2.0.0"
+        )
+
+    def test_remove_add_app(self):
+        # test that removing and adding app with same id works
+        def add_add_check_readme_text(
+            app_file_name,
+            readme_text_to_search,
+            text_included=True,
+            app_version_text=None,
+        ):
+            self.login()
+            # open admin panel
+            self.driver.find_element(By.ID, "navAdminPanel").click()
+
+            WebDriverWait(self.driver, 30).until(
+                EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+            )
+
+            WebDriverWait(self.driver, 30).until(
+                EC.visibility_of_element_located((By.ID, "addAppBox"))
+            )
+
+            wait = WebDriverWait(self.driver, 10)
+            retry_count = 0
+            while True:
+                try:
+                    wait.until(EC.element_to_be_clickable((By.ID, "addApp"))).click()
+                    break
+                except (
+                    StaleElementReferenceException,
+                    ElementClickInterceptedException,
+                ) as exc:
+                    retry_count += 1
+                    time.sleep(1)
+                    self.assertLessEqual(
+                        retry_count,
+                        10,
+                        f"Couldn't click addApp box after 10 tries: {exc}",
+                    )
+            file_input = wait.until(
+                EC.presence_of_element_located((By.ID, "miroAppFile"))
+            )
+            wait.until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, "label[for='miroAppFile']")
+                )
+            )
+
+            file_input.send_keys(
+                os.path.join(os.getcwd(), "tests", "data", app_file_name)
+            )
+            wait.until(
+                EC.text_to_be_present_in_element_value(
+                    (By.ID, "newAppName"), "Transport test app"
+                )
+            )
+            self.driver.find_element(By.ID, "btAddApp").click()
+            WebDriverWait(self.driver, 30).until(
+                EC.invisibility_of_element((By.ID, "expandedAddAppWrapper"))
+            )
+            file_input = wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "app-data-file-input"))
+            )
+            if app_version_text is not None:
+                version_fields = self.driver.find_elements(
+                    By.CLASS_NAME, "app-version-field"
+                )
+                visible_version_fields = [
+                    field for field in version_fields if field.is_displayed()
+                ]
+                if app_version_text == "":
+                    assert len(visible_version_fields) == 0
+                else:
+                    assert (
+                        len(visible_version_fields) == 1
+                        and visible_version_fields[0].text.strip() == app_version_text
+                    )
+            self.driver.switch_to.default_content()
+            wait.until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))
+            ).click()
+            wait.until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box"))
+            )
+            all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
+            visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
+            visible_buttons[0].click()
+            wait.until(EC.url_contains("/app/test_app1"))
+            WebDriverWait(self.driver, 30).until(
+                EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
+            )
+            wait.until(
+                EC.text_to_be_present_in_element(
+                    (By.CLASS_NAME, "readme-wrapper"),
+                    "A Transportation Problem with multiple version LP/MIP/MINLP",
+                )
+            )
+            readme_wrapper = self.driver.find_element(By.CLASS_NAME, "readme-wrapper")
+            if text_included:
+                assert readme_text_to_search in readme_wrapper.text
+            else:
+                assert readme_text_to_search not in readme_wrapper.text
+
+        add_add_check_readme_text(
+            "transport.miroapp", "VERSION 2", text_included=False, app_version_text=""
+        )
+        self.remove_apps()
+        self.logout()
+        time.sleep(1)
+        add_add_check_readme_text(
+            "transport_v2.miroapp",
+            "VERSION 2",
+            text_included=True,
+            app_version_text="2.0.0",
+        )
 
     def test_update_app_meta(self):
         # test that updating metadata works
@@ -784,7 +1052,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "c1f874ff6b82b6566e7ac3491ca766b1",  # pragma: allowlist secret
+            "c1f874ff6b82b6566e7ac3491ca766b1",  # betterleaks:allow
             "Default logo not displayed",
         )
         self.driver.find_element(By.CLASS_NAME, "input-group").click()
@@ -804,7 +1072,7 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updating logo did not work properly",
         )
         WebDriverWait(self.driver, 30).until(
@@ -820,12 +1088,12 @@ class UITests(unittest.TestCase):
         )
         self.assertEqual(
             get_image_hash_background_style_b64(self.driver, ".app-logo"),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updating logo did not work properly",
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
 
         def get_url_from_style(style: str) -> str:
             start_index = style.find("url(") + len("url(")
@@ -843,21 +1111,17 @@ class UITests(unittest.TestCase):
                 },
                 transformer_fn=get_url_from_style,
             ),
-            "7420e77f2fbc70ac06e3f39fa3094860",  # pragma: allowlist secret
+            "7420e77f2fbc70ac06e3f39fa3094860",  # betterleaks:allow
             "Updated logo not displayed correctly in gallery",
         )
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         self.assertTrue(
             len(visible_buttons) == 1,
-            "More than one visible 'launch-app' button found.",
-        )
-        self.assertTrue(
-            visible_buttons[0].get_attribute("href").endswith("/app/test_app1"),
-            "The href of the launch-app link is not '/app/test_app1'.",
+            "More than one visible 'launch-app-box' found.",
         )
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         WebDriverWait(self.driver, 30).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "shinyframe"))
         )
@@ -878,7 +1142,7 @@ class UITests(unittest.TestCase):
                 attribute="href",
                 xpath=True,
             ),
-            "05b572547194e2dd1700ded2fb5afa89",  # pragma: allowlist secret
+            "05b572547194e2dd1700ded2fb5afa89",  # betterleaks:allow
             "Favicon not correct",
         )
         # open admin panel
@@ -967,7 +1231,9 @@ class UITests(unittest.TestCase):
             "Should have two environment rows (one pre-filled, one empty).",
         )
         time.sleep(0.5)
-        self.driver.find_element(By.CSS_SELECTOR, ".modal-footer .confirm-btn").click()
+        wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".modal-footer .confirm-btn"))
+        ).click()
 
         wait.until(EC.invisibility_of_element((By.CLASS_NAME, "bootbox-body")))
 
@@ -1008,11 +1274,11 @@ class UITests(unittest.TestCase):
         )
         self.driver.switch_to.default_content()
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "navbar-brand"))).click()
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app")))
-        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app")
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "launch-app-box")))
+        all_buttons = self.driver.find_elements(By.CLASS_NAME, "launch-app-box")
         visible_buttons = [btn for btn in all_buttons if btn.is_displayed()]
         visible_buttons[0].click()
-        wait.until(EC.visibility_of_element_located((By.ID, "loading")))
+        wait.until(EC.url_contains("/app/test_app1"))
         self.assertEqual(
             get_image_hash(
                 self.driver,
@@ -1024,7 +1290,7 @@ class UITests(unittest.TestCase):
                     for cookie in self.driver.get_cookies()
                 },
             ),
-            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
+            "19c0456e4ab146f8e47b5a409cc2541c",  # betterleaks:allow
             "Favicon not correct for app",
         )
         self.driver.get(f"{self.ui_url}/app_direct/test_app1")
@@ -1040,7 +1306,7 @@ class UITests(unittest.TestCase):
                     for cookie in self.driver.get_cookies()
                 },
             ),
-            "19c0456e4ab146f8e47b5a409cc2541c",  # pragma: allowlist secret
+            "19c0456e4ab146f8e47b5a409cc2541c",  # betterleaks:allow
             "Favicon not correct for app_direct",
         )
         self.driver.get(self.ui_url)

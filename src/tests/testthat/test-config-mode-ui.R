@@ -3,7 +3,7 @@ library(V8)
 
 test_that(
   "Config mode works",
-  try_again(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
+  retryUiTest(as.integer(Sys.getenv("MIRO_MAX_RETRIES", "3")), {
     createTestDb()
 
     sorter <- JSONSorter$new("../../JS")
@@ -29,6 +29,15 @@ test_that(
     source(file.path(testDir, "shinytest", "config_mode_widget_test.R"), local = TRUE)
     source(file.path(testDir, "shinytest", "config_mode_graph_test.R"), local = TRUE)
 
-    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
+    # a syntactically valid but non-functional key is enough: it activates the
+    # AI assistant module so the UI can be exercised, and lets us assert on
+    # the (deterministic) error path the app takes when the provider rejects
+    # the request, without depending on real credentials or a mocked backend
+    Sys.setenv(MIRO_AI_ASSISTANT_CONFIG = jsonlite::toJSON(list(
+      apiKeys = list(list(provider = "anthropic", key = "sk-ant-test-invalid-key-0000000000"))
+    ), auto_unbox = TRUE))
+    source(file.path(testDir, "shinytest", "config_mode_ai_test.R"), local = TRUE)
+
+    Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_AI_ASSISTANT_CONFIG"))
   })
 )

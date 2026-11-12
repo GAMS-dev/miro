@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 maven:3.9.6-eclipse-temurin-17 AS builder
+FROM --platform=linux/amd64 maven:3.9.11-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
@@ -15,11 +15,11 @@ RUN chmod +x build.sh
 
 RUN ./build.sh
 
-FROM --platform=linux/amd64 alpine:3.19
+FROM --platform=linux/amd64 alpine:3.24
 
 RUN apk update && \
     apk upgrade --available && \
-    apk --no-cache add openjdk17-jre
+    apk --no-cache add openjdk21-jre
 
 RUN addgroup -g 1001 -S miro && \
     addgroup -g 1000 -S miro2 && \

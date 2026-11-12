@@ -1,0 +1,20 @@
+{
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "..",
+    "short_name": "National CGE Model",
+    "name": "Modeling the Impact of Domestic Policies and Global Shocks",
+    "icons": [
+        {
+            "src": "logo192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

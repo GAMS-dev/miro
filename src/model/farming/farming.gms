@@ -1,4 +1,4 @@
-$title Crop plant alloction problem with stochastic crop yield
+$title Crop plant allocation problem with stochastic crop yield
 
 $ontext
 
@@ -48,7 +48,7 @@ set pcs(crop,seq) relevant segments; option pcs<pricecurve;
 alias (crop,c);
 
 * Data checks
-file fmiro / 'farming_miro.log' /; put fmiro 'Crop plant alloction problem with stochastic crop yield' //;
+file fmiro / 'farming_miro.log' /; put fmiro 'Crop plant allocation problem with stochastic crop yield' //;
 
 put '------------------------------------'/;
 put '        Data validation'/;
