@@ -34,7 +34,7 @@ for (i in seq_len(180L)) {
   if (!is.null(res)) break
   Sys.sleep(1)
 }
-invisible(miro$kill())
+invisible(miro$kill(close_connections = FALSE))
 if (is.null(res) || res$status_code != 200L || !grepl("GAMS MIRO", rawToChar(res$content), fixed = TRUE)) {
   stop("MIRO did not start. Output:\n", miro$read_all_output())
 }
