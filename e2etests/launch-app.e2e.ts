@@ -5,9 +5,11 @@ import { dragAndDropFile, getMainWindow } from './util';
 
 const execPath =
   process.env.MIRO_EXEC_PATH ??
-  (process.platform === 'win32'
-    ? 'C:\\Program Files\\GAMS MIRO\\GAMS MIRO.exe'
-    : '/Applications/GAMS MIRO.app/Contents/MacOS/GAMS MIRO');
+  {
+    win32: 'C:\\Program Files\\GAMS MIRO\\GAMS MIRO.exe',
+    darwin: '/Applications/GAMS MIRO.app/Contents/MacOS/GAMS MIRO',
+    linux: '/opt/GAMS MIRO/com.gams.miro',
+  }[process.platform];
 const isCI = !!process.env.CI;
 
 export const test = base.extend({
@@ -28,6 +30,8 @@ export const test = base.extend({
         E2E: 'true',
         MIRO_WORKSPACE_DIR: testDir,
       },
+      // Playwright passes --no-sandbox on Linux unless told otherwise; only the installed app has a usable sandbox
+      chromiumSandbox: isCI,
       ...(isCI ? { executablePath: execPath } : { args: ['main.js'] }),
     });
 

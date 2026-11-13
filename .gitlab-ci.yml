@@ -1009,6 +1009,44 @@ test_macos_arm_job:
     - when: on_success
   needs: [build_macos_arm_job]
 
+test_linux_e2e_job:
+  tags:
+    - linux
+  stage: test
+  retry: 1
+  parallel:
+    matrix:
+      - DISPLAY_SERVER: [x11, wayland]
+  before_script:
+    - yarn install --frozen-lockfile
+  script:
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && echo "Skipping Linux build" && exit 0'
+    - apt-get update && apt-get install -y --no-install-recommends xvfb mutter dbus ./dist/*.deb
+    - export PATH="$GAMS_SYS_DIR:$PATH"
+    - ci/run-e2e-linux.sh "$DISPLAY_SERVER"
+  dependencies: [build_linux_packages_job]
+  cache:
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules/
+      policy: pull
+  artifacts:
+    when: always
+    paths:
+      - launcher-logs
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+  needs: [build_linux_packages_job]
+
 test_job_api:
   tags:
     - linux
