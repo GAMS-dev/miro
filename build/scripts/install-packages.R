@@ -86,9 +86,7 @@ requiredPackages <- c(
 if (identical(Sys.getenv("BUILD_DOCKER"), "true")) {
   requiredPackages <- c(requiredPackages, "DBI", "blob")
 }
-if (isLinux) {
-  requiredPackages <- c(requiredPackages, "askpass")
-} else {
+if (!isLinux) {
   requiredPackages <- c(requiredPackages, "testthat", "shinytest2")
 }
 installedPackagesDevel <- installed.packages(RlibPathDevel)
@@ -239,13 +237,13 @@ if (!dir.create(file.path(".", "r-src", "build"))) {
   stop("Could not create build directory: ./r-src/build")
 }
 
-installPackage <- function(package, attempt = 0, sourceOnly = isLinux) {
+installPackage <- function(package, attempt = 0) {
   if (attempt == 3L) {
     stop(sprintf("Problems installing package: %s", package[0]))
   }
   tryCatch(
     {
-      if (sourceOnly) {
+      if (isLinux) {
         downloadPackage(package)
       } else if (isMac && identical(package[1], "V8")) {
         # use binary from CRAN to avoid having absolute path to v8 dylib compiled into binary
@@ -282,17 +280,16 @@ installPackage <- function(package, attempt = 0, sourceOnly = isLinux) {
         #        'CPPFLAGS=-I/usr/local/opt/gettext/include -I$(LLVM_LOC)/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'),
         #    makevarsPath)
         # }
-        # on Linux, dependencies (e.g. askpass for openssl) are only available in the devel lib path
-        withr::with_libpaths(if (CIBuild && !isLinux) RlibPathTmp else RLibPath, install_version(package[1], package[2],
+        withr::with_libpaths(if (CIBuild) RlibPathTmp else RLibPath, install_version(package[1], package[2],
           out = "./dist/dump",
           dependencies = FALSE, repos = CRANMirrors[attempt + 1],
           INSTALL_opts = "--no-multiarch"
-        ), action = if (isLinux) "prefix" else "replace")
+        ))
       }
     },
     error = function(e) {
       print(conditionMessage(e))
-      installPackage(package, attempt + 1, sourceOnly)
+      installPackage(package, attempt + 1)
     }
   )
 }
@@ -322,7 +319,7 @@ downloadPackage <- function(package) {
 }
 
 installOpenSSL <- function(package) {
-  # ship a binary linked against the OpenSSL 3 built from source (AppImage, macOS CI);
+  # ship a binary linked against the OpenSSL 3 built from source (macOS CI);
   # OPENSSL_PKG_CONFIG_PATH points pkg-config to it
   CIMacOpenSSLBuild <- CIBuild && isMac
   if (CIMacOpenSSLBuild) {
@@ -333,7 +330,7 @@ installOpenSSL <- function(package) {
     if (nzchar(opensslPkgConfigPath)) {
       c(PKG_CONFIG_PATH = paste(c(opensslPkgConfigPath, Sys.getenv("PKG_CONFIG_PATH")), collapse = .Platform$path.sep))
     },
-    installPackage(package, sourceOnly = isLinux && identical(Sys.getenv("BUILD_DOCKER"), "true"))
+    installPackage(package)
   )
   if (CIMacOpenSSLBuild) {
     rOpenSSLBinary <- file.path(RlibPathTmp, "openssl", "libs", "openssl.so")
