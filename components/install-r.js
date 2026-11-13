@@ -2,6 +2,7 @@ import { dialog, ipcMain } from 'electron';
 import log from 'electron-log/main.js';
 import { execa } from 'execa';
 import path from 'node:path';
+import { dialogParent } from './util.js';
 
 async function installRPackages(
   rpath,
@@ -11,7 +12,7 @@ async function installRPackages(
   devMode = false,
 ) {
   if (!rpath) {
-    await dialog.showMessageBox(mainWindow, {
+    await dialog.showMessageBox(dialogParent(mainWindow), {
       type: 'error',
       title: 'R not found',
       message:
@@ -21,7 +22,7 @@ async function installRPackages(
     return false;
   }
   const selection = (
-    await dialog.showMessageBox(mainWindow, {
+    await dialog.showMessageBox(dialogParent(mainWindow), {
       type: 'question',
       title: 'Install R packages',
       message: `Would you like to install the required R packages now?${

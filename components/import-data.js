@@ -2,6 +2,7 @@ import { dialog, BrowserWindow } from 'electron';
 import path from 'node:path';
 import { format } from 'node:util';
 import log from 'electron-log/main.js';
+import { dialogParent } from './util.js';
 
 async function addModelData(
   miroProcessManager,
@@ -124,7 +125,7 @@ async function addModelData(
         } else if (error[1] === '418') {
           log.info('MIRO signalled that the scenario already exists.');
           if (
-            dialog.showMessageBoxSync(windowObj, {
+            dialog.showMessageBoxSync(dialogParent(windowObj), {
               type: 'info',
               title: global.lang.main.ErrorDataImportHdr,
               message: format(global.lang.main.ErrorDataImportMsg, error[2]),
@@ -146,7 +147,7 @@ async function addModelData(
             `MIRO signalled that custom packages need to be installed: ${error[3]}`,
           );
           if (
-            dialog.showMessageBoxSync(windowObj, {
+            dialog.showMessageBoxSync(dialogParent(windowObj), {
               type: 'info',
               title: global.lang.main.ErrorCustomPackagesHdr,
               message: format(

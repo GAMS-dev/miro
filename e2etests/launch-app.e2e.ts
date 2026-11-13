@@ -1,6 +1,8 @@
 import { test as base, expect, _electron as electron } from '@playwright/test';
 import * as path from 'path';
 import fs from 'fs/promises';
+import { spawn } from 'child_process';
+import { once } from 'events';
 import { dragAndDropFile, getMainWindow } from './util';
 
 const execPath =
@@ -235,4 +237,39 @@ test('App launched with GAMS Engine backend', async ({ electronApp }) => {
   await expect(
     details.locator('text=/A Transportation Problem /'),
   ).toBeVisible();
+});
+
+test('Error dialog in development mode keeps the Wayland connection', async ({}, testInfo) => {
+  test.skip(process.platform !== 'linux' || !isCI);
+  const workspaceDir = path.resolve(
+    'launcher-logs',
+    `wayland-dialog-${testInfo.workerIndex}-${Date.now()}`,
+  );
+  await fs.mkdir(workspaceDir, { recursive: true });
+  // without a model path, the launcher shows an error dialog while its main window is hidden
+  const proc = spawn(execPath, [], {
+    env: {
+      ...process.env,
+      MIRO_DEV_MODE: 'true',
+      MIRO_WORKSPACE_DIR: workspaceDir,
+    },
+  });
+  await once(proc, 'spawn');
+  const exited = once(proc, 'exit');
+  let output = '';
+  proc.stdout.on('data', (data) => {
+    output += data;
+  });
+  proc.stderr.on('data', (data) => {
+    output += data;
+  });
+  await new Promise((resolve) => {
+    setTimeout(resolve, 10_000);
+  });
+  // still running means the launcher is waiting in the dialog
+  const running = proc.exitCode === null && proc.signalCode === null;
+  proc.kill('SIGKILL');
+  await exited;
+  expect(running).toBe(true);
+  expect(output).not.toContain('libwayland');
 });

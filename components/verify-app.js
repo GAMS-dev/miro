@@ -4,6 +4,7 @@ import { execa } from 'execa';
 import path from 'node:path';
 import fs from 'node:fs';
 import { format } from 'node:util';
+import { dialogParent } from './util.js';
 
 async function verifyApp(
   configData,
@@ -26,7 +27,7 @@ async function verifyApp(
   }
 
   const showError = (message) => {
-    dialog.showMessageBoxSync(mainWindow, {
+    dialog.showMessageBoxSync(dialogParent(mainWindow), {
       type: 'error',
       title: global.lang.main.ErrorInvalidThreeMsg,
       message,
@@ -118,19 +119,22 @@ async function verifyApp(
         showError(global.lang.main.ErrorAppInvalidSig);
         return false;
       }
-      const addNewKeySelection = dialog.showMessageBoxSync(mainWindow, {
-        type: 'warning',
-        title: global.lang.general.dialogCustomCodeHdr,
-        message: format(
-          global.lang.general.dialogAddPublicKeyMsg,
-          newKeyOutput.fingerprint,
-        ),
-        buttons: [
-          global.lang.general.dialogAddPublicKeyBtnTrust,
-          global.lang.general.dialogCustomCodeBtnAbort,
-        ],
-        cancelId: 1,
-      });
+      const addNewKeySelection = dialog.showMessageBoxSync(
+        dialogParent(mainWindow),
+        {
+          type: 'warning',
+          title: global.lang.general.dialogCustomCodeHdr,
+          message: format(
+            global.lang.general.dialogAddPublicKeyMsg,
+            newKeyOutput.fingerprint,
+          ),
+          buttons: [
+            global.lang.general.dialogAddPublicKeyBtnTrust,
+            global.lang.general.dialogCustomCodeBtnAbort,
+          ],
+          cancelId: 1,
+        },
+      );
       if (addNewKeySelection !== 0) {
         return false;
       }
@@ -170,16 +174,19 @@ async function verifyApp(
     }
     if (exitCode === 3) {
       // not signed and app contains custom code
-      const addAppSelection = dialog.showMessageBoxSync(mainWindow, {
-        type: 'warning',
-        title: global.lang.general.dialogCustomCodeHdr,
-        message: global.lang.general.dialogCustomCodeMsg,
-        buttons: [
-          global.lang.general.dialogCustomCodeBtnAdd,
-          global.lang.general.dialogCustomCodeBtnAbort,
-        ],
-        cancelId: 1,
-      });
+      const addAppSelection = dialog.showMessageBoxSync(
+        dialogParent(mainWindow),
+        {
+          type: 'warning',
+          title: global.lang.general.dialogCustomCodeHdr,
+          message: global.lang.general.dialogCustomCodeMsg,
+          buttons: [
+            global.lang.general.dialogCustomCodeBtnAdd,
+            global.lang.general.dialogCustomCodeBtnAbort,
+          ],
+          cancelId: 1,
+        },
+      );
       if (addAppSelection !== 0) {
         return false;
       }

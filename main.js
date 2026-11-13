@@ -30,6 +30,7 @@ import ConfigManager from './components/ConfigManager.js';
 import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
+import { dialogParent } from './components/util.js';
 import { AzureUserAuth } from './components/azure-user-auth.cjs';
 import {
   apiVersion,
@@ -146,7 +147,7 @@ function showErrorMsg(optionsTmp, windowObj = mainWindow) {
     if (!options.buttons) {
       options.buttons = ['OK'];
     }
-    dialog.showMessageBoxSync(windowObj, options);
+    dialog.showMessageBoxSync(dialogParent(windowObj), options);
   }
 }
 
@@ -690,7 +691,7 @@ async function updateMIROApp(newAppParam, appIdToUpdate = null) {
       return;
     }
   }
-  const overwriteData = dialog.showMessageBoxSync(mainWindow, {
+  const overwriteData = dialog.showMessageBoxSync(dialogParent(mainWindow), {
     type: 'info',
     title: lang.main.OverwriteDataHdr,
     message: lang.main.OverwriteDataMsg,
@@ -890,7 +891,7 @@ async function addOrUpdateMIROApp(filePath) {
 async function addMiroscenFile(filePath) {
   let miroscenPath = filePath;
   if (!miroscenPath) {
-    miroscenPath = dialog.showOpenDialogSync(mainWindow, {
+    miroscenPath = dialog.showOpenDialogSync(dialogParent(mainWindow), {
       title: lang.dialogNewScenFilesHdr,
       message: lang.dialogNewScenFilesMsg,
       buttonLabel: lang.dialogNewScenFilesBtn,
@@ -1647,9 +1648,8 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
         `MIRO signalled that custom packages need to be installed: ${error[3]}`,
       );
       cancelTermination = true;
-      mainWindow.show();
       if (
-        dialog.showMessageBoxSync(mainWindow, {
+        dialog.showMessageBoxSync(dialogParent(mainWindow), {
           type: 'info',
           title: lang.main.ErrorCustomPackagesHdr,
           message: util.format(
@@ -1660,9 +1660,6 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
           buttons: [lang.main.BtnCancel, lang.main.BtnOk],
         }) === 1
       ) {
-        if (miroDevelopMode) {
-          mainWindow.hide();
-        }
         log.debug('Installing custom packages');
         try {
           const appDataAgreeInstall = appData;
@@ -1755,7 +1752,7 @@ async function searchLibPath(devMode = false) {
       );
       if (
         unusedLibDirs.length > 0 &&
-        dialog.showMessageBoxSync(mainWindow, {
+        dialog.showMessageBoxSync(dialogParent(mainWindow), {
           type: 'info',
           title: lang.main.RemoveUnusedLibDirsHdr,
           message: util.format(
@@ -1849,7 +1846,7 @@ async function searchLibPath(devMode = false) {
         if (!libsInstalled) {
           const installType = isInAppImage
             ? (
-              await dialog.showMessageBox(mainWindow, {
+              await dialog.showMessageBox(dialogParent(mainWindow), {
                 type: 'info',
                 title: lang.main.ErrorInstallPermHdr,
                 message: `${lang.main.ErrorInstallPerm1Msg} ${libPath}${lang.main.ErrorInstallPerm2Msg} (${libPathTmp})${lang.main.ErrorInstallPerm3Msg}${miroVersion}${lang.main.ErrorInstallPerm4Msg}`,
@@ -2044,7 +2041,7 @@ ipcMain.on('show-confirm-enable-ai-dialog', async () => {
 })
 
 ipcMain.on('browse-app', (e, options, callback, id = null) => {
-  const filePaths = dialog.showOpenDialogSync(mainWindow, options);
+  const filePaths = dialog.showOpenDialogSync(dialogParent(mainWindow), options);
   if (filePaths) {
     if (callback === 'validateLogo') {
       validateAppLogo(filePaths, id);
@@ -2109,7 +2106,7 @@ ipcMain.on('add-app', async (e, newApp) => {
     );
     if (fs.existsSync(dbPath)) {
       overwriteData =
-        dialog.showMessageBoxSync(mainWindow, {
+        dialog.showMessageBoxSync(dialogParent(mainWindow), {
           type: 'info',
           title: lang.main.OverwriteDataHdr,
           message: lang.main.OverwriteDataMsg,
@@ -2199,7 +2196,7 @@ ipcMain.on('update-app', async (_, filePaths, appIdToUpdate) => {
 });
 ipcMain.on('update-app-data', async (_, filePaths, appId) => {
   log.debug('Request to update app data received.');
-  const overwriteData = dialog.showMessageBoxSync(mainWindow, {
+  const overwriteData = dialog.showMessageBoxSync(dialogParent(mainWindow), {
     type: 'info',
     title: lang.main.OverwriteDataHdr,
     message: lang.main.OverwriteDataMsg,
@@ -2396,7 +2393,7 @@ ipcMain.on('validate-logo', (e, filePath, id) => {
 });
 ipcMain.on('delete-app', async (e, appId) => {
   log.debug(`Delete app (ID: ${appId}) request received`);
-  const deleteAppConfirmedId = dialog.showMessageBoxSync(mainWindow, {
+  const deleteAppConfirmedId = dialog.showMessageBoxSync(dialogParent(mainWindow), {
     buttons: [lang.main.BtnCancel, lang.main.BtnRemove],
     cancelId: 0,
     message: lang.main.DeleteMsg,
@@ -2405,7 +2402,7 @@ ipcMain.on('delete-app', async (e, appId) => {
     return;
   }
   const deleteAppData =
-    dialog.showMessageBoxSync(mainWindow, {
+    dialog.showMessageBoxSync(dialogParent(mainWindow), {
       buttons: [lang.main.BtnCancel, lang.main.BtnRemove],
       cancelId: 0,
       message: lang.main.DeleteDataMsg,

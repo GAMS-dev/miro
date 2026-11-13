@@ -3,6 +3,7 @@ import path from 'node:path';
 import { format } from 'node:util';
 import { dialog } from 'electron';
 import log from 'electron-log/main.js';
+import { dialogParent } from './util.js';
 import addModelData from './import-data.js';
 
 function miroscenGetModelName(scenFilePath, successCallback, errCallback) {
@@ -86,7 +87,7 @@ function addMiroscen(
           log.warn(
             `Problems parsing miroscen file. Error message: ${err.message};`,
           );
-          dialog.showMessageBox(windowObj, {
+          dialog.showMessageBox(dialogParent(windowObj), {
             type: 'error',
             title: global.lang.main.ErrorNewScenHdr,
             message: global.lang.main.ErrorNewScenMsg + err.message,
