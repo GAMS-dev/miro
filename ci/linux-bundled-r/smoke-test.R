@@ -2,6 +2,10 @@ pkgs <- setdiff(rownames(installed.packages(.Library)), "tcltk")
 for (pkg in pkgs) suppressPackageStartupMessages(library(pkg, character.only = TRUE))
 message(length(pkgs), " packages loaded from ", R.home())
 stopifnot(curl::curl_fetch_memory("https://cloud.r-project.org")$status_code == 200L)
+stopifnot(
+  startsWith(curl::curl_version()$ssl_version, "OpenSSL/3"), startsWith(openssl::openssl_config()$version, "OpenSSL 3"),
+  nzchar(openssl::md4("x"))
+)
 message("HTTPS works")
 png(plotFile <- tempfile(fileext = ".png"))
 plot(1:10, main = "MIRO")
