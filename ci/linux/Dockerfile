@@ -2,8 +2,6 @@ FROM node:24-trixie
 
 ARG R_BASE_VERSION=4.4.0
 ENV R_BASE_VERSION=${R_BASE_VERSION}
-ARG OPENSSL_VERSION=3.1.5
-ENV OPENSSL_VERSION=${OPENSSL_VERSION}
 
 ARG GAMS_VERSION_FULL=50.4.1
 
@@ -71,17 +69,6 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_VERSION_FULL
 ENV GAMS_SYS_DIR=/opt/gams
 
 RUN R -e "install.packages(c('xml2', 'precommit', 'docopt', 'styler'));"
-
-# install openssl3 from source
-RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz && \
-        tar -xvzf openssl-${OPENSSL_VERSION}.tar.gz && \
-        cd openssl-${OPENSSL_VERSION} && \
-        ./config no-shared && \
-        make && \
-        make install
-
-# make sure the openssl R package finds the libraries
-ENV OPENSSL_PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
