@@ -165,8 +165,8 @@ const pathConfig = {
   });
 });
 
-if (['darwin', 'win32'].includes(process.platform)) {
-  // do not allow changing R path on macOS/Windows as R is bundled here
+if (ipcRenderer.sendSync('is-r-bundled')) {
+  // do not allow changing R path when R is bundled
   $('#rpathWrapper').hide();
 }
 

@@ -240,6 +240,9 @@ class ConfigManager extends Store {
 
     this.isNewMiroInstallation = isNewMiroInstallation;
     this.appRootDir = appRootDir;
+    // packaged MIRO ships R; running the Linux launcher from source uses the system R
+    this.rBundled = process.platform !== 'linux'
+      || fs.existsSync(path.join(appRootDir, 'r', 'bin', 'R'));
     this.configpath = configPathTmp;
     this.configpathDefault = miroWorkspaceDir;
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
@@ -303,7 +306,7 @@ class ConfigManager extends Store {
   async get(key, fallback = true) {
     let valTmp;
 
-    if (key === 'rpath' && ['darwin', 'win32'].includes(process.platform)) {
+    if (key === 'rpath' && this.rBundled) {
       valTmp = await this.getDefault('rpath');
       return valTmp;
     }
@@ -443,7 +446,7 @@ class ConfigManager extends Store {
     if (this.rpathDefault) {
       return this.rpathDefault;
     }
-    if (process.platform === 'win32') {
+    if (process.platform === 'win32' || (process.platform === 'linux' && this.rBundled)) {
       this.rpathDefault = path.join(this.appRootDir, 'r');
     } else if (process.platform === 'darwin' && app.isPackaged) {
       this.rpathDefault = path.resolve(

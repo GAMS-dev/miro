@@ -91,7 +91,8 @@ RUN apt-get update \
         gnupg \
         lsb-release \
         python3-pip \
-        python3-venv
+        python3-venv \
+        rpm
 
 RUN mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \

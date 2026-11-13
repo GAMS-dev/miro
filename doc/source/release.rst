@@ -19,6 +19,7 @@ Breaking changes
 ~~~~~~~~~~~~~~~~
 
 - MIRO Desktop requires macOS 13 (Ventura) or later.
+- MIRO Desktop for Linux requires glibc 2.28 or later (e.g. RHEL 8, Debian 10 and Ubuntu 20.04 or newer).
 
 New features
 ~~~~~~~~~~~~
@@ -41,6 +42,7 @@ New features
 
 - New, modern design for MIRO apps, MIRO Desktop and MIRO Server.
 - MIRO Desktop: Environment variables can now be edited directly in the settings window, so exporting and importing them is no longer necessary.
+- MIRO Desktop for Linux ships with R and all required R packages, so R and compilers no longer need to be installed and no packages are compiled on first launch. MIRO Desktop is now also available as an RPM package for Fedora/RHEL.
 - Spanish language support.
 - Scenario comparison: Select a baseline scenario.
 

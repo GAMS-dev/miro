@@ -70,24 +70,6 @@ you use Unicode characters in your GAMS model (e.g. in the explanatory
 text), make sure that your source file is UTF-8 encoded. You can change
 your file encoding in GAMS Studio via ``Edit → Encoding → convert to... → UTF-8``.
 
-After updating some system libraries on Linux, MIRO displays an error when starting an application. How can I fix it?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Most likely, updating your system libraries has resulted in the removal
-of an existing library against which one of the R dependencies was
-linked when MIRO was installed. You should see an error message similar
-to this: ``libicui18n.so.70: cannot open shared object file: No such file
-or directory``. The error message usually also contains the name of the
-affected R library as well as the path where the library is located. To
-fix this problem, the library must be recompiled. To force recompilation
-of one of the R libraries that MIRO depends on, simply remove the
-directory from the MIRO R library (e.g. ``rm -r
-~/.config/miro-library/<version>/stringi/``) and add an empty file named
-``INSTALLING`` to the root of the library path (e.g. ``touch
-~/.config/miro-library/<version>/INSTALLING``). The next time you start MIRO,
-the library will be recompiled and linked against the updated system
-library.
-
 What do you do in terms of security?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

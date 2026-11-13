@@ -1723,7 +1723,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
 }
 
 async function searchLibPath(devMode = false) {
-  if (process.platform === 'linux') {
+  if (process.platform === 'linux' && !configData.rBundled) {
     let libPathFiles = [];
     let libsInstalled = true;
 
@@ -1898,6 +1898,9 @@ async function searchLibPath(devMode = false) {
     }
   }
 }
+ipcMain.on('is-r-bundled', (e) => {
+  e.returnValue = configData.rBundled;
+});
 ipcMain.on('show-error-msg', (e, options, windowObjName = 'main') => {
   log.debug(
     `New error message received. Title: ${options.title}, message: ${options.message}.`,
@@ -2520,7 +2523,7 @@ app.on('will-finish-launching', () => {
 });
 
 app.on('ready', async () => {
-  if (process.platform === 'linux') {
+  if (process.platform === 'linux' && !configData?.rBundled) {
     try {
       const rPathTmp = await configData.get('rpath');
       if (!rPathTmp) {

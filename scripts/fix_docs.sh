@@ -57,7 +57,8 @@ for hash_name in \
     MIRO_SHA_HASH_MAC_ARM \
     MIRO_SHA_HASH_MAC_X86 \
     MIRO_SHA_HASH_LINUX \
-    MIRO_SHA_HASH_DEB_LINUX
+    MIRO_SHA_HASH_DEB_LINUX \
+    MIRO_SHA_HASH_RPM_LINUX
 do
     if [[ -z "${!hash_name:-}" ]]; then
         echo "Required release hash is missing: ${hash_name}" >&2
@@ -113,6 +114,7 @@ sed \
     -e "s|__SHA_HASH_MAC_ARM__|${MIRO_SHA_HASH_MAC_ARM}|g" \
     -e "s|__SHA_HASH_MAC_X86__|${MIRO_SHA_HASH_MAC_X86}|g" \
     -e "s|__SHA_HASH_DEB_LINUX__|${MIRO_SHA_HASH_DEB_LINUX}|g" \
+    -e "s|__SHA_HASH_RPM_LINUX__|${MIRO_SHA_HASH_RPM_LINUX}|g" \
     -e "s|__SHA_HASH_LINUX__|${MIRO_SHA_HASH_LINUX}|g" \
     "$download_page" > "$download_temporary"
 mv "$download_temporary" "$download_page"

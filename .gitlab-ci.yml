@@ -233,7 +233,8 @@ build_linux_job:
     - yarn install --frozen-lockfile
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
-    - yarn dist
+    # R is added in bundle_r_linux_job, the packages are built in build_linux_packages_job
+    - yarn dist --linux dir -c.directories.output=build/linux
     - >
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
@@ -271,8 +272,7 @@ build_linux_job:
     paths:
       - r/
       - build/lib_devel
-      - dist/*.AppImage
-      - dist/*.deb
+      - build/linux/linux-unpacked
     expire_in: 1 day
   cache:
     - key: build-cache
@@ -300,18 +300,103 @@ package_linux_job:
   tags:
     - linux
   stage: build
-  needs: [build_linux_job]
-  dependencies: [build_linux_job]
+  needs: [build_linux_packages_job]
+  dependencies: [build_linux_packages_job]
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
     - mv dist/*.AppImage miro_linux_x86.AppImage
     - mv dist/*.deb miro_linux_x86.deb
+    - mv dist/*.rpm miro_linux_x86.rpm
   artifacts:
     paths:
       - miro_linux_x86.AppImage
       - miro_linux_x86.deb
+      - miro_linux_x86.rpm
     expose_as: 'Linux -x86_64-'
     expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+# R with precompiled packages, built on the manylinux_2_28 baseline (glibc >= 2.28)
+bundle_r_linux_job:
+  tags:
+    - linux
+  stage: build
+  image: almalinux:8
+  needs: [build_linux_job]
+  dependencies: [build_linux_job]
+  variables:
+    OUT: build/linux
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
+    - bash ci/linux-bundled-r/build.sh
+  artifacts:
+    paths:
+      - build/linux/miro-r-linux-*.tar.gz
+    expire_in: 1 day
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+build_linux_packages_job:
+  tags:
+    - linux
+  stage: build
+  image: $CI_REGISTRY_IMAGE/builder-linux:latest
+  needs: [build_linux_job, bundle_r_linux_job]
+  dependencies: [build_linux_job, bundle_r_linux_job]
+  before_script:
+    - yarn install --frozen-lockfile
+  script:
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
+    # ship R with precompiled packages instead of the package sources
+    - rm -rf build/linux/linux-unpacked/r
+    - tar -xzf build/linux/miro-r-linux-x86_64.tar.gz -C build/linux/linux-unpacked
+    - yarn electron-builder --prepackaged build/linux/linux-unpacked --linux --publish never
+  artifacts:
+    paths:
+      - dist/*.AppImage
+      - dist/*.deb
+      - dist/*.rpm
+    expire_in: 1 day
+  cache:
+    - key:
+        files:
+          - yarn.lock
+      paths:
+        - node_modules/
+      policy: pull
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
+      when: never
+    - when: on_success
+
+test_bundled_r_linux_job:
+  tags:
+    - linux
+  stage: test
+  image: $DISTRO
+  needs: [bundle_r_linux_job]
+  parallel:
+    matrix:
+      - DISTRO: ['rockylinux:8', 'rockylinux:9', 'ubuntu:22.04', 'ubuntu:24.04', 'debian:12', 'fedora:42', 'archlinux:latest']
+  before_script:
+    # stock container images lack CA certificates, tar and which that desktop installations have
+    - if command -v apt-get; then apt-get update && apt-get install -y --no-install-recommends ca-certificates; elif command -v dnf; then dnf install -y tar gzip which; else pacman -Sy --noconfirm which; fi
+  script:
+    - '[ "$[[ inputs.skip-tests ]]" = true ] && echo "Skipping tests" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" == "master" ]] && [ "$[[ inputs.run-tests-master ]]" = false ] && echo "Skipping tests on master" && exit 0'
+    - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && echo "Skipping Linux build" && exit 0'
+    - sh ci/linux-bundled-r/smoke-test.sh build/linux/miro-r-linux-*.tar.gz
   rules:
     - if: $CI_COMMIT_TAG
       when: never
@@ -1139,6 +1224,7 @@ upload_cloudfront:
     - echo "MIRO_SHA_HASH_MAC_X86=`sha256sum dist/*.dmg |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_LINUX=`sha256sum dist/*.AppImage |cut -d ' ' -f1`" >> .hashes.txt
     - echo "MIRO_SHA_HASH_DEB_LINUX=`sha256sum dist/*.deb |cut -d ' ' -f1`" >> .hashes.txt
+    - echo "MIRO_SHA_HASH_RPM_LINUX=`sha256sum dist/*.rpm |cut -d ' ' -f1`" >> .hashes.txt
     - ./ci/s3_upload_artifacts.sh
   artifacts:
     paths:

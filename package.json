@@ -117,10 +117,20 @@
         "xdg-utils",
         "libatspi2.0-0",
         "libuuid1",
-        "libsecret-1-0",
-        "r-base-dev",
-        "libcurl-dev",
-        "libpng-dev"
+        "libsecret-1-0"
+      ]
+    },
+    "rpm": {
+      "depends": [
+        "gtk3",
+        "libnotify",
+        "nss",
+        "libXScrnSaver",
+        "(libXtst or libXtst6)",
+        "xdg-utils",
+        "at-spi2-core",
+        "(libuuid or libuuid1)",
+        "which"
       ]
     },
     "linux": {
@@ -132,7 +142,8 @@
       "artifactName": "GAMS-MIRO-${version}.${ext}",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm"
       ],
       "category": "Science",
       "icon": "build/icons"

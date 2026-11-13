@@ -101,7 +101,25 @@ Please check the `release notes <./release.html>`__.
             .. rubric:: Installation
 
 
-            #. The first time you launch GAMS MIRO, some R packages need to be installed. They are installed in your home directory (``$XDG_CONFIG_HOME/miro-library`` or ``~/.config/miro-library``). You will be guided through this installation process.
+            Install the package with your package manager, e.g. ``sudo apt install ./GAMS-MIRO-__VERSION_FULL__.deb``.
+
+         .. tab-item:: Fedora/RHEL
+
+            .. _install-linux-rpm:
+
+            .. button-link:: https://d37drm4t2jghv5.cloudfront.net/miro/__VERSION__/linux/GAMS-MIRO-__VERSION_FULL__.rpm
+               :color: primary
+
+               Download for Fedora/RHEL (rpm)
+
+            SHA-256 hash: ``__SHA_HASH_RPM_LINUX__``
+
+            By downloading this software, you agree to the `License Agreement <./license.html>`__.
+
+            .. rubric:: Installation
+
+
+            Install the package with your package manager, e.g. ``sudo dnf install ./GAMS-MIRO-__VERSION_FULL__.rpm``.
 
          .. tab-item:: Other
 
@@ -119,19 +137,13 @@ Please check the `release notes <./release.html>`__.
             .. rubric:: Installation
 
 
-            #. If a current R version (4.4 or later) is not yet installed on your system, install it first. You can download R `here <https://cloud.r-project.org/>`__.
-            #. For MIRO to work, compilers as well as the system libraries libpng and libcurl need to be installed. For example, on Fedora:
-
-               .. code-block:: console
-
-                  > sudo dnf install libcurl-devel libpng-devel
-
-               If no compilers are installed on your system yet, we recommend installing the build tools: ``> sudo dnf groupinstall "Development Tools"`` (Fedora).
-            #. The first time you launch GAMS MIRO, some R packages need to be installed. They are installed either in the R installation path (``rPath/miro-library``) or in the user's home directory (``$XDG_CONFIG_HOME/miro-library`` or ``~/.config/miro-library``) depending on whether MIRO was installed for all users or only for the current user. You will be guided through this installation process.
+            Make the AppImage executable (``chmod +x GAMS-MIRO-__VERSION_FULL__.AppImage``) and run it.
 
             .. note::
 
                For a complete system integration of the MIRO AppImage (e.g. file associations and custom URL schemes), please install the AppImage via the `AppImageLauncher <https://github.com/TheAssassin/AppImageLauncher>`__.
+
+      GAMS MIRO ships with R and all required R packages, so neither R nor compilers need to be installed. It runs on distributions with glibc 2.28 or later (e.g. RHEL 8, Debian 10 and Ubuntu 20.04 or newer).
 
 .. _miro-workspace:
 
