@@ -107,7 +107,6 @@
       "include": "build/uninstaller.nsh"
     },
     "deb": {
-      "maintainer": "GAMS Development Corp <support@gams.com>",
       "depends": [
         "libgtk-3-0",
         "libnotify4",
@@ -134,6 +133,7 @@
       ]
     },
     "linux": {
+      "maintainer": "GAMS Development Corp <support@gams.com>",
       "extraFiles": [
         "r/**",
         "scripts/globals.R",
