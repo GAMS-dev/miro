@@ -5,7 +5,7 @@ import { format } from 'node:util';
 import { dialogParent } from './util.js';
 
 const { autoUpdater } = updater;
-const feedBaseUrl = 'https://gams.com/miro/updates';
+const feedBaseUrl = 'https://d37drm4t2jghv5.cloudfront.net/miro/updates';
 const releaseNotesUrl = 'https://gams.com/miro/release.html';
 const channels = ['latest', 'dev'];
 const checkIntervalMs = 6 * 60 * 60 * 1000;
@@ -43,8 +43,10 @@ function configureFeed() {
   log.info(`Update channel: ${channel}`);
   autoUpdater.setFeedURL({
     provider: 'generic',
-    url: `${feedBaseUrl}/${channel}`,
+    url: `${feedBaseUrl}/${channel}/${process.platform}-${process.arch}`,
     channel,
+    // S3 doesn't support multiple ranges per request, which differential downloads need otherwise
+    useMultipleRangeRequest: false,
   });
 }
 

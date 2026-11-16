@@ -24,7 +24,7 @@
     "afterAllArtifactBuild": "build/scripts/notarize.js",
     "publish": {
       "provider": "generic",
-      "url": "https://gams.com/miro/updates/latest"
+      "url": "https://d37drm4t2jghv5.cloudfront.net/miro/updates/latest"
     },
     "extraResources": [
       "src/conf/*",
