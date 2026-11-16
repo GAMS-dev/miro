@@ -2688,7 +2688,23 @@ app.on('ready', async () => {
   } else {
     createMainWindow(false, focusMainWindow, () => searchLibPath());
     if (process.env.E2E !== 'true') {
-      autoUpdater.init(configData, lang.update, () => mainWindow);
+      autoUpdater.init(
+        configData,
+        lang.update,
+        () => mainWindow,
+        async () => {
+          // the Windows installer can't replace files that running R processes still use
+          if (process.platform !== 'win32') {
+            return;
+          }
+          Object.values(miroAppWindows).forEach((win) => {
+            if (!win.isDestroyed()) {
+              win.destroy();
+            }
+          });
+          await miroProcessManager.terminateAll();
+        },
+      );
       autoUpdater.setAutomaticChecks(await configData.get('autoCheckUpdates'));
     }
   }

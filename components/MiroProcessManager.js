@@ -49,6 +49,8 @@ class MiroProcessManager {
     this.appDataPath = appDataPath;
     this.miroWorkspaceDir = miroWorkspaceDir;
     this.miroProcesses = [];
+    // processes terminated on purpose, e.g. before installing an update
+    this.terminatedProcesses = new WeakSet();
     this.pidPortMap = {};
     this.processIdMap = {};
   }
@@ -295,8 +297,12 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         process.stdout.write(data);
       });
     }
-    this.miroProcesses[internalPid]
+    const proc = this.miroProcesses[internalPid];
+    proc
       .catch(async (e) => {
+        if (this.terminatedProcesses.has(proc)) {
+          return;
+        }
         log.debug(
           `Process of MIRO app with pid: ${internalPid} stopped.\nStdout: ${e.stdout}.\nStderr: ${e.stderr}`,
         );
@@ -405,6 +411,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         return { pid: null };
       }
       const { pid } = miroProcess;
+      this.terminatedProcesses.add(miroProcess);
       return kill(pid);
     });
     for (let i = 0; i < this.miroProcesses.length; i += 1) {

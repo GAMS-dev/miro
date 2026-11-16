@@ -16,6 +16,7 @@ const canInstall =
 let configData;
 let lang;
 let getMainWindow;
+let beforeInstall;
 let checkTimer;
 let availableVersion;
 let notifiedVersion;
@@ -84,10 +85,13 @@ async function download() {
     // the version can be offered again by the next automatic check
     notifiedVersion = null;
     setProgress(-1);
+    confirming = true;
     showDialog({
       type: 'error',
       message: lang.error,
       buttons: [lang.btClose],
+    }).finally(() => {
+      confirming = false;
     });
   } finally {
     downloadingVersion = null;
@@ -139,14 +143,25 @@ async function notifyDownloaded(version) {
   });
   confirming = false;
   if (response === 1) {
+    await beforeInstall();
+    // a failure to start the installer is reported synchronously, then MIRO keeps running
+    const onInstallError = () =>
+      showDialog({
+        type: 'error',
+        message: lang.error,
+        buttons: [lang.btClose],
+      });
+    autoUpdater.once('error', onInstallError);
     autoUpdater.quitAndInstall(true, true);
+    autoUpdater.removeListener('error', onInstallError);
   }
 }
 
-function init(configDataObj, langData, getMainWindowFn) {
+function init(configDataObj, langData, getMainWindowFn, beforeInstallFn) {
   configData = configDataObj;
   lang = langData;
   getMainWindow = getMainWindowFn;
+  beforeInstall = beforeInstallFn;
   autoUpdater.logger = log;
   autoUpdater.autoDownload = false;
   configureFeed();
@@ -172,10 +187,15 @@ function setAutomaticChecks(enabled) {
   if (!enabled || !app.isPackaged || !configData) {
     return;
   }
-  const check = () =>
+  const check = () => {
+    // a check during a download replaces the update info of the download
+    if (downloadingVersion) {
+      return;
+    }
     autoUpdater.checkForUpdates().catch(() => {
       // logged by the error handler
     });
+  };
   check();
   checkTimer = setInterval(check, checkIntervalMs);
 }
@@ -184,6 +204,9 @@ async function checkForUpdate() {
   if (!app.isPackaged || !configData) {
     log.info('Updates are only available for installed versions of MIRO.');
     return { status: 'error' };
+  }
+  if (downloadingVersion) {
+    return { status: 'downloading', version: downloadingVersion };
   }
   manualCheck = true;
   try {
@@ -194,9 +217,6 @@ async function checkForUpdate() {
     const { version } = result.updateInfo;
     if (version === downloadedVersion) {
       return { status: 'downloaded', version };
-    }
-    if (downloadingVersion) {
-      return { status: 'downloading', version: downloadingVersion };
     }
     notifiedVersion = version;
     return { status: 'available', version };
