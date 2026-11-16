@@ -1331,7 +1331,8 @@ upload_dev:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != "master"'
       when: never
-    - when: on_success
+    # upload the platforms that were built even if another build failed
+    - when: always
 
 upload_dockerhub:
   tags:
