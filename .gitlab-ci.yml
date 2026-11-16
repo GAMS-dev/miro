@@ -236,6 +236,11 @@ build_linux_job:
     # R is added in bundle_r_linux_job, the packages are built in build_linux_packages_job
     - node ci/set-dev-version.js
     - yarn dist --linux dir -c.directories.output=build/linux
+    # identifies the inputs of the R bundle, see ci/linux-bundled-r/cached-build.sh
+    - >
+      git -c safe.directory="$CI_PROJECT_DIR" rev-parse HEAD:r-src HEAD:src/miro-pkg-lock.csv HEAD:build-config.json
+      HEAD:ci/linux-bundled-r HEAD:scripts/install_source.R HEAD:scripts/globals.R HEAD:build/scripts/install-packages.R
+      | sha256sum | cut -c1-16 > build/linux/r-bundle.key
     - >
       if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
         pushd server
@@ -274,6 +279,7 @@ build_linux_job:
       - r/
       - build/lib_devel
       - build/linux/linux-unpacked
+      - build/linux/r-bundle.key
     expire_in: 1 day
   cache:
     - key: build-cache
@@ -334,7 +340,11 @@ bundle_r_linux_job:
     OUT: build/linux
   script:
     - '[[ "$CI_COMMIT_BRANCH" != "master" ]] && [ "$[[ inputs.build-linux ]]" = false ] && [ "$[[ inputs.build-ci ]]" = false ] && [ "$[[ inputs.build-server-images ]]" = false ] && echo "Skipping Linux build" && exit 0'
-    - bash ci/linux-bundled-r/build.sh
+    - bash ci/linux-bundled-r/cached-build.sh
+  cache:
+    key: r-bundle-linux
+    paths:
+      - .r-bundle-cache/
   artifacts:
     paths:
       - build/linux/miro-r-linux-*.tar.gz
