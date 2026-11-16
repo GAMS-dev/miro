@@ -1075,6 +1075,7 @@ function openAboutDialog() {
     title: 'About GAMS MIRO',
     width: 600,
     height: 380,
+    useContentSize: true,
     show: false,
     resizable: false,
     minimizable: false,
@@ -1107,14 +1108,18 @@ function openAboutDialog() {
   });
 
   aboutDialogWindow.webContents.on('will-navigate', (event, url) => {
-    const current = whatsNewWindow.webContents.getURL();
+    const current = aboutDialogWindow.webContents.getURL();
     if (url !== current) {
       event.preventDefault();
       shell.openExternal(url);
     }
   });
-  aboutDialogWindow.once('ready-to-show', async () => {
-    log.debug('About dialog ready to show.');
+  aboutDialogWindow.webContents.once('did-finish-load', async () => {
+    // fit the window to its content so it never needs a scrollbar
+    const height = await aboutDialogWindow.webContents.executeJavaScript(
+      "document.querySelector('.site-wrapper').offsetHeight",
+    );
+    aboutDialogWindow.setContentSize(600, height);
     aboutDialogWindow.show();
   });
   aboutDialogWindow.on('page-title-updated', (e) => {

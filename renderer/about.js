@@ -6,22 +6,26 @@ const copyrightYear = window.globals
 const buildVersion = new URLSearchParams(window.location.search).get(
   'buildVersion',
 );
-const buildText =
+const buildRow =
   buildVersion && buildVersion !== window.globals.miroVersion()
-    ? `Build: ${buildVersion}<br/>`
+    ? `<dt>Build</dt><dd>${buildVersion}</dd>`
     : '';
 
-const aboutText = `<b>GAMS MIRO v.${window.globals.miroVersion()}</b>&nbsp;&nbsp;<sup>(__HASH__)</sup><br/><br/>\
-${buildText}Release Date: ${window.globals.miroRelease()}<br/>\
-Copyright (c) 2019 - ${copyrightYear} GAMS Software GmbH &lt;support@gams.com&gt;<br/>\
-Copyright (c) 2019 - ${copyrightYear} GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>\
-This program is free software: you can redistribute it and/or modify it under the terms of version 3 \
-of the GNU General Public License as published by the Free Software Foundation.<br/><br/>\
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; \
+const aboutText = `<div class="about-header">\
+<img class="about-logo" src="../static/icon_64x64.png" alt="" />\
+<div><div class="about-title">GAMS MIRO</div>\
+<div class="about-version">Version ${window.globals.miroVersion()} <span>(__HASH__)</span></div></div></div>\
+<dl class="about-meta">${buildRow}\
+<dt>Release date</dt><dd>${window.globals.miroRelease()}</dd>\
+<dt>Copyright</dt><dd>&copy; 2019&ndash;${copyrightYear} GAMS Software GmbH<br/>\
+&copy; 2019&ndash;${copyrightYear} GAMS Development Corp.</dd>\
+<dt>Support</dt><dd>support@gams.com</dd></dl>\
+<p class="about-legal">This program is free software: you can redistribute it and/or modify it under the terms of version 3 \
+of the GNU General Public License as published by the Free Software Foundation. \
+It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; \
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \
-See the GNU General Public License for more details.<br/><br/>\
-You should have received a copy of the GNU General Public License along with this program. \
-If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>. \
-For more information about third-party software included in MIRO, see <a href="http://www.gams.com/miro/license.html">here</a>`;
+See the <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details. \
+For information about third-party software included in MIRO, see the \
+<a href="http://www.gams.com/miro/license.html">license overview</a>.</p>`;
 
 $('#aboutText').html(aboutText);
