@@ -22,6 +22,10 @@
     "productName": "GAMS MIRO",
     "afterPack": "build/scripts/sign-dmg.js",
     "afterAllArtifactBuild": "build/scripts/notarize.js",
+    "publish": {
+      "provider": "generic",
+      "url": "https://gams.com/miro/updates/latest"
+    },
     "extraResources": [
       "src/conf/*",
       "src/whats-new/*",
@@ -79,8 +83,10 @@
       "category": "public.app-category.productivity",
       "icon": "./build/icon.icns",
       "darkModeSupport": true,
+      "artifactName": "GAMS-MIRO-${version}-${arch}.${ext}",
       "target": [
-        "dmg"
+        "dmg",
+        "zip"
       ]
     },
     "win": {
@@ -96,7 +102,11 @@
       },
       "icon": "./build/icon.ico"
     },
+    "dmg": {
+      "writeUpdateInfo": false
+    },
     "nsis": {
+      "artifactName": "GAMS-MIRO-Setup-${version}.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
