@@ -371,7 +371,12 @@ build_linux_packages_job:
     - rm -rf build/linux/linux-unpacked/r
     - tar -xzf build/linux/miro-r-linux-x86_64.tar.gz -C build/linux/linux-unpacked
     - node ci/set-dev-version.js
-    - yarn electron-builder --prepackaged build/linux/linux-unpacked --linux --publish never
+    # one target at a time: deb and rpm write resources/package-type, which makes electron-updater treat an AppImage
+    # as deb/rpm, and each run rewrites latest-linux.yml, which must only list the AppImage
+    - yarn electron-builder --prepackaged build/linux/linux-unpacked --linux deb --publish never
+    - yarn electron-builder --prepackaged build/linux/linux-unpacked --linux rpm --publish never
+    - rm -f build/linux/linux-unpacked/resources/package-type
+    - yarn electron-builder --prepackaged build/linux/linux-unpacked --linux AppImage --publish never
   artifacts:
     paths:
       - dist/*.AppImage
