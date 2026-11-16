@@ -16,24 +16,16 @@
     <link id="theme-style" rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
-    <div class="site-wrapper">
-      <div
-        style="
-          margin: 0;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          -ms-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-          text-align: center;
-        "
-      >
-        <i id="updateSpinner" class="fas fa-spinner fa-pulse"></i>
-        <h6 id="updateText"></h6>
-        <button id="btUpdate" class="btn btn-primary" style="display: none">
+    <div class="site-wrapper update-wrapper">
+      <img class="about-logo" src="../static/icon_64x64.png" alt="" />
+      <i id="updateSpinner" class="fas fa-spinner fa-pulse"></i>
+      <div id="updateText"></div>
+      <div id="updateDetail"></div>
+      <div class="update-actions">
+        <button id="btClose" class="btn btn-secondary confirm-btn">Ok</button>
+        <button id="btUpdate" class="btn confirm-btn" style="display: none">
           Update
         </button>
-        <button id="btClose" class="btn btn-secondary">Ok</button>
       </div>
     </div>
     <script type="text/javascript" src="./update.js"></script>

@@ -13,9 +13,10 @@ $('#btUpdate').on('click', () => {
   ipcRenderer.send('close-window', 'update');
 });
 
-function updateStatus(status) {
+function updateStatus(status, detail = '') {
   $('#updateSpinner').hide();
   $('#updateText').text(status);
+  $('#updateDetail').text(detail);
 }
 
 ipcRenderer.on('lang-data-received', async (e, lang) => {
@@ -25,10 +26,11 @@ ipcRenderer.on('lang-data-received', async (e, lang) => {
   if (status === 'upToDate') {
     updateStatus(lang.upToDate);
   } else if (status === 'available') {
-    updateStatus(`${lang.updateAvailable} ${version}`);
+    updateStatus(`${lang.updateAvailable}\n${version}`);
+    $('#btClose').text(lang.btLater).removeClass('confirm-btn');
     $('#btUpdate').show();
   } else if (status === 'downloading') {
-    updateStatus(`${lang.updateAvailable} ${version}. ${lang.downloading}`);
+    updateStatus(`${lang.updateAvailable}\n${version}`, lang.downloading);
   } else if (status === 'downloaded') {
     updateStatus(lang.downloaded.replace('%s', version));
   } else {

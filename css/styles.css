@@ -1548,7 +1548,6 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
   border-color: var(--m-border-strong);
   color: var(--m-text) !important;
 }
-#updateText + #btClose,
 .about-wrapper .btn {
   background: var(--m-accent);
   border-color: var(--m-accent);
@@ -1939,10 +1938,45 @@ body:not(.edit-mode-active) .launch-app-box:hover .app-logo {
   margin: 0;
   font-size: 11.5px;
 }
+.update-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100vh;
+  padding: 24px 32px;
+  text-align: center;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+.update-wrapper > div:empty {
+  display: none;
+}
+.update-wrapper .about-logo {
+  margin-bottom: 10px;
+}
+#updateSpinner {
+  font-size: 20px;
+  color: var(--m-muted);
+}
 #updateText {
   font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 16px;
+  font-weight: 600;
+  white-space: pre-line;
+}
+#updateDetail {
+  font-size: 13px;
+  color: var(--m-muted);
+}
+.update-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  -webkit-app-region: no-drag;
+}
+.update-actions .btn {
+  min-width: 88px;
 }
 
 /* --- dialogs ---------------------------------------------------------------- */

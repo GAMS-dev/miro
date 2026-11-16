@@ -1140,7 +1140,7 @@ function openCheckUpdateWindow() {
   checkForUpdateWindow = new BrowserWindow({
     title: lang.update.title,
     width: 400,
-    height: 240,
+    height: 280,
     resizable: false,
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : null,
     show: false,
