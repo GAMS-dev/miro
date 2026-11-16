@@ -31,6 +31,7 @@ import WhatsNewManager from './components/WhatsNewManager.js';
 import unzip from './components/Unzip.js';
 import MiroProcessManager from './components/MiroProcessManager.js';
 import { dialogParent } from './components/util.js';
+import * as autoUpdater from './components/auto-updater.js';
 import { AzureUserAuth } from './components/azure-user-auth.cjs';
 import {
   apiVersion,
@@ -1133,7 +1134,7 @@ function openCheckUpdateWindow() {
   checkForUpdateWindow = new BrowserWindow({
     title: lang.update.title,
     width: 400,
-    height: 200,
+    height: 240,
     resizable: false,
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : null,
     show: false,
@@ -1148,10 +1149,7 @@ function openCheckUpdateWindow() {
       enableRemoteModule: false,
     },
   });
-  checkForUpdateWindow.loadFile(
-    path.join(__dirname, 'renderer', 'update.html'),
-    { query: { miroVersion } },
-  );
+  checkForUpdateWindow.loadFile(path.join(__dirname, 'renderer', 'update.html'));
   checkForUpdateWindow.once('ready-to-show', async () => {
     log.debug('Check for Update window ready to show.');
     checkForUpdateWindow.send('lang-data-received', lang.update);
@@ -1198,6 +1196,7 @@ if (!miroDevelopMode) {
 
   app.on('second-instance', async (_, argv) => {
     log.debug('Second MIRO instance launched.');
+    autoUpdater.setUpdateChannelFromArgs(argv);
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -2326,8 +2325,13 @@ ipcMain.on('update-app-meta', (e, updatedApp) => {
 ipcMain.on('save-general-config', async (e, newConfigData, needRestart) => {
   log.debug('Save general config request received.');
   try {
+    const autoCheckUpdatesBefore = await configData.get('autoCheckUpdates');
     configData.set(newConfigData);
     azureUserAuth?.refreshTokenFile(await configData.get('aiAssistantConfig'));
+    const autoCheckUpdates = await configData.get('autoCheckUpdates');
+    if (autoCheckUpdates !== autoCheckUpdatesBefore) {
+      autoUpdater.setAutomaticChecks(autoCheckUpdates);
+    }
     if (settingsWindow) {
       if (needRestart === true) {
         if (
@@ -2483,6 +2487,8 @@ ipcMain.on('launch-app', (e, appData) => {
   createMIROAppWindow(appData);
 });
 
+ipcMain.handle('check-for-update', () => autoUpdater.checkForUpdate());
+ipcMain.on('confirm-update', () => autoUpdater.confirmUpdate());
 ipcMain.on('close-window', (e, id) => {
   if (id === 'about' && aboutDialogWindow) {
     aboutDialogWindow.close();
@@ -2680,6 +2686,10 @@ app.on('ready', async () => {
     );
   } else {
     createMainWindow(false, focusMainWindow, () => searchLibPath());
+    if (process.env.E2E !== 'true') {
+      autoUpdater.init(configData, lang.update, () => mainWindow);
+      autoUpdater.setAutomaticChecks(await configData.get('autoCheckUpdates'));
+    }
   }
 
   // keeps the access token handed to R processes fresh while MIRO runs

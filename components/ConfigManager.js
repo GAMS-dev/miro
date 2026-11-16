@@ -53,6 +53,13 @@ const schema = {
   launchExternal: {
     type: 'boolean',
   },
+  autoCheckUpdates: {
+    type: 'boolean',
+  },
+  updateChannel: {
+    type: 'string',
+    enum: ['dev'],
+  },
   remoteExecution: {
     type: 'boolean',
   },
@@ -174,6 +181,7 @@ const schema = {
         'rpath',
         'logpath',
         'launchExternal',
+        'autoCheckUpdates',
         'remoteExecution',
         'remoteConfig',
         'aiAssistantConfig',
@@ -220,6 +228,7 @@ class ConfigManager extends Store {
           'rpath',
           'logpath',
           'launchExternal',
+          'autoCheckUpdates',
           'remoteExecution',
           'remoteConfig',
           'aiAssistantConfig',
@@ -253,6 +262,7 @@ class ConfigManager extends Store {
       'rpath',
       'logpath',
       'launchExternal',
+      'autoCheckUpdates',
       'remoteExecution',
       'remoteConfig',
       'aiAssistantConfig',
@@ -288,6 +298,7 @@ class ConfigManager extends Store {
         value == null ||
         value === '' ||
         (key === 'launchExternal' && value === false) ||
+        (key === 'autoCheckUpdates' && value === false) ||
         (key === 'remoteExecution' && value === false) ||
         (key === 'logLifeTime' && value === -1) ||
         (key === 'language' && value === 'en') ||
@@ -359,6 +370,9 @@ class ConfigManager extends Store {
       return 'INFO';
     }
     if (key === 'launchExternal') {
+      return false;
+    }
+    if (key === 'autoCheckUpdates') {
       return false;
     }
     if (key === 'remoteExecution') {

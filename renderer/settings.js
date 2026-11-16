@@ -19,6 +19,7 @@ const { EnvEditor } = require('./env-editor.cjs');
 log.errorHandler.startCatching();
 
 const cbLaunchExternal = $('#launchExternal');
+const cbAutoCheckUpdates = $('#autoCheckUpdatesCheckbox');
 const cbRemoteExecution = $('#remoteExecution');
 const cbEnableAi = $('#enableAiAssistant');
 const inputLogLifetime = $('#logLifeTime');
@@ -142,6 +143,7 @@ const pathConfig = {
   inputColorTheme,
   inputLogLevel,
   cbLaunchExternal,
+  cbAutoCheckUpdates,
   cbRemoteExecution,
   cbEnableAi,
   $('#engineNs'),
@@ -394,6 +396,7 @@ saveButton.on('click', async () => {
     }
     newConfig.logLifeTime = logLifeVal;
     newConfig.launchExternal = cbLaunchExternal.is(':checked');
+    newConfig.autoCheckUpdates = cbAutoCheckUpdates.is(':checked');
 
     newConfig.language = optionAliasMap.language[inputLanguage.val()];
     newConfig.colorTheme = optionAliasMap.colorTheme[inputColorTheme.val()];
@@ -586,6 +589,8 @@ $('.btn-reset-nonpath').on('click', function resetClickNonPath() {
   newConfig[elKey] = '';
   if (elKey === 'launchExternal') {
     cbLaunchExternal.prop('checked', defaultValues[elKey]);
+  } else if (elKey === 'autoCheckUpdates') {
+    cbAutoCheckUpdates.prop('checked', defaultValues[elKey]);
   } else if (elKey === 'remoteExecution') {
     cbRemoteExecution.prop('checked', defaultValues[elKey]);
     $('.engine-input').val('');
@@ -1012,6 +1017,8 @@ ipcRenderer.on(
         'ai-tab',
         'launchBrowser',
         'browserReset',
+        'autoCheckUpdates',
+        'autoCheckUpdatesReset',
         'generalLanguage',
         'languageReset',
         'generalRemoteExec',
@@ -1130,6 +1137,7 @@ ipcRenderer.on(
         if (
           [
             'launchExternal',
+            'autoCheckUpdates',
             'remoteExecution',
             'logLifeTime',
             'language',
@@ -1148,6 +1156,11 @@ ipcRenderer.on(
         cbLaunchExternal.prop('checked', newValue);
         if (isImportant) {
           cbLaunchExternal.attr('disabled', true);
+        }
+      } else if (key === 'autoCheckUpdates') {
+        cbAutoCheckUpdates.prop('checked', newValue);
+        if (isImportant) {
+          cbAutoCheckUpdates.attr('disabled', true);
         }
       } else if (key === 'remoteExecution') {
         cbRemoteExecution.prop('checked', newValue);
