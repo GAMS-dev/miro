@@ -43,6 +43,7 @@ New features
 - New, modern design for MIRO apps, MIRO Desktop and MIRO Server.
 - MIRO Desktop: Environment variables can now be edited directly in the settings window, so exporting and importing them is no longer necessary.
 - MIRO Desktop for Linux ships with R and all required R packages, so R and compilers no longer need to be installed and no packages are compiled on first launch. MIRO Desktop is now also available as an RPM package for Fedora/RHEL.
+- MIRO Desktop can `update itself <./download.html#update-miro>`__ on Windows, macOS and Linux (AppImage): *Help → Check for Update* installs a new version after you confirm it. Optionally, MIRO Desktop checks for updates automatically.
 - Spanish language support.
 - Scenario comparison: Select a baseline scenario.
 

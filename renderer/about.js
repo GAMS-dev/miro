@@ -2,8 +2,17 @@ const copyrightYear = window.globals
   .miroRelease()
   .substr(window.globals.miroRelease.length - 4);
 
+// development builds have their own version, e.g. 2.14.0-dev.4600.<branch>
+const buildVersion = new URLSearchParams(window.location.search).get(
+  'buildVersion',
+);
+const buildText =
+  buildVersion && buildVersion !== window.globals.miroVersion()
+    ? `Build: ${buildVersion}<br/>`
+    : '';
+
 const aboutText = `<b>GAMS MIRO v.${window.globals.miroVersion()}</b>&nbsp;&nbsp;<sup>(__HASH__)</sup><br/><br/>\
-Release Date: ${window.globals.miroRelease()}<br/>\
+${buildText}Release Date: ${window.globals.miroRelease()}<br/>\
 Copyright (c) 2019 - ${copyrightYear} GAMS Software GmbH &lt;support@gams.com&gt;<br/>\
 Copyright (c) 2019 - ${copyrightYear} GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>\
 This program is free software: you can redistribute it and/or modify it under the terms of version 3 \

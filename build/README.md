@@ -67,3 +67,14 @@ Note that in order for your artifact to be properly signed, you need to specify 
 * Codesign identity: `CODESIGN_IDENTITY`
 * Apple ID (for notarisation): `APPLEID`
 * Apple ID password (for notarisation): `APPLEIDPASS`
+
+## Auto-update
+Release builds (`master`) upload a copy of their installers and the update metadata to `updates/latest/<platform>-<arch>/` on S3. Every other CI build (`develop`, feature branch pipelines started manually and `rc`) gets a version such as `2.14.0-dev.<pipeline>.<branch>` (see `ci/set-dev-version.js`), and the `upload_dev` job replaces the previous build in `updates/dev/<platform>-<arch>/` right after the builds, without waiting for the tests. The About dialog shows this version as *Build*.
+
+To receive these builds, quit MIRO Desktop and start it once with the dev update channel, then use *Help → Check for Update*:
+
+* Windows (default per-user installation): `"%LOCALAPPDATA%\Programs\GAMS MIRO\GAMS MIRO.exe" --update-channel=dev`
+* macOS: `open -a "GAMS MIRO" --args --update-channel=dev`
+* Linux (AppImage): `./GAMS-MIRO-<version>.AppImage --update-channel=dev`
+
+The channel is stored in the MIRO settings. `--update-channel=latest` switches back to releases; builds from the dev channel are only replaced by the next release with a higher version. Alternatively, set the environment variable `MIRO_UPDATE_CHANNEL=dev`, which overrides the stored channel.

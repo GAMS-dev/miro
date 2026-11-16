@@ -154,6 +154,17 @@ The workspace is where `deployed apps <./deployment.html>`__ are stored and cach
 
 On all platforms, the MIRO workspace is located at ``~/.miro``. On macOS and Linux, ``~`` resolves to ``$HOME``; on Windows, it resolves to ``%USERPROFILE%``.
 
+.. _update-miro:
+
+Update GAMS MIRO
+----------------
+
+To check whether a new version of GAMS MIRO is available, click on *Help → Check for Update*. To be notified about new versions automatically, enable *Check for updates automatically?* in the `settings <./deployment.html#customize-your-installed-miro-apps>`__. MIRO Desktop then checks for updates at startup and every 6 hours.
+
+Before updating, check the `release notes <./release.html>`__ for updated R packages and other breaking changes. Custom code, such as `custom renderers <./configuration_advanced.html#custom-renderers>`__, may need to be adapted to keep working with the new version. Once you confirm the update, it is downloaded in the background. You can then restart MIRO Desktop right away or install the update the next time you quit MIRO Desktop.
+
+On Windows, macOS and Linux (AppImage), MIRO Desktop installs updates itself. The deb and rpm packages are updated with your package manager: download the new package from this page and install it as described above.
+
 .. _uninstallation-section:
 
 Uninstall GAMS MIRO

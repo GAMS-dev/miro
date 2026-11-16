@@ -1097,6 +1097,7 @@ function openAboutDialog() {
     query: {
       miroVersion,
       miroRelease,
+      buildVersion: app.getVersion(),
       btClose: lang.update.btClose,
     },
   });
