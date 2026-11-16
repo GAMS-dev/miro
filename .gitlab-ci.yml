@@ -69,7 +69,7 @@ image:
 .assume_role_s3: &assume_role_s3
   - >
     STS=($(aws sts assume-role-with-web-identity
-    --role-arn ${AWS_S3_ROLE_ARN}
+    --role-arn ${S3_ROLE_ARN:-$AWS_S3_ROLE_ARN}
     --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
     --web-identity-token "$ID_TOKEN"
     --duration-seconds 3600
@@ -1303,6 +1303,9 @@ upload_dev:
   needs: [build_windows_job, build_macos_job, build_macos_arm_job, build_linux_packages_job]
   # an older pipeline must not overwrite a newer build
   resource_group: s3_updates_dev
+  variables:
+    # may only write to updates/dev, but can be assumed from any branch
+    S3_ROLE_ARN: $AWS_S3_DEV_ROLE_ARN
   script:
     - *assume_role_s3
     - ./ci/s3_upload_updates.sh dev
