@@ -526,6 +526,58 @@ article.bd-article > redoc pre {
     overflow-x: auto;
 }
 
+/* Narrow API column: put each property's description below its name. */
+redoc .api-content {
+    container-type: inline-size;
+}
+
+@container (max-width: 600px) {
+    redoc :is(table, tbody, tr, td):has(td[kind]),
+    redoc table:has(td[kind]) > caption,
+    redoc td[kind],
+    redoc td[kind] + td {
+        display: block;
+    }
+
+    redoc td[kind] {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    redoc td[kind] + td {
+        width: auto;
+        padding: 0 0 10px 20px;
+        border-left: 1px solid #edd7b8;
+    }
+
+    redoc tr.last > td[kind] + td {
+        border-left-color: transparent;
+    }
+}
+
+/* Dark mode: colors ReDoc hardcodes outside its theme (see server_api.rst). */
+html[data-theme="dark"] redoc :is(h2, h3) {
+    color: var(--pst-color-text-base);
+}
+
+html[data-theme="dark"] redoc :is(h5, h5 span, caption) {
+    border-color: var(--pst-color-border);
+    color: var(--pst-color-text-muted);
+}
+
+html[data-theme="dark"] redoc table tr {
+    background-color: transparent;
+}
+
+html[data-theme="dark"] redoc td[colspan] td[colspan] > div {
+    background-color: var(--pst-color-background);
+}
+
+/* The server list popup stays light. */
+html[data-theme="dark"] redoc [id^="operation/"] > div > div:last-child > div:first-child > div:last-child :is(div, span) {
+    color: #263238;
+}
+
 /* Fact-sheet previews use Sphinx-managed images; full-size files are downloads. */
 img.miro-fact-sheet-preview {
   max-height: 300px;

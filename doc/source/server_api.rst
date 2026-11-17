@@ -5,5 +5,44 @@ The GAMS MIRO Server REST API can be used to manage (add, remove, update) MIRO a
 
 .. raw:: html
 
-   <redoc spec-url="miro_server_api.json" scroll-y-offset="100" hide-download-button></redoc>
+   <redoc></redoc>
    <script src="_static/redoc.standalone.js"></script>
+   <script>
+     // ReDoc's colors are fixed at render time, so re-render when the theme changes.
+     const redocDarkTheme = {
+       colors: {
+         text: { primary: "#ced6dd", secondary: "#9ca4af" },
+         border: { dark: "rgba(255, 255, 255, 0.15)", light: "#14181e" },
+         gray: { 50: "#222832", 100: "#29313d" },
+       },
+       schema: { nestedBackground: "#222832" },
+       typography: {
+         code: { color: "#ff8a80", backgroundColor: "rgba(255, 255, 255, 0.08)" },
+       },
+       sidebar: { backgroundColor: "#222832", textColor: "#ced6dd" },
+     };
+     let redocTheme;
+     const renderRedoc = () => {
+       const theme = document.documentElement.dataset.theme;
+       // Unset until the theme script resolves it; identical writes are no changes.
+       if (!theme || theme === redocTheme) return;
+       redocTheme = theme;
+       Redoc.init(
+         "miro_server_api.json",
+         {
+           scrollYOffset: 100,
+           hideDownloadButton: true,
+           theme: {
+             // The article is too narrow for a third column at any window size.
+             breakpoints: { medium: "9999rem" },
+             ...(theme === "dark" && redocDarkTheme),
+           },
+         },
+         document.querySelector("redoc"),
+       );
+     };
+     new MutationObserver(renderRedoc).observe(document.documentElement, {
+       attributeFilter: ["data-theme"],
+     });
+     renderRedoc();
+   </script>
