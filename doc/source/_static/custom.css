@@ -526,6 +526,12 @@ article.bd-article > redoc pre {
     overflow-x: auto;
 }
 
+/* ReDoc scrolls to a section and then by its own offset. */
+:root:has(redoc) {
+    scroll-behavior: auto;
+    scroll-padding-top: 0;
+}
+
 /* Narrow API column: put each property's description below its name. */
 redoc .api-content {
     container-type: inline-size;
