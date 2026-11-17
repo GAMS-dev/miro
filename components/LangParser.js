@@ -39,6 +39,10 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        downloadedDetail: {
+          type: 'string',
+          minLength: 1,
+        },
         btLater: {
           type: 'string',
           minLength: 1,
@@ -52,6 +56,10 @@ const schema = {
           minLength: 1,
         },
         confirmUpdateDetail: {
+          type: 'string',
+          minLength: 1,
+        },
+        downloadDetail: {
           type: 'string',
           minLength: 1,
         },
@@ -72,10 +80,12 @@ const schema = {
         'btClose',
         'downloading',
         'downloaded',
+        'downloadedDetail',
         'btLater',
         'btRestart',
         'confirmUpdate',
         'confirmUpdateDetail',
+        'downloadDetail',
         'btReleaseNotes',
         'btUpdate',
       ],
@@ -1545,11 +1555,15 @@ const en = {
     btClose: 'Ok',
     downloading: 'It is being downloaded and will be installed when you quit GAMS MIRO.',
     downloaded: 'GAMS MIRO %s has been downloaded and will be installed when you quit GAMS MIRO.',
+    downloadedDetail:
+      'On restart, GAMS MIRO is updated in the background, which can take a few minutes.',
     btLater: 'Later',
     btRestart: 'Restart now',
     confirmUpdate: 'Do you want to update to GAMS MIRO %s?',
     confirmUpdateDetail:
       'Before updating, please check the release notes for R package updates and other breaking changes. Custom code, such as custom renderers, may need to be adapted to keep working.',
+    downloadDetail:
+      'The update is downloaded in the background, which can take a few minutes.',
     btReleaseNotes: 'Release notes',
     btUpdate: 'Update',
   },
@@ -1904,11 +1918,15 @@ const de = {
     btClose: 'Ok',
     downloading: 'Sie wird heruntergeladen und beim Beenden von GAMS MIRO installiert.',
     downloaded: 'GAMS MIRO %s wurde heruntergeladen und wird beim Beenden von GAMS MIRO installiert.',
+    downloadedDetail:
+      'Beim Neustart wird GAMS MIRO im Hintergrund aktualisiert, was einige Minuten dauern kann.',
     btLater: 'Später',
     btRestart: 'Jetzt neu starten',
     confirmUpdate: 'Möchten Sie auf GAMS MIRO %s aktualisieren?',
     confirmUpdateDetail:
       'Bitte prüfen Sie vor dem Update die Release Notes auf aktualisierte R-Pakete und andere inkompatible Änderungen. Eigener Code, z. B. Custom Renderer, muss eventuell angepasst werden, damit er weiterhin funktioniert.',
+    downloadDetail:
+      'Das Update wird im Hintergrund heruntergeladen, was einige Minuten dauern kann.',
     btReleaseNotes: 'Release Notes',
     btUpdate: 'Aktualisieren',
   },
@@ -2283,11 +2301,13 @@ const cn = {
     btClose: '确定',
     downloading: '正在下载，将在退出GAMS MIRO时安装。',
     downloaded: 'GAMS MIRO %s已下载，将在退出GAMS MIRO时安装。',
+    downloadedDetail: '重启时GAMS MIRO将在后台更新，可能需要几分钟。',
     btLater: '稍后',
     btRestart: '立即重启',
     confirmUpdate: '是否更新到GAMS MIRO %s？',
     confirmUpdateDetail:
       '更新前，请查看发行说明中的R包更新和其他不兼容的更改。自定义代码（例如自定义渲染器）可能需要调整才能继续正常运行。',
+    downloadDetail: '更新将在后台下载，可能需要几分钟。',
     btReleaseNotes: '发行说明',
     btUpdate: '更新',
   },
@@ -2619,11 +2639,15 @@ const es = {
     btClose: 'Aceptar',
     downloading: 'Se está descargando y se instalará al cerrar GAMS MIRO.',
     downloaded: 'GAMS MIRO %s se ha descargado y se instalará al cerrar GAMS MIRO.',
+    downloadedDetail:
+      'Al reiniciar, GAMS MIRO se actualizará en segundo plano, lo que puede tardar unos minutos.',
     btLater: 'Más tarde',
     btRestart: 'Reiniciar ahora',
     confirmUpdate: '¿Desea actualizar a GAMS MIRO %s?',
     confirmUpdateDetail:
       'Antes de actualizar, consulte en las notas de la versión las actualizaciones de paquetes de R y otros cambios incompatibles. Es posible que el código personalizado, como los renderizadores personalizados, deba adaptarse para seguir funcionando.',
+    downloadDetail:
+      'La actualización se descarga en segundo plano, lo que puede tardar unos minutos.',
     btReleaseNotes: 'Notas de la versión',
     btUpdate: 'Actualizar',
   },

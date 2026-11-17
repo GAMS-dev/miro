@@ -112,7 +112,9 @@ async function confirmUpdate() {
     ({ response } = await showDialog({
       type: 'warning',
       message: format(lang.confirmUpdate, version),
-      detail: lang.confirmUpdateDetail,
+      detail: canInstall
+        ? `${lang.confirmUpdateDetail}\n\n${lang.downloadDetail}`
+        : lang.confirmUpdateDetail,
       buttons: [lang.btLater, lang.btReleaseNotes, lang.btUpdate],
     }));
     if (response === 1) {
@@ -139,6 +141,7 @@ async function notifyDownloaded(version) {
   const { response } = await showDialog({
     type: 'info',
     message: format(lang.downloaded, version),
+    detail: lang.downloadedDetail,
     buttons: [lang.btLater, lang.btRestart],
   });
   confirming = false;
