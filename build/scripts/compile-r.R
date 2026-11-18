@@ -12,3 +12,8 @@ for (file in files) {
   # version 2 does not record the native encoding, so strings are loaded as by source()
   compiler::cmpfile(file, outFile, version = 2)
 }
+# main.R is compiled as a single block, so app.R can evaluate it as a whole
+saveRDS(compiler::compile(as.call(c(as.name("{"), parse("main.R", encoding = "UTF-8")))),
+  file.path(outDir, "main.rds"),
+  version = 2
+)
