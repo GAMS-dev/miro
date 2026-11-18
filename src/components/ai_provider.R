@@ -1177,8 +1177,8 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
     apiKeys = NULL,
     allModels = list(
       OpenAI = c(
-        "GPT-6 Astra" = "openai/gpt-6-astra",
-        "GPT-6.1 Sol" = "openai/gpt-6.1-sol",
+        "GPT-6.2 Astra" = "openai/gpt-6.2-astra",
+        "GPT-6.2 Sol" = "openai/gpt-6.2-sol",
         "GPT-6.1 Terra" = "openai/gpt-6.1-terra",
         "GPT-6 Luna" = "openai/gpt-6-luna"
       ),
@@ -1190,11 +1190,10 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
         "Claude Haiku 5.5" = "anthropic/claude-haiku-5-5"
       ),
       Google = c(
-        "Gemini 4 Carbon"  = "google/gemini-4-carbon",
-        "Gemini 4 Argon"   = "google/gemini-4-argon",
-        "Gemini 3.1 Pro"   = "google/gemini-3.1-pro-preview",
-        "Gemini 3.8 Flash" = "google/gemini-3.8-flash",
-        "Gemini 3.6 Flash" = "google/gemini-3.6-flash"
+        "Gemini 4 Carbon"   = "google/gemini-4-carbon",
+        "Gemini 4 Argon"    = "google/gemini-4-argon",
+        "Gemini 4 Hydrogen" = "google/gemini-4-hydrogen",
+        "Gemini 3.8 Flash"  = "google/gemini-3.8-flash"
       ),
       `Microsoft Foundry` = character(0L),
       `Amazon Bedrock` = character(0L),

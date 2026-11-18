@@ -41,8 +41,8 @@ test_that("MiroAiAssistant getProvider returns correct R6 instances", {
   ))
 
   # Valid providers
-  openai_provider <- assistant$getProvider("openai", "gpt-6.1-sol")
-  google_provider <- assistant$getProvider("google", "gemini-3.6-flash")
+  openai_provider <- assistant$getProvider("openai", "gpt-6.2-sol")
+  google_provider <- assistant$getProvider("google", "gemini-4-hydrogen")
 
   expect_true(inherits(openai_provider, "MiroAiOpenAiProvider"))
   expect_true(inherits(google_provider, "MiroAiGoogleProvider"))
@@ -582,7 +582,7 @@ test_that("MiroAiAnthropicProvider hands tool arguments to the dispatcher simpli
 })
 
 test_that("MiroAiGoogleProvider hands tool arguments to the dispatcher simplified", {
-  provider <- MockGoogleCapture$new("gemini-3.6-flash", "key")
+  provider <- MockGoogleCapture$new("gemini-4-hydrogen", "key")
   provider$mockResponses <- list(
     list(
       steps = list(list(
@@ -1297,7 +1297,7 @@ test_that("every provider sends its request through the shared HTTP call", {
   expect_match(calls[[2]]$headers[["anthropic-beta"]], "server-side-fallback", fixed = TRUE)
 
   calls <- list(list())
-  MiroAiOpenAiProvider$new("gpt-6.1-sol", "sk-oai")$.__enclos_env__$private$executeHttpCall(list())
+  MiroAiOpenAiProvider$new("gpt-6.2-sol", "sk-oai")$.__enclos_env__$private$executeHttpCall(list())
   expect_equal(calls[[2]]$url, "https://api.openai.com/v1/responses")
   expect_equal(calls[[2]]$headers[["Authorization"]], "Bearer sk-oai")
 
