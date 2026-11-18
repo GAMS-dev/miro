@@ -7,7 +7,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "canning plants"
+                    "alias": "canning plants",
+                    "domain": "i",
+                    "domainDefining": true
                 },
                 "value": {
                     "type": "numeric",
@@ -21,7 +23,9 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "markets"
+                    "alias": "markets",
+                    "domain": "j",
+                    "domainDefining": true
                 },
                 "value": {
                     "type": "numeric",
@@ -35,11 +39,15 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "canning plants"
+                    "alias": "canning plants",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "j": {
                     "type": "string",
-                    "alias": "markets"
+                    "alias": "markets",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "value": {
                     "type": "numeric",
@@ -53,7 +61,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "canning plants"
+                    "alias": "canning plants",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "lat": {
                     "type": "numeric",
@@ -71,7 +81,9 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "markets"
+                    "alias": "markets",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "lat": {
                     "type": "numeric",
@@ -126,11 +138,15 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "canning plants"
+                    "alias": "canning plants",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "j": {
                     "type": "string",
-                    "alias": "markets"
+                    "alias": "markets",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "lngP": {
                     "type": "numeric",

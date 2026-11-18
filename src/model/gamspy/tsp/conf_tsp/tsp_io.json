@@ -7,7 +7,9 @@
             "headers": {
                 "ii": {
                     "type": "string",
-                    "alias": "Cities used in the model"
+                    "alias": "Cities used in the model",
+                    "domain": "ii",
+                    "domainDefining": true
                 },
                 "lat": {
                     "type": "numeric",
@@ -56,11 +58,15 @@
             "headers": {
                 "ii": {
                     "type": "string",
-                    "alias": "Cities used in the model"
+                    "alias": "Cities used in the model",
+                    "domain": "ii",
+                    "domainDefining": false
                 },
                 "jj": {
                     "type": "string",
-                    "alias": "Cities used in the model"
+                    "alias": "Cities used in the model",
+                    "domain": "ii",
+                    "domainDefining": false
                 },
                 "lngA": {
                     "type": "numeric",
