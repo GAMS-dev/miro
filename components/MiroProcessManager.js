@@ -83,7 +83,6 @@ class MiroProcessManager {
     );
     if (internalPid != null) {
       await progressCallback({ internalPid, code: 'start' });
-      await waitFor(1500);
       await this.waitForResponse(
         appData.id,
         appData.allowMultiple,
@@ -348,13 +347,15 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       return;
     }
     const url = `http://127.0.0.1:${shinyPort}`;
-    const maxIter = timeout == null ? 100 : timeout;
+    const startTime = Date.now();
+    const deadline = startTime + (timeout == null ? 100 : timeout) * 1000;
+    let reportedNotResponding = false;
     /* eslint-disable no-await-in-loop */
-    for (let i = 0; i <= maxIter; i += 1) {
+    while (Date.now() <= deadline) {
+      await waitFor(100);
       if (!this.miroProcesses[internalPid]) {
         return;
       }
-      await waitFor(Math.min(i * 100, 1000));
       try {
         const res = await http.head(`${url}/manifest.json`, {
           timeout: 10000,
@@ -365,10 +366,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
           return;
         }
       } catch (e) {
-        if (i > 10) {
-          log.debug(
-            `Process: ${internalPid} not responding after ${i + 1} seconds.`,
-          );
+        if (!reportedNotResponding && Date.now() - startTime > 10000) {
+          reportedNotResponding = true;
+          log.debug(`Process: ${internalPid} not responding after 10 seconds.`);
           if (progressCallback) {
             await progressCallback({ code: 'notresponding' });
           }
