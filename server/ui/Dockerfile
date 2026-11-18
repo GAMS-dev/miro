@@ -135,6 +135,8 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # copy MIRO to the image
 COPY src /home/miro/app/
+COPY build/scripts/compile-r.R /tmp/compile-r.R
+RUN Rscript /tmp/compile-r.R /home/miro/app /home/miro/app/bytecode && rm /tmp/compile-r.R
 
 RUN apt-get update \
     && apt-get upgrade -y

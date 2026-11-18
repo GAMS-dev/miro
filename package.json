@@ -42,7 +42,11 @@
       "src/tools/**",
       "src/UI/**",
       "src/start-shiny.R",
-      "src/migrations/**"
+      "src/migrations/**",
+      {
+        "from": "build/bytecode",
+        "to": "src/bytecode"
+      }
     ],
     "files": [
       "**/*",

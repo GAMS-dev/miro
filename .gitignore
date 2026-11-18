@@ -22,5 +22,6 @@ node_modules/
 /build/lib_devel/
 /dist/
 /build/lib_devel
+/build/bytecode/
 venv
 /r/

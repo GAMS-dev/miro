@@ -8,27 +8,40 @@ const buildDocker = process.argv[2] === '--docker';
 
 const buildConfig = JSON.parse(fs.readFileSync('build-config.json'));
 
-const tryInstallRPackages = async () => {
+const runRScript = async (args, env) => {
+  const subproc = execa(
+    process.platform === 'win32'
+      ? path.join('.', 'r', 'bin', 'Rscript')
+      : 'Rscript',
+    args,
+    { env },
+  );
+  subproc.stderr.pipe(process.stderr);
+  subproc.stdout.pipe(process.stderr);
+  await subproc;
+};
+
+const tryPrepareR = async () => {
   try {
-    let rPath = 'Rscript';
-    if (process.platform === 'win32') {
-      rPath = path.join('.', 'r', 'bin', 'Rscript');
-    }
-    const subproc = execa(
-      rPath,
+    await runRScript(
       [path.join('.', 'build', 'scripts', 'install-packages.R')],
       {
-        env: {
-          LIB_PATH: path.join('.', 'r', 'library'),
-          BUILD_DOCKER: buildDocker ? 'true' : 'false',
-        },
+        LIB_PATH: path.join('.', 'r', 'library'),
+        BUILD_DOCKER: buildDocker ? 'true' : 'false',
       },
     );
-    subproc.stderr.pipe(process.stderr);
-    subproc.stdout.pipe(process.stderr);
-    await subproc;
   } catch (e) {
     console.log(`Problems installing R packages. Error message: ${e.message}`);
+    process.exit(1);
+  }
+  try {
+    await runRScript([
+      path.join('.', 'build', 'scripts', 'compile-r.R'),
+      'src',
+      path.join('build', 'bytecode'),
+    ]);
+  } catch (e) {
+    console.log(`Problems byte-compiling R sources. Error message: ${e.message}`);
     process.exit(1);
   }
 };
@@ -100,7 +113,7 @@ const getRVersion = async (rPath) => {
                   process.exit(1);
                 }
                 try {
-                  await tryInstallRPackages();
+                  await tryPrepareR();
                 } catch (e) {
                   console.log(
                     `Problems installing R packages. Error message: ${e.message}`,
@@ -146,7 +159,7 @@ const getRVersion = async (rPath) => {
       }
     }
     try {
-      await tryInstallRPackages();
+      await tryPrepareR();
     } catch (e) {
       console.log(
         `Problems installing R packages. Error message: ${e.message}`,
