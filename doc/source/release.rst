@@ -8,7 +8,7 @@ The R version and R packages shipped with each release are listed in :doc:`r_pac
 GAMS MIRO 2.14
 --------------
 
-(xxxx-xx-xx)
+(2026-11-19)
 
 Security
 ~~~~~~~~
