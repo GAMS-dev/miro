@@ -1192,6 +1192,7 @@ MiroAiAssistant <- R6Class("MiroAiAssistant",
       Google = c(
         "Gemini 4 Carbon"   = "google/gemini-4-carbon",
         "Gemini 4 Argon"    = "google/gemini-4-argon",
+        "Gemini 4 Neon"     = "google/gemini-4-neon",
         "Gemini 4 Hydrogen" = "google/gemini-4-hydrogen",
         "Gemini 3.8 Flash"  = "google/gemini-3.8-flash"
       ),
