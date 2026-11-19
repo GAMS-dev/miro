@@ -108,7 +108,7 @@ proxy:
       authUrl: ''
       tokenUrl: ''
       jwksUrl: ''
-      logoutUrl: ''
+      logoutUrl: '' # Logout endpoint of the identity provider. If empty, only the MIRO Server session is cleared and users stay logged in at the identity provider
       clientId: ''
       scopes: '' # "openid,email" are always requested. Only add additional scopes (e.g. profile) here
       withPKCE: false
