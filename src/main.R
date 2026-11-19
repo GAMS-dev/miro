@@ -1603,7 +1603,7 @@ if (!is.null(errMsg)) {
                 next
               }
               if (!is.null(scenImportConfig[["scenNameOverwrite"]])) {
-                activeScen$updateMetadata(
+                newScen$updateMetadata(
                   newName = scenImportConfig[["scenNameOverwrite"]]
                 )
               }
