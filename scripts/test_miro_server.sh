@@ -55,6 +55,7 @@ pushd server > /dev/null
         echo "GMS_MIRO_ENGINE_NS=${ENGINE_NS}" >> .env
         mkdir logs
         chown -R 1000:1000 logs
+        chmod 775 logs
         mkdir data
         cp -a data_raw/. data/
         chown -R 1000:1000 data

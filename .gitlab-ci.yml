@@ -1222,6 +1222,16 @@ test_job_miro_server:
         echo "$BAD_LOGS"
         exit 1
       fi
+    - |
+      if grep -q "Failed to initialize container log storage" miro_server_all_logs.txt; then
+        echo "🚨 ERROR: The proxy cannot write container logs to server/miro_server/logs"
+        exit 1
+      fi
+      if ! find server/miro_server/logs/container-logs -type f -size +0 2>/dev/null | grep -q .; then
+        echo "🚨 ERROR: No container logs with content were written to server/miro_server/logs/container-logs"
+        ls -laR server/miro_server/logs || true
+        exit 1
+      fi
   dependencies: []
   artifacts:
     when: always

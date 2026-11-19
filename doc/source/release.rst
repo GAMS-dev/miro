@@ -100,6 +100,9 @@ Bug fixes
 ~~~~~~~~~
 
 - Fix bug in the logging of the MIRO Server authentication container.
+- MIRO Server: Fix app container logs (``logs/container-logs``) not being
+  written. To fix existing Linux installations, run ``chmod g+w logs`` in the
+  ``miro_server`` directory.
 - Hypercube module: Fixed bug that, in certain situations, caused the
   number of scenarios in the Hypercube module to be calculated
   incorrectly due to issues with numerical precision.

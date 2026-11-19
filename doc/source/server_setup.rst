@@ -224,8 +224,6 @@ Most settings are made in the *data/application.yml* file in the *miro_server* d
           container-network: miroserver-network
           miro-image-name: ${GMS_MIRO_UI_IMAGE}
           admin-image-name: ${GMS_MIRO_ADMIN_IMAGE}
-      logging:
-        file: /logs/miroproxy.log
 
       spring:
         application.name: GAMS MIRO Server

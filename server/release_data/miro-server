@@ -84,6 +84,11 @@ install (){
             echo "Could not change ownership of directory \"logs\". Check your permissions."
             exit 1
         }
+        # the proxy writes its logs as a member of group 1000
+        chmod 775 logs || {
+            echo "Could not change permissions of directory \"logs\". Check your permissions."
+            exit 1
+        }
     fi
 
     [ -d ./data ] || mkdir data
