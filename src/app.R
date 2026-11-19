@@ -1,7 +1,7 @@
 # version number
-MIROVersion <- "2.13.9999"
+MIROVersion <- "2.14.0"
 APIVersion <- "1"
-MIRORDate <- "Jun 30 2026"
+MIRORDate <- "Nov 19 2026"
 
 if (dir.exists("bytecode")) {
   # use MIRO's R files byte-compiled at build time (build/scripts/compile-r.R)
