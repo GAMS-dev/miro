@@ -67,6 +67,14 @@ if (startIndex > nFiles) {
   quit(status = 0)
 }
 filesToRun <- allFiles[startIndex:endIndex]
+if (identical(Sys.getenv("MIRO_TEST_BYTECODE"), "true")) {
+  # test MIRO byte-compiled as shipped (see app.R)
+  processx::run(
+    file.path(R.home(), "bin", "Rscript"),
+    c(file.path("..", "build", "scripts", "compile-r.R"), ".", "bytecode")
+  )
+  reg.finalizer(environment(), function(e) unlink("bytecode", recursive = TRUE), onexit = TRUE)
+}
 if (!"test-zzz-check-logs-unit.R" %in% filesToRun) {
   # always check logs
   filesToRun <- c(filesToRun, "test-zzz-check-logs-unit.R")

@@ -862,6 +862,7 @@ test_windows_job:
   retry: 1
   variables:
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    MIRO_TEST_BYTECODE: 'true'
   before_script:
     - yarn install --frozen-lockfile
     - $env:FORCE_RELEASE = if ("$[[ inputs.force-release ]]" -ceq "true") { "yes" } else { "no" }
@@ -925,6 +926,7 @@ test_macos_job:
     LANG: en_US.UTF-8
     LC_ALL: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    MIRO_TEST_BYTECODE: 'true'
   before_script:
     - yarn install --frozen-lockfile
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
@@ -987,6 +989,7 @@ test_macos_arm_job:
     LANG: en_US.UTF-8
     LC_ALL: en_US.UTF-8
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    MIRO_TEST_BYTECODE: 'true'
   before_script:
     - yarn install --frozen-lockfile
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")
@@ -1144,6 +1147,7 @@ test_job:
     POSTGRES_HOST_AUTH_METHOD: trust
     GAMSPY_INTERPRETER_PATH: /usr/bin/python3
     MIRO_MAX_TEST_FAILURES: '$[[ inputs.max-test-failures ]]'
+    MIRO_TEST_BYTECODE: 'true'
     PYTHON_EXEC_PATH: /usr/bin/python3
   before_script:
     - export FORCE_RELEASE=$([ "$[[ inputs.force-release ]]" = true ] && echo "yes" || echo "no")

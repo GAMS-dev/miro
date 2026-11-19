@@ -17,3 +17,4 @@ model/**/runapp.R
 model/**/*_miro.gms
 model/**/*_hcube_jobs
 gamslice.txt
+/bytecode/
