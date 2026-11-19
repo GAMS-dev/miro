@@ -88,6 +88,20 @@ ensureChromote <- function(timeout = as.numeric(Sys.getenv("MIRO_CHROMOTE_TIMEOU
   # timeout (e.g. DOM queries of app$click()); chromote's default of 10s
   # is too short on slow runners.
   checkTimeout <- 20
+  # tabs still open at this point are leftovers (AppDriver$new opens sessions
+  # to check whether Chrome works but never closes them)
+  closeLeftoverTabs <- function(chromoteObj) {
+    try(
+      {
+        for (target in chromoteObj$Target$getTargets(timeout_ = checkTimeout)$targetInfos) {
+          if (identical(target$type, "page")) {
+            chromoteObj$Target$closeTarget(target$targetId, timeout_ = checkTimeout)
+          }
+        }
+      },
+      silent = TRUE
+    )
+  }
   isWorking <- function(chromoteObj) {
     chromoteObj$default_timeout <- checkTimeout
     tryCatch(
@@ -111,6 +125,7 @@ ensureChromote <- function(timeout = as.numeric(Sys.getenv("MIRO_CHROMOTE_TIMEOU
   }
   if (chromote::has_default_chromote_object()) {
     chromoteObj <- chromote::default_chromote_object()
+    closeLeftoverTabs(chromoteObj)
     if (isWorking(chromoteObj)) {
       chromoteObj$default_timeout <- timeout
       return(invisible(TRUE))
@@ -167,6 +182,14 @@ retryUiTest <- function(times, code) {
       },
       error = function(cnd) {
         message(sprintf("Expectation errored; trying again (%d): %s", i, conditionMessage(cnd)))
+        FALSE
+      },
+      skip = function(cnd) {
+        # AppDriver skips if Chrome does not respond; ensureChromote() restarts it
+        if (!grepl("{chromote} can not be started", conditionMessage(cnd), fixed = TRUE)) {
+          stop(cnd)
+        }
+        message(sprintf("Chrome could not be started; trying again (%d)...", i))
         FALSE
       }
     )
