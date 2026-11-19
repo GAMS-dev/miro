@@ -94,6 +94,7 @@ Minor new features and improvements
 
 - `Custom theme colors <./configuration_colors.html#custom-theme-colors>`__: The main background color can now also be set for light mode. The body background color has been removed, as the new layout no longer shows it; existing color themes continue to work without changes. The highlighted sidebar entry now automatically adjusts its color to stay readable on dark sidebars.
 - Add option to `prevent attachments from overwriting model files <./configuration_general.html#protect-model-files>`__.
+- MIRO Server: If a user has no default scenario of their own, the default scenario of the user who added or last updated the app is loaded. This is normally the scenario bundled with the app.
 
 Bug fixes
 ~~~~~~~~~
