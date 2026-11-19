@@ -226,7 +226,8 @@ build_linux_job:
     DOCKER_TLS_CERTDIR: '/certs'
     DOCKER_CERT_PATH: '/certs/client'
     DOCKER_HOST: tcp://docker:2376
-    GIT_SUBMODULE_STRATEGY: normal
+    # recursive: server/containerproxy contains the nested spring-boot-undertow submodule
+    GIT_SUBMODULE_STRATEGY: recursive
     NODE_OPTIONS: --openssl-legacy-provider
     BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
   before_script:

@@ -2,6 +2,10 @@ FROM --platform=linux/amd64 maven:3.9.11-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
+# Spring Boot 4 dropped Undertow support; containerproxy depends on a starter built from this nested submodule
+COPY containerproxy/spring-boot-undertow containerproxy/spring-boot-undertow
+RUN cd containerproxy/spring-boot-undertow && mvn -B install -DskipTests
+
 COPY containerproxy/pom.xml containerproxy/pom.xml
 RUN cd containerproxy && mvn -U verify clean --fail-never
 
