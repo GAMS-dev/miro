@@ -7,7 +7,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "generators"
+                    "alias": "generators",
+                    "domain": "i",
+                    "domainDefining": true
                 },
                 "cost_per_unit": {
                     "type": "numeric",
@@ -41,7 +43,9 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "hours",
+                    "domain": "j",
+                    "domainDefining": true
                 },
                 "load_demand": {
                     "type": "numeric",
@@ -93,11 +97,15 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "generators"
+                    "alias": "generators",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "j": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "hours",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",
@@ -127,7 +135,9 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "hours",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",
@@ -157,7 +167,9 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "hours",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",
@@ -187,11 +199,15 @@
             "headers": {
                 "j": {
                     "type": "string",
-                    "alias": "hours"
+                    "alias": "hours",
+                    "domain": "j",
+                    "domainDefining": false
                 },
                 "power_output_header": {
                     "type": "string",
-                    "alias": "power_output_header"
+                    "alias": "power_output_header",
+                    "domain": "power_output_header",
+                    "domainDefining": false
                 },
                 "value": {
                     "type": "numeric",

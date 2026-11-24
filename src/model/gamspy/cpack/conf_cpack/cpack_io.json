@@ -44,7 +44,9 @@
             "headers": {
                 "uni": {
                     "type": "string",
-                    "alias": "uni"
+                    "alias": "uni",
+                    "domain": "*",
+                    "domainDefining": false
                 },
                 "x": {
                     "type": "numeric",

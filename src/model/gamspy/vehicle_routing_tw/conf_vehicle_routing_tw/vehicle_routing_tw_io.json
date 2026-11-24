@@ -7,7 +7,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "customers"
+                    "alias": "customers",
+                    "domain": "i",
+                    "domainDefining": true
                 },
                 "lat": {
                     "type": "numeric",
@@ -72,15 +74,21 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "customers"
+                    "alias": "customers",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "j": {
                     "type": "string",
-                    "alias": "customers"
+                    "alias": "customers",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "k": {
                     "type": "string",
-                    "alias": "vehicles"
+                    "alias": "vehicles",
+                    "domain": "k",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",
@@ -110,7 +118,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "customers"
+                    "alias": "customers",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",
@@ -140,7 +150,9 @@
             "headers": {
                 "i": {
                     "type": "string",
-                    "alias": "customers"
+                    "alias": "customers",
+                    "domain": "i",
+                    "domainDefining": false
                 },
                 "level": {
                     "type": "numeric",

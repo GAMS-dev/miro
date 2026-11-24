@@ -7,11 +7,15 @@
             "headers": {
                 "date": {
                     "type": "string",
-                    "alias": "trading date"
+                    "alias": "trading date",
+                    "domain": "date",
+                    "domainDefining": true
                 },
                 "symbol": {
                     "type": "string",
-                    "alias": "stock symbol"
+                    "alias": "stock symbol",
+                    "domain": "symbol",
+                    "domainDefining": true
                 },
                 "value": {
                     "type": "numeric",
@@ -59,7 +63,9 @@
             "headers": {
                 "symbol": {
                     "type": "string",
-                    "alias": "stock symbol"
+                    "alias": "stock symbol",
+                    "domain": "symbol",
+                    "domainDefining": false
                 },
                 "value": {
                     "type": "numeric",
@@ -73,7 +79,9 @@
             "headers": {
                 "date": {
                     "type": "string",
-                    "alias": "trading date"
+                    "alias": "trading date",
+                    "domain": "date",
+                    "domainDefining": false
                 },
                 "dj": {
                     "type": "numeric",
@@ -91,7 +99,9 @@
             "headers": {
                 "date": {
                     "type": "string",
-                    "alias": "trading date"
+                    "alias": "trading date",
+                    "domain": "date",
+                    "domainDefining": false
                 },
                 "absolute error train": {
                     "type": "numeric",
@@ -109,11 +119,15 @@
             "headers": {
                 "date": {
                     "type": "string",
-                    "alias": "trading date"
+                    "alias": "trading date",
+                    "domain": "date",
+                    "domainDefining": false
                 },
                 "uni": {
                     "type": "string",
-                    "alias": "uni"
+                    "alias": "uni",
+                    "domain": "*",
+                    "domainDefining": false
                 },
                 "value": {
                     "type": "numeric",

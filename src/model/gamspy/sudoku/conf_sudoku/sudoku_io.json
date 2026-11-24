@@ -7,7 +7,9 @@
             "headers": {
                 "row": {
                     "type": "string",
-                    "alias": "row"
+                    "alias": "row",
+                    "domain": "row",
+                    "domainDefining": false
                 },
                 "col1": {
                     "type": "numeric",
@@ -81,7 +83,9 @@
             "headers": {
                 "row": {
                     "type": "string",
-                    "alias": "row"
+                    "alias": "row",
+                    "domain": "row",
+                    "domainDefining": false
                 },
                 "col1": {
                     "type": "numeric",
